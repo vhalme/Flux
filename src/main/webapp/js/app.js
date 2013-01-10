@@ -10,13 +10,32 @@ App.ApplicationView = Em.View.extend({
 	templateName: 'application'
 });
 
+App.placeInputController = Ember.ArrayProxy.create({
+	content: ["Tashkent", "Bukhara", "Samarkand", "Khujand"]
+});
+
+App.PlaceInputView = Ember.TextField.extend({
+	
+	classNames: ['placeInput'],
+	
+	didInsertElement: function() {
+		//console.log($(this));
+		$('.placeInput').autocomplete({ source: ['AA', 'BB', 'CC'] });
+  	},
+  	
+  	controllerBinding: 'App.placeInputController'
+  	
+});
 
 App.AddEntryController = Em.Controller.extend({
 	title: 'Add entry'
 });
 
 App.AddEntryView = Em.View.extend({
-	templateName: 'addEntryViewTemplate'
+	
+	templateName: 'addEntryViewTemplate',
+	fromInput: App.PlaceInputView
+	
 });
 
 App.ExploreController = Em.Controller.extend({

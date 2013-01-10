@@ -76,6 +76,10 @@
 		<script type="text/x-handlebars" data-template-name="addEntryViewTemplate">
 			
 			{{title}} - <a {{action viewExplore}}>Explore</a>
+			
+			<br/>
+			
+			{{view view.fromInput}}
         
 		</script>
 
@@ -84,7 +88,8 @@
 			{{title}} - <a {{action viewAddEntry}}>Add entry</a>
 			
 		</script>
-
+		
+		
 		<!-- Prompt IE 6 users to install Chrome Frame. Remove this if you support IE 6.
 		chromium.org/developers/how-tos/chrome-frame-getting-started -->
 		<!--[if lt IE 7]><p class=chromeframe>Your browser is <em>ancient!</em> <a href="http://browsehappy.com/">Upgrade to a different browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to experience this site.</p><![endif]-->
@@ -100,6 +105,7 @@
 		<script src="js/libs/handlebars-1.0.0.beta.6.js"></script>
 		<script src="js/libs/ember-latest.js"></script>
 		<script src="js/app.js"></script>
+		
 
 	</body>
 </html>
