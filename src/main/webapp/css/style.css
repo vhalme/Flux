@@ -34,19 +34,23 @@ header h1 {
 #content {
 	
 	width: 100%;
-	padding-top: 0px;
+	min-height: 600px;
+	overflow: hidden;
+	
 	display: block;
+	
 	
 }
 
 #leftSection {
 	
 	float: left;
+	margin-bottom: -99999px;
+	padding-bottom: 99999px;
 	
-	width: 300px;
+	width: 38%;
 	padding-top: 10px;
 	padding-left: 10px;
-	padding-bottom: 36px;
 	
 	background: #ccc;
 
@@ -55,8 +59,7 @@ header h1 {
 #leftSection h1 {
 	
 	margin: 0px;
-	font-family: Verdana, Helvetica, sans-serif;
-	font-weight: bold;
+	font-family: Helvetica, sans-serif;
     font-size: 1.4em;
     line-height: 2.0em;
    	
@@ -71,5 +74,7 @@ header h1 {
 #centerSection {
 	
 	float: left;
+	margin-bottom: -99999px;
+	padding-bottom: 99999px;
 	
 }
