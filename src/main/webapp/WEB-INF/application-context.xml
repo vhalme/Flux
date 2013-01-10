@@ -1,0 +1,55 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:context="http://www.springframework.org/schema/context"
+      xmlns:jaxrs="http://cxf.apache.org/jaxrs"
+      xmlns:mongo="http://www.springframework.org/schema/data/mongo"
+      xsi:schemaLocation="http://www.springframework.org/schema/beans
+         http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+         http://cxf.apache.org/jaxrs 
+         http://cxf.apache.org/schemas/jaxrs.xsd
+         http://www.springframework.org/schema/data/mongo
+         http://www.springframework.org/schema/data/mongo/spring-mongo-1.0.xsd
+         http://www.springframework.org/schema/context
+		 http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+
+	
+	<import resource="classpath:META-INF/cxf/cxf.xml" />
+    <import resource="classpath:META-INF/cxf/osgi/cxf-extension-osgi.xml" />
+	
+	<!-- MONGO DB -->
+	
+	<mongo:mongo host="localhost" port="27017"/>
+	
+	<mongo:repositories base-package="com.lenin.project.repositories">
+		<mongo:repository id="stubRepository" mongo-template-ref="mongoTemplate" />
+	</mongo:repositories>
+	
+	<bean id="mongoTemplate" class="org.springframework.data.mongodb.core.MongoTemplate">
+		<constructor-arg ref="mongo" />
+		<constructor-arg name="databaseName" value="app1" />
+	</bean>
+	
+	
+	<!-- Service -->
+	
+	<bean id="stubServiceImpl" class="com.lenin.project.service.StubService">
+    	
+    </bean>
+     
+    
+    <!-- JAX-RS / JSON -->
+	
+	<bean id='jacksonProvider' class='org.codehaus.jackson.jaxrs.JacksonJaxbJsonProvider' />
+	
+	<jaxrs:server id="stub" address="/">
+    	<jaxrs:serviceBeans>
+        	<ref bean="stubServiceImpl"/>
+        </jaxrs:serviceBeans>
+        <jaxrs:providers>
+			<ref bean='jacksonProvider' />
+		</jaxrs:providers>
+	</jaxrs:server>
+      
+    <context:annotation-config />
+    
+</beans>
