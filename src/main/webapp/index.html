@@ -76,12 +76,18 @@
 		
 		</script>
 
-
 		<script type="text/x-handlebars" data-template-name="addEntryViewTemplate">
 			
-			{{title}} - <a {{action viewExplore}}>Explore</a>
+			Add entry - <a {{action viewExplore}}>Explore</a>
 			
 			<br/><br/><br/>
+			
+			{{view App.FromToInputView}}
+			
+        
+		</script>
+		
+		<script type="text/x-handlebars" data-template-name="fromToInputViewTemplate">
 			
 			{{view view.fromInput}}
 			

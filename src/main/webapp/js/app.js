@@ -74,13 +74,13 @@ App.PlaceInputView = Ember.View.extend({
   	
 });
 
-App.AddEntryController = Em.Controller.extend({
+App.FromToInputController = Em.Controller.extend({
 	
 });
 
-App.AddEntryView = Em.View.extend({
+App.FromToInputView = Em.View.extend({
 	
-	templateName: 'addEntryViewTemplate',
+	templateName: 'fromToInputViewTemplate',
 	
 	fromInput: App.PlaceInputView.extend({ 
 		controller: App.PlaceInputController.create({ direction: "From" }),
@@ -92,6 +92,14 @@ App.AddEntryView = Em.View.extend({
 		autocompleteController: App.AutocompleteController.create() 
 	}),
 
+});
+
+App.AddEntryController = Em.Controller.extend({
+	
+});
+
+App.AddEntryView = Em.View.extend({
+	templateName: 'addEntryViewTemplate',
 });
 
 App.ExploreController = Em.Controller.extend({
