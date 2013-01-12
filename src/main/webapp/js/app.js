@@ -76,12 +76,6 @@ App.PlaceInputView = Ember.View.extend({
 
 App.AddEntryController = Em.Controller.extend({
 	
-	title: "Add entry",
-	
-	fromValue: "test1",
-	
-	toValue: "test2"
-	
 });
 
 App.AddEntryView = Em.View.extend({
@@ -97,9 +91,6 @@ App.AddEntryView = Em.View.extend({
 		controller: App.PlaceInputController.create({ direction: "To" }),
 		autocompleteController: App.AutocompleteController.create() 
 	}),
-	
-	
-	//controllerBinding: App.AddEntryController.create()
 
 });
 
