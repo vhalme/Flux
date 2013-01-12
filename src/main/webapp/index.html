@@ -82,8 +82,22 @@
 			
 			<br/><br/><br/>
 			
-			{{view App.FromToInputView}}
-			
+			<div id="addEntryAccordion">
+				
+				<h3>FROM - TO</h3>
+				{{view App.FromToInputView}}
+				
+				<h3>BY</h3>
+				<div>
+					By bus/train/plane...
+				</div>
+				
+				<h3>WHEN</h3>
+				<div>
+					Date...
+				</div>
+				
+			</div>
         
 		</script>
 		
@@ -112,9 +126,11 @@
 			
 			<br/>
 			
+			<div>
 			{{#each place in view.autocompleteController}}
 				<a {{action selectPlace place}}>{{place.placeName}}</a><br/>
 			{{/each}}
+			</div>
 			
 		</script>
 		

@@ -99,7 +99,13 @@ App.AddEntryController = Em.Controller.extend({
 });
 
 App.AddEntryView = Em.View.extend({
+	
 	templateName: 'addEntryViewTemplate',
+	
+	didInsertElement: function() {
+		$("#addEntryAccordion").accordion({ collapsible: true });
+	}
+	
 });
 
 App.ExploreController = Em.Controller.extend({
