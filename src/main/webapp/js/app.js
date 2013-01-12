@@ -10,32 +10,97 @@ App.ApplicationView = Em.View.extend({
 	templateName: 'application'
 });
 
-App.placeInputController = Ember.ArrayProxy.create({
-	content: ["Tashkent", "Bukhara", "Samarkand", "Khujand"]
+App.map = new google.maps.Map(document.getElementById("map"), {});
+
+App.AutocompleteController = Ember.ArrayProxy.extend({
+	
+	init: function() {
+		this.set('content', []);
+	},
+	
+	getNames: function(searchString) {
+		
+		this.clear();
+		
+		if(searchString.length == 0) {
+			return;
+		}
+		
+		var controller = this;
+		
+		var service = new google.maps.places.AutocompleteService();
+		
+	    service.getQueryPredictions({ input: searchString }, function(results, status) {
+	    	
+	    	for(var i = 0; i < results.length; i++) {
+	    		controller.addObject(Ember.Object.create({ placeName: results[i].description }));
+	    	}
+	    	
+	    });
+		
+	}
+
 });
 
-App.PlaceInputView = Ember.TextField.extend({
+App.PlaceInputController = Ember.Controller.extend({
 	
-	classNames: ['placeInput'],
+	direction: undefined,
+	selectedPlace: undefined,
 	
-	didInsertElement: function() {
-		//console.log($(this));
-		$('.placeInput').autocomplete({ source: ['AA', 'BB', 'CC'] });
-  	},
+}),
+
+App.PlaceInputView = Ember.View.extend({
   	
-  	controllerBinding: 'App.placeInputController'
+	templateName: 'placeInputViewTemplate',
+	
+	inputField: Ember.TextField.extend({
+		
+		keyUp: function(event) {
+			
+			var autocompleteController = this.get('parentView').get('autocompleteController');
+			
+			autocompleteController.getNames(this.get('value'));
+			
+		}
+		
+	}),
+	
+	selectPlace: function(event) {
+		var place = event.context;
+		this.get('controller').set('selectedPlace', place.get('placeName'));
+	},
+  	
+  	autocompleteController: undefined
   	
 });
 
 App.AddEntryController = Em.Controller.extend({
-	title: 'Add entry'
+	
+	title: "Add entry",
+	
+	fromValue: "test1",
+	
+	toValue: "test2"
+	
 });
 
 App.AddEntryView = Em.View.extend({
 	
 	templateName: 'addEntryViewTemplate',
-	fromInput: App.PlaceInputView
 	
+	fromInput: App.PlaceInputView.extend({ 
+		controller: App.PlaceInputController.create({ direction: "From" }),
+		autocompleteController: App.AutocompleteController.create() 
+	}),
+	
+	toInput: App.PlaceInputView.extend({ 
+		controller: App.PlaceInputController.create({ direction: "To" }),
+		autocompleteController: App.AutocompleteController.create() 
+	}),
+	
+	
+	//controllerBinding: App.AddEntryController.create()
+
 });
 
 App.ExploreController = Em.Controller.extend({
@@ -52,6 +117,8 @@ App.Router = Em.Router.extend({
 	enableLogging: true,
 	
 	location: 'hash',
+	
+	testVal: 'ttt',
 
 	root: Em.Route.extend({
 		
@@ -63,6 +130,8 @@ App.Router = Em.Router.extend({
 		addEntry: Em.Route.extend({
 			
 			route: '/',
+			
+			// EVENTS
 			
 			connectOutlets: function(router, context) {
 				router.get('applicationController').connectOutlet('addEntry');

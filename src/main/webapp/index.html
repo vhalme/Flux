@@ -40,11 +40,15 @@
 		Modernizr enables HTML5 elements & feature detects for optimal performance.
 		Create your own custom Modernizr build: www.modernizr.com/download/ -->
 		<script src="js/libs/modernizr-2.5.3.min.js"></script>
-
+		
+		<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?libraries=places&sensor=false&key=AIzaSyDzX1uyPzyjs9OrHhIEyvqfA_Z2k5wxb1U"></script>
+		
 	</head>
 
 	<body>
-
+		
+		<div id="map"></div>
+		
 		<script type="text/x-handlebars" data-template-name="application">
 
 			<header>
@@ -77,9 +81,13 @@
 			
 			{{title}} - <a {{action viewExplore}}>Explore</a>
 			
-			<br/>
+			<br/><br/><br/>
 			
 			{{view view.fromInput}}
+			
+			<br/><br/><br/>
+			
+			{{view view.toInput}}
         
 		</script>
 
@@ -87,8 +95,28 @@
 			
 			{{title}} - <a {{action viewAddEntry}}>Add entry</a>
 			
+			<br/><br/><br/>
+			
 		</script>
 		
+		<script type="text/x-handlebars" data-template-name="placeInputViewTemplate">
+			
+			{{direction}}: {{selectedPlace}}<br/>
+			{{view view.inputField}}
+			
+			<br/>
+			
+			{{#each place in view.autocompleteController}}
+				<a {{action selectPlace place}}>{{place.placeName}}</a><br/>
+			{{/each}}
+			
+		</script>
+		
+		<script type="text/x-handlebars" data-template-name="placeAutocompleteViewTemplate">
+			
+			
+			
+		</script>
 		
 		<!-- Prompt IE 6 users to install Chrome Frame. Remove this if you support IE 6.
 		chromium.org/developers/how-tos/chrome-frame-getting-started -->
