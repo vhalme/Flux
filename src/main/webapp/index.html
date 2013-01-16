@@ -33,7 +33,7 @@
 		<link rel="stylesheet" href="css/style.css">
 
 		<!-- Google fonts -->
-		<link href="http://fonts.googleapis.com/css?family=Istok+Web" rel="stylesheet" type="text/css">
+		<link href='http://fonts.googleapis.com/css?family=Lato:400,700' rel='stylesheet' type='text/css'>
 		<link href="http://fonts.googleapis.com/css?family=Lora" rel="stylesheet" type="text/css">
 
 		<!-- All JavaScript at the bottom, except this Modernizr build.
@@ -52,7 +52,7 @@
 		<script type="text/x-handlebars" data-template-name="application">
 
 			<header>
-				<h1>Traveller Log</h1>
+				<div class="logo">Traveller Log</div>
 			</header>
 		
 			<div id="content">
@@ -64,7 +64,6 @@
 				</div>
 				
 				<div id="centerSection">
-					Content...
 				</div>
 				
 			</div>
@@ -78,23 +77,53 @@
 
 		<script type="text/x-handlebars" data-template-name="addEntryViewTemplate">
 			
-			Add entry - <a {{action viewExplore}}>Explore</a>
+			<div class="leftSectionHeader">
+				<div class="title">
+					<span>Add entry</span>
+				</div>
+				<div class="otherMenuLink">
+					<a {{action viewExplore}}>Explore</a>
+				</div>
+			</div>
 			
-			<br/><br/><br/>
+			<div class="haveTravelled">
+				<div class="left">
+					I travelled this route
+				</div>
+				<div class="right">
+					I researched this route
+				</div>
+			</div>
 			
-			<div id="addEntryAccordion">
+			
+			
+			<div class="other">
 				
-				<h3>FROM - TO</h3>
-				{{view App.FromToInputView}}
-				
-				<h3>BY</h3>
-				<div>
-					By bus/train/plane...
+				<div class="onMyTrip">
+					<div class="left">
+						<div class="label">On my trip</div> 
+						<div class="input">
+							<span style="color: #808080">(<a class="tripTitle" href="#">None selected</a>)</span>
+						</div>
+					</div>
+					<div class="right">
+						[ <a href="#">New trip</a> ]
+					</div>
 				</div>
 				
-				<h3>WHEN</h3>
+				{{view App.FromToInputView}}
+				
+				<div style="margin-top: 10px; width: 80%">
+					<div class="label">by</div>
+					<div class="input"> bus | train | plane | other </div>
+				</div>
+				
+				<div style="margin-top: 10px; width: 80%"">
+					<div class="label">in</div>
+					<div class="input"> Year Month Day </div>
+				</div>
+				
 				<div>
-					Date...
 				</div>
 				
 			</div>
@@ -103,17 +132,21 @@
 		
 		<script type="text/x-handlebars" data-template-name="fromToInputViewTemplate">
 			
-			{{view view.fromInput}}
+			<div style="margin-top: 10px; width: 80%">
+				<div class="label">from</div>
+				<div class="input">{{view view.fromInput}}</div>
+			</div>
 			
-			<br/><br/><br/>
-			
-			{{view view.toInput}}
+			<div style="margin-top: 10px; width: 80%">
+				<div class="label">to</div>
+				<div class="input">{{view view.toInput}}</div>
+        	</div>
         
 		</script>
 
 		<script type="text/x-handlebars" data-template-name="exploreViewTemplate">
 			
-			{{title}} - <a {{action viewAddEntry}}>Add entry</a>
+			{{title}} - <a style="position: absolute; top: 50%;" {{action viewAddEntry}}>Add entry</a>
 			
 			<br/><br/><br/>
 			
@@ -121,12 +154,9 @@
 		
 		<script type="text/x-handlebars" data-template-name="placeInputViewTemplate">
 			
-			{{direction}}: {{selectedPlace}}<br/>
 			{{view view.inputField}}
 			
-			<br/>
-			
-			<div>
+			<div style="border: 1px; background: red; position: absolute;">
 			{{#each place in view.autocompleteController}}
 				<a {{action selectPlace place}}>{{place.placeName}}</a><br/>
 			{{/each}}

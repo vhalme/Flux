@@ -51,6 +51,8 @@ App.PlaceInputController = Ember.Controller.extend({
 
 App.PlaceInputView = Ember.View.extend({
   	
+	classNames: [ "placeInput" ],
+	
 	templateName: 'placeInputViewTemplate',
 	
 	inputField: Ember.TextField.extend({
@@ -100,11 +102,7 @@ App.AddEntryController = Em.Controller.extend({
 
 App.AddEntryView = Em.View.extend({
 	
-	templateName: 'addEntryViewTemplate',
-	
-	didInsertElement: function() {
-		$("#addEntryAccordion").accordion({ collapsible: true });
-	}
+	templateName: 'addEntryViewTemplate'
 	
 });
 
