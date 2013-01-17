@@ -100,6 +100,7 @@ header .logo {
 
 .leftSectionHeader {
 	
+	position: relative;
 	height: 40px;
 	width: 100%;
 	
@@ -127,7 +128,7 @@ header .logo {
 	
 	position: relative;
 	height: 40px;
-	width: 200px;
+	width: 40%;
 	display: inline;
 	float: right;
 	border-left: 1px solid black;
@@ -155,7 +156,7 @@ header .logo {
 	margin-top: 36px;
 	margin-left: 0px;
 	height: 25px;
-	overflow-x: hidden;
+	overflow: hidden;
 	color: #808080;
 	font-size: 0.8em;
 }
@@ -225,7 +226,7 @@ header .logo {
 
 .other .label {
 	text-align: right;
-	width: 24%;
+	width: 40%;
 	display: inline-block;	
 }
 
