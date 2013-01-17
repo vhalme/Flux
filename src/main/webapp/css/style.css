@@ -95,7 +95,15 @@ header .logo {
 
 .placeInput {
 	display: inline;
-	
+}
+
+.placeInput input {
+	background-color: transparent; 
+	border-style: solid; 
+	border-width: 0px 0px 1px 0px; 
+	border-color: black;
+	outline: 0px;
+	width: 100%;
 }
 
 .leftSectionHeader {
@@ -217,11 +225,41 @@ header .logo {
 	font-size: 0.8em;
 }
 
-.other {
+.routeInfoInput {
 	
 	font-size: 1.2em;
-	padding-left: 10px;
-		
+	
+	width: 100%;
+	
+}
+
+.routeInfoInput .tripleColumn {
+	
+	margin-top: 0.6em;
+	width: 100%;
+	
+}
+
+.routeInfoInput .tripleColumn .columnLeft {
+	width: 25%;
+	display: inline-block;
+}
+
+.routeInfoInput .tripleColumn .columnCenter {
+	width: 44%;
+	display: inline-block;
+	text-align: center;
+}
+
+.routeInfoInput .tripleColumn .columnRight {
+	width: 25%;
+	display: inline-block;
+}
+
+.mediumButton {
+	
+	font-size: 0.8em;
+	
 }
 
 .other .label {
@@ -233,4 +271,10 @@ header .logo {
 .other .input {
 	font-size: 0.8em;
 	display: inline;	
+}
+
+.placeAutocompleteBox {
+	border: 1px solid black; 
+	background: white; 
+	position: absolute;
 }

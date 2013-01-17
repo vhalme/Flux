@@ -97,52 +97,76 @@
 			
 			
 			
-			<div class="other">
+			<div class="routeInfoInput">
 				
-				<div class="onMyTrip">
-					<div class="left">
-						<div class="label">On my trip</div> 
-						<div class="input">
-							<span style="color: #808080">(<a class="tripTitle" href="#">None selected</a>)</span>
-						</div>
+				<div class="tripleColumn">
+					
+					<div class="columnLeft" align="right">On my trip</div> 
+					<div class="columnCenter">
+						<div class="placeInput"><input type="text"/></div>
 					</div>
-					<div class="right">
-						[ <a href="#">New trip</a> ]
+					<div class="columnRight" align="center">
+						<span class="mediumButton">[ <a href="#">New trip</a> ]</span>
 					</div>
+					
 				</div>
 				
-				{{view App.FromToInputView}}
-				
-				<div style="margin-top: 10px; width: 80%">
-					<div class="label">by</div>
-					<div class="input"> bus | train | plane | other </div>
+				<div class="tripleColumn">
+					<div class="columnLeft" align="right">from</div>
+					<div class="columnCenter">{{view App.PlaceInputView controllerBinding="from"}}</div>
+					<div class="columnRight" align="center"></div>
 				</div>
 				
-				<div style="margin-top: 10px; width: 80%"">
-					<div class="label">in</div>
-					<div class="input"> Year Month Day </div>
+				<div class="tripleColumn">
+					<div class="columnLeft" align="right">to</div>
+					<div class="columnCenter">{{view App.PlaceInputView controllerBinding="to"}}</div>
+					<div class="columnRight" align="center"></div>
+        		</div>
+				
+				<div class="tripleColumn">
+					<div class="columnLeft" align="right">by</div>
+					<div class="columnCenter"><span class="mediumButton"> bus | train | plane | other </span></div>
+					<div class="columnRight" align="center"></div>
 				</div>
 				
-				<div>
+				<div class="tripleColumn">
+					<div class="columnLeft" align="right">in</div>
+					<div class="columnCenter"><span class="mediumButton"> Year Month Day </span></div>
+					<div class="columnRight" align="center"></div>
+				</div>
+				
+				<div style="border: 1px solid green">
+					<br/><br/>
+					{{view App.TestView}}
+					
+					{{view App.TestView}}
 				</div>
 				
 			</div>
-        
+        	
 		</script>
 		
-		<script type="text/x-handlebars" data-template-name="fromToInputViewTemplate">
-			
-			<div style="margin-top: 10px; width: 80%">
-				<div class="label">from</div>
-				<div class="input">{{view view.fromInput}}</div>
-			</div>
-			
-			<div style="margin-top: 10px; width: 80%">
-				<div class="label">to</div>
-				<div class="input">{{view view.toInput}}</div>
-        	</div>
-        
-		</script>
+		<script type="text/x-handlebars" data-template-name="testViewTemplate">
+        		
+        		{{view.testVal}}
+        		
+        		{{view.controller}}
+        		
+        		{{#each el in view.controller}}
+					{{el}}
+				{{/each}}
+					
+        		{{#view view.subView}}
+						
+					{{view.testVal}}
+					
+					{{#each el in view.controller}}
+						{{el}}
+					{{/each}}
+					
+				{{/view}}
+						
+        </script>
 
 		<script type="text/x-handlebars" data-template-name="exploreViewTemplate">
 			
@@ -154,12 +178,17 @@
 		
 		<script type="text/x-handlebars" data-template-name="placeInputViewTemplate">
 			
+			
+			]{{controller}}[
+			
 			{{view view.inputField}}
 			
-			<div style="border: 1px; background: red; position: absolute;">
-			{{#each place in view.autocompleteController}}
+			<div class="placeAutocompleteBox">
+			{{#view view.autocompleteView}}
+			{{#each place in view.controller}}
 				<a {{action selectPlace place}}>{{place.placeName}}</a><br/>
 			{{/each}}
+			{{/view}}
 			</div>
 			
 		</script>

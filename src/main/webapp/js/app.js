@@ -42,26 +42,37 @@ App.AutocompleteController = Ember.ArrayProxy.extend({
 
 });
 
+
 App.PlaceInputController = Ember.Controller.extend({
 	
-	direction: undefined,
-	selectedPlace: undefined,
+	selectedPlace: "aaa",
+	
+	content: "ggg"
 	
 }),
 
+
 App.PlaceInputView = Ember.View.extend({
   	
+	//controllerBinding: this.searchString,
+	
 	classNames: [ "placeInput" ],
 	
 	templateName: 'placeInputViewTemplate',
+	
+	searchString: undefined,
+	
+	selectedPlace: "hhh",
 	
 	inputField: Ember.TextField.extend({
 		
 		keyUp: function(event) {
 			
-			var autocompleteController = this.get('parentView').get('autocompleteController');
-			
-			autocompleteController.getNames(this.get('value'));
+			if(event.keyCode == 13) {
+				this.get('parentView').set('controller', this.get('value'));
+			} else {
+				this.get('parentView').set('searchString', this.get('value'));
+			}
 			
 		}
 		
@@ -71,36 +82,37 @@ App.PlaceInputView = Ember.View.extend({
 		var place = event.context;
 		this.get('controller').set('selectedPlace', place.get('placeName'));
 	},
-  	
-  	autocompleteController: undefined
-  	
-});
-
-App.FromToInputController = Em.Controller.extend({
 	
-});
-
-App.FromToInputView = Em.View.extend({
+	autocompleteView: Ember.View.extend({
+		
+		init: function() {
+			
+			this._super();
+			this.set('controller', App.AutocompleteController.create());
+		
+		},
+		
+		autocomplete: function() {
+			
+			var searchString = this.get('parentView').get('searchString');
+			this.get('controller').getNames(searchString);
+			
+		}.observes('parentView.searchString')
+		
+	})
 	
-	templateName: 'fromToInputViewTemplate',
-	
-	fromInput: App.PlaceInputView.extend({ 
-		controller: App.PlaceInputController.create({ direction: "From" }),
-		autocompleteController: App.AutocompleteController.create() 
-	}),
-	
-	toInput: App.PlaceInputView.extend({ 
-		controller: App.PlaceInputController.create({ direction: "To" }),
-		autocompleteController: App.AutocompleteController.create() 
-	}),
-
 });
 
 App.AddEntryController = Em.Controller.extend({
 	
+	from: "f",
+	to: "t"
+	
 });
 
 App.AddEntryView = Em.View.extend({
+	
+	controller: App.AddEntryController.create(),
 	
 	templateName: 'addEntryViewTemplate'
 	
@@ -115,6 +127,49 @@ App.ExploreView = Em.View.extend({
 });
 
 
+App.TestView = Ember.View.extend({
+	
+	templateName: 'testViewTemplate',
+	
+	testVal: "ttt1",
+	searchString: "ttt4",
+	
+	click: function(event) {
+		this.set('searchString', "jkkj");
+	},
+	
+	testFunc: function() {
+		console.log(this.get('subView'));
+	},
+	
+	subView: Ember.View.extend({
+		
+		init: function() {
+			
+			this._super();
+			
+			var controller = Ember.ArrayController.extend({
+				init: function() {
+					this.set('content', ['3' ,'4']);
+				}
+			}).create();
+			
+			this.set('controller', controller);
+		},
+		
+		autocomplete: function() {
+			var word = this.get('parentView').get('searchString');
+			this.get('controller').addObject(word);
+		}.observes('parentView.searchString'),
+		
+		controller: undefined
+		
+	}),
+	
+	controller: Ember.ArrayController.create({ content: ['1', '2'] })
+		
+}),
+
 App.Router = Em.Router.extend({
 	
 	enableLogging: true,
@@ -122,7 +177,7 @@ App.Router = Em.Router.extend({
 	location: 'hash',
 	
 	testVal: 'ttt',
-
+	
 	root: Em.Route.extend({
 		
 		// EVENTS
