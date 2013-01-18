@@ -43,53 +43,112 @@ App.AutocompleteController = Ember.ArrayProxy.extend({
 });
 
 
-App.PlaceInputController = Ember.Controller.extend({
-	
-	selectedPlace: "aaa",
-	
-	content: "ggg"
-	
-}),
-
-
 App.PlaceInputView = Ember.View.extend({
-  	
-	//controllerBinding: this.searchString,
 	
 	classNames: [ "placeInput" ],
 	
 	templateName: 'placeInputViewTemplate',
 	
-	searchString: undefined,
+	searchString: "",
 	
-	selectedPlace: "hhh",
+	isEditable: true,
 	
-	inputField: Ember.TextField.extend({
+	testVal: "ttt",
+	
+	InputFieldEdit: Ember.TextField.extend({
 		
 		keyUp: function(event) {
 			
 			if(event.keyCode == 13) {
-				this.get('parentView').set('controller', this.get('value'));
+				
 			} else {
-				this.get('parentView').set('searchString', this.get('value'));
+				var parentView = this.get('parentView');
+				parentView.set('searchString', this.get('value'));
 			}
 			
+		},
+		
+		valueBinding: 'parentView.content.placeName',
+		
+	}),
+	
+	InputFieldSelected: Ember.View.extend({
+		
+		tagName: 'a',
+		
+		isEditableBinding: 'parentView.isEditable',
+		testValBinding: 'parentView.content.placeName',
+		
+		click: function() {
+			console.log(this.get('testVal'));
+			this.set('isEditable', true);
 		}
 		
 	}),
 	
-	selectPlace: function(event) {
-		var place = event.context;
-		this.get('controller').set('selectedPlace', place.get('placeName'));
-	},
 	
-	autocompleteView: Ember.View.extend({
+	InputField: Ember.View.extend({
+		
+		contentBinding: 'parentView.content',
+		
+		searchStringBinding: 'parentView.searchString',
+		isEditableBinding: 'parentView.isEditable',
+		
+		editView: undefined,
+		editViewBinding: 'parentView.InputFieldEdit',
+		editViewTemplate: Ember.Handlebars.compile('{{#view view.editView}}{{/view}}'),
+		
+		selectedView: undefined,
+		selectedViewBinding: 'parentView.InputFieldSelected',
+		selectedViewTemplate: Ember.Handlebars.compile('{{#view view.selectedView}} ]{{view.testVal}}[ {{/view}}'),
+		
+		init: function() {
+			
+			this._super();
+			
+			this.set('editView', this.get('editView'));
+			this.set('selectedView', this.get('selectedView'));
+			
+			this.set('template', this.get('editViewTemplate'));
+			
+		},
+		
+		test: function() {
+			
+			console.log(this.get('isEditable')+"/");
+			
+		}.observes('searchString'),
+		
+		toggleEditability: function() {
+			
+			var isEditable = this.get('isEditable');
+			
+			console.log('change template');
+			
+			if(isEditable) {
+				
+				this.set('template', this.get('editViewTemplate'));
+				
+			} else {
+				
+				this.set('template', this.get('selectedViewTemplate'));
+
+			}
+			
+			this.rerender();
+			
+		}.observes('isEditable')
+		
+	}),
+	
+	
+	AutocompleteView: Ember.View.extend({
 		
 		init: function() {
 			
 			this._super();
 			this.set('controller', App.AutocompleteController.create());
-		
+			
 		},
 		
 		autocomplete: function() {
@@ -97,18 +156,30 @@ App.PlaceInputView = Ember.View.extend({
 			var searchString = this.get('parentView').get('searchString');
 			this.get('controller').getNames(searchString);
 			
-		}.observes('parentView.searchString')
+		}.observes('parentView.searchString'),
+		
+		
+		selectPlace: function(event) {
+			
+			var parentView = this.get('parentView');
+			console.log(parentView.get('controller'));
+			parentView.set('content', event.context);
+			parentView.set('isEditable', false);
+			
+		}
 		
 	})
 	
 });
 
+
 App.AddEntryController = Em.Controller.extend({
 	
-	from: "f",
-	to: "t"
+	from: undefined,
+	to: undefined
 	
 });
+
 
 App.AddEntryView = Em.View.extend({
 	
@@ -118,9 +189,11 @@ App.AddEntryView = Em.View.extend({
 	
 });
 
+
 App.ExploreController = Em.Controller.extend({
 	title: 'Explore'	
 });
+
 
 App.ExploreView = Em.View.extend({
 	templateName: 'exploreViewTemplate'
@@ -131,52 +204,59 @@ App.TestView = Ember.View.extend({
 	
 	templateName: 'testViewTemplate',
 	
-	testVal: "ttt1",
-	searchString: "ttt4",
+	SubView1: Ember.TextField.extend(),
+	SubView2: Ember.View.extend( { tagName: 'a' } ),
 	
-	click: function(event) {
-		this.set('searchString', "jkkj");
-	},
 	
-	testFunc: function() {
-		console.log(this.get('subView'));
-	},
-	
-	subView: Ember.View.extend({
+	SubView: Ember.View.extend({
 		
 		init: function() {
 			
 			this._super();
 			
-			var controller = Ember.ArrayController.extend({
-				init: function() {
-					this.set('content', ['3' ,'4']);
-				}
-			}).create();
+			this.set('view1', this.get('myView1'));
+			this.set('view2', this.get('myView2'));
 			
-			this.set('controller', controller);
+			this.set('template', this.get('template1'));	
 		},
 		
-		autocomplete: function() {
-			var word = this.get('parentView').get('searchString');
-			this.get('controller').addObject(word);
-		}.observes('parentView.searchString'),
+		view1: undefined,
+		myView1Binding: 'parentView.SubView1',
 		
-		controller: undefined
+		view2: undefined,
+		myView2Binding: 'parentView.SubView2',
 		
-	}),
+		template1: Ember.Handlebars.compile('gg {{#view view.view1}} hh {{/view}}'),
+		template2: Ember.Handlebars.compile('gg {{#view view.view2}} rr {{/view}}'),
+		
+		
+		click: function() {
+			
+			this.set('template', this.get('template2'));
+			
+			/*
+			this.set('myViewBinding', 'parentView.SubView2');
+			var newView = this.get('myView');
+			this.set('view', newView);
+			
+			var template = Ember.Handlebars.compile('gg {{#view view.view}} rr {{/view}}');
+			this.set('template', template);
+			*/
+			
+			this.rerender();
+				
+		}
+		
+	})
 	
-	controller: Ember.ArrayController.create({ content: ['1', '2'] })
 		
-}),
+});
 
 App.Router = Em.Router.extend({
 	
 	enableLogging: true,
 	
 	location: 'hash',
-	
-	testVal: 'ttt',
 	
 	root: Em.Route.extend({
 		

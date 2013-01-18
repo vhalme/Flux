@@ -113,13 +113,13 @@
 				
 				<div class="tripleColumn">
 					<div class="columnLeft" align="right">from</div>
-					<div class="columnCenter">{{view App.PlaceInputView controllerBinding="from"}}</div>
+					<div class="columnCenter">{{view App.PlaceInputView contentBinding="from"}}</div>
 					<div class="columnRight" align="center"></div>
 				</div>
 				
 				<div class="tripleColumn">
 					<div class="columnLeft" align="right">to</div>
-					<div class="columnCenter">{{view App.PlaceInputView controllerBinding="to"}}</div>
+					<div class="columnCenter">{{view App.PlaceInputView contentBinding="to"}}</div>
 					<div class="columnRight" align="center"></div>
         		</div>
 				
@@ -146,25 +146,27 @@
         	
 		</script>
 		
+		<script type="text/x-handlebars" data-template-name="placeInputViewTemplate">
+			
+			{{view view.InputField}}
+			
+			{{#view view.AutocompleteView class="placeAutocompleteBox"}}
+				{{#each place in view.controller}}
+					<a {{action selectPlace place}}>{{place.placeName}}</a><br/>
+				{{/each}}
+			{{/view}}
+			
+		</script>
+		
 		<script type="text/x-handlebars" data-template-name="testViewTemplate">
         		
-        		{{view.testVal}}
+        		jjhjhj
         		
-        		{{view.controller}}
+        		{{view.SubView}}
         		
-        		{{#each el in view.controller}}
-					{{el}}
-				{{/each}}
-					
-        		{{#view view.subView}}
-						
-					{{view.testVal}}
-					
-					{{#each el in view.controller}}
-						{{el}}
-					{{/each}}
-					
-				{{/view}}
+				
+        		{{view view.SubView}}
+				
 						
         </script>
 
@@ -176,22 +178,7 @@
 			
 		</script>
 		
-		<script type="text/x-handlebars" data-template-name="placeInputViewTemplate">
-			
-			
-			]{{controller}}[
-			
-			{{view view.inputField}}
-			
-			<div class="placeAutocompleteBox">
-			{{#view view.autocompleteView}}
-			{{#each place in view.controller}}
-				<a {{action selectPlace place}}>{{place.placeName}}</a><br/>
-			{{/each}}
-			{{/view}}
-			</div>
-			
-		</script>
+		
 		
 		<script type="text/x-handlebars" data-template-name="placeAutocompleteViewTemplate">
 			

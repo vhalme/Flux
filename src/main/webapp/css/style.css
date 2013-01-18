@@ -277,4 +277,13 @@ header .logo {
 	border: 1px solid black; 
 	background: white; 
 	position: absolute;
+	padding: 6px;
+}
+
+.placeAutocompleteBox a {
+	color: black; 
+	font-size: 0.8em;
+	text-decoration: underline;
+	cursor: hand; 
+	cursor: pointer;
 }
