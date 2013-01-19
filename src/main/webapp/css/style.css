@@ -97,6 +97,12 @@ header .logo {
 	display: inline;
 }
 
+.placeInput a {
+	font-size: 1.0em;
+	color: black;
+	text-decoration: underline;
+}
+
 .placeInput input {
 	background-color: transparent; 
 	border-style: solid; 
@@ -286,4 +292,9 @@ header .logo {
 	text-decoration: underline;
 	cursor: hand; 
 	cursor: pointer;
+}
+
+.invisible {
+	display: none;
+	visibility: hidden;	
 }
