@@ -7,16 +7,15 @@ body {
 }
 
 header, footer {
-	
-	height: 50px; 
 	padding: 6px;
-	
 }
 
 header {
+	height: 80px;
 }
 
 footer {
+	height: 50px;
 	border-bottom: 1px solid black;
 }
 
@@ -62,7 +61,9 @@ header .logo {
 	width: 33%;
 	height: 100%;
 	
-	padding: 2.0em;
+	padding-top: 1.0em;
+	padding-left: 2.4em;
+	padding-right: 2.0em;
 	
 	min-height: 600px;
 	
@@ -80,18 +81,11 @@ header .logo {
 	
 }
 
-#centerSection h1 {
-	
-	margin: 0px;
-	font-family: Helvetica, sans-serif;
-    font-size: 1.4em;
-    line-height: 2.0em;
-   	
-}
-
 #centerSection .centerSectionContent {
 	
-	margin: 2.0em;
+	margin-top: 1.4em;
+	margin-left: 2.0em;
+	margin-right: 2.0em;
    	border: 1px solid black;
    	
 }
@@ -116,27 +110,19 @@ header .logo {
 	width: 100%;
 }
 
-.leftSectionHeader {
-	
-	position: relative;
-	height: 40px;
-	width: 100%;
-	
-}
-
-.leftSectionHeader .title {
+#centerSection .title {
 	
 	position: relative;
 	font-size: 1.8em;
 	height: 40px;
 	width: 50%;
-	display: inline;
-	float: left;
-	padding-left: 10px;
+	display: block;
+	margin-left: 1.0em;
+	margin-top: 0.2em;
 	
 }
 
-.leftSectionHeader .title span {
+#centerSection .title span {
 	position: absolute;
 	top: 50%;
 	margin-top: -0.5em;
@@ -169,16 +155,15 @@ header .logo {
 .haveTravelled {
 	text-align: center;
 	position: relative;
-	border-top: 1px solid black;
 	border-bottom: 1px solid black;
-	margin-top: 36px;
+	margin-top: 0.3em;
 	margin-left: 0px;
-	height: 25px;
+	height: 2.0em;
 	overflow: hidden;
 }
 
 .haveTravelled .left {
-	height: 25px;
+	height: 2.0em;
 	left: 0px;
 	position: absolute;
 	display: inline-block;
@@ -187,7 +172,7 @@ header .logo {
 
 
 .haveTravelled .right {
-	height: 25px;
+	height: 2.0em;
 	margin-right: 1px;
 	position: absolute;
 	left: 50%;

@@ -3,8 +3,13 @@ var App = Ember.Application.create();
 App.map = new google.maps.Map(document.getElementById("map"), {});
 
 App.ApplicationController = Ember.Controller.extend();
+
 App.ApplicationView = Ember.View.extend({
-	templateName: 'application'
+		
+	templateName: 'application',
+	
+	title: "Add entry"
+	
 });
 
 App.NavView = Ember.View.extend({
@@ -85,8 +90,6 @@ App.SelectListView = Ember.View.extend({
 			controller.addObject(content);
 			
 			itemView.set('index', i);
-			
-			console.log(controller.objectAt(i));
 				
 		}	
 		
@@ -270,7 +273,56 @@ App.AddEntryView = Em.View.extend({
 	
 	controller: App.AddEntryController.create(),
 	
-	templateName: 'addEntryViewTemplate'
+	templateName: 'addEntryViewTemplate',
+	
+	/*
+	didInsertElement: function ()
+	{
+    	
+	},
+	*/
+	
+		
+	willDestroyElement: function ()
+	{
+		
+		var clone = this.$().clone();
+    	this.$().replaceWith(clone);
+    	
+    	//clone.remove();
+    	this.animateOut(clone, this.get('animateOut'));
+    	
+	
+	},
+	
+	animateOut: function(element, func) {
+		
+		var elHeight = element.height();
+		elHeight = elHeight - 2;
+		
+		if(elHeight > 50) {
+			elHeight = elHeight-2;
+			element.height(elHeight);
+		}
+		
+		if(elHeight > 50) {
+			
+			setTimeout(func, 10, element, func);
+		
+		} else {
+			
+			console.log("remove el");
+			
+			element.css("display", "none");
+			element.css("visibility", "hidden");
+			element.remove();
+			element = null;
+			delete element;
+			
+			
+		}
+		
+	}
 	
 });
 
