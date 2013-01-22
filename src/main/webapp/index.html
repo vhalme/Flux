@@ -49,6 +49,13 @@
 		
 		<div id="map"></div>
 		
+		<script type="text/x-handlebars" data-template-name="navViewTemplate">
+			
+			<a {{action viewAddEntry}}>Add entry</a> | 
+			<a {{action viewExplore}}>Explore</a>
+			
+		</script>
+			
 		<script type="text/x-handlebars" data-template-name="application">
 
 			<header>
@@ -58,12 +65,48 @@
 			<div id="content">
 				
 				<div id="leftSection">
-				
-					{{outlet}}
-			
+					
+					{{view App.NavView}}
+					
+					<br/>
+					<br/>
+					
+					Book flights
+					
+					<br/>
+					
+					<a href="#">Helsinki - Tashkent</a> (from 219e)
+					
+					<br/>
+					<br/>
+					
+					Book hotels
+					
+					<br/>
+					
+					<a href="#">Helsinki</a> (from 64e)
+					<br/>
+					<a href="#">Tashkent</a> (from 32e)
+					
+					<br/>
+					<br/>
+					
+					Arrange travel
+					
+					<br/>
+					
+					<a href="#">Uzbekistan travel agency</a>
+					
 				</div>
 				
-				<div id="centerSection">
+				<div id="centerSection">	
+				
+					{{#view App.CenterSectionContentView class="centerSectionContent"}}
+					
+						{{outlet}}
+					
+					{{/view}}
+				
 				</div>
 				
 			</div>
@@ -81,19 +124,14 @@
 				<div class="title">
 					<span>Add entry</span>
 				</div>
-				<div class="otherMenuLink">
-					<a {{action viewExplore}}>Explore</a>
-				</div>
 			</div>
 			
-			<div class="haveTravelled">
-				<div class="left">
-					I travelled this route
-				</div>
-				<div class="right">
-					I researched this route
-				</div>
-			</div>
+			
+				
+			{{#view App.SelectListView class="haveTravelled"}}
+				{{#view view.ItemView class="right"}}I travelled this route{{/view}}
+				{{#view view.ItemView class="left"}}I researched this route{{/view}}
+			{{/view}}
 			
 			
 			
@@ -125,7 +163,16 @@
 				
 				<div class="tripleColumn">
 					<div class="columnLeft" align="right">by</div>
-					<div class="columnCenter"><span class="mediumButton"> bus | train | plane | other </span></div>
+					<div class="columnCenter">
+						<span class="mediumButton">
+							{{#view App.SelectListView class="selectList"}}
+								{{#view view.ItemView}}bus{{/view}}
+								{{#view view.ItemView}}plane{{/view}}
+								{{#view view.ItemView}}train{{/view}}
+								{{#view view.ItemView}}other{{/view}}
+							{{/view}}
+						</span>
+					</div>
 					<div class="columnRight" align="center"></div>
 				</div>
 				
@@ -133,13 +180,6 @@
 					<div class="columnLeft" align="right">in</div>
 					<div class="columnCenter"><span class="mediumButton"> Year Month Day </span></div>
 					<div class="columnRight" align="center"></div>
-				</div>
-				
-				<div style="border: 1px solid green">
-					<br/><br/>
-					{{view App.TestView}}
-					
-					{{view App.TestView}}
 				</div>
 				
 			</div>
@@ -150,13 +190,31 @@
 			
 			{{view view.InputField class="placeInput"}}
 			
-			{{#view view.AutocompleteView class="placeAutocompleteBox" classBinding="view.isVisible::invisible" }}
+			{{#view view.AutocompleteView class="placeAutocompleteBox"}}
 				{{#each place in view.controller}}
 					<a {{action selectPlace place}}>{{place.placeName}}</a><br/>
 				{{/each}}
 			{{/view}}
 			
 		</script>
+
+
+		<script type="text/x-handlebars" data-template-name="exploreViewTemplate">
+			
+			
+			[ Map ]
+			
+			<br/><br/><br/>
+			
+		</script>
+		
+		
+		<script type="text/x-handlebars" data-template-name="placeAutocompleteViewTemplate">
+			
+			
+			
+		</script>
+		
 		
 		<script type="text/x-handlebars" data-template-name="testViewTemplate">
         		
@@ -166,25 +224,8 @@
         		
 				
         		{{view view.SubView}}
-				
-						
+					
         </script>
-
-		<script type="text/x-handlebars" data-template-name="exploreViewTemplate">
-			
-			{{title}} - <a style="position: absolute; top: 50%;" {{action viewAddEntry}}>Add entry</a>
-			
-			<br/><br/><br/>
-			
-		</script>
-		
-		
-		
-		<script type="text/x-handlebars" data-template-name="placeAutocompleteViewTemplate">
-			
-			
-			
-		</script>
 		
 		<!-- Prompt IE 6 users to install Chrome Frame. Remove this if you support IE 6.
 		chromium.org/developers/how-tos/chrome-frame-getting-started -->

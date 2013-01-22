@@ -14,16 +14,14 @@ header, footer {
 }
 
 header {
-	border-bottom: 1px solid black;
 }
 
 footer {
-	border-top: 1px solid black;
+	border-bottom: 1px solid black;
 }
 
 div {
 	background: white;
-	/* border: 1px solid black; */	
 }
 
 h2 {
@@ -49,28 +47,40 @@ header .logo {
 #content {
 	
 	width: 100%;
+	
 	min-height: 600px;
-	overflow: hidden;
-	
-	display: block;
-	
 	
 }
+
 
 #leftSection {
 	
 	float: left;
-	margin-bottom: -99999px;
-	padding-bottom: 99999px;
 	
-	width: 38%;
-	padding-top: 10px;
+	display: inline-block;
 	
-	border-right: 1px solid black;
+	width: 33%;
+	height: 100%;
+	
+	padding: 2.0em;
+	
+	min-height: 600px;
 	
 }
 
-#leftSection h1 {
+#centerSection {
+	
+	float: left;
+	
+	display: inline-block;
+	border: 1px dotted black;
+	
+	width: 62%;
+	min-height: 600px;
+	
+}
+
+#centerSection h1 {
 	
 	margin: 0px;
 	font-family: Helvetica, sans-serif;
@@ -79,19 +89,13 @@ header .logo {
    	
 }
 
-#leftSection p {
+#centerSection .centerSectionContent {
 	
- 	font: 400 16px/1.6 'Lora', Georgia, serif;
-	
+	margin: 2.0em;
+   	border: 1px solid black;
+   	
 }
 
-#centerSection {
-	
-	float: left;
-	margin-bottom: -99999px;
-	padding-bottom: 99999px;
-	
-}
 
 .placeInput {
 	display: inline;
@@ -171,8 +175,6 @@ header .logo {
 	margin-left: 0px;
 	height: 25px;
 	overflow: hidden;
-	color: #808080;
-	font-size: 0.8em;
 }
 
 .haveTravelled .left {
@@ -183,12 +185,6 @@ header .logo {
 	width: 50%;
 }
 
-.haveTravelled .left:hover {
-	cursor: hand; 
-	cursor: pointer;
-	font-size: 1.4em;
-	color: black;
-}
 
 .haveTravelled .right {
 	height: 25px;
@@ -199,12 +195,6 @@ header .logo {
 	width: 50%;
 }
 
-.haveTravelled .right:hover {
-	cursor: hand; 
-	cursor: pointer;
-	font-size: 1.4em;
-	color: black;
-}
 
 .onMyTrip {
 	margin-top: 16px;	
@@ -284,6 +274,8 @@ header .logo {
 	background: white; 
 	position: absolute;
 	padding: 6px;
+	display: none;
+	visibility: hidden;
 }
 
 .placeAutocompleteBox a {
@@ -294,7 +286,27 @@ header .logo {
 	cursor: pointer;
 }
 
-.invisible {
-	display: none;
-	visibility: hidden;	
+.visible {
+	display: block;
+	visibility: visible;
+}
+
+.selectList {
+	
+}
+
+.selectList .selectListItem {
+	
+	display: inline;
+	color: #808080;
+	cursor: hand;
+	cursor: pointer;
+	
+}
+
+.selectList .selectListItem.selected {
+	
+	font-size: 1.2em;
+	color: black;
+	
 }

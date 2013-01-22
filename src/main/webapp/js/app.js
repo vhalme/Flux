@@ -1,20 +1,19 @@
 var App = Ember.Application.create();
 
+App.map = new google.maps.Map(document.getElementById("map"), {});
+
 App.ApplicationController = Ember.Controller.extend();
 App.ApplicationView = Ember.View.extend({
 	templateName: 'application'
 });
 
-App.ApplicationController = Em.Controller.extend();
-App.ApplicationView = Em.View.extend({
-	templateName: 'application'
+App.NavView = Ember.View.extend({
+	
+	templateName: 'navViewTemplate'
+
 });
 
-App.map = new google.maps.Map(document.getElementById("map"), {});
-
 App.AutocompleteController = Ember.ArrayProxy.extend({
-	
-	isVisible: true,
 	
 	init: function() {
 		this.set('content', []);
@@ -45,6 +44,94 @@ App.AutocompleteController = Ember.ArrayProxy.extend({
 	    });
 		
 	}
+	
+});
+
+
+App.SelectListController = Ember.ArrayController.extend({
+	
+	selectedIndex: undefined,
+	
+	init: function() {
+		this.set('content', []);
+	}
+	
+		
+});
+
+
+App.SelectListView = Ember.View.extend({
+	
+	classNames: [ 'selectList' ],
+	
+	init: function() {
+		
+		this._super();
+		
+		this.set('controller', App.SelectListController.create());
+		
+	},
+	
+	didInsertElement: function() {
+		
+		var itemViews = this.get('childViews');
+		
+		var controller = this.get('controller');
+		
+		for(var i=0; i<itemViews.length; i++) {
+			
+			var itemView = itemViews[i];
+			var content = itemView.get('element').innerHTML;
+			controller.addObject(content);
+			
+			itemView.set('index', i);
+			
+			console.log(controller.objectAt(i));
+				
+		}	
+		
+	
+	},
+	
+	ItemView: Ember.View.extend({
+		
+		classNames: [ 'selectListItem' ],
+		
+		classNameBindings: [ 'selected' ],
+		
+		index: undefined,
+		
+		selected: false,
+		
+		click: function() {
+			
+			this.set('selected', true);
+			
+			var controller = this.get('parentView').get('controller');
+			controller.set('selectedIndex', this.get('index'));
+			
+		}
+		
+	}),
+	
+	
+	changeSelection: function() {
+		
+		var itemViews = this.get('childViews');
+		var controller = this.get('controller');
+		var selectedIndex = controller.get('selectedIndex');
+		
+		for(var i=0; i<itemViews.length; i++) {
+			
+			var itemView = itemViews[i];
+			
+			if(i != selectedIndex) {
+				itemView.set('selected', false);
+			}
+				
+		}
+		
+	}.observes('controller.selectedIndex')
 	
 });
 
@@ -126,7 +213,9 @@ App.PlaceInputView = Ember.View.extend({
 	
 	AutocompleteView: Ember.View.extend({
 		
-		isVisibleBinding: 'parentView.isEditable',
+		classNameBindings: [ 'visible' ],
+		
+		visible: false,
 		
 		init: function() {
 			
@@ -140,6 +229,12 @@ App.PlaceInputView = Ember.View.extend({
 			var searchString = this.get('parentView').get('searchString');
 			this.get('controller').getNames(searchString);
 			
+			if(searchString.length > 0) {
+				this.set('visible', true);
+			} else {
+				this.set('visible', false);
+			}
+			
 		}.observes('parentView.searchString'),
 		
 		
@@ -149,6 +244,8 @@ App.PlaceInputView = Ember.View.extend({
 			parentView.set('content', event.context);
 			parentView.set('isEditable', false);
 			
+			this.set('visible', false);
+			
 		}
 		
 		
@@ -156,6 +253,10 @@ App.PlaceInputView = Ember.View.extend({
 	
 });
 
+
+App.CenterSectionContentView = Ember.View.extend({
+	
+});
 
 App.AddEntryController = Em.Controller.extend({
 	
@@ -201,7 +302,8 @@ App.TestView = Ember.View.extend({
 			this.set('view1', this.get('myView1'));
 			this.set('view2', this.get('myView2'));
 			
-			this.set('template', this.get('template1'));	
+			this.set('template', this.get('template1'));
+			
 		},
 		
 		view1: undefined,
@@ -257,18 +359,7 @@ App.Router = Em.Router.extend({
 			
 			connectOutlets: function(router, context) {
 				router.get('applicationController').connectOutlet('addEntry');
-			},
-			
-			
-			// STATES
-			index: Em.Route.extend({
-				
-				route: '/',
-				connectOutlets: function(router, context) {
-					router.get('applicationController').connectOutlet('addEntry');
-				}
-				
-			})
+			}
 
 			
 		}),
@@ -279,18 +370,7 @@ App.Router = Em.Router.extend({
 			
 			connectOutlets: function(router, context) {
 				router.get('applicationController').connectOutlet('explore');
-			},
-
-			
-			// STATES
-			index: Em.Route.extend({
-				
-				route: '/',
-				connectOutlets: function(router, context) {
-					router.get('applicationController').connectOutlet('explore');
-				}
-				
-			})
+			}
 			
 		})
 		
