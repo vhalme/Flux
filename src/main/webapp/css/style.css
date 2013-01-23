@@ -3,6 +3,7 @@ body {
 	font: normal 16px/1.5em helvetica, arial, sans-serif; 
 	margin: 0; 
 	width: 100%;
+	min-width: 600px;
 
 }
 
@@ -58,7 +59,7 @@ header .logo {
 	
 	display: inline-block;
 	
-	width: 33%;
+	width: 28%;
 	height: 100%;
 	
 	padding-top: 1.0em;
@@ -74,19 +75,23 @@ header .logo {
 	float: left;
 	
 	display: inline-block;
-	border: 1px dotted black;
+	/*border: 1px dotted black;*/
 	
-	width: 62%;
+	width: 64%;
 	min-height: 600px;
+	
+	overflow-x: hidden;
 	
 }
 
 #centerSection .centerSectionContent {
 	
+	position: relative;
 	margin-top: 1.4em;
 	margin-left: 2.0em;
 	margin-right: 2.0em;
-   	border: 1px solid black;
+	height: 500px;
+	overflow: hidden;
    	
 }
 
@@ -293,5 +298,15 @@ header .logo {
 	
 	font-size: 1.2em;
 	color: black;
+	
+}
+
+.nooverflow {
+	
+	overflow: hidden;
+	border: 1px solid black;
+	position: absolute;
+	width: 99%;
+	min-height: 400px;
 	
 }

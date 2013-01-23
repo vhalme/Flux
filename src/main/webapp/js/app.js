@@ -261,6 +261,7 @@ App.CenterSectionContentView = Ember.View.extend({
 	
 });
 
+
 App.AddEntryController = Em.Controller.extend({
 	
 	from: undefined,
@@ -275,12 +276,22 @@ App.AddEntryView = Em.View.extend({
 	
 	templateName: 'addEntryViewTemplate',
 	
-	/*
+	classNames: [ "nooverflow" ],
+	
+	
 	didInsertElement: function ()
 	{
     	
+    	var element = this.$();
+		
+		App.transition.comingIn = element;
+		element.deg = 90;
+    	element.top = -396;
+    	element.z = -110;
+    	
+    	App.transition.animate();
+		
 	},
-	*/
 	
 		
 	willDestroyElement: function ()
@@ -289,39 +300,11 @@ App.AddEntryView = Em.View.extend({
 		var clone = this.$().clone();
     	this.$().replaceWith(clone);
     	
-    	//clone.remove();
-    	this.animateOut(clone, this.get('animateOut'));
-    	
-	
-	},
-	
-	animateOut: function(element, func) {
-		
-		var elHeight = element.height();
-		elHeight = elHeight - 2;
-		
-		if(elHeight > 50) {
-			elHeight = elHeight-2;
-			element.height(elHeight);
-		}
-		
-		if(elHeight > 50) {
-			
-			setTimeout(func, 10, element, func);
-		
-		} else {
-			
-			console.log("remove el");
-			
-			element.css("display", "none");
-			element.css("visibility", "hidden");
-			element.remove();
-			element = null;
-			delete element;
-			
-			
-		}
-		
+    	App.transition.goingOut = clone;
+    	clone.deg = 0;
+    	clone.top = 0;
+    	clone.z = 0;
+    
 	}
 	
 });
@@ -333,62 +316,41 @@ App.ExploreController = Em.Controller.extend({
 
 
 App.ExploreView = Em.View.extend({
-	templateName: 'exploreViewTemplate'
+	
+	templateName: 'exploreViewTemplate',
+	
+	classNames: [ "nooverflow" ],
+	
+	didInsertElement: function() {
+		
+		var element = this.$();
+		
+		App.transition.comingIn = element;
+		element.deg = 90;
+    	element.top = -396;
+    	element.z = -110;
+    	
+    	App.transition.animate();
+	
+	},
+	
+	willDestroyElement: function ()
+	{
+		
+		var clone = this.$().clone();
+    	this.$().replaceWith(clone);
+    	
+    	App.transition.goingOut = clone;
+    	clone.deg = 0;
+    	clone.top = 0;
+    	clone.z = 0;
+	
+	},
+	
+	
+	
 });
 
-
-App.TestView = Ember.View.extend({
-	
-	templateName: 'testViewTemplate',
-	
-	SubView1: Ember.TextField.extend(),
-	SubView2: Ember.View.extend( { tagName: 'a' } ),
-	
-	
-	SubView: Ember.View.extend({
-		
-		init: function() {
-			
-			this._super();
-			
-			this.set('view1', this.get('myView1'));
-			this.set('view2', this.get('myView2'));
-			
-			this.set('template', this.get('template1'));
-			
-		},
-		
-		view1: undefined,
-		myView1Binding: 'parentView.SubView1',
-		
-		view2: undefined,
-		myView2Binding: 'parentView.SubView2',
-		
-		template1: Ember.Handlebars.compile('gg {{#view view.view1}} hh {{/view}}'),
-		template2: Ember.Handlebars.compile('gg {{#view view.view2}} rr {{/view}}'),
-		
-		
-		click: function() {
-			
-			this.set('template', this.get('template2'));
-			
-			/*
-			this.set('myViewBinding', 'parentView.SubView2');
-			var newView = this.get('myView');
-			this.set('view', newView);
-			
-			var template = Ember.Handlebars.compile('gg {{#view view.view}} rr {{/view}}');
-			this.set('template', template);
-			*/
-			
-			this.rerender();
-				
-		}
-		
-	})
-	
-		
-});
 
 App.Router = Em.Router.extend({
 	
