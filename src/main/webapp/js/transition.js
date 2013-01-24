@@ -41,7 +41,7 @@ App.transition = Ember.Object.create({
 		
 		if(deg > -90) {
 			
-			setTimeout(func, 100, func);
+			setTimeout(func, 25, func);
 		
 		} else {
 			
@@ -90,7 +90,7 @@ App.transition = Ember.Object.create({
 		
 		if(deg > 0) {
 			
-			setTimeout(func, 100, func);
+			setTimeout(func, 25, func);
 		
 		} else {
 			

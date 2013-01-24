@@ -2,282 +2,79 @@ var App = Ember.Application.create();
 
 App.map = new google.maps.Map(document.getElementById("map"), {});
 
-App.ApplicationController = Ember.Controller.extend();
+App.ApplicationController = Ember.Controller.extend({
+	viewName: "Add entry"
+});
 
 App.ApplicationView = Ember.View.extend({
-		
-	templateName: 'application',
-	
-	title: "Add entry"
-	
+	templateName: 'application'
 });
 
-App.NavView = Ember.View.extend({
+
+App.Router.map(function() {
 	
-	templateName: 'navViewTemplate'
+	this.resource("find");
+  	this.resource("add_entry", function() {
+  		this.route("index", { path: "/" });
+  		this.route("date");
+  		this.route("reference");
+  	});
 
 });
 
-App.AutocompleteController = Ember.ArrayProxy.extend({
+App.IndexRoute = Ember.Route.extend({
+	
+	redirect: function() {
+    	this.transitionTo("add_entry");
+  	}
+  	
+});
+
+App.AddEntryIndexRoute = Ember.Route.extend({
+	
+	redirect: function() {
+    	this.transitionTo("add_entry.date");
+  	}
+  	
+});
+
+/** OTHER STUFF **/
+
+App.AddEntryController = Ember.ObjectController.extend({
 	
 	init: function() {
-		this.set('content', []);
+		this.set('content', Ember.Object.create());	
 	},
 	
-	getNames: function(searchString) {
-		
-		this.clear();
-		
-		if(searchString.length == 0) {
-			return;
-		}
-		
-		var controller = this;
-		
-		var service = new google.maps.places.AutocompleteService();
-		
-	    service.getQueryPredictions({ input: searchString }, function(results, status) {
-	    	
-	    	if(results.length == 0) {
-	    		results[0] = { description: "No results" }
-	    	}
-	    	
-	    	for(var i = 0; i < results.length; i++) {
-	    		controller.addObject(Ember.Object.create({ placeName: results[i].description }));
-	    	}
-	    	
-	    });
-		
-	}
+	entryType: -1,
+	trip: undefined,
+	from: undefined,
+	to: undefined,
+	by: undefined
 	
 });
 
 
-App.SelectListController = Ember.ArrayController.extend({
-	
-	selectedIndex: undefined,
-	
-	init: function() {
-		this.set('content', []);
-	}
-	
-		
-});
+App.DateInputView = Ember.View.extend({	
+}),
 
-
-App.SelectListView = Ember.View.extend({
-	
-	classNames: [ 'selectList' ],
-	
-	init: function() {
-		
-		this._super();
-		
-		this.set('controller', App.SelectListController.create());
-		
-	},
-	
-	didInsertElement: function() {
-		
-		var itemViews = this.get('childViews');
-		
-		var controller = this.get('controller');
-		
-		for(var i=0; i<itemViews.length; i++) {
-			
-			var itemView = itemViews[i];
-			var content = itemView.get('element').innerHTML;
-			controller.addObject(content);
-			
-			itemView.set('index', i);
-				
-		}	
-		
-	
-	},
-	
-	ItemView: Ember.View.extend({
-		
-		classNames: [ 'selectListItem' ],
-		
-		classNameBindings: [ 'selected' ],
-		
-		index: undefined,
-		
-		selected: false,
-		
-		click: function() {
-			
-			this.set('selected', true);
-			
-			var controller = this.get('parentView').get('controller');
-			controller.set('selectedIndex', this.get('index'));
-			
-		}
-		
-	}),
-	
-	
-	changeSelection: function() {
-		
-		var itemViews = this.get('childViews');
-		var controller = this.get('controller');
-		var selectedIndex = controller.get('selectedIndex');
-		
-		for(var i=0; i<itemViews.length; i++) {
-			
-			var itemView = itemViews[i];
-			
-			if(i != selectedIndex) {
-				itemView.set('selected', false);
-			}
-				
-		}
-		
-	}.observes('controller.selectedIndex')
-	
-});
-
-
-App.PlaceInputView = Ember.View.extend({
-	
-	classNames: [ "placeInput" ],
-	
-	templateName: 'placeInputViewTemplate',
-	
-	searchString: "",
-	
-	isEditable: true,
-
-	InputField: Ember.View.extend({
-		
-		contentBinding: 'parentView.content',
-		
-		searchStringBinding: 'parentView.searchString',
-		isEditableBinding: 'parentView.isEditable',
-		
-		editViewTemplate: Ember.Handlebars.compile('{{view view.InputFieldEdit}}'),
-		selectedViewTemplate: Ember.Handlebars.compile('{{#view view.InputFieldSelected}}{{view.placeName}}{{/view}}'),
-		
-		InputFieldEdit: Ember.TextField.extend({
-			
-			keyUp: function(event) {
-				
-				if(event.keyCode == 13) {
-					
-				} else {
-					var parentView = this.get('parentView');
-					parentView.set('searchString', this.get('value'));
-				}
-				
-			},
-			
-			valueBinding: 'parentView.content.placeName',
-			
-		}),
-		
-		InputFieldSelected: Ember.View.extend({
-			
-			tagName: 'a',
-			
-			isEditableBinding: 'parentView.isEditable',
-			placeNameBinding: 'parentView.content.placeName',
-			
-			click: function() {
-				this.set('isEditable', true);
-			}
-			
-		}),
-		
-		init: function() {
-			
-			this._super();
-			
-			this.set('template', this.get('editViewTemplate'));
-			
-		},
-		
-		toggleEditability: function() {
-			
-			var isEditable = this.get('isEditable');
-			
-			if(isEditable) {
-				this.set('template', this.get('editViewTemplate'));
-			} else {
-				this.set('template', this.get('selectedViewTemplate'));
-			}
-			
-			this.rerender();
-			
-		}.observes('isEditable')
-		
-	}),
-	
-	
-	AutocompleteView: Ember.View.extend({
-		
-		classNameBindings: [ 'visible' ],
-		
-		visible: false,
-		
-		init: function() {
-			
-			this._super();
-			this.set('controller', App.AutocompleteController.create());
-			
-		},
-		
-		autocomplete: function() {
-			
-			var searchString = this.get('parentView').get('searchString');
-			this.get('controller').getNames(searchString);
-			
-			if(searchString.length > 0) {
-				this.set('visible', true);
-			} else {
-				this.set('visible', false);
-			}
-			
-		}.observes('parentView.searchString'),
-		
-		
-		selectPlace: function(event) {
-			
-			var parentView = this.get('parentView');
-			parentView.set('content', event.context);
-			parentView.set('isEditable', false);
-			
-			this.set('visible', false);
-			
-		}
-		
-		
-	})
-	
-});
-
+App.ReferenceInputView = Ember.View.extend({
+}),
 
 App.CenterSectionContentView = Ember.View.extend({
 	
 });
 
-
-App.AddEntryController = Em.Controller.extend({
-	
-	from: undefined,
-	to: undefined
-	
-});
-
-
 App.AddEntryView = Em.View.extend({
-	
-	controller: App.AddEntryController.create(),
-	
-	templateName: 'addEntryViewTemplate',
 	
 	classNames: [ "nooverflow" ],
 	
+	init: function() {
+		
+		this._super();
+		this.set('controller', App.AddEntryController.create());
+			
+	},
 	
 	didInsertElement: function ()
 	{
@@ -307,17 +104,15 @@ App.AddEntryView = Em.View.extend({
     
 	}
 	
-});
-
-
-App.ExploreController = Em.Controller.extend({
-	title: 'Explore'	
-});
-
-
-App.ExploreView = Em.View.extend({
 	
-	templateName: 'exploreViewTemplate',
+});
+
+
+App.FindController = Ember.ObjectController.extend({
+});
+
+
+App.FindView = Em.View.extend({
 	
 	classNames: [ "nooverflow" ],
 	
@@ -331,11 +126,13 @@ App.ExploreView = Em.View.extend({
     	element.z = -110;
     	
     	App.transition.animate();
-	
+		
+		
 	},
 	
 	willDestroyElement: function ()
 	{
+		
 		
 		var clone = this.$().clone();
     	this.$().replaceWith(clone);
@@ -344,53 +141,11 @@ App.ExploreView = Em.View.extend({
     	clone.deg = 0;
     	clone.top = 0;
     	clone.z = 0;
-	
-	},
-	
-	
+		
+		
+	}
 	
 });
 
-
-App.Router = Em.Router.extend({
-	
-	enableLogging: true,
-	
-	location: 'hash',
-	
-	root: Em.Route.extend({
-		
-		// EVENTS
-		viewAddEntry: Ember.Route.transitionTo('addEntry'),
-		viewExplore: Ember.Route.transitionTo('explore'),
-		
-		// STATES
-		addEntry: Em.Route.extend({
-			
-			route: '/',
-			
-			// EVENTS
-			
-			connectOutlets: function(router, context) {
-				router.get('applicationController').connectOutlet('addEntry');
-			}
-
-			
-		}),
-		
-		explore: Em.Route.extend({
-			
-			route: '/',
-			
-			connectOutlets: function(router, context) {
-				router.get('applicationController').connectOutlet('explore');
-			}
-			
-		})
-		
-	})
-	
-});
-
-App.initialize();
-
+App.router = App.Router.create();
+App.initialize(App.router);

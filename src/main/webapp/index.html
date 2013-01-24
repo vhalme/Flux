@@ -48,12 +48,6 @@
 	<body>
 		
 		<div id="map"></div>
-		
-		<script type="text/x-handlebars" data-template-name="navViewTemplate">
-			
-			
-			
-		</script>
 			
 		<script type="text/x-handlebars" data-template-name="application">
 
@@ -64,10 +58,10 @@
 				</div>
 				<div style="display: inline-block; width: 64%;">
 					<div style="display: inline-block; width: 40%">
-						<a {{action viewAddEntry}}>Add entry</a>
+						{{#linkTo "add_entry"}}Add entry{{/linkTo}}
 					</div>
 					<div style="display: inline-block; width: 40%"> 
-						<a {{action viewExplore}}>Find</a>
+						{{#linkTo "find"}}Find{{/linkTo}}
 					</div>
 				</div>
 				
@@ -108,7 +102,7 @@
 				<div id="centerSection">	
 					
 					<div class="title">
-						<span>{{view.title}}</span>
+						<span>{{viewName}}</span>
 					</div>
 					
 					
@@ -128,25 +122,28 @@
 			</footer>
 		
 		</script>
-
-		<script type="text/x-handlebars" data-template-name="addEntryViewTemplate">
+		
+		
+		<script type="text/x-handlebars" data-template-name="add_entry">
+			
+			<div class="haveTravelled">
 				
-			{{#view App.SelectListView class="haveTravelled"}}
-				{{#view view.ItemView class="right"}}I travelled this route{{/view}}
-				{{#view view.ItemView class="left"}}I researched this route{{/view}}
-			{{/view}}
+				{{#view App.EntryTypeSelectView}}
+					{{#view App.ListItemView class="left"}}I travelled this route{{/view}}
+					{{#view App.ListItemView class="right"}}I researched this route{{/view}}
+				{{/view}}
+			
+				{{outlet}}
+			
+			</div>
 			
 			<div class="routeInfoInput">
 				
 				<div class="tripleColumn">
 					
 					<div class="columnLeft" align="right">On my trip</div> 
-					<div class="columnCenter">
-						<div class="placeInput"><input type="text"/></div>
-					</div>
-					<div class="columnRight" align="center">
-						<span class="mediumButton">[ <a href="#">New trip</a> ]</span>
-					</div>
+					<div class="columnCenter">{{view App.TripInputView contentBinding="trip"}}</div>
+					<div class="columnRight" align="center"></div>
 					
 				</div>
 				
@@ -165,21 +162,13 @@
 				<div class="tripleColumn">
 					<div class="columnLeft" align="right">by</div>
 					<div class="columnCenter">
-						<span class="mediumButton">
-							{{#view App.SelectListView class="selectList"}}
-								{{#view view.ItemView}}bus{{/view}}
-								{{#view view.ItemView}}plane{{/view}}
-								{{#view view.ItemView}}train{{/view}}
-								{{#view view.ItemView}}other{{/view}}
-							{{/view}}
-						</span>
+						{{#view App.SelectListView class="selectList"}}
+							{{#view App.ListItemView}}bus{{/view}}
+							{{#view App.ListItemView}}plane{{/view}}
+							{{#view App.ListItemView}}train{{/view}}
+							{{#view App.ListItemView}}other{{/view}}
+						{{/view}}
 					</div>
-					<div class="columnRight" align="center"></div>
-				</div>
-				
-				<div class="tripleColumn">
-					<div class="columnLeft" align="right">in</div>
-					<div class="columnCenter"><span class="mediumButton"> Year Month Day </span></div>
 					<div class="columnRight" align="center"></div>
 				</div>
 				
@@ -187,20 +176,56 @@
         	
 		</script>
 		
+		<script type="text/x-handlebars" data-template-name="add_entry/date">
+			
+			<div style="margin-bottom: 6px;">
+				{{#view App.SelectListView class="selectList"}}
+					{{#view App.ListItemView}}today{{/view}}
+					{{#view App.ListItemView}}this month{{/view}}
+					{{#view App.ListItemView}}this year{{/view}}
+				{{/view}}
+			</div>
+			
+		</script>
+		
+		
+		<script type="text/x-handlebars" data-template-name="add_entry/reference">
+			<div style="margin-bottom: 6px;">
+				<textarea>[   refrence    ]</textarea>
+			</div>
+		</script>
+		
+		
 		<script type="text/x-handlebars" data-template-name="placeInputViewTemplate">
 			
 			{{view view.InputField class="placeInput"}}
 			
 			{{#view view.AutocompleteView class="placeAutocompleteBox"}}
-				{{#each place in view.controller}}
-					<a {{action selectPlace place}}>{{place.placeName}}</a><br/>
+				{{#each item in view.controller}}
+					<a {{action selectItem item}}>{{item.displayValue}}</a><br/>
+				{{/each}}
+			{{/view}}
+			
+		</script>
+		
+		
+		<script type="text/x-handlebars" data-template-name="tripInputViewTemplate">
+			
+			{{view view.InputField class="placeInput"}}
+			
+			{{#view view.AutocompleteView class="placeAutocompleteBox"}}
+				{{#if view.hasSearchString}}
+					<div><a {{action addNewTrip}} style="color: blue; text-decoration: none;">Add new trip</a> ({{view.parentView.searchString}})</div>
+				{{/if}}
+				{{#each item in view.controller}}
+					<a {{action selectItem item}}>{{item.displayValue}}</a><br/>
 				{{/each}}
 			{{/view}}
 			
 		</script>
 
 
-		<script type="text/x-handlebars" data-template-name="exploreViewTemplate">
+		<script type="text/x-handlebars" data-template-name="find">
 			
 			
 			[ Map ]
@@ -244,7 +269,10 @@
 		<script src="js/libs/ember-latest.js"></script>
 		<script src="js/app.js"></script>
 		<script src="js/transition.js"></script>
+		<script src="js/selectlist.js"></script>
+		<script src="js/autocompleteinput.js"></script>
 		<script src="js/test.js"></script>
+		<script src="js/router.js"></script>
 	
 		<script>
 		

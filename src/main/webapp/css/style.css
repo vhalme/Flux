@@ -88,16 +88,17 @@ header .logo {
 	
 	position: relative;
 	margin-top: 1.4em;
-	margin-left: 2.0em;
 	margin-right: 2.0em;
 	height: 500px;
 	overflow: hidden;
+	font-size: 1.2em;
    	
 }
 
 
 .placeInput {
 	display: inline;
+	position: relative;
 }
 
 .placeInput a {
@@ -108,7 +109,7 @@ header .logo {
 
 .placeInput input {
 	background-color: transparent; 
-	border-style: solid; 
+	border-style: dotted;
 	border-width: 0px 0px 1px 0px; 
 	border-color: black;
 	outline: 0px;
@@ -122,7 +123,6 @@ header .logo {
 	height: 40px;
 	width: 50%;
 	display: block;
-	margin-left: 1.0em;
 	margin-top: 0.2em;
 	
 }
@@ -161,26 +161,21 @@ header .logo {
 	text-align: center;
 	position: relative;
 	border-bottom: 1px solid black;
-	margin-top: 0.3em;
+	margin-top: 0.6em;
 	margin-left: 0px;
-	height: 2.0em;
+	margin-bottom: 2.0em;
 	overflow: hidden;
 }
 
 .haveTravelled .left {
-	height: 2.0em;
 	left: 0px;
-	position: absolute;
 	display: inline-block;
-	width: 50%;
+	width: 49%;
 }
 
 
 .haveTravelled .right {
-	height: 2.0em;
 	margin-right: 1px;
-	position: absolute;
-	left: 50%;
 	display: inline-block;
 	width: 50%;
 }
@@ -212,11 +207,7 @@ header .logo {
 }
 
 .routeInfoInput {
-	
-	font-size: 1.2em;
-	
 	width: 100%;
-	
 }
 
 .routeInfoInput .tripleColumn {
@@ -266,6 +257,9 @@ header .logo {
 	padding: 6px;
 	display: none;
 	visibility: hidden;
+	width: 100%;
+	z-index: 1;
+	margin: -1px;
 }
 
 .placeAutocompleteBox a {
@@ -287,10 +281,21 @@ header .logo {
 
 .selectList .selectListItem {
 	
+	display: inline-block;
+	color: #808080;
+	cursor: hand;
+	cursor: pointer;
+	font-size: 1.0em;
+	
+}
+
+.selectList a {
+	
 	display: inline;
 	color: #808080;
 	cursor: hand;
 	cursor: pointer;
+	font-size: 1.0em;
 	
 }
 
