@@ -126,7 +126,7 @@ App.AutocompleteInputView = Ember.View.extend({
 						parentView.set('autocompleteVisible', false);
 						
 						var searchString = parentView.get('searchString');
-						var selectedItem = parentView.get('content');
+						var selectedItem = parentView.get('controller.content');
 						
 						if(selectedItem) {
 							parentView.set('isEditable', false);
