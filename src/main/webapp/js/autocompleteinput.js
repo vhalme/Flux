@@ -12,7 +12,6 @@ App.AutocompleteController = Ember.ArrayController.extend({
 	
 	selectItem: function(item) {
 		
-		console.log(item);
 		this.set('selectedItem', item);
 		
 	}
@@ -86,6 +85,8 @@ App.AutocompleteInputView = Ember.View.extend({
 	
 	templateName: 'placeInputViewTemplate',
 	
+	value: undefined,
+	
 	searchString: "",
 	
 	isEditable: true,
@@ -98,7 +99,7 @@ App.AutocompleteInputView = Ember.View.extend({
 	
 	InputField: Ember.View.extend({
 		
-		contentBinding: 'parentView.content',
+		valueBinding: 'parentView.value',
 		
 		searchStringBinding: 'parentView.searchString',
 		isEditableBinding: 'parentView.isEditable',
@@ -126,7 +127,7 @@ App.AutocompleteInputView = Ember.View.extend({
 						parentView.set('autocompleteVisible', false);
 						
 						var searchString = parentView.get('searchString');
-						var selectedItem = parentView.get('controller.content');
+						var selectedItem = parentView.get('value');
 						
 						if(selectedItem) {
 							parentView.set('isEditable', false);
@@ -154,7 +155,7 @@ App.AutocompleteInputView = Ember.View.extend({
 			
 			tagName: 'a',
 			
-			displayValueBinding: 'parentView.controller.content.displayValue',
+			displayValueBinding: 'parentView.value.displayValue',
 			
 			click: function() {
 				
@@ -182,8 +183,6 @@ App.AutocompleteInputView = Ember.View.extend({
 			
 			var isEditable = this.get('isEditable');
 			
-			console.log("isEditable: "+isEditable);
-			
 			if(isEditable) {
 				this.set('template', this.get('editViewTemplate'));
 			} else {
@@ -205,6 +204,7 @@ App.AutocompleteInputView = Ember.View.extend({
 			}
 			
 		}.observes('searchString')
+		
 		
 	}),
 	
@@ -255,7 +255,7 @@ App.AutocompleteInputView = Ember.View.extend({
 			var item = this.get('controller.selectedItem');
 			
 			var parentView = this.get('parentView');
-			parentView.set('controller.content', item);
+			parentView.set('value', item);
 			parentView.set('searchString', item.get('displayValue'));
 			parentView.set('isEditable', false);
 			
@@ -268,9 +268,11 @@ App.AutocompleteInputView = Ember.View.extend({
 	
 	inputCleared: function() {
 		
-		console.log("input cleared");
-		
-	}
+	},
+	
+	showContent: function() {
+		console.log("input content changed ");
+	}.observes('value')
 	
 });
 
@@ -307,9 +309,7 @@ App.TripInputView = App.AutocompleteInputView.extend({
 	
 	inputCleared: function() {
 		
-		console.log("trip input cleared");
-		
-		this.set('controller.content', this.get('nullTrip'));
+		this.set('value', this.get('nullTrip'));
 		
 	}
 	

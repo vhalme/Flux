@@ -39,6 +39,8 @@ App.SelectListView = Ember.View.extend({
 	
 	selectedItem: undefined,
 	
+	value: undefined,
+	
 	didInsertElement: function() {
 		
 		var itemViews = this.get('childViews');
@@ -60,6 +62,8 @@ App.SelectListView = Ember.View.extend({
 		var itemViews = this.get('childViews');
 		var selectedItem = this.get('selectedItem');
 		var selectedItemIndex = selectedItem.get('itemIndex');
+		
+		this.set('value', selectedItem);
 		
 		for(var i=0; i<itemViews.length; i++) {
 			
@@ -86,14 +90,18 @@ App.SelectListView = Ember.View.extend({
 	
 });
 
-App.EntryTypeSelectView = App.SelectListView.extend({
+App.TextSelectListView = App.SelectListView.extend({
 	
 	setupItemContent: function(itemContent, itemView) {
 		
 		var textValue = itemView.$().text();
 		itemContent.set('textValue', textValue);
 		
-	},
+	}
+	
+});
+
+App.EntryTypeSelectView = App.TextSelectListView.extend({
 	
 	handleSelection: function(selectedItem) {
 		
@@ -104,6 +112,18 @@ App.EntryTypeSelectView = App.SelectListView.extend({
 		} else if(textValue.indexOf('research') != -1) {
 			App.router.transitionTo("add_entry.reference");
 		}
+		
+	}
+	
+});
+
+
+App.TransportTypeSelectView = App.TextSelectListView.extend({
+	
+	handleSelection: function(selectedItem) {
+		
+		var textValue = selectedItem.get('textValue');
+		
 		
 	}
 	

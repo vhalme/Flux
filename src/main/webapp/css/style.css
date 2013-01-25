@@ -119,11 +119,23 @@ header .logo {
 #centerSection .title {
 	
 	position: relative;
+	display: inline-block;
 	font-size: 1.8em;
 	height: 40px;
-	width: 50%;
-	display: block;
+	width: 40%;
 	margin-top: 0.2em;
+	
+}
+
+#centerSection .contentControl {
+	
+	position: relative;
+	display: inline-block;
+	float: right;
+	font-size: 1.8em;
+	height: 40px;
+	margin-top: 0.2em;
+	padding-right: 2.0em;
 	
 }
 
@@ -157,29 +169,39 @@ header .logo {
 
 }
 
-.haveTravelled {
+.entryType {
+	min-height: 4.0em;
 	text-align: center;
 	position: relative;
 	border-bottom: 1px solid black;
 	margin-top: 0.6em;
-	margin-left: 0px;
 	margin-bottom: 2.0em;
+	padding-left: 15%;
+	padding-right: 15%;
 	overflow: hidden;
 }
 
-.haveTravelled .left {
-	left: 0px;
+.entryType .typeInfo {
+	width: 100%;
+	margin-top: 12px;
 	display: inline-block;
-	width: 49%;
+}
+
+.entryType .entryTypeSelect {
+	display: inline-block;
+	width: 100%;	
+}
+
+.entryType .entryTypeSelect .left {
+	display: inline;
+	float: left;
 }
 
 
-.haveTravelled .right {
-	margin-right: 1px;
-	display: inline-block;
-	width: 50%;
+.entryType .entryTypeSelect .right {
+	display: inline;
+	float: right;
 }
-
 
 .onMyTrip {
 	margin-top: 16px;	
