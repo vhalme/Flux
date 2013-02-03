@@ -145,6 +145,10 @@ header .logo {
 	margin-top: -0.5em;
 }
 
+#centerSection .controlItem {
+	display: inline;	
+}
+
 .leftSectionHeader .otherMenuLink {
 	
 	position: relative;

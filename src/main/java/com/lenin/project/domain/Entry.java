@@ -1,57 +1,93 @@
 package com.lenin.project.domain;
 
-public class Entry {
+import java.io.Serializable;
+
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
+
+public class Entry implements Serializable {
 	
-	protected String type;
-	protected String date;
-	protected String reference;
-	protected String trip;
-	protected String from;
-	protected String to;
-	protected String by;
+	private static final long serialVersionUID = -6096286190530844035L;
+	
+	@Id
+	private String id;
+	
+	private SelectListItem type;
+	
+	private SelectListItem date;
+	private String reference;
+	
+	@DBRef
+	private Trip trip;
+	
+	@DBRef
+	private Place from;
+	
+	@DBRef
+	private Place to;
+	
+	private SelectListItem by;
+	
+	public Entry() {
+		
+	}
 	
 	
-	public String getType() {
+	public String getId() {
+		return id;
+	}
+	public void setId(String id) {
+		this.id = id;
+	}
+
+
+
+	public SelectListItem getType() {
 		return type;
 	}
-	public void setType(String type) {
+	public void setType(SelectListItem type) {
 		this.type = type;
 	}
 	
-	public String getDate() {
+	public SelectListItem getDate() {
 		return date;
 	}
-	public void setDate(String date) {
+	public void setDate(SelectListItem date) {
 		this.date = date;
 	}
+	
 	public String getReference() {
 		return reference;
 	}
 	public void setReference(String reference) {
 		this.reference = reference;
 	}
-	public String getTrip() {
+	
+	public Trip getTrip() {
 		return trip;
 	}
-	public void setTrip(String trip) {
+	public void setTrip(Trip trip) {
 		this.trip = trip;
 	}
-	public String getFrom() {
+	
+	public Place getFrom() {
 		return from;
 	}
-	public void setFrom(String from) {
+	public void setFrom(Place from) {
 		this.from = from;
 	}
-	public String getTo() {
+	
+	public Place getTo() {
 		return to;
 	}
-	public void setTo(String to) {
+	public void setTo(Place to) {
 		this.to = to;
 	}
-	public String getBy() {
+	
+	public SelectListItem getBy() {
 		return by;
 	}
-	public void setBy(String by) {
+	public void setBy(SelectListItem by) {
 		this.by = by;
 	}
 	

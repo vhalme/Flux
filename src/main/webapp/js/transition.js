@@ -45,6 +45,8 @@ App.transition = Ember.Object.create({
 		
 		} else {
 			
+			console.log("DESTROY ELEM");
+			
 			element.css("display", "none");
 			element.css("visibility", "hidden");
 			element.remove();
@@ -101,6 +103,12 @@ App.transition = Ember.Object.create({
 			element.css("-moz-transform", rotVal);
 			element.css("top", "0px");
 			
+			/*
+			element.destroy();
+			
+			element = null;
+			delete element;
+			*/
 		}
 		
 	}

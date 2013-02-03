@@ -63,7 +63,7 @@ App.SelectListView = Ember.View.extend({
 		var selectedItem = this.get('selectedItem');
 		var selectedItemIndex = selectedItem.get('itemIndex');
 		
-		this.set('value', selectedItem);
+		this.set('value', selectedItem.get('content'));
 		
 		for(var i=0; i<itemViews.length; i++) {
 			
@@ -106,12 +106,6 @@ App.EntryTypeSelectView = App.TextSelectListView.extend({
 	handleSelection: function(selectedItem) {
 		
 		var textValue = selectedItem.get('textValue');
-		
-		if(textValue.indexOf('travel') != -1) {
-			App.router.transitionTo("add_entry.date");
-		} else if(textValue.indexOf('research') != -1) {
-			App.router.transitionTo("add_entry.reference");
-		}
 		
 	}
 	

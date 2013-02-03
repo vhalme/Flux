@@ -70,7 +70,7 @@ App.ResourceAutocompleteController = App.AutocompleteController.extend({
 		
 		for(var i=0; i<fixture.length; i++) {
 			if(fixture[i].toLowerCase().indexOf(matchString.toLowerCase()) == 0) {
-				this.addObject(Ember.Object.create({ displayValue: fixture[i] }));
+				this.addObject(Ember.Object.create({ id: "5106cd6456c8b50ed3460b21", displayValue: fixture[i] }));
 			}
 		}
 		
@@ -261,12 +261,18 @@ App.AutocompleteInputView = Ember.View.extend({
 			
 			this.set('visible', false);
 			
+			parentView.handleSelection(item);
+			
 		}.observes('controller.selectedItem')
 		
 		
 	}),
 	
 	inputCleared: function() {
+		
+	},
+	
+	handleSelection: function(item) {
 		
 	},
 	
@@ -310,6 +316,10 @@ App.TripInputView = App.AutocompleteInputView.extend({
 	inputCleared: function() {
 		
 		this.set('value', this.get('nullTrip'));
+		
+	},
+	
+	handleSelection: function(item) {
 		
 	}
 	

@@ -48,7 +48,9 @@
 	<body>
 		
 		<div id="map"></div>
-			
+		
+		<div id="#entryContent"></div>
+		
 		<script type="text/x-handlebars" data-template-name="application">
 
 			<header>
@@ -58,10 +60,10 @@
 				</div>
 				<div style="display: inline-block; width: 64%;">
 					<div style="display: inline-block; width: 40%">
-						{{#linkTo "add_entry"}}Add entry{{/linkTo}}
+						<a href="#/entry/new">Add entry</a>
 					</div>
 					<div style="display: inline-block; width: 40%"> 
-						{{#linkTo "find"}}Find{{/linkTo}}
+						<a href="#/find">Find</a>
 					</div>
 				</div>
 				
@@ -106,15 +108,19 @@
 					</div>
 					
 					<div class="contentControl">
-						Save
+						{{#each App.controlsController}}
+							{{#view App.ControlView contentBinding="actionName" class="controlItem"}}
+								<a {{action "triggerAction"}}>{{view.content}}</a>
+							{{/view}}
+						{{/each}}
 					</div>
 					
 					{{#view App.CenterSectionContentView class="centerSectionContent"}}
-					
+						
 						{{outlet}}
 					
 					{{/view}}
-				
+					
 				</div>
 				
 			</div>
@@ -124,89 +130,6 @@
 			<footer>
 			</footer>
 		
-		</script>
-		
-		<script type="text/x-handlebars" data-template-name="add_entry/date">
-			
-			<div style="float: left;">
-				{{#view App.TextSelectListView valueBinding="view.entryController.date" class="selectList"}}
-					{{#view App.ListItemView}}today{{/view}}&nbsp;&nbsp;
-					{{#view App.ListItemView}}this month{{/view}}&nbsp;&nbsp;
-					{{#view App.ListItemView}}this year{{/view}}
-				{{/view}}
-			</div>
-		
-		</script>
-		
-		
-		<script type="text/x-handlebars" data-template-name="add_entry/reference">
-			
-			<div style="float: right; width: 50%">
-				<div style="display: inline; float: left;">Reference</div>
-				<div style="display: inline-block; width: 50%; float: left; padding-left: 0.8em; position: absolute; left: 60%;">
-					<textarea style="height: 1.2em; width: 70%; float: left;"></textarea>
-				</div>
-			</div>
-						
-		</script>
-		
-		<script type="text/x-handlebars" data-template-name="add_entry">
-			
-			<div style="position: absolute;">Save</div>
-			
-			<div class="entryType">
-				
-				
-				{{#view App.EntryTypeSelectView valueBinding="view.entryController.type" class="entryTypeSelect"}}
-					{{#view App.ListItemView class="left"}}I travelled this route{{/view}}
-					{{#view App.ListItemView class="right"}}I researched this route{{/view}}
-				{{/view}}
-				
-				
-				<div class="typeInfo">
-					{{outlet}}
-				</div>
-				
-			</div>
-			<div style="width: 15%"></div>
-				
-			<div class="routeInfoInput">
-				
-				<div class="tripleColumn">
-					
-					<div class="columnLeft" align="right">On my trip</div> 
-					<div class="columnCenter">{{view App.TripInputView valueBinding="view.entryController.trip"}}</div>
-					<div class="columnRight" align="center"></div>
-					
-				</div>
-				
-				<div class="tripleColumn">
-					<div class="columnLeft" align="right">from</div>
-					<div class="columnCenter">{{view App.PlaceInputView valueBinding="view.entryController.from"}}</div>
-					<div class="columnRight" align="center"></div>
-				</div>
-				
-				<div class="tripleColumn">
-					<div class="columnLeft" align="right">to</div>
-					<div class="columnCenter">{{view App.PlaceInputView valueBinding="view.entryController.to"}}</div>
-					<div class="columnRight" align="center"></div>
-        		</div>
-				
-				<div class="tripleColumn">
-					<div class="columnLeft" align="right">by</div>
-					<div class="columnCenter">
-						{{#view App.TransportTypeSelectView valueBinding="view.entryController.by" class="selectList"}}
-							{{#view App.ListItemView}}bus{{/view}}
-							{{#view App.ListItemView}}plane{{/view}}
-							{{#view App.ListItemView}}train{{/view}}
-							{{#view App.ListItemView}}other{{/view}}
-						{{/view}}
-					</div>
-					<div class="columnRight" align="center"></div>
-				</div>
-				
-			</div>
-        	
 		</script>
 		
 		<script type="text/x-handlebars" data-template-name="placeInputViewTemplate">
@@ -254,6 +177,91 @@
 			
 		</script>
 		
+		<script type="text/x-handlebars" data-template-name="entry/reference">
+			BLAH BLAH
+		</script>
+		
+		<script type="text/x-handlebars" data-template-name="entry/edit/date">
+			
+			<div style="float: left;">
+				{{#view App.TextSelectListView valueBinding="view.entryController.date" class="selectList"}}
+					{{#view App.ListItemView}}today{{/view}}&nbsp;&nbsp;
+					{{#view App.ListItemView}}this month{{/view}}&nbsp;&nbsp;
+					{{#view App.ListItemView}}this year{{/view}}
+				{{/view}}
+			</div>
+		
+		</script>
+		
+		
+		<script type="text/x-handlebars" data-template-name="entry/edit/reference">
+			
+			<div style="float: right; width: 50%">
+				<div style="display: inline; float: left;">Reference</div>
+				<div style="display: inline-block; width: 50%; float: left; padding-left: 0.8em; position: absolute; left: 60%;">
+					<textarea style="height: 1.2em; width: 70%; float: left;"></textarea>
+				</div>
+			</div>
+						
+		</script>
+		
+		<script type="text/x-handlebars" data-template-name="entry">
+			
+			<div class="entryType">
+				
+				
+				{{#view App.EntryTypeSelectView valueBinding="type" class="entryTypeSelect"}}
+					{{#view App.ListItemView class="left"}}I travelled this route{{/view}}
+					{{#view App.ListItemView class="right"}}I researched this route{{/view}}
+				{{/view}}
+				
+				
+				<div class="typeInfo">
+					{{view App.TypeInfoView}}
+				</div>
+				
+			</div>
+			<div style="width: 15%"></div>
+			
+			<div class="routeInfoInput">
+				
+				<div class="tripleColumn">
+					
+					<div class="columnLeft" align="right">On my trip</div> 
+					<div class="columnCenter">{{view App.TripInputView valueBinding="trip"}}</div>
+					<div class="columnRight" align="center"></div>
+					
+				</div>
+				
+				<div class="tripleColumn">
+					<div class="columnLeft" align="right">from</div>
+					<div class="columnCenter">{{view App.PlaceInputView valueBinding="from"}}</div>
+					<div class="columnRight" align="center"></div>
+				</div>
+				
+				<div class="tripleColumn">
+					<div class="columnLeft" align="right">to</div>
+					<div class="columnCenter">{{view App.PlaceInputView valueBinding="to"}}</div>
+					<div class="columnRight" align="center"></div>
+        		</div>
+				
+				<div class="tripleColumn">
+					<div class="columnLeft" align="right">by</div>
+					<div class="columnCenter">
+						{{#view App.TransportTypeSelectView valueBinding="by" class="selectList"}}
+							{{#view App.ListItemView}}bus{{/view}}
+							{{#view App.ListItemView}}plane{{/view}}
+							{{#view App.ListItemView}}train{{/view}}
+							{{#view App.ListItemView}}other{{/view}}
+						{{/view}}
+					</div>
+					<div class="columnRight" align="center"></div>
+				</div>
+				
+			</div>
+			
+			
+		</script>
 		
 		<script type="text/x-handlebars" data-template-name="testViewTemplate">
         		

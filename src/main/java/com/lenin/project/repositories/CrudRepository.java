@@ -17,6 +17,8 @@ public interface CrudRepository<T, ID extends Serializable>
 	
 	void delete(T entity);
 	
+	void deleteAll();
+	
 	boolean exists(ID primaryKey);
 	
 
