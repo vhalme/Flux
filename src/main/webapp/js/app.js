@@ -198,6 +198,8 @@ App.Model.reopenClass({
 
 App.Entry = App.Model.extend({
 	
+	path: "entry",
+	
 	idBinding: 'data.id',
 	typeBinding: 'data.type',
 	dateBinding: 'data.date',
