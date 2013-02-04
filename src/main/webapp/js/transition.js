@@ -8,7 +8,7 @@ App.transition = Ember.Object.create({
 		
 		this.animateOut(this.get('animateOut'));
 		this.animateIn(this.get('animateIn'));
-			
+		
 	},
 	
 	animateOut: function(func) {
@@ -24,18 +24,16 @@ App.transition = Ember.Object.create({
 		var z = element.z;
 		
 		element.deg = deg-4;
-		element.top = top+18;
+		element.top = top+24;
 		element.z = z-5;
 		
-		var rotVal = "perspective(600px) translateZ("+z+"px) rotateX("+deg+"deg)";
+		var rotVal = "perspective(600px) translateY("+(top)+"px) translateZ("+z+"px) rotateX("+deg+"deg)";
 		
 		if(deg > -90) {
-			
 			
 			element.css("transform", rotVal);
 			element.css("-webkit-transform", rotVal); /* Safari and Chrome */
 			element.css("-moz-transform", rotVal); /* Firefox */
-			element.css("top", top+"px");
 			
 		}
 		
@@ -79,14 +77,13 @@ App.transition = Ember.Object.create({
 		element.top = top;
 		element.z = z;
 		
-		var rotVal = "perspective(600px) translateZ("+z+"px) rotateX("+deg+"deg)";
+		var rotVal = "perspective(600px) translateY("+(top)+"px) translateZ("+z+"px) rotateX("+deg+"deg)";
 		
 		if(deg >= 0) {
 			
 			element.css("transform", rotVal);
 			element.css("-webkit-transform", rotVal); /* Safari and Chrome */
 			element.css("-moz-transform", rotVal); /* Firefox */
-			element.css("top", top+"px");
 			
 		}
 		
@@ -101,14 +98,7 @@ App.transition = Ember.Object.create({
 			element.css("transform", rotVal);
 			element.css("-webkit-transform", rotVal);
 			element.css("-moz-transform", rotVal);
-			element.css("top", "0px");
 			
-			/*
-			element.destroy();
-			
-			element = null;
-			delete element;
-			*/
 		}
 		
 	}

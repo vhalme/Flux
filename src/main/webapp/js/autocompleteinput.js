@@ -68,11 +68,16 @@ App.ResourceAutocompleteController = App.AutocompleteController.extend({
 			matchString = searchString;
 		}
 		
+		//console.log(searchString+"/"+matchString);
+		
 		for(var i=0; i<fixture.length; i++) {
 			if(fixture[i].toLowerCase().indexOf(matchString.toLowerCase()) == 0) {
 				this.addObject(Ember.Object.create({ id: "5106cd6456c8b50ed3460b21", displayValue: fixture[i] }));
+				//console.log("adding object.......");
 			}
 		}
+		
+		
 		
 	}
 	
@@ -91,6 +96,10 @@ App.AutocompleteInputView = Ember.View.extend({
 	
 	isEditable: true,
 	
+	isFocused: false,
+	
+	contentTypeBinding: 'parentView.contentType',
+	
 	autocompleteVisible: false,
 	
 	alwaysAutocomplete: false,
@@ -103,6 +112,7 @@ App.AutocompleteInputView = Ember.View.extend({
 		
 		searchStringBinding: 'parentView.searchString',
 		isEditableBinding: 'parentView.isEditable',
+		isFocusedBinding: 'parentView.isFocused',
 		autocompleteVisibleBinding: 'parentView.autocompleteVisible',
 		
 		editViewTemplate: Ember.Handlebars.compile('{{view view.InputFieldEdit}}'),
@@ -114,11 +124,26 @@ App.AutocompleteInputView = Ember.View.extend({
 			
 			didInsertElement: function() {
 				
+				//console.log("inserted edit field");
+				
 				var parentView = this.get('parentView');
 				
 				var element = this.$();
 				
-				element.focus();
+				parentView.set('isFocused', true);
+				
+				element.focus(function() {
+					parentView.set('isFocused', true);
+				});
+				
+				setTimeout(function() {
+					
+					//console.log("focusing: ");
+					//console.log(element);
+					element.focus();
+					element.select();
+					
+				}, 200);
 				
 				element.blur(function() {
 					
@@ -126,12 +151,14 @@ App.AutocompleteInputView = Ember.View.extend({
 						
 						parentView.set('autocompleteVisible', false);
 						
-						var searchString = parentView.get('searchString');
+						//var searchString = parentView.get('searchString');
 						var selectedItem = parentView.get('value');
 						
 						if(selectedItem) {
 							parentView.set('isEditable', false);
 						}
+						
+						parentView.set('isFocused', false);
 						
 					}, 200);
 				});
@@ -179,6 +206,19 @@ App.AutocompleteInputView = Ember.View.extend({
 			
 		},
 		
+		refreshContent: function() {
+			
+			var selectedItem = this.get('parentView.value');
+			
+			if(selectedItem != null) {
+				this.set('isEditable', false);
+			} else {
+				this.set('parentView.searchString', "");
+				this.set('isEditable', true);
+			}
+			
+		},
+		
 		toggleEditability: function() {
 			
 			var isEditable = this.get('isEditable');
@@ -203,7 +243,12 @@ App.AutocompleteInputView = Ember.View.extend({
 				
 			}
 			
-		}.observes('searchString')
+		}.observes('searchString'),
+		
+		contentChanged: function() {
+			//console.log("ctype: "+this.get('parentView.contentType'));
+			this.refreshContent();
+		}.observes('parentView.contentType')
 		
 		
 	}),
@@ -232,7 +277,7 @@ App.AutocompleteInputView = Ember.View.extend({
 				
 			} else {
 				
-				if(!this.get('parentView.alwaysAutocomplete')) {
+				if(this.get('parentView.alwaysAutocomplete') == false) {
 					this.set('visible', false);
 				}
 				
@@ -244,8 +289,18 @@ App.AutocompleteInputView = Ember.View.extend({
 		
 		toggleVisibility: function() {
 			
-			if(this.get('parentView.alwaysAutocomplete')) {
-				this.set('visible', this.get('parentView.isEditable'));
+			//console.log("TOGVIS: "+this.get('parentView.alwaysAutocomplete')+"/"+this.get('parentView.isFocused')+"/"+this.get('parentView.isEditable'));
+			
+			if(this.get('parentView.alwaysAutocomplete') == true) {
+				
+				var isEditable = this.get('parentView.isEditable');
+				
+				if(isEditable == true) {
+					this.get('controller').getValues(this.get('parentView.searchString'));
+				}
+				
+				this.set('visible', isEditable);
+			
 			}
 			
 		}.observes('parentView.isEditable'),
@@ -277,7 +332,7 @@ App.AutocompleteInputView = Ember.View.extend({
 	},
 	
 	showContent: function() {
-		console.log("input content changed ");
+		//console.log("input content changed ");
 	}.observes('value')
 	
 });

@@ -75,7 +75,7 @@ App.EntryRoute = Ember.Route.extend({
 	
 	model: function(params) {
 		
-		console.log("params changed");
+		//console.log("params changed");
 		
 		this.set('params', params);
 		
@@ -92,7 +92,9 @@ App.EntryRoute = Ember.Route.extend({
     	if(params.entry_id == "new") {
     		
     		App.controller.set('viewName', "New entry");
-    		controller.set('content', App.Entry.create());
+    		controller.set('content', App.Entry.create({
+    			trip: Ember.Object.create({ displayValue: "(none)" })
+    		}));
     	
     	} else {
     		
@@ -101,7 +103,7 @@ App.EntryRoute = Ember.Route.extend({
   		
   		}
   		
-  		console.log("viewname "+App.controller.get('viewName'));
+  		//console.log("viewname "+App.controller.get('viewName'));
 	
 	},
 	
@@ -109,7 +111,7 @@ App.EntryRoute = Ember.Route.extend({
 		
 		this.set('controller', controller);
   		
-  		console.log("set ctrl");
+  		//console.log("set ctrl");
   		
   		this.model(this.get('params'));
   		
@@ -139,11 +141,13 @@ App.Model = Ember.Object.extend({
 	
 	path: undefined,
 	
+	data: null,
+	
 	save: function() {
 		
 		var json = JSON.stringify(this, null, 2);
 		
-		console.log("sending: \n"+json);
+		//console.log("sending: \n"+json);
 		
 		$.ajax({
   			
@@ -153,7 +157,7 @@ App.Model = Ember.Object.extend({
   			contentType: 'application/json',
   			data: json,
   			success: function(data) {
-  				console.log("success: "+data);	
+  				//console.log("success: "+data);	
   			}
   
 		});
@@ -161,7 +165,7 @@ App.Model = Ember.Object.extend({
 	},
 	
 	test: function() {
-		console.log("test");
+		//console.log("test");
 	}
 	
 });
@@ -181,7 +185,8 @@ App.Model.reopenClass({
   			contentType: 'application/json',
   			success: function(data) {
   				console.log("content received: "+data);
-  				controller.set('content', data);
+  				controller.modelUpdated(data);
+  				//controller.set('content', App.Entry.create({ data: data }));
   				//App.get('controller').set('viewName', data.from.displayValue+" - "+data.to.displayValue);
   			}
   
@@ -193,14 +198,14 @@ App.Model.reopenClass({
 
 App.Entry = App.Model.extend({
 	
-	id: null,
-	type: null,
-	date: null,
-	reference: null,
-	trip: null,
-	from: null,
-	to: null,
-	by: null
+	idBinding: 'data.id',
+	typeBinding: 'data.type',
+	dateBinding: 'data.date',
+	referenceBinding: 'data.reference',
+	tripBinding: 'data.trip',
+	fromBinding: 'data.from',
+	toBinding: 'data.to',
+	byBinding: 'data.by'
 	
 });
 
@@ -212,13 +217,10 @@ App.Entry.reopenClass({
 
 App.EntryController = Ember.ObjectController.extend({
 	
-	init: function() {
-		
-		this.set('content', App.Entry.create());
-		
-	},
 	
-	val: undefined,
+	init: function() {
+		this.set('content', App.Entry.create());
+	},
 	
 	showChange: function() {
 		
@@ -233,42 +235,23 @@ App.EntryController = Ember.ObjectController.extend({
 		var to = this.get('content.to');
 		var by = this.get('content.by');
 		
-		console.log(trip + " from "+from+" to "+to+" by "+by+", type "+type+", date "+date+", reference "+reference);
+		//console.log(trip + " from "+from+" to "+to+" by "+by+", type "+type+", date "+date+", reference "+reference);
 		
 		
-	}.observes('content.trip', 'content.from', 'content.to', 'content.by', 'content.type', 'content.date', 'content.reference')
+	}.observes('content.trip', 'content.from', 'content.to', 'content.by', 'content.type', 'content.date', 'content.reference'),
+	
+	modelUpdated: function(data) {
+		
+		var entry = App.Entry.create({ data: data });
+		this.set('content', entry);
+		
+	}
+	
 	
 });
 
 
 App.CenterSectionContentView = Ember.View.extend({
-	
-	/*
-	currentView: undefined,
-	
-	didInsertElement: function() {
-		
-		var view = App.EntryView.create();
-		this.set('currentView', view);
-		this.get('childViews').pushObject(view);
-		
-		
-	},
-	
-	changeView: function() {
-		
-		var currentView = this.get('currentView');
-		currentView.remove();
-		currentView.destroy();
-		
-		this.get('childViews').removeObject(0);
-		
-		var view = App.EntryView.create();
-		this.set('currentView', view);
-		this.get('childViews').pushObject(view);
-			
-	}.observes('App.controller.viewName')
-	*/
 	
 });
 
@@ -292,11 +275,11 @@ App.TypeInfoView = Ember.View.extend({
 		this._super();
 		
 		this.set('template', this.get('refSelectTemplate'));
-			
+		
 	},
 		
 	toggleTypeInfo: function() {
-			
+		
 		var type = this.get('type');
 		
 		if(type == null) {
@@ -324,20 +307,18 @@ App.EntryView = Em.View.extend({
 	
 	oldContentElem: undefined,
 	
+	contentType: undefined,
+	
 	init: function() {
 		
 		this._super();
-		//this.set('controller', App.EntryController.create());
 		Ember.addBeforeObserver(this, 'controller.content', this, 'valueWillChange');
 		
 	},
 	
-	valueWillChange: function(obj, keyName, value){
-        
-        console.log("value will change...");
+	valueWillChange: function(obj, keyName, value) {
         
         var element = this.$();
-        //console.log(element);
         
         if(element) {
         	var clone = element.clone();
@@ -349,17 +330,14 @@ App.EntryView = Em.View.extend({
 	didInsertElement: function ()
 	{
     	
-    	/*
-    	var element = this.$(); //Ember.$(this.get('element'));
+    	var element = this.$();
 		
 		App.transition.comingIn = element;
 		element.deg = 90;
     	element.top = -396;
     	element.z = -110;
     	
-    	console.log("ANIMATE IN SET UP");
     	App.transition.animate();
-		*/
 		
 	},
 	
@@ -369,18 +347,14 @@ App.EntryView = Em.View.extend({
 		
 		App.controller.set('actions', []);
 		
-		/*
-		var clone = this.$().clone(); //Ember.$(this.get('element')).clone();
-    	this.$().replaceWith(clone); //Ember.$(this.get('element')).replaceWith(clone);
+		var clone = this.$().clone();
+    	this.$().replaceWith(clone);
     	
     	
     	App.transition.goingOut = clone;
     	clone.deg = 0;
     	clone.top = 0;
     	clone.z = 0;
-    	
-    	console.log("ANIMATE OUT CLONE SET UP");
-    	*/
     	
 	},
 	
@@ -399,7 +373,7 @@ App.EntryView = Em.View.extend({
 		
 		if(action != null) {
 			App.controlsController.set('selectedAction', null);	
-			console.log("action: "+action);
+			//console.log("action: "+action);
 		}
 		
 	}.observes('App.controlsController.selectedAction'),
@@ -407,40 +381,22 @@ App.EntryView = Em.View.extend({
 	
 	contentChanged: function() {
 		
-		console.log("content changed:");
-		console.log(this.get('controller.content'));
-		
 		var oldElem = this.get('oldContentElem');
 		
-		var element = this.$(); //Ember.$(this.get('element'));
+		var element = this.$();
 		
-		//var parentView = this.get('parentView');
+		this.set('contentType', (new Date().getTime()));
 		
-			
 		if(oldElem) {
 			
 			var parentElem = element.parent();
 			
-			//var newElem = element.clone();
-			
-			
-			//this.$().replaceWith(this.$().clone());
-			
-			
-			element.css("display", "none");
-			element.css("visibility", "hidden");
-			
 			parentElem.append(oldElem);
 			
-			
-			//parentElem.append(oldElem);
 			App.transition.goingOut = oldElem;
     		oldElem.deg = 0;
     		oldElem.top = 0;
     		oldElem.z = 0;
-    		
-    		//console.log("coming in: "+newElem);
-    		//parentElem.append(newElem);
     		
     		App.transition.comingIn = element;
 			element.deg = 90;
@@ -451,8 +407,6 @@ App.EntryView = Em.View.extend({
 			
 			
 		}
-		
-		//console.log(element);
 		
 		
 	}.observes('controller.content')
