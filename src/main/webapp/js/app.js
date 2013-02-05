@@ -429,6 +429,18 @@ App.FindView = Em.View.extend({
 	
 	classNames: [ "nooverflow" ],
 	
+	from: undefined,
+	
+	to: undefined,
+	
+	searchLocation: undefined,
+	
+	fromSuggestions: Ember.ArrayProxy.create({ content: [] }),
+	
+	toSuggestions: Ember.ArrayProxy.create({ content: [] }),
+	
+	results: [],
+		
 	didInsertElement: function() {
 		
 		var mapOptions = {
@@ -465,7 +477,30 @@ App.FindView = Em.View.extend({
     	clone.z = 0;
 		
 		
-	}
+	},
+	
+	searchTermsChanged: function() {
+		
+		var searchLocation = this.get('searchLocation');
+		var toSuggestions = this.get('toSuggestions');
+		
+		toSuggestions.clear();
+		
+		if(searchLocation.length == 0) {
+			return;
+		}
+		
+		console.log("SEARCHLOCATION CHANGE: ID="+searchLocation.id);
+		
+		$.get("/TravellerLog/service/entry?from="+searchLocation.id, function(data) {
+			for(var i=0; i<data.length; i++) {
+				toSuggestions.addObject(
+					App.Entry.create({ data: data[i] })
+				);
+			}
+		});
+		
+	}.observes('searchLocation')
 	
 });
 

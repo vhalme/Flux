@@ -170,7 +170,7 @@
 				</div>
 				
 				<div class="center">
-					<div>{{view App.StoredPlaceInputView}}</div>
+					<div>{{view App.StoredPlaceInputView valueBinding="view.searchLocation"}}</div>
 					<div class="map" id="findMap">
 						
 					</div>
@@ -178,6 +178,11 @@
 					
 				<div class="right">
 					<div class="latTitle">TO</div>
+					<div>
+						{{#each entry in view.toSuggestions}}
+							<a href="#">{{entry.to.displayValue}}</a><br/>
+						{{/each}}
+					</div>
 				</div>
 				
 			</div>
