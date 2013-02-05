@@ -54,13 +54,18 @@ App.MapAutocompleteController = App.AutocompleteController.extend({
 
 App.ResourceAutocompleteController = App.AutocompleteController.extend({
 	
-	fixture: ['Central Asia with friends', 'Rutenfest 2012'],
+	resource: undefined,
+	
+	fixture: [
+	          
+	          { id: "5106cd6456c8b50ed3460b21", displayValue: "Central Asia with friends" },
+	          { id: "5106cd6456c8b50ed3460b21", displayValue: "Rutenfest 2012" }
+	          
+	          ],
 	
 	getValues: function(searchString) {
 		
 		this.clear();
-		
-		var fixture = this.get('fixture');
 		
 		var matchString = "";
 		
@@ -68,14 +73,16 @@ App.ResourceAutocompleteController = App.AutocompleteController.extend({
 			matchString = searchString;
 		}
 		
-		//console.log(searchString+"/"+matchString);
+		var controller = this;
 		
-		for(var i=0; i<fixture.length; i++) {
-			if(fixture[i].toLowerCase().indexOf(matchString.toLowerCase()) == 0) {
-				this.addObject(Ember.Object.create({ id: "5106cd6456c8b50ed3460b21", displayValue: fixture[i] }));
-				//console.log("adding object.......");
+		$.get(this.get('resource'), function(data) {
+			console.log(data);
+			for(var i=0; i<data.length; i++) {
+				if(data[i].displayValue.toLowerCase().indexOf(matchString.toLowerCase()) == 0) {
+					controller.addObject(data[i]);
+				}
 			}
-		}
+		});
 		
 		
 		
@@ -364,13 +371,34 @@ App.TripInputView = App.AutocompleteInputView.extend({
 		
 		this._super();
 		this.set('controller', Ember.ObjectController.create());
-		this.set('autocompleteController', App.ResourceAutocompleteController.create());
+		this.set('autocompleteController', App.ResourceAutocompleteController.create({
+			resource: "/TravellerLog/service/trip"
+		}));
 		
 	},
 	
 	inputCleared: function() {
 		
 		this.set('value', this.get('nullTrip'));
+		
+	},
+	
+	handleSelection: function(item) {
+		
+	}
+	
+});
+
+
+App.StoredPlaceInputView = App.AutocompleteInputView.extend({
+	
+	init: function() {
+		
+		this._super();
+		this.set('controller', Ember.ObjectController.create());
+		this.set('autocompleteController', App.ResourceAutocompleteController.create({
+			resource: "/TravellerLog/service/place"
+		}));
 		
 	},
 	
