@@ -75,11 +75,7 @@ App.EntryRoute = Ember.Route.extend({
 	
 	model: function(params) {
 		
-		//console.log("params changed");
-		
 		this.set('params', params);
-		
-		//var params = this.get('params');
 		
 		var controller = this.get('controller');
 		
@@ -87,14 +83,10 @@ App.EntryRoute = Ember.Route.extend({
 			return;
 		}
 		
-		//console.log(params);
-		
     	if(params.entry_id == "new") {
     		
     		App.controller.set('viewName', "New entry");
-    		controller.set('content', App.Entry.create({
-    			trip: Ember.Object.create({ displayValue: "(none)" })
-    		}));
+    		controller.set('content', App.Entry.create());
     	
     	} else {
     		
@@ -110,8 +102,6 @@ App.EntryRoute = Ember.Route.extend({
 	setupController: function(controller, model) {
 		
 		this.set('controller', controller);
-  		
-  		//console.log("set ctrl");
   		
   		this.model(this.get('params'));
   		
@@ -143,9 +133,12 @@ App.Model = Ember.Object.extend({
 	
 	data: null,
 	
+	init: function() {
+	},
+	
 	save: function() {
 		
-		var json = JSON.stringify(this, null, 2);
+		var json = JSON.stringify(this.get('data'), null, 2);
 		
 		//console.log("sending: \n"+json);
 		
@@ -207,7 +200,18 @@ App.Entry = App.Model.extend({
 	tripBinding: 'data.trip',
 	fromBinding: 'data.from',
 	toBinding: 'data.to',
-	byBinding: 'data.by'
+	byBinding: 'data.by',
+	
+	init: function() {
+		
+		this._super();
+		
+		if(this.get('data') == null) {
+			this.set('data', {});
+			this.set('data.trip', { displayValue: "(none)" });
+		}
+		
+	}
 	
 });
 
@@ -237,7 +241,7 @@ App.EntryController = Ember.ObjectController.extend({
 		var to = this.get('content.to');
 		var by = this.get('content.by');
 		
-		//console.log(trip + " from "+from+" to "+to+" by "+by+", type "+type+", date "+date+", reference "+reference);
+		console.log(trip + " from "+from+" to "+to+" by "+by+", type "+type+", date "+date+", reference "+reference);
 		
 		
 	}.observes('content.trip', 'content.from', 'content.to', 'content.by', 'content.type', 'content.date', 'content.reference'),
@@ -347,7 +351,7 @@ App.EntryView = Em.View.extend({
 	willDestroyElement: function ()
 	{
 		
-		App.controller.set('actions', []);
+		App.controlsController.set('content', []);
 		
 		var clone = this.$().clone();
     	this.$().replaceWith(clone);
@@ -427,6 +431,15 @@ App.FindView = Em.View.extend({
 	
 	didInsertElement: function() {
 		
+		var mapOptions = {
+        	
+        	center: new google.maps.LatLng(-34.397, 150.644),
+          	zoom: 8,
+          	mapTypeId: google.maps.MapTypeId.ROADMAP
+        };
+        
+        var map = new google.maps.Map(document.getElementById("findMap"), mapOptions);
+            
 		var element = this.$();
 		
 		App.transition.comingIn = element;

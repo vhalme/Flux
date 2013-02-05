@@ -20,10 +20,6 @@ footer {
 	border-bottom: 1px solid black;
 }
 
-div {
-	background: white;
-}
-
 h2 {
 	display: inline;
 }
@@ -234,6 +230,7 @@ header .logo {
 
 .routeInfoInput {
 	width: 100%;
+	padding-bottom: 2.0em;
 }
 
 .routeInfoInput .tripleColumn {
@@ -338,6 +335,40 @@ header .logo {
 	border: 1px solid black;
 	position: absolute;
 	width: 99%;
-	min-height: 400px;
+}
+
+.findContent {
 	
+	width: 100%;
+	
+}
+
+.findContent .top {
+	display: block;	
+}
+
+.findContent .left {
+	display: inline-block;
+	width: 33%;
+	float: left;
+}
+
+.findContent .center {
+	display: inline-block;
+	width: 33%;
+}
+
+.findContent .center .map {
+	height: 20em;
+	background: #808080;	
+}
+
+.findContent .right {
+	display: inline-block;
+	width: 33%;	
+	float: right;
+}
+
+.findContent .latTitle {
+	text-align: center;
 }

@@ -118,7 +118,7 @@
 					{{#view App.CenterSectionContentView class="centerSectionContent"}}
 						
 						{{outlet}}
-					
+						
 					{{/view}}
 					
 				</div>
@@ -163,10 +163,24 @@
 
 		<script type="text/x-handlebars" data-template-name="find">
 			
-			
-			[ Map ]
-			
-			<br/><br/><br/>
+			<div class="findContent">
+				
+				<div class="left">
+					<div class="latTitle">FROM</div>
+				</div>
+				
+				<div class="center">
+					<div>{{view App.PlaceInputView}}</div>
+					<div class="map" id="findMap">
+						
+					</div>
+				</div>
+					
+				<div class="right">
+					<div class="latTitle">TO</div>
+				</div>
+				
+			</div>
 			
 		</script>
 		
@@ -184,7 +198,7 @@
 		<script type="text/x-handlebars" data-template-name="entry/edit/date">
 			
 			<div style="float: left;">
-				{{#view App.TextSelectListView valueBinding="view.entryController.date" class="selectList"}}
+				{{#view App.TextSelectListView valueBinding="date" class="selectList"}}
 					{{#view App.ListItemView}}today{{/view}}&nbsp;&nbsp;
 					{{#view App.ListItemView}}this month{{/view}}&nbsp;&nbsp;
 					{{#view App.ListItemView}}this year{{/view}}
@@ -208,7 +222,6 @@
 		<script type="text/x-handlebars" data-template-name="entry">
 			
 			<div class="entryType">
-				
 				
 				{{#view App.EntryTypeSelectView valueBinding="type" class="entryTypeSelect"}}
 					{{#view App.ListItemView class="left"}}I travelled this route{{/view}}

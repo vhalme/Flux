@@ -1,5 +1,6 @@
 package com.lenin.project.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
@@ -9,9 +10,11 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoTemplate;
 
 import com.lenin.project.domain.Entry;
 import com.lenin.project.domain.Place;
@@ -19,12 +22,16 @@ import com.lenin.project.domain.Trip;
 import com.lenin.project.repositories.EntryRepository;
 import com.lenin.project.repositories.PlaceRepository;
 import com.lenin.project.repositories.TripRepository;
+import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
 
 
 @Path("/")
 public class TravellerService {
+	
+	@Autowired
+	private MongoTemplate mongoTemplate;
 	
 	@Autowired
 	private EntryRepository entryRepository;
@@ -116,9 +123,41 @@ public class TravellerService {
 	@GET
     @Path("/entry")
     @Produces({ MediaType.APPLICATION_JSON })
-    public List<Entry> list() {
+    public List<Entry> list(@QueryParam("from") String from, @QueryParam("to") String to) {
 		
-		List<Entry> entries = entryRepository.findAll();
+		List<Entry> entries = new ArrayList<Entry>();
+		
+		Place fromPlace = null;
+		Place toPlace = null;
+		
+		if(from != null) {
+			fromPlace = new Place();
+			fromPlace.setId(from);
+		}
+		
+		if(to != null) {
+			toPlace = new Place();
+			toPlace.setId(to);
+		}
+		
+		if(from != null && to == null) {
+			
+			entries = entryRepository.findByFrom(fromPlace);
+			
+		} else if(from == null && to != null) {
+			
+			entries = entryRepository.findByTo(toPlace);
+		
+		} else if(from != null && to != null) {
+			
+			entries = entryRepository.findByFromAndTo(fromPlace, toPlace);
+			
+		} else {
+			
+			entries = entryRepository.findAll();
+			
+		}
+		
 		System.out.println(entries);
         
 		return entries;
