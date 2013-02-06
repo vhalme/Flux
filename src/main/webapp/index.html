@@ -167,6 +167,11 @@
 				
 				<div class="left">
 					<div class="latTitle">FROM</div>
+					<div>
+						{{#each entry in view.fromSuggestions}}
+							<a {{action selectFromTerm entry}}>{{entry.from.displayValue}}</a><br/>
+						{{/each}}
+					</div>
 				</div>
 				
 				<div class="center">
@@ -180,11 +185,17 @@
 					<div class="latTitle">TO</div>
 					<div>
 						{{#each entry in view.toSuggestions}}
-							<a href="#">{{entry.to.displayValue}}</a><br/>
+							<a {{action selectToTerm entry}}>{{entry.to.displayValue}}</a><br/>
 						{{/each}}
 					</div>
 				</div>
 				
+			</div>
+			
+			<div>
+				{{#each entry in view.results}}
+					<a href="#">{{entry.from.displayValue}} - {{entry.to.displayValue}}</a><br/>
+				{{/each}}
 			</div>
 			
 		</script>
@@ -303,7 +314,6 @@
 		<script>
 			window.jQuery || document.write('<script src="js/libs/jquery-1.8.3.min.js"><\/script>')
 		</script>
-		<script src="js/libs/jquery-ui-1.9.2.custom.min.js"></script>
 		<script src="js/libs/handlebars-1.0.0.beta.6.js"></script>
 		<script src="js/libs/ember-latest.js"></script>
 		<script src="js/libs/json2.js"></script>

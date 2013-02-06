@@ -109,21 +109,24 @@ App.EntryRoute = Ember.Route.extend({
   	
 });
 
+
+App.FindRoute = Ember.Route.extend({
+	
+	setupController: function(controller, model) {
+		
+		controller.set('content', Ember.Object.create({ from: null, to: null }));
+		App.controller.set('viewName', "Find");
+  		
+  	}
+  	
+});
+
 App.IndexRoute = Ember.Route.extend({
 	
 	enter: function() {
     	location.href = "#/entry/new";
   	}
   	
-});
-
-
-App.FindIndexRoute = Ember.Route.extend({
-	
-	enter: function() {
-		App.get('controller').set('viewName', "Find");
-	},
-	
 });
 
 	
@@ -421,7 +424,20 @@ App.EntryView = Em.View.extend({
 });
 
 
-App.FindController = Ember.ObjectController.extend({
+App.FindController = Ember.Controller.extend({
+	
+	content: Ember.Object.create( { from: null, to: null } ),
+	
+	selectFromTerm: function(param) {
+		this.set('to', null);
+		this.set('from', param.from);
+	},
+
+	selectToTerm: function(param) {
+		this.set('from', null);
+		this.set('to', param.to);
+	}
+	
 });
 
 
@@ -429,18 +445,15 @@ App.FindView = Em.View.extend({
 	
 	classNames: [ "nooverflow" ],
 	
-	from: undefined,
-	
-	to: undefined,
-	
 	searchLocation: undefined,
 	
 	fromSuggestions: Ember.ArrayProxy.create({ content: [] }),
 	
 	toSuggestions: Ember.ArrayProxy.create({ content: [] }),
 	
-	results: [],
-		
+	results: Ember.ArrayProxy.create({ content: [] }),
+	
+	
 	didInsertElement: function() {
 		
 		var mapOptions = {
@@ -483,8 +496,10 @@ App.FindView = Em.View.extend({
 		
 		var searchLocation = this.get('searchLocation');
 		var toSuggestions = this.get('toSuggestions');
+		var fromSuggestions = this.get('fromSuggestions');
 		
 		toSuggestions.clear();
+		fromSuggestions.clear();
 		
 		if(searchLocation.length == 0) {
 			return;
@@ -500,7 +515,51 @@ App.FindView = Em.View.extend({
 			}
 		});
 		
-	}.observes('searchLocation')
+		$.get("/TravellerLog/service/entry?to="+searchLocation.id, function(data) {
+			for(var i=0; i<data.length; i++) {
+				fromSuggestions.addObject(
+					App.Entry.create({ data: data[i] })
+				);
+			}
+		});
+		
+	}.observes('searchLocation'),
+	
+	searchTermsSelected: function() {
+		
+		var from = this.get('controller.from');
+		var to = this.get('controller.to');
+		
+		if(from == undefined && to == undefined) {
+			return;
+		}
+		
+		if(from != null) {
+			to = this.get('searchLocation');
+		} else if(to != null) {
+			from = this.get('searchLocation');
+		}
+		
+		var results = this.get('results');
+		results.clear();
+		
+		if(from == null && to == null) {
+			console.log(to+"/"+from);
+			console.log("both undefined");
+			return;
+		}
+		
+		console.log(from.id+" "+to.id);
+		
+		$.get("/TravellerLog/service/entry?from="+from.id+"&to="+to.id, function(data) {
+			for(var i=0; i<data.length; i++) {
+				results.addObject(
+					App.Entry.create({ data: data[i] })
+				);
+			}
+		});
+		
+	}.observes('controller.from', 'controller.to')
 	
 });
 
