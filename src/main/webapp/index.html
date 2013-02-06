@@ -121,6 +121,7 @@
 						
 					{{/view}}
 					
+					
 				</div>
 				
 			</div>
@@ -151,7 +152,7 @@
 			
 			{{#view view.AutocompleteView class="placeAutocompleteBox"}}
 				{{#if view.hasSearchString}}
-					<div><a {{action addNewTrip}} style="color: blue; text-decoration: none;">Add new trip</a> ({{view.parentView.searchString}})</div>
+					<div><a {{action saveTrip}} style="color: blue; text-decoration: none;">Add new trip</a> ({{view.parentView.searchString}})</div>
 				{{/if}}
 				{{#each item in view.controller}}
 					<a {{action selectItem item}}>{{item.displayValue}}</a><br/>
@@ -163,11 +164,11 @@
 
 		<script type="text/x-handlebars" data-template-name="find">
 			
-			<div class="findContent">
+			<div class="findContent" style="border: 1px solid red;">
 				
 				<div class="left">
 					<div class="latTitle">FROM</div>
-					<div>
+					<div class="partResults">
 						{{#each entry in view.fromSuggestions}}
 							<a {{action selectFromTerm entry}}>{{entry.from.displayValue}}</a><br/>
 						{{/each}}
@@ -175,7 +176,7 @@
 				</div>
 				
 				<div class="center">
-					<div>{{view App.StoredPlaceInputView valueBinding="view.searchLocation"}}</div>
+					<div>{{view App.StoredPlaceInputView valueBinding="view.searchLocation" class="searchPlace"}}</div>
 					<div class="map" id="findMap">
 						
 					</div>
@@ -183,7 +184,7 @@
 					
 				<div class="right">
 					<div class="latTitle">TO</div>
-					<div>
+					<div class="partResults">
 						{{#each entry in view.toSuggestions}}
 							<a {{action selectToTerm entry}}>{{entry.to.displayValue}}</a><br/>
 						{{/each}}
@@ -192,9 +193,9 @@
 				
 			</div>
 			
-			<div>
+			<div class="searchResults">
 				{{#each entry in view.results}}
-					<a href="#">{{entry.from.displayValue}} - {{entry.to.displayValue}}</a><br/>
+					<a {{action selectEntry entry}}>{{entry.from.displayValue}} - {{entry.to.displayValue}}</a><br/>
 				{{/each}}
 			</div>
 			

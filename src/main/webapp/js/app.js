@@ -73,15 +73,32 @@ App.EntryRoute = Ember.Route.extend({
 	
 	controller: undefined,
 	
-	model: function(params) {
+	model: function(params, firstLoad) {
 		
-		this.set('params', params);
+		//console.log("PARAMS("+firstLoad+"): ");
+		//console.log(params);
 		
 		var controller = this.get('controller');
+		
+		if(params != undefined) {
+			
+			var oldParams = this.get('params');
+			
+			//console.log("paramscheck: "+(oldParams == params));
+			
+			if(oldParams == params && firstLoad == undefined) {
+				return;
+			} else {
+				this.set('params', params);
+			}
+			
+		}
 		
 		if(!controller) {
 			return;
 		}
+		
+		//console.log("changing entry content: "+firstLoad+" / "+params.entry_id+" ()");
 		
     	if(params.entry_id == "new") {
     		
@@ -101,9 +118,9 @@ App.EntryRoute = Ember.Route.extend({
 	
 	setupController: function(controller, model) {
 		
+		//console.log("setup ctrl");
 		this.set('controller', controller);
-  		
-  		this.model(this.get('params'));
+  		this.model(this.get('params'), true);
   		
   	}
   	
@@ -211,7 +228,7 @@ App.Entry = App.Model.extend({
 		
 		if(this.get('data') == null) {
 			this.set('data', {});
-			this.set('data.trip', { displayValue: "(none)" });
+			this.set('data.trip', App.Trip.create( { displayValue: "(none)" } ));
 		}
 		
 	}
@@ -223,6 +240,26 @@ App.Entry.reopenClass({
 });
 
 
+App.Trip = App.Model.extend({
+	
+	path: "trip",
+	
+	id: null,
+	displayValue: null,
+	
+	/*
+	init: function() {
+		
+		this._super();
+		
+		if(this.get('data') == null) {
+			this.set('data', {});
+		}
+		
+	}
+	*/
+	
+});
 
 App.EntryController = Ember.ObjectController.extend({
 	
@@ -339,14 +376,16 @@ App.EntryView = Em.View.extend({
 	didInsertElement: function ()
 	{
     	
+    	//console.log("did insert entry");
+    	
+    	
     	var element = this.$();
 		
 		App.transition.comingIn = element;
-		element.deg = 90;
-    	element.top = -396;
-    	element.z = -110;
+    	element.top = 600;
     	
     	App.transition.animate();
+		
 		
 	},
 	
@@ -354,16 +393,20 @@ App.EntryView = Em.View.extend({
 	willDestroyElement: function ()
 	{
 		
+		//console.log("will destroy entry");
+		
 		App.controlsController.set('content', []);
+		
 		
 		var clone = this.$().clone();
     	this.$().replaceWith(clone);
     	
     	
     	App.transition.goingOut = clone;
-    	clone.deg = 0;
     	clone.top = 0;
-    	clone.z = 0;
+    	
+    	App.transition.animate();
+    	
     	
 	},
 	
@@ -382,7 +425,6 @@ App.EntryView = Em.View.extend({
 		
 		if(action != null) {
 			App.controlsController.set('selectedAction', null);	
-			//console.log("action: "+action);
 		}
 		
 	}.observes('App.controlsController.selectedAction'),
@@ -396,21 +438,17 @@ App.EntryView = Em.View.extend({
 		
 		this.set('contentType', (new Date().getTime()));
 		
-		if(oldElem) {
+		if(oldElem && !App.transition.animatingOut) {
 			
 			var parentElem = element.parent();
 			
 			parentElem.append(oldElem);
 			
 			App.transition.goingOut = oldElem;
-    		oldElem.deg = 0;
     		oldElem.top = 0;
-    		oldElem.z = 0;
     		
     		App.transition.comingIn = element;
-			element.deg = 90;
-    		element.top = -396;
-    		element.z = -110;
+    		element.top = 600;
 			
 			App.transition.animate();
 			
@@ -436,6 +474,10 @@ App.FindController = Ember.Controller.extend({
 	selectToTerm: function(param) {
 		this.set('from', null);
 		this.set('to', param.to);
+	},
+	
+	selectEntry: function(entry) {
+		location.href = "#/entry/"+entry.id;	
 	}
 	
 });
@@ -443,7 +485,7 @@ App.FindController = Ember.Controller.extend({
 
 App.FindView = Em.View.extend({
 	
-	classNames: [ "nooverflow" ],
+	classNames: [ "withOverflow" ],
 	
 	searchLocation: undefined,
 	
@@ -456,6 +498,8 @@ App.FindView = Em.View.extend({
 	
 	didInsertElement: function() {
 		
+		//console.log("did insert find");
+		
 		var mapOptions = {
         	
         	center: new google.maps.LatLng(-34.397, 150.644),
@@ -467,12 +511,13 @@ App.FindView = Em.View.extend({
             
 		var element = this.$();
 		
-		App.transition.comingIn = element;
+		App.findTransition.comingIn = element;
 		element.deg = 90;
     	element.top = -396;
     	element.z = -110;
     	
-    	App.transition.animate();
+    	console.log("gonna animate...");
+    	App.findTransition.animate();
 		
 		
 	},
@@ -480,15 +525,19 @@ App.FindView = Em.View.extend({
 	willDestroyElement: function ()
 	{
 		
+		//console.log("will destroy find");
 		
 		var clone = this.$().clone();
     	this.$().replaceWith(clone);
     	
-    	App.transition.goingOut = clone;
+    	App.findTransition.goingOut = clone;
     	clone.deg = 0;
     	clone.top = 0;
     	clone.z = 0;
-		
+    	
+    	App.findTransition.animate();
+    	//console.log("will animate out:");
+		//console.log(App.transition.goingOut);
 		
 	},
 	
@@ -505,7 +554,7 @@ App.FindView = Em.View.extend({
 			return;
 		}
 		
-		console.log("SEARCHLOCATION CHANGE: ID="+searchLocation.id);
+		//console.log("SEARCHLOCATION CHANGE: ID="+searchLocation.id);
 		
 		$.get("/TravellerLog/service/entry?from="+searchLocation.id, function(data) {
 			for(var i=0; i<data.length; i++) {
@@ -530,9 +579,15 @@ App.FindView = Em.View.extend({
 		var from = this.get('controller.from');
 		var to = this.get('controller.to');
 		
+		if(this.get('searchLocation') == undefined) {
+			return;
+		}
+		
+		
 		if(from == undefined && to == undefined) {
 			return;
 		}
+		
 		
 		if(from != null) {
 			to = this.get('searchLocation');
@@ -544,8 +599,8 @@ App.FindView = Em.View.extend({
 		results.clear();
 		
 		if(from == null && to == null) {
-			console.log(to+"/"+from);
-			console.log("both undefined");
+			//console.log(to+"/"+from);
+			//console.log("both undefined");
 			return;
 		}
 		

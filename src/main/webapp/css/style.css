@@ -68,15 +68,13 @@ header .logo {
 
 #centerSection {
 	
+	overflow-x: hidden;
 	float: left;
 	
 	display: inline-block;
-	/*border: 1px dotted black;*/
 	
 	width: 64%;
 	min-height: 600px;
-	
-	overflow-x: hidden;
 	
 }
 
@@ -86,8 +84,8 @@ header .logo {
 	margin-top: 1.4em;
 	margin-right: 2.0em;
 	height: 500px;
-	overflow: hidden;
 	font-size: 1.2em;
+	overflow: hidden;
    	
 }
 
@@ -371,4 +369,28 @@ header .logo {
 
 .findContent .latTitle {
 	text-align: center;
+}
+
+.findContent .partResults {
+	text-align: center;	
+}
+
+.searchResults {
+	position: absolute;
+	top: 22em;
+	height: 22em;
+	background: #808080;
+}
+
+.searchPlace {
+	width: 100%;
+	text-align: center;
+	display: inline-block;	
+}
+
+.withOverflow {
+	
+	position: absolute;
+	width: 99%;	
+
 }

@@ -79,7 +79,7 @@ public class TravellerService {
 		Place from = entry.getFrom();
 		Place to = entry.getTo();
 		
-		if(trip != null) {
+		if(trip != null && !trip.displayValue.equals("(none)")) {
 			entry.setTrip(tripRepository.save(trip));
 		}
 		

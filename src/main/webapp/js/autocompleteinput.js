@@ -2,6 +2,10 @@ App.AutocompleteController = Ember.ArrayController.extend({
 	
 	selectedItem: null,
 	
+	searchString: "",
+	
+	//value: undefined,
+	
 	init: function() {
 		this.set('content', []);
 	},
@@ -56,14 +60,9 @@ App.ResourceAutocompleteController = App.AutocompleteController.extend({
 	
 	resource: undefined,
 	
-	fixture: [
-	          
-	          { id: "5106cd6456c8b50ed3460b21", displayValue: "Central Asia with friends" },
-	          { id: "5106cd6456c8b50ed3460b21", displayValue: "Rutenfest 2012" }
-	          
-	          ],
-	
 	getValues: function(searchString) {
+		
+		//console.log("getValues("+searchString+")");
 		
 		this.clear();
 		
@@ -90,6 +89,16 @@ App.ResourceAutocompleteController = App.AutocompleteController.extend({
 	
 });
 
+App.TripAutocompleteController = App.ResourceAutocompleteController.extend({
+	
+	saveTrip: function() {
+		var tripName = this.get('searchString');
+		console.log("SAVE TRIP: "+tripName);
+		this.selectItem(App.Trip.create( { displayValue: tripName } ));
+	}
+	
+});
+
 
 App.AutocompleteInputView = Ember.View.extend({
 	
@@ -99,7 +108,7 @@ App.AutocompleteInputView = Ember.View.extend({
 	
 	value: undefined,
 	
-	searchString: "",
+	searchStringBinding: 'autocompleteController.searchString',
 	
 	isEditable: true,
 	
@@ -301,9 +310,10 @@ App.AutocompleteInputView = Ember.View.extend({
 			if(this.get('parentView.alwaysAutocomplete') == true) {
 				
 				var isEditable = this.get('parentView.isEditable');
+				var searchString = this.get('parentView.searchString');
 				
-				if(isEditable == true) {
-					this.get('controller').getValues(this.get('parentView.searchString'));
+				if(isEditable == true && searchString.length == 0) {
+					this.get('controller').getValues(searchString);
 				}
 				
 				this.set('visible', isEditable);
@@ -371,7 +381,7 @@ App.TripInputView = App.AutocompleteInputView.extend({
 		
 		this._super();
 		this.set('controller', Ember.ObjectController.create());
-		this.set('autocompleteController', App.ResourceAutocompleteController.create({
+		this.set('autocompleteController', App.TripAutocompleteController.create({
 			resource: "/TravellerLog/service/trip"
 		}));
 		
