@@ -159,7 +159,7 @@ App.findTransition = Ember.Object.create({
 		
 		console.log("anim "+deg+" deg");
 		
-		var rotVal = "perspective(600px) rotateX("+deg+"deg)"; // translateY("+(top)+"px) translateZ("+z+"px)";
+		var rotVal = "rotateX("+deg+"deg)"; //perspective(600px) translateZ("+200+"px) translateY("+(top)+"px) ";
 		
 		if(deg < 90) {
 			
