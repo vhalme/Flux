@@ -68,14 +68,15 @@ header .logo {
 
 #centerSection {
 	
-	overflow-x: hidden;
+	overflow: hidden;
 	float: left;
 	
 	display: inline-block;
 	
 	width: 64%;
 	min-height: 600px;
-	
+	position: relative;
+	border: 1px solid green;
 }
 
 #centerSection .centerSectionContent {
@@ -86,6 +87,7 @@ header .logo {
 	height: 500px;
 	font-size: 1.2em;
 	overflow: hidden;
+	border: 1px solid blue;
    	
 }
 
@@ -333,11 +335,14 @@ header .logo {
 	border: 1px solid black;
 	position: absolute;
 	width: 99%;
+	top: 600px;
+	
 }
 
 .findContent {
 	
 	width: 100%;
+	background: white;
 	
 }
 
@@ -391,6 +396,20 @@ header .logo {
 .withOverflow {
 	
 	position: absolute;
-	width: 99%;	
+	width: 99%;
 
+}
+
+.verticalSlideUp {
+	
+	top: 0px;
+  	-webkit-transition: top 2s;
+  	
+}
+
+.verticalSlideDown {
+	
+	top: 600px;
+  	-webkit-transition: top 2s;
+  	
 }

@@ -31,7 +31,7 @@ App.transition = Ember.Object.create({
 		//var z = element.z;
 		
 		//element.deg = deg-4;
-		element.top = top+10;
+		element.top = top+24;
 		//element.z = z-5;
 		
 		//var rotVal = "perspective(600px) translateY("+(top)+"px) translateZ("+z+"px) rotateX("+deg+"deg)";
@@ -81,30 +81,30 @@ App.transition = Ember.Object.create({
 			return;
 		}
 		
-		//var deg = element.deg-4;
-		var top = element.top-10;
-		//var z = element.z+5;
+		//var deg = element.deg;
+		var top = element.top;
+		//var z = element.z;
 		
-		//if(deg < 0) { deg = 0 }
-		
-		//element.deg = deg;
-		element.top = top;
-		//element.z = z;
+		//element.deg = deg-4;
+		element.top = top-24;
+		//element.z = z-5;
 		
 		//var rotVal = "perspective(600px) translateY("+(top)+"px) translateZ("+z+"px) rotateX("+deg+"deg)";
+		var rotVal = "translateY("+top+"px)";
 		
 		if(top > 0) {
 			
 			//element.css("transform", rotVal);
 			//element.css("-webkit-transform", rotVal); /* Safari and Chrome */
 			//element.css("-moz-transform", rotVal); /* Firefox */
+			console.log(element.css("top"));
 			element.css("top", top+"px");
 			
 		}
 		
 		if(top > 0) {
 			
-			setTimeout(func, 25, func);
+			setTimeout(func, 250, func);
 		
 		} else {
 			
@@ -153,13 +153,11 @@ App.findTransition = Ember.Object.create({
 		var top = element.top;
 		var z = element.z;
 		
-		element.deg = deg+1;
-		//element.top = top-6;
-		//element.z = z+5;
+		element.deg = deg+4;
+		element.top = top-24;
+		element.z = z-5;
 		
-		console.log("anim "+deg+" deg");
-		
-		var rotVal = "rotateX("+deg+"deg)"; //perspective(600px) translateZ("+200+"px) translateY("+(top)+"px) ";
+		var rotVal = "perspective(600px) translateY("+(top)+"px) translateZ("+z+"px) rotateX("+deg+"deg)";
 		
 		if(deg < 90) {
 			

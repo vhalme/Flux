@@ -349,8 +349,6 @@ App.EntryView = Em.View.extend({
 	
 	templateName: 'entry',
 	
-	classNames: [ "nooverflow" ],
-	
 	oldContentElem: undefined,
 	
 	contentType: undefined,
@@ -378,13 +376,34 @@ App.EntryView = Em.View.extend({
     	
     	//console.log("did insert entry");
     	
-    	
     	var element = this.$();
+    	
+    	element.addClass("nooverflow");
+    	
+    	setTimeout(function() {	
+    		
+    		element.removeClass("verticalSlideDown");
+    		element.addClass("verticalSlideUp");
+    	}, 10);
+    	
+    	
 		
+		/*
 		App.transition.comingIn = element;
     	element.top = 600;
     	
+    	console.log("entry animate in");
+    	console.log(App.transition.comingIn);
+    	
     	App.transition.animate();
+		*/
+		
+		//element.css("top", "100px");
+		//element.addClass("initial");
+		//element.removeClass("loweredDown");
+		//element.css("top", "0px");
+		//element.css("top", "100px");
+		//element.css("top", "600px");
 		
 		
 	},
@@ -401,12 +420,45 @@ App.EntryView = Em.View.extend({
 		var clone = this.$().clone();
     	this.$().replaceWith(clone);
     	
+		
+    	clone.bind('trans-end', function() { 
+    		clone.remove();
+    		delete clone;
+		});
+		
+		setTimeout(function() {
+			clone.removeClass("verticalSlideUp");
+			clone.addClass("verticalSlideDown");
+		}, 0);
+		
+		
+		//clone.removeClass("verticalSlideUp");
+		//clone.addClass("verticalSlideDown");
+		
+		/*
+    	var el = document.getElementsByClassName('nooverflow');
+    	el = el[0];
+    	//alert(el);
+    	el.addEventListener("webkitTransitionEnd", function(ev) {
+    		alert("remove el");
+    		//clone.remove();
+    		//delete clone;
+    	}, false);
+    	*/
     	
+    	//clone.removeClass("verticalSlideDown");
+    	
+    	
+    	//clone.removeClass("raisedUp");
+		//clone.addClass("loweredDown");
+		
+    	/*
     	App.transition.goingOut = clone;
     	clone.top = 0;
     	
+    	console.log("entry animate out");
     	App.transition.animate();
-    	
+    	*/
     	
 	},
 	
@@ -432,6 +484,14 @@ App.EntryView = Em.View.extend({
 	
 	contentChanged: function() {
 		
+		var element = this.$();
+		
+		if(element != undefined) {
+			console.log("added class");
+			element.addClass("nooverflow");
+		}
+		
+		/*
 		var oldElem = this.get('oldContentElem');
 		
 		var element = this.$();
@@ -454,7 +514,7 @@ App.EntryView = Em.View.extend({
 			
 			
 		}
-		
+		*/
 		
 	}.observes('controller.content')
 	
@@ -508,7 +568,8 @@ App.FindView = Em.View.extend({
         };
         
         var map = new google.maps.Map(document.getElementById("findMap"), mapOptions);
-            
+        
+        /*
 		var element = this.$();
 		
 		App.findTransition.comingIn = element;
@@ -516,9 +577,9 @@ App.FindView = Em.View.extend({
     	element.top = -396;
     	element.z = -110;
     	
-    	console.log("gonna animate...");
+    	console.log("find animate in");
     	App.findTransition.animate();
-		
+		*/
 		
 	},
 	
@@ -526,7 +587,7 @@ App.FindView = Em.View.extend({
 	{
 		
 		//console.log("will destroy find");
-		
+		/*
 		var clone = this.$().clone();
     	this.$().replaceWith(clone);
     	
@@ -536,8 +597,9 @@ App.FindView = Em.View.extend({
     	clone.z = 0;
     	
     	App.findTransition.animate();
-    	//console.log("will animate out:");
-		//console.log(App.transition.goingOut);
+    	console.log("find animate out");
+		console.log(App.findTransition.goingOut);
+		*/
 		
 	},
 	

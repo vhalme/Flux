@@ -49,7 +49,6 @@
 		
 		<div id="map"></div>
 		
-		<div id="#entryContent"></div>
 		
 		<script type="text/x-handlebars" data-template-name="application">
 
@@ -238,6 +237,7 @@
 		
 		<script type="text/x-handlebars" data-template-name="entry">
 			
+			
 			<div class="entryType">
 				
 				{{#view App.EntryTypeSelectView valueBinding="type" class="entryTypeSelect"}}
@@ -253,7 +253,9 @@
 			</div>
 			<div style="width: 15%"></div>
 			
+			
 			<div class="routeInfoInput">
+				
 				
 				<div class="tripleColumn">
 					
@@ -262,6 +264,7 @@
 					<div class="columnRight" align="center"></div>
 					
 				</div>
+				
 				
 				<div class="tripleColumn">
 					<div class="columnLeft" align="right">from</div>
@@ -274,6 +277,7 @@
 					<div class="columnCenter">{{view App.PlaceInputView valueBinding="to"}}</div>
 					<div class="columnRight" align="center"></div>
         		</div>
+				
 				
 				<div class="tripleColumn">
 					<div class="columnLeft" align="right">by</div>
@@ -326,7 +330,11 @@
 		<script src="js/router.js"></script>
 	
 		<script>
-		
+			
+			$('*').live('webkitTransitionEnd transitionend msTransitionEnd oTransitionEnd', function () {
+    			$(this).trigger('trans-end');
+			});
+
 			$(document).ready( function() {
             	
             	// Cache for performance

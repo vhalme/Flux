@@ -152,14 +152,16 @@ App.AutocompleteInputView = Ember.View.extend({
 					parentView.set('isFocused', true);
 				});
 				
+				
 				setTimeout(function() {
 					
 					//console.log("focusing: ");
 					//console.log(element);
-					element.focus();
+					//element.focus();
 					element.select();
 					
 				}, 200);
+				
 				
 				element.blur(function() {
 					
@@ -224,6 +226,7 @@ App.AutocompleteInputView = Ember.View.extend({
 		
 		refreshContent: function() {
 			
+			
 			var selectedItem = this.get('parentView.value');
 			
 			if(selectedItem != null) {
@@ -233,9 +236,11 @@ App.AutocompleteInputView = Ember.View.extend({
 				this.set('isEditable', true);
 			}
 			
+			
 		},
 		
 		toggleEditability: function() {
+			
 			
 			var isEditable = this.get('isEditable');
 			
@@ -246,6 +251,7 @@ App.AutocompleteInputView = Ember.View.extend({
 			}
 			
 			this.rerender();
+			
 			
 		}.observes('isEditable'),
 		
