@@ -18,6 +18,12 @@ App.AutocompleteController = Ember.ArrayController.extend({
 		
 		this.set('selectedItem', item);
 		
+		this.handleSelection(item);
+		
+	},
+	
+	handleSelection: function(item) {
+		
 	}
 	
 });
@@ -45,10 +51,49 @@ App.MapAutocompleteController = App.AutocompleteController.extend({
 	    	}
 	    	
 	    	for(var i = 0; i < results.length; i++) {
+	    		console.log(results[i]);
 	    		controller.addObject(Ember.Object.create({ displayValue: results[i].description }));
 	    	}
 	    	
 	    });
+		
+	},
+	
+	handleSelection: function(item) {
+		
+		var displayValue = item.get('displayValue');
+		
+		var geocoder = new google.maps.Geocoder();
+		
+		geocoder.geocode( { 'address': displayValue }, function(results, status) {
+		
+			if(status == google.maps.GeocoderStatus.OK) {
+				
+				//console.log("GEOCODE RESULTS: "+results.length);
+				//console.log(results);
+				var lat = results[0].geometry.location.lat();
+				var lng = results[0].geometry.location.lng();
+				item.set('lat', lat);
+				item.set('lng', lng);
+				
+				//console.log(results[0].geometry.location);
+				//console.log(lat+"/"+lng);
+				
+				
+				/*
+		        map.setCenter(results[0].geometry.location);
+		        
+		        var marker = new google.maps.Marker({
+		            map: map,
+		            position: results[0].geometry.location
+		        });
+		        */
+				
+			} else {
+		        alert("Geocode was not successful for the following reason: " + status);
+		    }
+		   
+		});
 		
 	}
 
@@ -85,6 +130,10 @@ App.ResourceAutocompleteController = App.AutocompleteController.extend({
 		
 		
 		
+	},
+	
+	handleSelection: function(item) {
+		console.log(item);
 	}
 	
 });
@@ -268,7 +317,7 @@ App.AutocompleteInputView = Ember.View.extend({
 		}.observes('searchString'),
 		
 		contentChanged: function() {
-			//console.log("ctype: "+this.get('parentView.contentType'));
+			console.log("ctype: "+this.get('parentView.contentType'));
 			this.refreshContent();
 		}.observes('parentView.contentType')
 		

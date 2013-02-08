@@ -7,6 +7,10 @@ body {
 
 }
 
+#document {
+	border: 1px dashed red;
+}
+
 header, footer {
 	padding: 6px;
 }
@@ -17,7 +21,7 @@ header {
 
 footer {
 	height: 50px;
-	border-bottom: 1px solid black;
+	border-top: 1px solid black;
 }
 
 h2 {
@@ -44,7 +48,7 @@ header .logo {
 	
 	width: 100%;
 	
-	min-height: 600px;
+	min-height: 400px;
 	
 }
 
@@ -68,7 +72,6 @@ header .logo {
 
 #centerSection {
 	
-	overflow: hidden;
 	float: left;
 	
 	display: inline-block;
@@ -76,7 +79,7 @@ header .logo {
 	width: 64%;
 	min-height: 600px;
 	position: relative;
-	border: 1px solid green;
+	/*border: 1px solid green;*/
 }
 
 #centerSection .centerSectionContent {
@@ -86,8 +89,7 @@ header .logo {
 	margin-right: 2.0em;
 	height: 500px;
 	font-size: 1.2em;
-	overflow: hidden;
-	border: 1px solid blue;
+	/*border: 1px solid blue;*/
    	
 }
 
@@ -230,7 +232,7 @@ header .logo {
 
 .routeInfoInput {
 	width: 100%;
-	padding-bottom: 6.0em;
+	padding-bottom: 10.0em;
 }
 
 .routeInfoInput .tripleColumn {
@@ -336,55 +338,73 @@ header .logo {
 	position: absolute;
 	width: 99%;
 	top: 600px;
-	
-}
-
-.findContent {
-	
-	width: 100%;
 	background: white;
 	
 }
 
-.findContent .top {
+.searchBox {
+	
+	-webkit-transform: perspective(600px) translateY(-340px) translateZ(-180px) rotateX(90deg);
+	width: 100%;
+	background: white;
+	border: 1px solid black;
+	
+}
+
+.searchBox .top {
 	display: block;	
 }
 
-.findContent .left {
+.searchBox .left {
 	display: inline-block;
 	width: 33%;
 	float: left;
 }
 
-.findContent .center {
+.searchBox .center {
 	display: inline-block;
 	width: 33%;
 }
 
-.findContent .center .map {
+.searchBox .center .map {
 	height: 20em;
-	background: #808080;	
+	background: #808080;
 }
 
-.findContent .right {
+.searchBox .right {
 	display: inline-block;
 	width: 33%;	
 	float: right;
 }
 
-.findContent .latTitle {
+.searchBox .latTitle {
 	text-align: center;
 }
 
-.findContent .partResults {
+.searchBox .partResults {
 	text-align: center;	
 }
 
 .searchResults {
+	width: 100%;
 	position: absolute;
-	top: 22em;
-	height: 22em;
-	background: #808080;
+	top: 600px;
+}
+
+.searchResults .item {
+	border-top: 1px solid black; 
+	border-right: 1px solid black; 
+	border-left: 1px solid black;
+	padding-left: 1.0em;
+}
+
+.searchResults .item .by {
+	font-style: italic;
+	font-size: 0.8em;	
+}
+
+.searchResults .item a {
+	color: black;
 }
 
 .searchPlace {
@@ -403,13 +423,41 @@ header .logo {
 .verticalSlideUp {
 	
 	top: 0px;
-  	-webkit-transition: top 2s;
+  	-webkit-transition: top 1s;
   	
 }
 
 .verticalSlideDown {
 	
 	top: 600px;
-  	-webkit-transition: top 2s;
+  	-webkit-transition: top 1s;
+  	
+}
+
+.rollOut {
+	
+	-webkit-transform: perspective(600px) translateY(-340px) translateZ(-180px) rotateX(90deg);
+	-webkit-transition: -webkit-transform 1s;
+	
+}
+
+.rollIn {
+	
+	-webkit-transform: perspective(600px) translateY(0px) translateZ(0px) rotateX(0deg);
+	-webkit-transition: -webkit-transform 1s;
+	
+}
+
+.searchResultsSlideUp {
+	
+	top: 22em;
+  	-webkit-transition: top 1s;
+  	
+}
+
+.searchResultsSlideDown {
+	
+	top: 600px;
+  	-webkit-transition: top 1s;
   	
 }

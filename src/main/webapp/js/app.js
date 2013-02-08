@@ -170,7 +170,8 @@ App.Model = Ember.Object.extend({
   			contentType: 'application/json',
   			data: json,
   			success: function(data) {
-  				//console.log("success: "+data);	
+  				console.log("success: "+data.id);
+  				location.href="#/entry/"+data.id;
   			}
   
 		});
@@ -374,41 +375,39 @@ App.EntryView = Em.View.extend({
 	didInsertElement: function ()
 	{
     	
-    	//console.log("did insert entry");
-    	
-    	var element = this.$();
-    	
-    	element.addClass("nooverflow");
-    	
-    	setTimeout(function() {	
-    		
-    		element.removeClass("verticalSlideDown");
-    		element.addClass("verticalSlideUp");
-    	}, 10);
-    	
-    	
+    	var contentType = Math.random();
+		this.set('contentType', contentType);
 		
-		/*
-		App.transition.comingIn = element;
-    	element.top = 600;
-    	
-    	console.log("entry animate in");
-    	console.log(App.transition.comingIn);
-    	
-    	App.transition.animate();
-		*/
-		
-		//element.css("top", "100px");
-		//element.addClass("initial");
-		//element.removeClass("loweredDown");
-		//element.css("top", "0px");
-		//element.css("top", "100px");
-		//element.css("top", "600px");
+    	this.transitIn();
 		
 		
 	},
 	
+	transitIn: function() {
 		
+		var element = this.$();
+    	
+    	element.addClass("nooverflow");
+    	
+    	var container = $('#centerSection .centerSectionContent');
+    	container.css("height", (($(window).height()-container.offset().top))+"px");
+		container.css("overflow", "hidden");
+		
+		element.bind('trans-end', function() {
+    		container.css("overflow", "");
+    		var docHeight = $(document).height();
+			$("#document").height((docHeight)+"px");
+		});
+		
+    	setTimeout(function() {	
+    		
+    		element.removeClass("verticalSlideDown");
+    		element.addClass("verticalSlideUp");
+    		
+    	}, 10);
+    	
+	},
+	
 	willDestroyElement: function ()
 	{
 		
@@ -416,51 +415,37 @@ App.EntryView = Em.View.extend({
 		
 		App.controlsController.set('content', []);
 		
-		
 		var clone = this.$().clone();
     	this.$().replaceWith(clone);
     	
+    	this.transitOut(clone);
 		
-    	clone.bind('trans-end', function() { 
-    		clone.remove();
+	},
+	
+	transitOut: function(clone) {
+		
+		var container = $('#centerSection .centerSectionContent');
+    	container.css("height", (($(window).height()-container.offset().top))+"px");
+		container.css("overflow", "hidden");
+		
+		clone.css("z-index", -1);
+		
+    	setTimeout(function() {
+    	//clone.bind('trans-end', function() { 
+    		console.log("remove clone");
+			console.log(clone);
+			clone.remove();
     		delete clone;
-		});
+    		container.css("overflow", "");
+		}, 1200);
 		
 		setTimeout(function() {
 			clone.removeClass("verticalSlideUp");
 			clone.addClass("verticalSlideDown");
 		}, 0);
-		
-		
-		//clone.removeClass("verticalSlideUp");
-		//clone.addClass("verticalSlideDown");
-		
-		/*
-    	var el = document.getElementsByClassName('nooverflow');
-    	el = el[0];
-    	//alert(el);
-    	el.addEventListener("webkitTransitionEnd", function(ev) {
-    		alert("remove el");
-    		//clone.remove();
-    		//delete clone;
-    	}, false);
-    	*/
-    	
-    	//clone.removeClass("verticalSlideDown");
-    	
-    	
-    	//clone.removeClass("raisedUp");
-		//clone.addClass("loweredDown");
-		
-    	/*
-    	App.transition.goingOut = clone;
-    	clone.top = 0;
-    	
-    	console.log("entry animate out");
-    	App.transition.animate();
-    	*/
-    	
+			
 	},
+	
 	
 	actionTriggered: function() {
 		
@@ -486,35 +471,22 @@ App.EntryView = Em.View.extend({
 		
 		var element = this.$();
 		
+		var contentType = Math.random();
+		this.set('contentType', contentType);
+		
 		if(element != undefined) {
-			console.log("added class");
-			element.addClass("nooverflow");
-		}
-		
-		/*
-		var oldElem = this.get('oldContentElem');
-		
-		var element = this.$();
-		
-		this.set('contentType', (new Date().getTime()));
-		
-		if(oldElem && !App.transition.animatingOut) {
 			
-			var parentElem = element.parent();
+			element.toggleClass("verticalSlideUp");
 			
-			parentElem.append(oldElem);
+			var clone = this.get('oldContentElem');
+			if(clone != undefined) {
+				this.get('parentView').$().append(clone);
+				this.transitOut(clone);
+			}
 			
-			App.transition.goingOut = oldElem;
-    		oldElem.top = 0;
-    		
-    		App.transition.comingIn = element;
-    		element.top = 600;
-			
-			App.transition.animate();
-			
+			this.transitIn();
 			
 		}
-		*/
 		
 	}.observes('controller.content')
 	
@@ -545,16 +517,29 @@ App.FindController = Ember.Controller.extend({
 
 App.FindView = Em.View.extend({
 	
-	classNames: [ "withOverflow" ],
+	//classNames: [ "withOverflow" ],
+	
+	map: undefined,
 	
 	searchLocation: undefined,
 	
-	fromSuggestions: Ember.ArrayProxy.create({ content: [] }),
+	fromSuggestions: undefined,
 	
-	toSuggestions: Ember.ArrayProxy.create({ content: [] }),
+	toSuggestions: undefined,
 	
-	results: Ember.ArrayProxy.create({ content: [] }),
+	results: undefined,
 	
+	searchResultsHeight: 0,
+	
+	init: function() {
+		
+		this._super();
+		
+		this.set('fromSuggestions', Ember.ArrayProxy.create({ content: [] }));
+		this.set('toSuggestions', Ember.ArrayProxy.create({ content: [] }));
+		this.set('results', Ember.ArrayProxy.create({ content: [] }));
+		
+	},
 	
 	didInsertElement: function() {
 		
@@ -569,37 +554,64 @@ App.FindView = Em.View.extend({
         
         var map = new google.maps.Map(document.getElementById("findMap"), mapOptions);
         
-        /*
+        this.set('map', map);
+        
 		var element = this.$();
 		
-		App.findTransition.comingIn = element;
-		element.deg = 90;
-    	element.top = -396;
-    	element.z = -110;
+    	var searchBox = element.find(".searchBox");
+		var searchResults = element.find(".searchResults");
+		
+		var container = $('#centerSection .centerSectionContent');
+		container.css("height", (($(window).height()-container.offset().top))+"px");
+		container.css("overflow", "hidden");
+		
+		searchBox.bind('trans-end', function() {
+    		container.css("overflow", "");
+		});
+		
+		setTimeout(function() {
+			searchBox.removeClass("rollOut");
+			searchBox.addClass("rollIn");
+			searchResults.removeClass("searchResultsSlideDown");
+			searchResults.addClass("searchResultsSlideUp");
+		}, 10);
     	
-    	console.log("find animate in");
-    	App.findTransition.animate();
-		*/
 		
 	},
 	
 	willDestroyElement: function ()
 	{
 		
-		//console.log("will destroy find");
-		/*
 		var clone = this.$().clone();
     	this.$().replaceWith(clone);
     	
-    	App.findTransition.goingOut = clone;
-    	clone.deg = 0;
-    	clone.top = 0;
-    	clone.z = 0;
+    	clone.css("z-index", -1);
     	
-    	App.findTransition.animate();
-    	console.log("find animate out");
-		console.log(App.findTransition.goingOut);
-		*/
+		var searchBox = clone.find(".searchBox");
+		var searchResults = clone.find(".searchResults");
+		searchResults.css("z-index", -1);
+		
+		var container = $('#centerSection .centerSectionContent');
+		container.css("height", (($(window).height()-container.offset().top))+"px");
+		container.css("overflow", "hidden");
+		
+		var docHeight = $(document).height();
+		$("#document").height(($(window).height())+"px");
+		
+		searchBox.bind('trans-end', function() {
+    		clone.remove();
+    		delete clone;
+    		container.css("overflow", "");
+    		container.css("height", "");
+		});
+		
+		setTimeout(function() {
+			searchBox.removeClass("rollIn");
+			searchBox.addClass("rollOut");
+			searchResults.removeClass("searchResultsSlideUp");
+			searchResults.addClass("searchResultsSlideDown");
+		}, 0);
+		
 		
 	},
 	
@@ -609,14 +621,16 @@ App.FindView = Em.View.extend({
 		var toSuggestions = this.get('toSuggestions');
 		var fromSuggestions = this.get('fromSuggestions');
 		
+		var map = this.get('map');
+		var location = new google.maps.LatLng(searchLocation.lat, searchLocation.lng);
+		map.setCenter(location);
+		
 		toSuggestions.clear();
 		fromSuggestions.clear();
 		
 		if(searchLocation.length == 0) {
 			return;
 		}
-		
-		//console.log("SEARCHLOCATION CHANGE: ID="+searchLocation.id);
 		
 		$.get("/TravellerLog/service/entry?from="+searchLocation.id, function(data) {
 			for(var i=0; i<data.length; i++) {
@@ -645,11 +659,9 @@ App.FindView = Em.View.extend({
 			return;
 		}
 		
-		
 		if(from == undefined && to == undefined) {
 			return;
 		}
-		
 		
 		if(from != null) {
 			to = this.get('searchLocation');
@@ -661,19 +673,29 @@ App.FindView = Em.View.extend({
 		results.clear();
 		
 		if(from == null && to == null) {
-			//console.log(to+"/"+from);
-			//console.log("both undefined");
 			return;
 		}
 		
 		console.log(from.id+" "+to.id);
 		
+		var view = this;
+		var oldDocHeight = $(document).height();
+		
 		$.get("/TravellerLog/service/entry?from="+from.id+"&to="+to.id, function(data) {
+			
 			for(var i=0; i<data.length; i++) {
 				results.addObject(
 					App.Entry.create({ data: data[i] })
 				);
 			}
+			
+			setTimeout(function() {
+				
+				var docHeight = $(document).height();
+				$("#document").height((docHeight)+"px");
+				
+			}, 100);
+			
 		});
 		
 	}.observes('controller.from', 'controller.to')

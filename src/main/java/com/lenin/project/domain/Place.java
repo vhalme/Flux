@@ -12,7 +12,9 @@ public class Place implements Serializable {
 	@Id
 	private String id;
 	
-	public String displayValue;
+	private String displayValue;
+	private Double lat;
+	private Double lng;
 	
 	public Place() {
 	}
@@ -32,6 +34,22 @@ public class Place implements Serializable {
 
 	public void setDisplayValue(String displayValue) {
 		this.displayValue = displayValue;
+	}
+
+	public Double getLat() {
+		return lat;
+	}
+
+	public void setLat(Double lat) {
+		this.lat = lat;
+	}
+
+	public Double getLng() {
+		return lng;
+	}
+
+	public void setLng(Double lng) {
+		this.lng = lng;
 	}
 	
 	
