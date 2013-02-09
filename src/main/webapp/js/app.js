@@ -271,7 +271,7 @@ App.EntryController = Ember.ObjectController.extend({
 	
 	showChange: function() {
 		
-		App.controlsController.set('content', [ { actionName: "save" } ]);
+		//App.controlsController.set('content', [ { actionName: "save" } ]);
 		
 		
 		var type = this.get('content.type');
@@ -291,6 +291,13 @@ App.EntryController = Ember.ObjectController.extend({
 		
 		var entry = App.Entry.create({ data: data });
 		this.set('content', entry);
+		
+	},
+	
+	saveEntry: function() {
+			
+		var entry = this.get('content');
+		entry.save();
 		
 	}
 	
@@ -333,9 +340,9 @@ App.TypeInfoView = Ember.View.extend({
 			return;
 		}
 		
-		if(type.textValue == "I travelled this route") {
+		if(type.textValue == "I travelled") {
 			this.set('template', this.get('dateSelectTemplate'));
-		} else if(type.textValue == "I researched this route") {
+		} else if(type.textValue == "I planned") {
 			this.set('template', this.get('refSelectTemplate'));
 		}
 			
@@ -389,20 +396,19 @@ App.EntryView = Em.View.extend({
     	
     	element.addClass("nooverflow");
     	
-    	var container = $('#centerSection .centerSectionContent');
-    	container.css("height", (($(window).height()-container.offset().top))+"px");
+    	var container = $('#centerSection');
 		container.css("overflow", "hidden");
 		
-		element.bind('trans-end', function() {
+		setTimeout(function() {
+		//element.bind('trans-end', function() {
     		container.css("overflow", "");
-    		var docHeight = $(document).height();
-			$("#document").height((docHeight)+"px");
-		});
+		//});
+		}, 1200);
 		
     	setTimeout(function() {	
     		
-    		element.removeClass("verticalSlideDown");
-    		element.addClass("verticalSlideUp");
+    		element.removeClass("slideOut");
+    		element.addClass("slideIn");
     		
     	}, 10);
     	
@@ -413,7 +419,7 @@ App.EntryView = Em.View.extend({
 		
 		//console.log("will destroy entry");
 		
-		App.controlsController.set('content', []);
+		//App.controlsController.set('content', []);
 		
 		var clone = this.$().clone();
     	this.$().replaceWith(clone);
@@ -424,11 +430,9 @@ App.EntryView = Em.View.extend({
 	
 	transitOut: function(clone) {
 		
-		var container = $('#centerSection .centerSectionContent');
-    	container.css("height", (($(window).height()-container.offset().top))+"px");
+		var container = $('#centerSection');
 		container.css("overflow", "hidden");
 		
-		clone.css("z-index", -1);
 		
     	setTimeout(function() {
     	//clone.bind('trans-end', function() { 
@@ -437,31 +441,32 @@ App.EntryView = Em.View.extend({
 			clone.remove();
     		delete clone;
     		container.css("overflow", "");
-		}, 1200);
+    	//});
+    	}, 1200);
 		
 		setTimeout(function() {
-			clone.removeClass("verticalSlideUp");
-			clone.addClass("verticalSlideDown");
-		}, 0);
+			clone.removeClass("slideIn");
+			clone.addClass("slideOut");
+		}, 10);
 			
 	},
 	
 	
 	actionTriggered: function() {
 		
-		var action = App.controlsController.get('selectedAction');
+		//var action = App.controlsController.get('selectedAction');
 		
 		if(action == "save") {
 			
 			var entry = this.get('controller.content');
 			entry.save();
 			
-			App.controlsController.set('content', []);
+			//App.controlsController.set('content', []);
 			
 		}
 		
 		if(action != null) {
-			App.controlsController.set('selectedAction', null);	
+			//App.controlsController.set('selectedAction', null);	
 		}
 		
 	}.observes('App.controlsController.selectedAction'),
@@ -476,7 +481,7 @@ App.EntryView = Em.View.extend({
 		
 		if(element != undefined) {
 			
-			element.toggleClass("verticalSlideUp");
+			element.toggleClass("slideIn");
 			
 			var clone = this.get('oldContentElem');
 			if(clone != undefined) {
@@ -545,35 +550,63 @@ App.FindView = Em.View.extend({
 		
 		//console.log("did insert find");
 		
+		var styles = [
+		              {
+		            	    "stylers": [
+		            	      { "saturation": -100 }
+		            	    ]
+		            	  }
+		            	];
+		
+		var styledMap = new google.maps.StyledMapType(styles,
+			    {name: "Styled Map"});
+		
 		var mapOptions = {
         	
         	center: new google.maps.LatLng(-34.397, 150.644),
           	zoom: 8,
-          	mapTypeId: google.maps.MapTypeId.ROADMAP
+          	mapTypeId: google.maps.MapTypeId.ROADMAP,
+          	panControl: false,
+            zoomControl: false,
+            mapTypeControl: false,
+            scaleControl: false,
+            streetViewControl: false,
+            overviewMapControl: false,
+            
+            mapTypeControlOptions: {
+                mapTypeIds: [google.maps.MapTypeId.ROADMAP, 'map_style']
+            }
+		
         };
         
         var map = new google.maps.Map(document.getElementById("findMap"), mapOptions);
         
+        map.mapTypes.set('map_style', styledMap);
+        map.setMapTypeId('map_style');
+        
         this.set('map', map);
         
 		var element = this.$();
+		element.addClass("nooverflow");
 		
-    	var searchBox = element.find(".searchBox");
-		var searchResults = element.find(".searchResults");
+    	//var searchBox = element.find(".searchBox");
+		//var searchResults = element.find(".searchResults");
 		
-		var container = $('#centerSection .centerSectionContent');
-		container.css("height", (($(window).height()-container.offset().top))+"px");
+		var container = $('#centerSection');
+		//container.css("height", (($(window).height()-container.offset().top))+"px");
 		container.css("overflow", "hidden");
 		
-		searchBox.bind('trans-end', function() {
+		setTimeout(function() {
+		//element.bind('trans-end', function() {
     		container.css("overflow", "");
-		});
+		//});
+		}, 1200);
 		
 		setTimeout(function() {
-			searchBox.removeClass("rollOut");
-			searchBox.addClass("rollIn");
-			searchResults.removeClass("searchResultsSlideDown");
-			searchResults.addClass("searchResultsSlideUp");
+			element.removeClass("slideOut");
+			element.addClass("slideIn");
+			//searchResults.removeClass("searchResultsSlideDown");
+			//searchResults.addClass("searchResultsSlideUp");
 		}, 10);
     	
 		
@@ -585,31 +618,28 @@ App.FindView = Em.View.extend({
 		var clone = this.$().clone();
     	this.$().replaceWith(clone);
     	
-    	clone.css("z-index", -1);
+    	var container = $("centerSection");
     	
-		var searchBox = clone.find(".searchBox");
-		var searchResults = clone.find(".searchResults");
-		searchResults.css("z-index", -1);
+		//var searchBox = clone.find(".searchBox");
+		//var searchResults = clone.find(".searchResults");
+		//searchResults.css("z-index", -1);
 		
-		var container = $('#centerSection .centerSectionContent');
-		container.css("height", (($(window).height()-container.offset().top))+"px");
 		container.css("overflow", "hidden");
 		
-		var docHeight = $(document).height();
-		$("#document").height(($(window).height())+"px");
-		
-		searchBox.bind('trans-end', function() {
+		setTimeout(function() {
+		//clone.bind('trans-end', function() {
     		clone.remove();
     		delete clone;
     		container.css("overflow", "");
-    		container.css("height", "");
-		});
+    		//container.css("height", "");
+		//});
+		}, 1200);
 		
 		setTimeout(function() {
-			searchBox.removeClass("rollIn");
-			searchBox.addClass("rollOut");
-			searchResults.removeClass("searchResultsSlideUp");
-			searchResults.addClass("searchResultsSlideDown");
+			clone.removeClass("slideIn");
+			clone.addClass("slideOut");
+			//searchResults.removeClass("searchResultsSlideUp");
+			//searchResults.addClass("searchResultsSlideDown");
 		}, 0);
 		
 		
@@ -689,12 +719,6 @@ App.FindView = Em.View.extend({
 				);
 			}
 			
-			setTimeout(function() {
-				
-				var docHeight = $(document).height();
-				$("#document").height((docHeight)+"px");
-				
-			}, 100);
 			
 		});
 		

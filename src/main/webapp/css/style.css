@@ -1,12 +1,3 @@
-body {
-	
-	font: normal 16px/1.5em helvetica, arial, sans-serif; 
-	margin: 0; 
-	width: 100%;
-	min-width: 600px;
-
-}
-
 #document {
 	border: 1px dashed red;
 }
@@ -76,8 +67,7 @@ header .logo {
 	
 	display: inline-block;
 	
-	width: 64%;
-	min-height: 600px;
+	width: 100%;
 	position: relative;
 	/*border: 1px solid green;*/
 }
@@ -85,8 +75,6 @@ header .logo {
 #centerSection .centerSectionContent {
 	
 	position: relative;
-	margin-top: 1.4em;
-	margin-right: 2.0em;
 	height: 500px;
 	font-size: 1.2em;
 	/*border: 1px solid blue;*/
@@ -106,11 +94,8 @@ header .logo {
 }
 
 .placeInput input {
-	background-color: transparent; 
-	border-style: dotted;
-	border-width: 0px 0px 1px 0px; 
-	border-color: black;
-	outline: 0px;
+	margin-bottom: 0px;
+	padding: 4px 0px;
 	width: 100%;
 }
 
@@ -173,7 +158,6 @@ header .logo {
 
 .entryType {
 	min-height: 4.0em;
-	text-align: center;
 	position: relative;
 	border-bottom: 1px solid black;
 	margin-top: 0.6em;
@@ -232,30 +216,33 @@ header .logo {
 
 .routeInfoInput {
 	width: 100%;
-	padding-bottom: 10.0em;
+	padding-bottom: 6.0em;
 }
 
 .routeInfoInput .tripleColumn {
 	
+	display: inline-block;
 	margin-top: 0.6em;
 	width: 100%;
 	
 }
 
 .routeInfoInput .tripleColumn .columnLeft {
-	width: 25%;
+	min-width: 3.0em;
 	display: inline-block;
+	padding-right: 0.2em;
 }
 
 .routeInfoInput .tripleColumn .columnCenter {
-	width: 44%;
+	width: 70%;
+	max-width: 20em;
 	display: inline-block;
 	text-align: center;
 }
 
 .routeInfoInput .tripleColumn .columnRight {
-	width: 25%;
 	display: inline-block;
+	padding-left: 1.2em;
 }
 
 .mediumButton {
@@ -275,16 +262,13 @@ header .logo {
 	display: inline;	
 }
 
-.placeAutocompleteBox {
-	border: 1px solid black; 
+.placeAutocompleteBox { 
 	background: white; 
 	position: absolute;
-	padding: 6px;
 	display: none;
 	visibility: hidden;
 	width: 100%;
 	z-index: 1;
-	margin: -1px;
 }
 
 .placeAutocompleteBox a {
@@ -333,19 +317,16 @@ header .logo {
 
 .nooverflow {
 	
-	overflow: hidden;
-	border: 1px solid black;
 	position: absolute;
 	width: 99%;
-	top: 600px;
+	margin-left: -100%;
 	background: white;
 	
 }
 
 .searchBox {
 	
-	-webkit-transform: perspective(600px) translateY(-340px) translateZ(-180px) rotateX(90deg);
-	width: 100%;
+	/*-webkit-transform: perspective(600px) translateY(-340px) translateZ(-180px) rotateX(90deg);*/
 	background: white;
 	border: 1px solid black;
 	
@@ -356,24 +337,27 @@ header .logo {
 }
 
 .searchBox .left {
+	position: relative;
 	display: inline-block;
-	width: 33%;
-	float: left;
+	width: 48%;
 }
 
-.searchBox .center {
-	display: inline-block;
-	width: 33%;
-}
-
-.searchBox .center .map {
+.searchBox .left .map {
 	height: 20em;
 	background: #808080;
 }
 
+.searchBox .left .searchInput {
+	width: 90%;
+	top: 0.2em;
+	left: 5%;
+	position: absolute;
+	z-index: 1;
+}
+
 .searchBox .right {
 	display: inline-block;
-	width: 33%;	
+	width: 50%;	
 	float: right;
 }
 
@@ -386,9 +370,8 @@ header .logo {
 }
 
 .searchResults {
+	margin-top: 1.6em;
 	width: 100%;
-	position: absolute;
-	top: 600px;
 }
 
 .searchResults .item {
@@ -415,22 +398,25 @@ header .logo {
 
 .withOverflow {
 	
+	overflow: hidden;
 	position: absolute;
 	width: 99%;
+	margin-left: -100%;
+	background: white;
 
 }
 
-.verticalSlideUp {
+.slideIn {
 	
-	top: 0px;
-  	-webkit-transition: top 1s;
+	margin-left: 0%;
+  	-webkit-transition: margin-left 1s;
   	
 }
 
-.verticalSlideDown {
+.slideOut {
 	
-	top: 600px;
-  	-webkit-transition: top 1s;
+	margin-left: 100%;
+  	-webkit-transition: margin-left 1s;
   	
 }
 

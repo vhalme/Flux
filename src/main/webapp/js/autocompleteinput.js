@@ -185,6 +185,8 @@ App.AutocompleteInputView = Ember.View.extend({
 		
 		InputFieldEdit: Ember.TextField.extend({
 			
+			classNames: [ "edit" ],
+			
 			valueBinding: 'parentView.searchString',
 			
 			didInsertElement: function() {
@@ -247,6 +249,8 @@ App.AutocompleteInputView = Ember.View.extend({
 		
 		InputFieldSelected: Ember.View.extend({
 			
+			classNames: [ "selected" ],
+			
 			tagName: 'a',
 			
 			displayValueBinding: 'parentView.value.displayValue',
@@ -269,7 +273,7 @@ App.AutocompleteInputView = Ember.View.extend({
 			
 			this._super();
 			
-			this.set('template', this.get('editViewTemplate'));
+			//this.set('template', this.get('editViewTemplate'));
 			
 		},
 		
@@ -277,6 +281,7 @@ App.AutocompleteInputView = Ember.View.extend({
 			
 			
 			var selectedItem = this.get('parentView.value');
+			console.log(selectedItem);
 			
 			if(selectedItem != null) {
 				this.set('isEditable', false);
@@ -290,17 +295,28 @@ App.AutocompleteInputView = Ember.View.extend({
 		
 		toggleEditability: function() {
 			
+			var element = this.$();
+			var edit = element.find(".edit");
+			var selected = element.find(".selected");
 			
 			var isEditable = this.get('isEditable');
 			
 			if(isEditable) {
-				this.set('template', this.get('editViewTemplate'));
+				selected.css("visibility", "hidden");
+				selected.css("display", "none");
+				edit.css("visibility", "visible");
+				edit.css("display", "inline-block");
+				//this.set('template', this.get('editViewTemplate'));
 			} else {
-				this.set('template', this.get('selectedViewTemplate'));
+				edit.css("visibility", "hidden");
+				edit.css("display", "none");
+				selected.css("visibility", "visible");
+				selected.css("display", "inline-block");
+				//this.set('template', this.get('selectedViewTemplate'));
 			}
 			
-			this.rerender();
-			
+			//this.rerender();
+			console.log("rerendered "+this.get('value.displayValue'));
 			
 		}.observes('isEditable'),
 		
