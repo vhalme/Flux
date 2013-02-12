@@ -46,14 +46,15 @@
 		<script type="text/x-handlebars" data-template-name="application">
 				
 			<div id="wrap">
-			
+              	
 		<div class="navbar navbar-fixed-top">
         <div class="navbar-inner">
           <div class="container">
             <a class="brand" href="#">Travlog</a>
               <ul class="nav">
-                <li class="active"><a href="#/entry/new">Add</a></li>
-                <li><a href="#/find">Find</a></li>
+              	{{#each label in navLabels}}
+              		{{#view label}}<a {{action selectNavLabel view.value}}>{{view.value}}</a>{{/view}}
+              	{{/each}}
               </ul>
               <ul class="nav" style="float: right;">
               	<li><a href="#contact">Log In</a></li>
@@ -274,27 +275,23 @@
 		<script type="text/x-handlebars" data-template-name="entry">
 			
 			<div style="border: 1px solid black;">
-				
-			<div class="entryType">
-				
-				{{#view App.EntryTypeSelectView valueBinding="type" class="entryTypeSelect"}}
-					{{#view App.ListItemView class="left"}}I travelled{{/view}}
-					{{#view App.ListItemView class="right"}}I planned{{/view}}
-				{{/view}}
-				
-				
-				<div class="typeInfo">
-					{{view App.TypeInfoView}}
-				</div>
-				
-			</div>
-			<div style="width: 15%"></div>
 			
 			
 			<div class="routeInfoInput">
 				
 				<div style="margin: 0px auto; max-width: 40em;">
-					
+				
+				<div class="tripleColumn" style="margin-bottom: 1.0em;">
+					<div class="columnLeft" align="right"></div>
+					<div class="columnCenter">
+						{{#view App.EntryTypeSelectView valueBinding="type" class="selectList"}}
+							{{#view App.ListItemView class="halfWidth"}}I travelled{{/view}}
+							{{#view App.ListItemView class="halfWidth"}}I planned{{/view}}
+						{{/view}}
+					</div>
+					<div class="columnRight visible-desktop" align="center"></div>
+        		</div>
+        		
 				<div class="tripleColumn">
 					
 					<div class="columnLeft" align="right">Trip</div> 
@@ -326,6 +323,19 @@
 							{{#view App.ListItemView}}train{{/view}}
 							{{#view App.ListItemView}}other{{/view}}
 						{{/view}}
+					</div>
+					<div class="columnRight visible-desktop" align="center">Mode of transportation</div>
+				</div>
+				
+				<div class="tripleColumn" style="margin-top: 0.2em;">
+					<div class="columnLeft" align="right"></div>
+					<div class="columnCenter">
+						<input type="text" placeholder="Number, destination or other id..." style="width: 100%; padding: 4px 0px; margin-top: 0px;"></input>
+						<input type="text" placeholder="Dep. time" style="width: 28%; padding: 4px 0px; margin-top: 0px; display: inline; float: left; margin-top: -0.2em;"></input>
+						<input type="text" placeholder="Arr. time" style="width: 28%; padding: 4px 0px; margin-top: 0px; display: inline; float: left; margin-top: -0.2em; margin-left: 0.4em;"></input>
+						<div style="display: inline; float: left; margin-left: 0.4em; vertical-align: middle; padding: 4px 0px;">+&nbsp;</div>
+						<input type="text" placeholder="0" style="width: 10%; padding: 4px 0px; margin-top: 0px; display: inline; float: left; margin-top: -0.2em;"></input>
+						<div style="display: inline; float: left; vertical-align: middle; padding: 4px 0px;">&nbsp;days</div>
 					</div>
 					<div class="columnRight visible-desktop" align="center">Mode of transportation</div>
 				</div>

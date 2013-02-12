@@ -8,9 +8,50 @@ App.params = {
 	})
 };
 
+
+App.NavLabelView = Ember.View.extend({
+	
+	tagName: 'li',
+	
+	classNames: [ "handCursor" ],
+	
+	classNameBindings: 'active',
+	
+	active: false,
+	
+	value: undefined,
+	
+	uri: undefined,
+	
+	select: function() {
+		location.href = this.get('uri');
+	}
+	
+});
+
 App.ApplicationController = Ember.Controller.extend({
 	
 	viewName: "",
+	
+	navLabels: [ 
+	             App.NavLabelView.create({ active: true, value: "New", uri: "#/entry/new" }), 
+	             App.NavLabelView.create({ active: false, value: "Find", uri: "#/find" }), 
+	             App.NavLabelView.create({ active: false, value: "Trips", uri: "#/trips" })   
+	           ],
+	           
+	selectNavLabel: function(navLabel) {
+		
+		var navLabels = this.get('navLabels');
+		for(var i=0; i<navLabels.length; i++) {
+			if(navLabels[i].get('value') == navLabel) {
+				navLabels[i].set('active', true);
+				location.href = navLabels[i].get('uri');
+			} else {
+				navLabels[i].set('active', false);
+			}
+		}
+		
+	}
 	
 });
 
@@ -103,6 +144,8 @@ App.EntryRoute = Ember.Route.extend({
     	if(params.entry_id == "new") {
     		
     		App.controller.set('viewName', "New entry");
+    		//App.controller.selectNavLabel("New");
+    		
     		controller.set('content', App.Entry.create());
     	
     	} else {
@@ -132,6 +175,8 @@ App.FindRoute = Ember.Route.extend({
 	setupController: function(controller, model) {
 		
 		controller.set('content', Ember.Object.create({ from: null, to: null }));
+		
+		//App.controller.selectNavLabel("Find");
 		App.controller.set('viewName', "Find");
   		
   	}

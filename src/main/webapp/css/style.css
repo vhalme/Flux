@@ -157,13 +157,9 @@ header .logo {
 }
 
 .entryType {
-	min-height: 4.0em;
 	position: relative;
-	border-bottom: 1px solid black;
 	margin-top: 0.6em;
-	margin-bottom: 2.0em;
-	padding-left: 15%;
-	padding-right: 15%;
+	margin-bottom: 1.0em;
 	overflow: hidden;
 }
 
@@ -175,18 +171,22 @@ header .logo {
 
 .entryType .entryTypeSelect {
 	display: inline-block;
-	width: 100%;	
+	width: 100%;
 }
 
 .entryType .entryTypeSelect .left {
 	display: inline;
 	float: left;
+	width: 49%;
+	text-align: center;
 }
 
 
 .entryType .entryTypeSelect .right {
 	display: inline;
 	float: right;
+	width: 49%;
+	text-align: center;
 }
 
 .onMyTrip {
@@ -219,28 +219,30 @@ header .logo {
 	padding-bottom: 6.0em;
 }
 
-.routeInfoInput .tripleColumn {
+.tripleColumn {
 	
 	display: inline-block;
-	margin-top: 0.6em;
+	margin-top: 1.2em;
 	width: 100%;
 	
 }
 
-.routeInfoInput .tripleColumn .columnLeft {
+.tripleColumn .columnLeft {
 	min-width: 3.0em;
 	display: inline-block;
 	padding-right: 0.2em;
 }
 
-.routeInfoInput .tripleColumn .columnCenter {
+.tripleColumn .columnCenter {
 	width: 70%;
 	max-width: 20em;
 	display: inline-block;
 	text-align: center;
+	position: relative;
+	height: 1.0em;
 }
 
-.routeInfoInput .tripleColumn .columnRight {
+.tripleColumn .columnRight {
 	display: inline-block;
 	padding-left: 1.2em;
 }
@@ -286,6 +288,11 @@ header .logo {
 
 .selectList {
 	
+	position: absolute;
+	margin-left: auto;
+	margin-right: auto;
+	width: 100%;
+	
 }
 
 .selectList .selectListItem {
@@ -312,7 +319,12 @@ header .logo {
 	
 	font-size: 1.2em;
 	color: black;
+	margin-top: -0.2em;
 	
+}
+
+.halfWidth {
+	width: 48%;
 }
 
 .nooverflow {
@@ -452,4 +464,9 @@ header .logo {
 	top: 600px;
   	-webkit-transition: top 1s;
   	
+}
+
+.handCursor {
+	cursor: hand; 
+	cursor: pointer;	
 }
