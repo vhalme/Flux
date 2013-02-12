@@ -319,7 +319,9 @@ header .logo {
 	
 	position: absolute;
 	width: 99%;
-	margin-left: -100%;
+	margin-top: -100%;
+	width: 100%;
+	opacity: 0;
 	background: white;
 	
 }
@@ -400,7 +402,7 @@ header .logo {
 	
 	overflow: hidden;
 	position: absolute;
-	width: 99%;
+	width: 100%;
 	margin-left: -100%;
 	background: white;
 
@@ -408,15 +410,19 @@ header .logo {
 
 .slideIn {
 	
-	margin-left: 0%;
-  	-webkit-transition: margin-left 1s;
-  	
+	opacity: 1;
+	width: 100%;
+	margin-top: 0px;
+	-webkit-transition: margin-top 1s;
+	
 }
 
 .slideOut {
 	
-	margin-left: 100%;
-  	-webkit-transition: margin-left 1s;
+	width: 100%;
+	margin-top: 0px;
+	opacity: 0;
+	-webkit-transition: opacity 0s;
   	
 }
 

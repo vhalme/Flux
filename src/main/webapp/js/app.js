@@ -397,7 +397,7 @@ App.EntryView = Em.View.extend({
     	element.addClass("nooverflow");
     	
     	var container = $('#centerSection');
-		container.css("overflow", "hidden");
+		//container.css("overflow", "hidden");
 		
 		setTimeout(function() {
 		//element.bind('trans-end', function() {
@@ -422,6 +422,7 @@ App.EntryView = Em.View.extend({
 		//App.controlsController.set('content', []);
 		
 		var clone = this.$().clone();
+		clone.css("z-index", "-1");
     	this.$().replaceWith(clone);
     	
     	this.transitOut(clone);
@@ -431,7 +432,7 @@ App.EntryView = Em.View.extend({
 	transitOut: function(clone) {
 		
 		var container = $('#centerSection');
-		container.css("overflow", "hidden");
+		//container.css("overflow", "hidden");
 		
 		
     	setTimeout(function() {
@@ -484,6 +485,8 @@ App.EntryView = Em.View.extend({
 			element.toggleClass("slideIn");
 			
 			var clone = this.get('oldContentElem');
+			clone.css("z-index", "-1");
+			
 			if(clone != undefined) {
 				this.get('parentView').$().append(clone);
 				this.transitOut(clone);
@@ -594,7 +597,7 @@ App.FindView = Em.View.extend({
 		
 		var container = $('#centerSection');
 		//container.css("height", (($(window).height()-container.offset().top))+"px");
-		container.css("overflow", "hidden");
+		//container.css("overflow", "hidden");
 		
 		setTimeout(function() {
 		//element.bind('trans-end', function() {
@@ -618,13 +621,15 @@ App.FindView = Em.View.extend({
 		var clone = this.$().clone();
     	this.$().replaceWith(clone);
     	
+    	clone.css("z-index", "-1");
+    	
     	var container = $("centerSection");
     	
 		//var searchBox = clone.find(".searchBox");
 		//var searchResults = clone.find(".searchResults");
 		//searchResults.css("z-index", -1);
 		
-		container.css("overflow", "hidden");
+		//container.css("overflow", "hidden");
 		
 		setTimeout(function() {
 		//clone.bind('trans-end', function() {
