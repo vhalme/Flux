@@ -210,7 +210,7 @@ App.Model = Ember.Object.extend({
 		$.ajax({
   			
   			type: "PUT",
-  			url: "/TravellerLog/service/"+this.get('path'),
+  			url: "service/"+this.get('path'),
   			dataType: "json",
   			contentType: 'application/json',
   			data: json,
@@ -239,7 +239,7 @@ App.Model.reopenClass({
 		$.ajax({
   			
   			type: "GET",
-  			url: "/TravellerLog/service/"+model.path+"/"+id,
+  			url: "service/"+model.path+"/"+id,
   			dataType: "json",
   			contentType: 'application/json',
   			success: function(data) {
@@ -712,7 +712,7 @@ App.FindView = Em.View.extend({
 			return;
 		}
 		
-		$.get("/TravellerLog/service/entry?from="+searchLocation.id, function(data) {
+		$.get("service/entry?from="+searchLocation.id, function(data) {
 			for(var i=0; i<data.length; i++) {
 				toSuggestions.addObject(
 					App.Entry.create({ data: data[i] })
@@ -720,7 +720,7 @@ App.FindView = Em.View.extend({
 			}
 		});
 		
-		$.get("/TravellerLog/service/entry?to="+searchLocation.id, function(data) {
+		$.get("service/entry?to="+searchLocation.id, function(data) {
 			for(var i=0; i<data.length; i++) {
 				fromSuggestions.addObject(
 					App.Entry.create({ data: data[i] })
@@ -761,7 +761,7 @@ App.FindView = Em.View.extend({
 		var view = this;
 		var oldDocHeight = $(document).height();
 		
-		$.get("/TravellerLog/service/entry?from="+from.id+"&to="+to.id, function(data) {
+		$.get("service/entry?from="+from.id+"&to="+to.id, function(data) {
 			
 			for(var i=0; i<data.length; i++) {
 				results.addObject(

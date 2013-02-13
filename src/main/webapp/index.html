@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>Bootstrap, from Twitter</title>
+    <title>Wiki-Routes - Global Transit Database</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
     <meta name="author" content="">
@@ -50,7 +50,7 @@
 		<div class="navbar navbar-fixed-top">
         <div class="navbar-inner">
           <div class="container">
-            <a class="brand" href="#">Travlog</a>
+            <a class="brand" href="#">Wiki-Routes</a>
               <ul class="nav">
               	{{#each label in navLabels}}
               		{{#view label}}<a {{action selectNavLabel view.value}}>{{view.value}}</a>{{/view}}
@@ -304,13 +304,13 @@
 				<div class="tripleColumn">
 					<div class="columnLeft" align="right">from</div>
 					<div class="columnCenter">{{view App.PlaceInputView valueBinding="from"}}</div>
-					<div class="columnRight visible-desktop" align="center"></div>
+					<div class="columnRight visible-desktop" align="center">Origin</div>
 				</div>
 				
 				<div class="tripleColumn">
 					<div class="columnLeft" align="right">to</div>
 					<div class="columnCenter">{{view App.PlaceInputView valueBinding="to"}}</div>
-					<div class="columnRight visible-desktop" align="center"></div>
+					<div class="columnRight visible-desktop" align="center">Destination</div>
         		</div>
 				
 				
@@ -324,10 +324,10 @@
 							{{#view App.ListItemView}}other{{/view}}
 						{{/view}}
 					</div>
-					<div class="columnRight visible-desktop" align="center">Mode of transportation</div>
+					<div class="columnRight visible-desktop">Mode of transportation and identifying information. Eg. <i>Train 365, United Airlines Flight 110, Bus to NYC Grand Central Terminal etc.</i></div>
 				</div>
 				
-				<div class="tripleColumn" style="margin-top: 0.2em;">
+				<div class="tripleColumn" style="margin-top: 0.4em;">
 					<div class="columnLeft" align="right"></div>
 					<div class="columnCenter">
 						<input type="text" placeholder="Number, destination or other id..." style="width: 100%; padding: 4px 0px; margin-top: 0px;"></input>
@@ -337,7 +337,40 @@
 						<input type="text" placeholder="0" style="width: 10%; padding: 4px 0px; margin-top: 0px; display: inline; float: left; margin-top: -0.2em;"></input>
 						<div style="display: inline; float: left; vertical-align: middle; padding: 4px 0px;">&nbsp;days</div>
 					</div>
-					<div class="columnRight visible-desktop" align="center">Mode of transportation</div>
+					<div class="columnRight visible-desktop"></div>
+				</div>
+				
+				<div class="tripleColumn"  style="margin-top: 3.2em;">
+					<div class="columnLeft" align="right"></div>
+					<div class="columnCenter">
+						<input type="text" placeholder="Schedule info, link to timetables..." style="width: 100%; padding: 4px 0px; margin-top: 0px;"></input>
+					</div>
+					<div class="columnRight visible-desktop">Eg. <i>Daily, Wed and Fri</i> OR <i>www.nationalrail.co.uk/times_fares/</i></div>
+				</div>
+				
+				<div class="tripleColumn">
+					<div class="columnLeft" align="right">Cost</div>
+					<div class="columnCenter">
+						<input type="text" placeholder="Cost in local or other currency" style="width: 100%; padding: 4px 0px; margin-top: 0px;"></input>
+					</div>
+					<div class="columnRight visible-desktop"></div>
+				</div>
+				
+				<div class="tripleColumn">
+					
+					<div class="columnLeft" align="right"></div>
+					
+					<div class="columnCenter">
+						<div style="display: inline; float: left; margin-right: 0.4em; vertical-align: middle; padding: 4px 0px;">Departure Date</div>
+						<input type="text" placeholder="YYYY" style="width: 22%; padding: 4px 0px; display: inline; float: right; margin-top: -0.2em; margin-left: 2%;"></input>
+						<input type="text" placeholder="MM" style="width: 11%; padding: 4px 0px; display: inline; float: right; margin-top: -0.2em; margin-left: 2%;"></input>
+						<input type="text" placeholder="DD" style="width: 11%; padding: 4px 0px; display: inline; float: right; margin-top: -0.2em;"></input>
+					</div>
+					
+					<div class="columnRight visible-desktop">
+						When did you travel or plan to travel?
+					</div>
+					
 				</div>
 				
 				</div>

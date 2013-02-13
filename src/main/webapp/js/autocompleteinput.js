@@ -453,7 +453,7 @@ App.TripInputView = App.AutocompleteInputView.extend({
 		this._super();
 		this.set('controller', Ember.ObjectController.create());
 		this.set('autocompleteController', App.TripAutocompleteController.create({
-			resource: "/TravellerLog/service/trip"
+			resource: "service/trip"
 		}));
 		
 	},
@@ -478,7 +478,7 @@ App.StoredPlaceInputView = App.AutocompleteInputView.extend({
 		this._super();
 		this.set('controller', Ember.ObjectController.create());
 		this.set('autocompleteController', App.ResourceAutocompleteController.create({
-			resource: "/TravellerLog/service/place"
+			resource: "service/place"
 		}));
 		
 	},
