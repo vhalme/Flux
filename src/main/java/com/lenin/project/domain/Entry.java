@@ -27,6 +27,16 @@ public class Entry implements Serializable {
 	
 	private SelectListItem by;
 	
+	private String byId;
+	private String byDepTime;
+	private String byArrTime;
+	private String byAddDays;
+	private String scheduleInfo;
+	private String cost;
+	private String depDateYear;
+	private String depDateMonth;
+	private String depDateDay;
+	
 	public Entry() {
 		
 	}
@@ -89,6 +99,98 @@ public class Entry implements Serializable {
 	public void setBy(SelectListItem by) {
 		this.by = by;
 	}
+
+
+	public String getById() {
+		return byId;
+	}
+
+
+	public void setById(String byId) {
+		this.byId = byId;
+	}
+
+
+	public String getByDepTime() {
+		return byDepTime;
+	}
+
+
+	public void setByDepTime(String byDepTime) {
+		this.byDepTime = byDepTime;
+	}
+
+
+	public String getByArrTime() {
+		return byArrTime;
+	}
+
+
+	public void setByArrTime(String byArrTime) {
+		this.byArrTime = byArrTime;
+	}
+
+
+	public String getByAddDays() {
+		return byAddDays;
+	}
+
+
+	public void setByAddDays(String byAddDays) {
+		this.byAddDays = byAddDays;
+	}
+
+
+	public String getScheduleInfo() {
+		return scheduleInfo;
+	}
+
+
+	public void setScheduleInfo(String scheduleInfo) {
+		this.scheduleInfo = scheduleInfo;
+	}
+	
+
+	public String getCost() {
+		return cost;
+	}
+
+
+	public void setCost(String cost) {
+		this.cost = cost;
+	}
+	
+	
+	public String getDepDateYear() {
+		return depDateYear;
+	}
+
+
+	public void setDepDateYear(String depDateYear) {
+		this.depDateYear = depDateYear;
+	}
+
+
+	public String getDepDateMonth() {
+		return depDateMonth;
+	}
+
+
+	public void setDepDateMonth(String depDateMonth) {
+		this.depDateMonth = depDateMonth;
+	}
+
+
+	public String getDepDateDay() {
+		return depDateDay;
+	}
+
+
+	public void setDepDateDay(String depDateDay) {
+		this.depDateDay = depDateDay;
+	}
+
+
 	
 	
 }

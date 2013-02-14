@@ -949,6 +949,55 @@
   }
 }
 
+@media (max-width: 400px) {
+	
+	.navbar .nav > li > a {
+		padding: 10px 6px 10px;
+	}
+
+}
+
+@media (min-width: 400px) and (max-width: 600px) {
+	
+	.navbar .nav > li > a {
+		padding: 10px 12px 10px;
+	}
+
+}
+
+@media (min-width: 440px) {
+	
+	.visibleMini {
+		display: none;
+	}
+	
+	.visibleNormal {
+		display: block;
+	}
+	
+	.depDate {
+		float: right;
+	}
+
+}
+
+@media (max-width: 440px) {
+	
+	.visibleMini {
+		display: block;
+	}
+	
+	.visibleNormal {
+		display: none;
+	}
+	
+	.depDate {
+		float: left;
+	}
+
+}
+
+
 @media (max-width: 979px) {
   body {
     padding-top: 0;

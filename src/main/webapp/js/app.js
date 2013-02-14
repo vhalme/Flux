@@ -267,6 +267,15 @@ App.Entry = App.Model.extend({
 	fromBinding: 'data.from',
 	toBinding: 'data.to',
 	byBinding: 'data.by',
+	byIdBinding: 'data.byId',
+	byDepTimeBinding: 'data.byDepTime',
+	byArrTimeBinding: 'data.byArrTime',
+	byAddDaysBinding: 'data.byAddDays',
+	scheduleInfoBinding: 'data.scheduleInfo',
+	costBinding: 'data.cost',
+	depDateYearBinding: 'data.depDateYear',
+	depDateMonthBinding: 'data.depDateMonth',
+	depDateDayBinding: 'data.depDateDay',
 	
 	init: function() {
 		
@@ -773,6 +782,16 @@ App.FindView = Em.View.extend({
 		});
 		
 	}.observes('controller.from', 'controller.to')
+	
+});
+
+App.InputTextField = Ember.TextField.extend({
+	
+	test: function() {
+		
+		var value = this.get('value');
+		
+	}
 	
 });
 
