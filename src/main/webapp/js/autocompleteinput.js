@@ -59,7 +59,11 @@ App.MapAutocompleteController = App.AutocompleteController.extend({
 		
 	},
 	
+	
 	handleSelection: function(item) {
+		
+		
+		console.log("HANDLE SELECTION!");
 		
 		var displayValue = item.get('displayValue');
 		
@@ -69,25 +73,28 @@ App.MapAutocompleteController = App.AutocompleteController.extend({
 		
 			if(status == google.maps.GeocoderStatus.OK) {
 				
-				//console.log("GEOCODE RESULTS: "+results.length);
-				//console.log(results);
-				var lat = results[0].geometry.location.lat();
-				var lng = results[0].geometry.location.lng();
+				var result = results[0];
+				
+				var lat = result.geometry.location.lat();
+				var lng = result.geometry.location.lng();
+				var locality = null;
+				
+				var addressComponents = result.address_components;
+				for(var i=0; i<addressComponents.length; i++) {
+					var component = addressComponents[i];
+					var types = component.types;
+					if(types[0] == "locality" && types[1] == "political") {
+						locality = component.long_name;
+					}
+				}
+				
+				console.log("locality: "+locality);
+				
 				item.set('lat', lat);
 				item.set('lng', lng);
+				item.set('localityName', locality);
 				
-				//console.log(results[0].geometry.location);
-				//console.log(lat+"/"+lng);
-				
-				
-				/*
-		        map.setCenter(results[0].geometry.location);
-		        
-		        var marker = new google.maps.Marker({
-		            map: map,
-		            position: results[0].geometry.location
-		        });
-		        */
+				//App.controller.set('searchTags', [ locality ]);
 				
 			} else {
 		        alert("Geocode was not successful for the following reason: " + status);
@@ -95,8 +102,9 @@ App.MapAutocompleteController = App.AutocompleteController.extend({
 		   
 		});
 		
+		
 	}
-
+	
 	
 });
 

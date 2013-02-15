@@ -33,6 +33,8 @@ App.ApplicationController = Ember.Controller.extend({
 	
 	viewName: "",
 	
+	searchTags: [],
+	
 	navLabels: [ 
 	             App.NavLabelView.create({ active: true, value: "New", uri: "#/entry/new" }), 
 	             App.NavLabelView.create({ active: false, value: "Find", uri: "#/find" }), 
@@ -52,6 +54,7 @@ App.ApplicationController = Ember.Controller.extend({
 		}
 		
 	}
+	
 	
 });
 
@@ -104,6 +107,63 @@ App.Router.map(function() {
   	this.resource("entry", { path: "/entry/:entry_id" }, function() {
   		this.route("edit", { path: "/edit" });
   	});
+  	
+  	this.resource("route", { path: "/route/:params" }, function() {
+  		this.route("edit", { path: "/edit" });
+  	});
+  	
+});
+
+
+App.RouteRoute = Ember.Route.extend({
+	
+	params: undefined,
+	
+	controller: undefined,
+	
+	model: function(params, firstLoad) {
+		
+		console.log("PARAMS("+firstLoad+"): ");
+		console.log(params);
+		
+		var controller = this.get('controller');
+		
+		if(params != undefined) {
+			
+			var oldParams = this.get('params');
+			
+			console.log("paramscheck: "+(oldParams == params));
+			
+			if(oldParams == params && firstLoad == undefined) {
+				console.log("failed params check....");
+				return;
+			} else {
+				this.set('params', params);
+			}
+			
+		}
+		
+		if(!controller) {
+			console.log("no controller");
+			return;
+		}
+		
+		console.log("updating params");
+		
+    	App.controller.set('viewName', "New entry");
+    	controller.set('fromto', params.params);
+    	
+  		//console.log("viewname "+App.controller.get('viewName'));
+	
+	},
+	
+	setupController: function(controller, model) {
+		
+		//console.log("setup ctrl");
+		this.set('controller', controller);
+  		this.model(this.get('params'), true);
+  		
+  	}
   	
 });
 
@@ -529,6 +589,23 @@ App.EntryView = Em.View.extend({
 	
 	contentChanged: function() {
 		
+		var entry = this.get('controller.content');
+		
+		if(entry != undefined) {
+			
+			var from = entry.get('from');
+			var to = entry.get('to');
+			
+			console.log("FROM/TO>>>");
+			console.log(from);
+			console.log(to);
+			
+			if(from != undefined && to != undefined) {
+				App.controller.set('searchTags', [ from.localityName, to.localityName ]);
+			}
+			
+		}
+		
 		var element = this.$();
 		
 		var contentType = Math.random();
@@ -571,7 +648,7 @@ App.FindController = Ember.Controller.extend({
 	},
 	
 	selectEntry: function(entry) {
-		location.href = "#/entry/"+entry.id;	
+		location.href = "#/route/from="+entry.get('from').id+"&to="+entry.get('to').id;	
 	}
 	
 });
@@ -794,6 +871,153 @@ App.InputTextField = Ember.TextField.extend({
 	}
 	
 });
+
+
+App.FeedController = Ember.ArrayController.extend({
+	
+	init: function() {
+		this.set('content', []);
+	},
+	
+	getContent: function(tags) {
+		
+		var query = "";
+		
+		for(var i=0; i<tags.length; i++) {
+			
+			query += "%23"+tags[i];
+			
+			if(i < tags.length-1) {
+				query += " OR ";
+			}
+			
+		}
+		
+		console.log("QUERY: "+query);
+		
+		this.clear();
+		
+		var controller = this;
+		
+		$.ajax({  
+        url : "https://search.twitter.com/search.json?q="+query+"&lang=en&callback=?",
+        dataType : "json",  
+        timeout:15000,  
+        success : function(data)  
+        {  
+              var results = data.results;
+              
+              for(var i=0; i<results.length; i++) {
+              	var post = results[i];
+        		controller.addObject(post);      	
+              }
+        },  
+        error : function()  
+        {
+            alert("Failure!");
+        },
+    });  
+		
+	}
+	
+});
+
+App.FeedView = Ember.View.extend({
+	
+	init: function() {
+		this._super();
+		this.set('controller', App.FeedController.create());
+	},
+	
+	didInsertElement: function() {
+		
+		this.get('controller').getContent(["Helsinki"]);
+		
+	},
+	
+	searchTagsChanged: function() {
+		
+		this.get('controller').getContent(App.controller.get('searchTags'));
+		
+	}.observes('App.controller.searchTags')
+	
+});
+
+
+App.RouteController = Ember.Controller.extend({
+	
+	fromto: undefined,
+	
+	from: undefined,
+	to: undefined,
+	
+	entries: undefined,
+	
+	init: function() {
+		
+		var entries = Ember.ArrayProxy.create( { content: [] });
+		this.set('entries', entries);
+		
+	},
+	
+	getEntries: function(from, to) {
+		
+		var entries = this.get('entries');
+		
+		entries.clear();
+		
+		var controller = this;
+		
+		$.get("service/entry?from="+from+"&to="+to, function(data) {
+			
+			console.log(data);
+			
+			if(data.length > 0) {
+				controller.set('from', data[0].from.displayValue);
+				controller.set('to', data[0].to.displayValue);		
+			}
+			
+			for(var i=0; i<data.length; i++) {
+				entries.addObject(
+					App.Entry.create({ data: data[i] })
+				);
+			}
+		});
+		
+	},
+	
+	paramsChanged: function() {
+		
+		var fromto = this.get('fromto');
+		
+		var paramArr = fromto.split("&");
+		var fromParam = paramArr[0];
+		var toParam = paramArr[1];
+		var fromVal = fromParam.split("=")[1];
+		var toVal = toParam.split("=")[1];
+		
+		this.getEntries(fromVal, toVal);
+		
+	}.observes('fromto')
+	
+	
+});
+
+
+App.RouteView = Ember.View.extend({
+	
+	didInsertView: function() {
+		
+	},
+	
+	contentChanged: function() {
+		
+		
+		
+	}.observes('controller.from')
+	
+});
+
 
 App.router = App.Router.create();
 App.initialize(App.router);

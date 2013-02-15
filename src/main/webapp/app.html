@@ -70,17 +70,18 @@
 					
 					<div class="span3 bs-docs-sidebar visible-desktop visible-tablet">
         				
-        				<div style="border-top: 1px solid black; padding-bottom: 2.0em;">
-        					John Smith @Uzbekistan
-        					<br/><br/>
-        					Finally in Uzbekistan! Will upload photos when have better Wi-Fi connection! #Tashkent
-        				</div>
+        				{{#view App.FeedView}}
+						
+							{{#each post in controller}}
+							
+								<div style="border-top: 1px solid black; padding-bottom: 2.0em;">
+        							{{post.text}}
+        							<br/><br/>
+        						</div>
+        					
+        					{{/each}}
         				
-        				<div style="border-top: 1px solid black; padding-bottom: 2.0em;">
-        					Emily Rose @Uzbekistan
-        					<br/><br/>
-        					More than 10,000 ppl at the main square. Riot police has arrived. It's not safe to move around the center of Tashkent. #Tashkent
-        				</div>
+						{{/view}}
         				
         				<div style="border-top: 1px solid black; padding-bottom: 2.0em;">
         					Wiki-Places
@@ -88,11 +89,6 @@
         					Book flights from Helsinki to Tashkent (from 219e)
         				</div>
         				
-        				<div style="border-top: 1px solid black; padding-bottom: 2.0em;">
-        					John Smith @Uzbekistan
-        					<br/><br/>
-        					What happens in Uzbekistan stays in Uzbekistan ;) #Uzbekistan
-        				</div>
         				
         				<div style="border-top: 1px solid black; padding-bottom: 2.0em;">
         					Wiki-Places
@@ -195,7 +191,21 @@
 			
 		</script>
 
-
+		<script type="text/x-handlebars" data-template-name="route">
+		
+			<h2 style="line-height: 23px;">{{from}} - {{to}}</h2>
+			
+			<br/><br/>
+			
+			{{#each entry in entries}}
+				<div class="item">
+					By {{entry.by.textValue}} / {{entry.type.textValue}}
+					<span class="by">(lenin_ra)</span>
+				</div>
+			{{/each}}
+			
+		</script>
+		
 		<script type="text/x-handlebars" data-template-name="find">
 			
 			<div class="searchBox">

@@ -16,6 +16,9 @@ public class Place implements Serializable {
 	private Double lat;
 	private Double lng;
 	
+	private String localityName;
+	
+	
 	public Place() {
 	}
 	
@@ -50,6 +53,14 @@ public class Place implements Serializable {
 
 	public void setLng(Double lng) {
 		this.lng = lng;
+	}
+
+	public String getLocalityName() {
+		return localityName;
+	}
+
+	public void setLocalityName(String localityName) {
+		this.localityName = localityName;
 	}
 	
 	
