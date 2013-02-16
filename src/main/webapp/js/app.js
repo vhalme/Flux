@@ -986,6 +986,10 @@ App.RouteController = Ember.Controller.extend({
 		
 	},
 	
+	selectEntry: function(entry) {
+		location.href="#/entry/"+entry.id;
+	},
+	
 	paramsChanged: function() {
 		
 		var fromto = this.get('fromto');

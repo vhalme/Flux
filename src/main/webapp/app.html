@@ -198,9 +198,8 @@
 			<br/><br/>
 			
 			{{#each entry in entries}}
-				<div class="item">
-					By {{entry.by.textValue}} / {{entry.type.textValue}}
-					<span class="by">(lenin_ra)</span>
+				<div style="">
+					<a {{action selectEntry entry}}>&gt;&gt;</a>&nbsp;&nbsp;By {{entry.by.textValue}} / {{entry.type.textValue}} / Cost: {{entry.cost}}&nbsp;&nbsp;&nbsp;&nbsp;from Anonymous
 				</div>
 			{{/each}}
 			
@@ -215,38 +214,29 @@
 					<div class="map" id="findMap">
 					</div>
 				</div>
-					
-				<div class="right">
-					
-					<div style="height: 9em;">
-						<div class="latTitle">FROM</div>
-						<div class="partResults">
-						{{#each entry in view.fromSuggestions}}
-							<a {{action selectFromTerm entry}}>{{entry.from.displayValue}}</a><br/>
-						{{/each}}
-						</div>
-					</div>
-					
-					<div style="height: 9em;">
-						<div class="latTitle">TO</div>
-						<div class="partResults">
-							{{#each entry in view.toSuggestions}}
-								<a {{action selectToTerm entry}}>{{entry.to.displayValue}}</a><br/>
-							{{/each}}
-						</div>
-					</div>
-					
-				</div>
 				
 			</div>
 			
 			<div class="searchResults">
-				{{#each entry in view.results}}
-					<div class="item">
-						<a {{action selectEntry entry}}>{{entry.from.displayValue}} - {{entry.to.displayValue}}</a>
-						<span class="by">by lenin_ra</span>
+				
+					<div style="display: inline; float: left; height: 5em; width: 48%;">
+						<div class="latTitle">FROM</div>
+						<div class="partResults">
+						{{#each entry in view.fromSuggestions}}
+							<a {{action selectEntry entry}}>{{entry.from.displayValue}} - {{entry.to.displayValue}}</a><br/>
+						{{/each}}
+						</div>
 					</div>
-				{{/each}}
+					
+					<div style="display: inline; float: right; height: 9em; width: 48%;">
+						<div class="latTitle">TO</div>
+						<div class="partResults">
+							{{#each entry in view.toSuggestions}}
+								<a {{action selectEntry entry}}>{{entry.from.displayValue}} - {{entry.to.displayValue}}</a><br/>
+							{{/each}}
+						</div>
+					</div>
+					
 			</div>
 			
 		</script>

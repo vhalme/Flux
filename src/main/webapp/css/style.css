@@ -433,6 +433,7 @@ header .logo {
 	width: 100%;
 	margin-top: 0px;
 	-webkit-transition: margin-top 1s;
+	-webkit-transform: translateZ(0px);
 	
 }
 
@@ -442,6 +443,7 @@ header .logo {
 	margin-top: 0px;
 	opacity: 0;
 	-webkit-transition: opacity 0s;
+  	-webkit-transform: translateZ(0px);
   	
 }
 
