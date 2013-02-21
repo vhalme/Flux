@@ -115,19 +115,7 @@ App.Trip = App.Model.extend({
 	path: "trip",
 	
 	id: null,
-	displayValue: null,
-	
-	/*
-	init: function() {
-		
-		this._super();
-		
-		if(this.get('data') == null) {
-			this.set('data', {});
-		}
-		
-	}
-	*/
+	displayValue: null
 	
 });
 
@@ -206,71 +194,9 @@ App.EntryView = Em.View.extend({
     	var contentType = Math.random();
 		this.set('contentType', contentType);
 		
-    	this.transitIn();
+    	//this.transitIn();
 		
 		
-	},
-	
-	transitIn: function() {
-		
-		var element = this.$();
-    	
-    	element.addClass("nooverflow");
-    	
-    	var container = $('#centerSection');
-		//container.css("overflow", "hidden");
-		
-		setTimeout(function() {
-		//element.bind('trans-end', function() {
-    		container.css("overflow", "");
-		//});
-		}, 1200);
-		
-    	setTimeout(function() {	
-    		
-    		element.removeClass("slideOut");
-    		element.addClass("slideIn");
-    		
-    	}, 10);
-    	
-	},
-	
-	willDestroyElement: function ()
-	{
-		
-		//console.log("will destroy entry");
-		
-		//App.controlsController.set('content', []);
-		
-		var clone = this.$().clone();
-		clone.css("z-index", "-1");
-    	this.$().replaceWith(clone);
-    	
-    	this.transitOut(clone);
-		
-	},
-	
-	transitOut: function(clone) {
-		
-		var container = $('#centerSection');
-		//container.css("overflow", "hidden");
-		
-		
-    	setTimeout(function() {
-    	//clone.bind('trans-end', function() { 
-    		console.log("remove clone");
-			console.log(clone);
-			clone.remove();
-    		delete clone;
-    		container.css("overflow", "");
-    	//});
-    	}, 1200);
-		
-		setTimeout(function() {
-			clone.removeClass("slideIn");
-			clone.addClass("slideOut");
-		}, 10);
-			
 	},
 	
 	
@@ -315,26 +241,28 @@ App.EntryView = Em.View.extend({
 			
 		}
 		
+		
 		var element = this.$();
 		
 		var contentType = Math.random();
 		this.set('contentType', contentType);
 		
+		/*
 		if(element != undefined) {
 			
-			element.toggleClass("slideIn");
+			//element.toggleClass("slideIn");
 			
 			var clone = this.get('oldContentElem');
 			clone.css("z-index", "-1");
 			
 			if(clone != undefined) {
-				this.get('parentView').$().append(clone);
+				element.append(clone);
 				this.transitOut(clone);
 			}
 			
-			this.transitIn();
 			
 		}
+		*/
 		
 	}.observes('controller.content')
 	
@@ -342,14 +270,88 @@ App.EntryView = Em.View.extend({
 });
 
 
-App.EntryViewView = Ember.View.extend({
+App.EntryContentView = Ember.View.extend({
+	
+	didInsertElement: function ()
+	{
+    	
+    	console.log("insert entryviewview");
+    	var contentType = Math.random();
+		this.set('parentView.contentType', contentType);
+		
+    	this.transitIn();
+		
+		
+	},
+	
+	transitIn: function() {
+		
+		var element = this.$();
+    	
+    	element.addClass("nooverflow");
+    	
+    	var container = $('#centerSection');
+    	
+		setTimeout(function() {
+		//element.bind('trans-end', function() {
+    		container.css("overflow", "");
+		//});
+		}, 1200);
+		
+    	setTimeout(function() {
+    		
+    		element.removeClass("slideOut");
+    		element.addClass("slideIn");
+    		
+    	}, 10);
+    	
+	},
+	
+	willDestroyElement: function ()
+	{
+		
+		var clone = this.$().clone();
+		clone.css("z-index", "-1");
+    	this.$().replaceWith(clone);
+    	
+    	this.transitOut(clone);
+		
+	},
+	
+	transitOut: function(clone) {
+		
+		var container = $('#centerSection');
+		//container.css("overflow", "hidden");
+		
+		
+    	setTimeout(function() {
+    	//clone.bind('trans-end', function() { 
+    		console.log("remove clone");
+			console.log(clone);
+			clone.remove();
+    		delete clone;
+    		container.css("overflow", "");
+    	//});
+    	}, 1200);
+		
+		setTimeout(function() {
+			clone.removeClass("slideIn");
+			clone.addClass("slideOut");
+		}, 10);
+			
+	}
+	
+	
+});
+
+App.EntryViewView = App.EntryContentView.extend({
 	
 	controllerBinding: 'parentView.controller'
 	
 });
 
 
-App.EntryEditView = Ember.View.extend({
+App.EntryEditView = App.EntryContentView.extend({
 	
 	controllerBinding: 'parentView.controller'
 	

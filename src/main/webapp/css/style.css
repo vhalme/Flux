@@ -35,24 +35,6 @@ header .logo {
     
 }
 
-
-#leftSection {
-	
-	float: left;
-	
-	display: inline-block;
-	
-	width: 28%;
-	height: 100%;
-	
-	padding-top: 1.0em;
-	padding-left: 2.4em;
-	padding-right: 2.0em;
-	
-	min-height: 600px;
-	
-}
-
 #centerSection {
 	
 	float: left;
@@ -326,10 +308,8 @@ header .logo {
 .nooverflow {
 	
 	position: absolute;
-	width: 99%;
 	margin-left: 100%;
 	width: 100%;
-	opacity: 0;
 	background: white;
 	
 }
@@ -422,8 +402,6 @@ header .logo {
 
 .slideIn {
 	
-	opacity: 1;
-	width: 100%;
 	margin-left: 0px;
 	-webkit-transition: margin-left 1s;
 	-webkit-transform: translateZ(0px);
@@ -432,10 +410,8 @@ header .logo {
 
 .slideOut {
 	
-	width: 100%;
-	margin-right: -100%;
-	opacity: 0;
-	-webkit-transition: margin-right 0s;
+	margin-left: -100%;
+	-webkit-transition: margin-left 1s;
   	-webkit-transform: translateZ(0px);
   	
 }

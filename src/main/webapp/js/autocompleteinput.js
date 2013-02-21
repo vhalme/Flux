@@ -16,6 +16,9 @@ App.AutocompleteController = Ember.ArrayController.extend({
 	
 	selectItem: function(item) {
 		
+		console.log("selected item");
+		console.log(item);
+		
 		this.set('selectedItem', item);
 		
 		this.handleSelection(item);
@@ -218,7 +221,7 @@ App.AutocompleteInputView = Ember.View.extend({
 					//element.focus();
 					element.blur();
 					
-				}, 0);
+				}, 200);
 				
 				
 				element.blur(function() {
@@ -236,7 +239,7 @@ App.AutocompleteInputView = Ember.View.extend({
 						
 						parentView.set('isFocused', false);
 						
-					}, 0);
+					}, 200);
 				});
 				
 			},
