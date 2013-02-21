@@ -35,14 +35,6 @@ header .logo {
     
 }
 
-#content {
-	
-	width: 100%;
-	
-	min-height: 400px;
-	
-}
-
 
 #leftSection {
 	
@@ -69,6 +61,7 @@ header .logo {
 	
 	width: 100%;
 	position: relative;
+	overflow-x: hidden;
 	/*border: 1px solid green;*/
 }
 
@@ -77,6 +70,7 @@ header .logo {
 	position: relative;
 	height: 500px;
 	font-size: 1.2em;
+	
 	/*border: 1px solid blue;*/
    	
 }
@@ -215,7 +209,6 @@ header .logo {
 
 .routeInfoInput {
 	width: 100%;
-	padding-bottom: 6.0em;
 }
 
 .tripleColumn {
@@ -334,7 +327,7 @@ header .logo {
 	
 	position: absolute;
 	width: 99%;
-	margin-top: -100%;
+	margin-left: 100%;
 	width: 100%;
 	opacity: 0;
 	background: white;
@@ -431,8 +424,8 @@ header .logo {
 	
 	opacity: 1;
 	width: 100%;
-	margin-top: 0px;
-	-webkit-transition: margin-top 1s;
+	margin-left: 0px;
+	-webkit-transition: margin-left 1s;
 	-webkit-transform: translateZ(0px);
 	
 }
@@ -440,9 +433,9 @@ header .logo {
 .slideOut {
 	
 	width: 100%;
-	margin-top: 0px;
+	margin-right: -100%;
 	opacity: 0;
-	-webkit-transition: opacity 0s;
+	-webkit-transition: margin-right 0s;
   	-webkit-transform: translateZ(0px);
   	
 }

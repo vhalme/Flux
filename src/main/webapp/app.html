@@ -276,21 +276,20 @@
 						
 		</script>
 		
-		<script type="text/x-handlebars" data-template-name="entry">
-			
-			<div style="border: 1px solid black;">
-			
+		<script type="text/x-handlebars" data-template-name="entry/edit">
 			
 			<div class="routeInfoInput">
 				
 				<div style="margin: 0px auto; max-width: 40em;">
 				
 				<div class="tripleColumn" style="margin-bottom: 1.0em;">
-					<div class="columnLeft" align="right"></div>
+					<div class="columnLeft" align="right">Type</div>
 					<div class="columnCenter">
 						{{#view App.EntryTypeSelectView valueBinding="type" class="selectList"}}
-							{{#view App.ListItemView class="halfWidth"}}I travelled{{/view}}
-							{{#view App.ListItemView class="halfWidth"}}I planned{{/view}}
+							{{#view App.ListItemView}}Travel{{/view}}&nbsp;
+							{{#view App.ListItemView}}Research{{/view}}&nbsp;
+							{{#view App.ListItemView}}Advertisement{{/view}}&nbsp;
+							{{#view App.ListItemView}}Ride{{/view}}
 						{{/view}}
 					</div>
 					<div class="columnRight visible-desktop" align="center"></div>
@@ -389,7 +388,112 @@
 				<a {{action "saveEntry"}} class="btn btn-primary">Save</a>
 			</div>
 			
+			
+		</script>
+		
+		<script type="text/x-handlebars" data-template-name="entry">
+			{{outlet}}
+	    </script>
+	   
+		<script type="text/x-handlebars" data-template-name="entry/view">
+			
+			<div class="routeInfoInput">
+				
+				<div style="margin: 0px auto; max-width: 40em;">
+				
+				<div class="tripleColumn" style="margin-bottom: 1.0em;">
+					<div class="columnLeft" align="right">Type</div>
+					{{type.textValue}}
+					<div class="columnRight visible-desktop" align="center"></div>
+        		</div>
+        		
+				<div class="tripleColumn">
+					
+					<div class="columnLeft" align="right">Trip</div> 
+					<div class="columnCenter">{{trip.displayValue}}</div>
+					<div class="columnRight visible-desktop" align="center"></div>
+					
+				</div>
+				
+				
+				<div class="tripleColumn">
+					<div class="columnLeft" align="right">from</div>
+					<div class="columnCenter">{{from.displayValue}}</div>
+					<div class="columnRight visible-desktop" align="center"></div>
+				</div>
+				
+				<div class="tripleColumn">
+					<div class="columnLeft" align="right">to</div>
+					<div class="columnCenter">{{to.displayValue}}</div>
+					<div class="columnRight visible-desktop" align="center"></div>
+        		</div>
+				
+				
+				<div class="tripleColumn">
+					<div class="columnLeft" align="right">by</div>
+					<div class="columnCenter">
+						{{by.textValue}}
+					</div>
+					<div class="columnRight visible-desktop"></div>
+				</div>
+				
+				<div class="tripleColumn" style="margin-top: 0.4em;">
+					<div class="columnLeft" align="right"></div>
+					<div class="columnCenter">
+						{{byId}}
+						{{byDepTime}}
+						{{byArrTime}}
+						<div style="display: inline; float: left; margin-left: 0.4em; vertical-align: middle; padding: 4px 0px;">+&nbsp;</div>
+						{{byAddDays}}
+						<div style="display: inline; float: left; vertical-align: middle; padding: 4px 0px;">&nbsp;days</div>
+					</div>
+					<div class="columnRight visible-desktop"></div>
+				</div>
+				
+				<div class="tripleColumn"  style="margin-top: 3.2em;">
+					<div class="columnLeft" align="right"></div>
+					<div class="columnCenter">
+						{{scheduleInfo}}
+					</div>
+					<div class="columnRight visible-desktop"></div>
+				</div>
+				
+				<div class="tripleColumn">
+					<div class="columnLeft" align="right">Cost</div>
+					<div class="columnCenter">
+						{{cost}}
+					</div>
+					<div class="columnRight visible-desktop"></div>
+				</div>
+				
+				<div class="tripleColumn">
+					
+					<div class="columnLeft" align="right"></div>
+					
+					<div class="columnCenter">
+						<div style="float: left; margin-right: 4%; vertical-align: middle; padding: 4px 0px;">Departure Date</div>
+						<div style="padding: 4px 0px;" class="visibleMini">&nbsp;</div>
+						<div class="depDate">
+							{{depDateYear}}
+							{{depDateMonth}}
+							{{depDateDay}}
+						</div>
+						
+					</div>
+					
+					<div class="columnRight visible-desktop">
+					</div>
+					
+				</div>
+				
+				</div>
+				
 			</div>
+			
+			<div style="padding-left: 50%; padding-bottom: 1.0em;">
+				<a {{action "saveEntry"}} class="btn btn-primary">Save</a>
+			</div>
+			
 			
 		</script>
 		
@@ -425,6 +529,7 @@
 		<script src="js/transition.js"></script>
 		<script src="js/selectlist.js"></script>
 		<script src="js/autocompleteinput.js"></script>
+		<script src="js/entry.js"></script>
 		<script src="js/test.js"></script>
 		<script src="js/router.js"></script>
 	

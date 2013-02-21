@@ -78,6 +78,11 @@
   .hidden-tablet {
     display: none !important;
   }
+	
+ #centerSection .centerSectionContent {
+	margin-left: 15%;
+	}
+
 }
 
 @media (max-width: 767px) {
