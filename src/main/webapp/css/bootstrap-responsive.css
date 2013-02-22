@@ -161,9 +161,19 @@
   .span4 {
     width: 370px;
   }
+  
+  .span4-entryview {
+    width: 370px;
+  }
+  
   .span3 {
     width: 270px;
   }
+  
+  .span3-entryview {
+    width: 270px;
+  }
+  
   .span2 {
     width: 170px;
   }
@@ -485,7 +495,8 @@
     width: 724px;
   }
   .span12 {
-    width: 820px;
+  	width: 724px;
+    /*width: 748px;*/
   }
   .span11 {
     width: 662px;
@@ -494,7 +505,9 @@
     width: 600px;
   }
   .span9 {
-    width: 538px;
+    width: 470px;
+    padding-left: 12px;
+   /*width: 538px;*/
   }
   .span8 {
     width: 476px;
@@ -508,14 +521,26 @@
   .span5 {
     width: 290px;
   }
+  
   .span4 {
-  	width: 300px;
+  	width: 320px;
     /*width: 228px;*/
   }
+  
   .span3 {
-    /*width: 166px;*/
-   width: 220px;
+    width: 220px;
+   /*width: 180px;*/
   }
+  
+  .span4-entryview {
+  	float: right;
+    width: 224px;
+  }
+  
+  .span3-entryview {
+   	width: 166px;
+  }
+  
   .span2 {
     width: 104px;
   }
@@ -557,10 +582,6 @@
   }
   .offset1 {
     margin-left: 82px;
-  }
-  
-  #centerSection {
-  	margin-left: 4.0em;	
   }
   
   .row-fluid {

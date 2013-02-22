@@ -332,6 +332,14 @@ a:focus {
   width: 220px;
 }
 
+.span4-entryview {
+  width: 300px;
+}
+
+.span3-entryview {
+  width: 220px;
+}
+
 .span2 {
   width: 140px;
 }
