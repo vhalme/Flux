@@ -485,7 +485,7 @@
     width: 724px;
   }
   .span12 {
-    width: 724px;
+    width: 820px;
   }
   .span11 {
     width: 662px;
@@ -509,10 +509,12 @@
     width: 290px;
   }
   .span4 {
-    width: 228px;
+  	width: 300px;
+    /*width: 228px;*/
   }
   .span3 {
-    width: 166px;
+    /*width: 166px;*/
+   width: 220px;
   }
   .span2 {
     width: 104px;
@@ -556,6 +558,11 @@
   .offset1 {
     margin-left: 82px;
   }
+  
+  #centerSection {
+  	margin-left: 4.0em;	
+  }
+  
   .row-fluid {
     width: 100%;
     *zoom: 1;

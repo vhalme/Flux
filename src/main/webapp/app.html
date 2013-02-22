@@ -234,10 +234,6 @@
 			</script>
 
 			<script type="text/x-handlebars" data-template-name="placeAutocompleteViewTemplate"></script>
-
-			<script type="text/x-handlebars" data-template-name="entry/reference">
-				BLAH BLAH
-			</script>
 			
 			<script type="text/x-handlebars" data-template-name="entry/edit/date">
 
@@ -254,13 +250,15 @@
 
 			<script type="text/x-handlebars" data-template-name="entry/edit">
 				
+			<div class="editEntry">
+					
 				<div class="row" style="min-height: 2.4em">
 					
 					<div class="span1">
 						Type <span style="color: red;">*</span>
 					</div>
 				
-					<div class="span5">
+					<div class="span4 typeSelect">
 						{{#view App.EntryTypeSelectView valueBinding="type" class="selectList"}}
 							{{#view App.ListItemView}}Travel{{/view}}&nbsp;
 							{{#view App.ListItemView}}Research{{/view}}&nbsp;
@@ -273,11 +271,11 @@
 				
 				<br/>
 				
-				<div class="row" style="min-height: 2.4em">
+				<div class="row">
 					<div class="span1">
 						Trip
 					</div>
-					<div class="span4">
+					<div class="span4" style="text-align: center;">
 						{{view App.TripInputView valueBinding="trip"}}
 					</div>
 					<div class="span2 visible-desktop">
@@ -285,11 +283,11 @@
 					</div>
 				</div>
 				
-				<div class="row"  style="min-height: 2.4em">
+				<div class="row">
 					<div class="span1">
 						From <span style="color: red;">*</span>
 					</div>
-					<div class="span4">
+					<div class="span4" style="text-align: center;">
 						{{view App.PlaceInputView valueBinding="from"}}
 					</div>
 					<div class="span2 visible-desktop">
@@ -297,11 +295,11 @@
 					</div>
 				</div>
 				
-				<div class="row" style="min-height: 2.4em">
+				<div class="row">
 					<div class="span1">
 						To <span style="color: red;">*</span>
 					</div>
-					<div class="span4">
+					<div class="span4" style="text-align: center;">
 						{{view App.PlaceInputView valueBinding="to"}}
 					</div>
 					<div class="span2 visible-desktop">
@@ -309,11 +307,11 @@
 					</div>
 				</div>
 				
-				<div class="row" style="min-height: 2.4em">
+				<div class="row">
 					<div class="span1">
 						By <span style="color: red;">*</span>
 					</div>
-					<div class="span4">
+					<div class="span4 transportSelect">
 						{{#view App.TransportTypeSelectView valueBinding="by" class="selectList"}}
 							{{#view App.ListItemView}}bus{{/view}}
 							{{#view App.ListItemView}}plane{{/view}}
@@ -326,11 +324,12 @@
 					</div>
 				</div>
 				
-				<div class="row" style="min-height: 2.4em">
-					<div class="span1">
+				<div class="row">
+					<div class="span1" style="line-height: 1.0em;">
+						Transport details
 					</div>
 					<div class="span4">
-						{{view Ember.TextField valueBinding="byId" placeholder="Number, destination or other id..." }}
+						{{view Ember.TextField valueBinding="byId" class="fullWidth" placeholder="Number, destination or other id..." }}
 					</div>
 					<div class="span2 visible-desktop">
 						Transport identification or description
@@ -339,43 +338,48 @@
 				
 				<!-- and identifying information. Eg. <i>Train 365, United Airlines Flight 110, Bus to NYC Grand Central Terminal etc.</i> -->
 				
-				<div class="row" style="min-height: 2.4em">
+				<div class="row">
 					<div class="span1">
-						Cost
-					</div>
-					<div class="span4">
-						{{view Ember.TextField valueBinding="cost" placeholder="Exact or approximate cost" }}
-					</div>
-					<div class="span2 visible-desktop">
-					</div>
-				</div>
-				
-				<div class="row" style="min-height: 2.4em">
-					<div class="span1">
+						Travel time
 					</div>
 					<div class="span4">
 						{{view Ember.TextField valueBinding="byDepTime" class="byDepTime" placeholder="Dep. time" }}
 						{{view Ember.TextField valueBinding="byArrTime" class="byArrTime" placeholder="Arr. time" }}
-						+ {{view Ember.TextField valueBinding="byAddDays" class="byAddDays" placeholder="0" }} days
+						<div style="margin-left: 1.0em;margin-right: 0.5em;display: inline;float: left;">+</div>
+						{{view Ember.TextField valueBinding="byAddDays" class="byAddDays" placeholder="0" }}
+						<div style="margin-left: 0.5em;display: inline;float: left;">days</div>
 					</div>
 					<div class="span2 visible-desktop">
 					</div>
 				</div>
 				
-				<div class="row" style="min-height: 2.4em">
+				<div class="row">
 					<div class="span1">
 						Schedule
 					</div>
 					<div class="span4">
-						{{view Ember.TextField valueBinding="scheduleInfo" placeholder="Schedule info, link to timetables..." }}
+						{{view Ember.TextField valueBinding="scheduleInfo" class="fullWidth" placeholder="Schedule info, link to timetables..." }}
 					</div>
 					<div class="span2 visible-desktop">
 						Eg. <i>Daily, Wed and Fri</i> OR <i>www.nationalrail.co.uk/times_fares/</i>
 					</div>
 				</div>
 				
-				<div class="row" style="min-height: 2.4em">
+				<div class="row">
 					<div class="span1">
+						Cost
+					</div>
+					<div class="span4">
+						{{view Ember.TextField valueBinding="cost" class="fullWidth" placeholder="Exact or approximate cost" }}
+					</div>
+					<div class="span2 visible-desktop">
+					</div>
+				</div>
+				
+				<br/>
+				
+				<div class="row">
+					<div class="span1" style="line-height: 1.0em;">
 						Date of departure <span style="color: red;">*</span>
 					</div>
 					<div class="span4">
@@ -388,17 +392,19 @@
 					</div>
 				</div>
 				
-				<div class="row" style="min-height: 2.4em">
+				<br/>
+				
+				<div class="row">
 					<div class="span1">
 					</div>
 					<div class="span4">
-						<a {{action "saveEntry"}} class="btn btn-primary">Save</a>
+						<a {{action "saveEntry"}} class="btn btn-primary" style="display: inline; float: right;">Save</a>
 					</div>
 					<div class="span2 visible-desktop">
 					</div>
 				</div>
 				
-
+			</div>
 
 			</script>
 

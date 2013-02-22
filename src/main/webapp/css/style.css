@@ -450,3 +450,25 @@ header .logo {
 	float: left; 
 	margin-top: -0.2em;
 }
+
+.editEntry .row {
+	min-height: 2.4em;
+}
+
+.editEntry .span1 {
+	min-width: 80px;	
+}
+
+.editEntry .fullWidth {
+	width: 95%;	
+}
+
+.editEntry .transportSelect .selectList {
+	padding-left: 50%;
+	margin-left: -4.8em;	
+}
+
+.editEntry .typeSelect .selectList {
+	padding-left: 50%;
+	margin-left: -9em;
+}
