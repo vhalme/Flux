@@ -38,25 +38,12 @@ header .logo {
 #centerSection {
 	
 	float: left;
-	
+	position: relative;
 	display: inline-block;
 	
-	width: 100%;
-	position: relative;
 	overflow-x: hidden;
-	/*border: 1px solid green;*/
-}
-
-#centerSection .centerSectionContent {
 	
-	position: relative;
-	height: 500px;
-	font-size: 1.2em;
-	
-	/*border: 1px solid blue;*/
-   	
 }
-
 
 .placeInput {
 	display: inline;
@@ -164,66 +151,6 @@ header .logo {
 	text-align: center;
 }
 
-.onMyTrip {
-	margin-top: 16px;	
-}
-
-.onMyTrip a.tripTitle {
-	color: #808080;
-}
-
-.onMyTrip .left {
-	display: inline-block;
-	width: 80%;
-}
-
-.onMyTrip .right {
-	margin-right: 10px;
-	display: inline-block;
-	float: right;
-	font-size: 0.8em;
-}
-
-.onMyTrip .right a {
-	color: black;
-	font-size: 0.8em;
-}
-
-.routeInfoInput {
-	width: 100%;
-}
-
-.tripleColumn {
-	
-	display: inline-block;
-	margin-top: 1.2em;
-	width: 100%;
-	
-}
-
-.tripleColumn .columnLeft {
-	min-width: 3.0em;
-	display: inline-block;
-	padding-right: 0.2em;
-}
-
-.tripleColumn .columnCenter {
-	width: 70%;
-	max-width: 20em;
-	display: inline-block;
-	text-align: center;
-	position: relative;
-	height: 1.0em;
-}
-
-.tripleColumn .columnRight {
-	font-size: 0.9em;
-	position: absolute;
-	max-width: 37%;
-	display: inline-block;
-	padding-left: 2.0em;
-	padding-right: 1.6em;
-}
 
 .mediumButton {
 	
@@ -266,7 +193,6 @@ header .logo {
 
 .selectList {
 	
-	position: absolute;
 	margin-left: auto;
 	margin-right: auto;
 	width: 100%;
@@ -279,7 +205,6 @@ header .logo {
 	color: #808080;
 	cursor: hand;
 	cursor: pointer;
-	font-size: 1.0em;
 	
 }
 
@@ -307,9 +232,7 @@ header .logo {
 
 .nooverflow {
 	
-	position: absolute;
 	margin-left: 100%;
-	width: 100%;
 	background: white;
 	
 }

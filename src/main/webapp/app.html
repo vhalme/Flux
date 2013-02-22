@@ -1,291 +1,266 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <title>Wiki-Routes - Global Transit Database</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="">
-    <meta name="author" content="">
 
-    <!-- Le styles -->
-    <link href="css/bootstrap.css" rel="stylesheet">
-    <style>
-      body {
-        padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
-      }
-    </style>
-    <link href="css/bootstrap-responsive.css" rel="stylesheet">
+	<head>
 
-    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
-    <!--[if lt IE 9]>
-      <script src="../assets/js/html5shiv.js"></script>
-    <![endif]-->
+		<meta charset="utf-8">
+		<title>Wiki-Routes - Global Transit Database</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="description" content="">
+		<meta name="author" content="">
 
-    <!-- Fav and touch icons -->
-    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
-    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
-      <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
-                    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">
-                                   <link rel="shortcut icon" href="../assets/ico/favicon.png">
-                                   
-                                   <!-- App styles -->
-		<link rel="stylesheet" href="css/style.css">
+		<!-- Le styles -->
+		<link href="css/bootstrap.css" rel="stylesheet">
+		<style>
+			body {
+				padding-top: 60px;
+				/* 60px to make the container go all the way to the bottom of the topbar */
+			}
+		</style>
+		<link href="css/bootstrap-responsive.css" rel="stylesheet">
+
+		<!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+		<!--[if lt IE 9]>
+		<script src="../assets/js/html5shiv.js"></script>
+		<![endif]-->
+
+		<!-- Fav and touch icons -->
+		<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+		<link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+		<link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+		<link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">
+		<link rel="shortcut icon" href="../assets/ico/favicon.png">
 		
+		<!-- App styles -->
+		<link rel="stylesheet" href="css/style.css">
+
 		<!-- Google fonts -->
 		<link href='http://fonts.googleapis.com/css?family=Lato:400,700' rel='stylesheet' type='text/css'>
 		<link href="http://fonts.googleapis.com/css?family=Lora" rel="stylesheet" type="text/css">
-		
+
 		<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?libraries=places&sensor=false&key=AIzaSyDzX1uyPzyjs9OrHhIEyvqfA_Z2k5wxb1U"></script>
-		
-  </head>
+
+	</head>
 
 	<body>
-			
-		<div id="map"></div>
-	
-		<script type="text/x-handlebars" data-template-name="application">
-				
-			<div id="wrap">
-              	
-		<div class="navbar navbar-fixed-top">
-        <div class="navbar-inner">
-          <div class="container">
-            <a class="brand" href="#">Wiki-Routes</a>
-              <ul class="nav">
-              	{{#each label in navLabels}}
-              		{{#view label}}<a {{action selectNavLabel view.value}}>{{view.value}}</a>{{/view}}
-              	{{/each}}
-              </ul>
-              <ul class="nav" style="float: right;">
-              	<li><a href="#contact" style="padding: 10px 0px 10px;">Log In</a></li>
-              </ul>
-              
-          </div>
-        </div>
-      </div>
-		
-			<div class="container">
-			
-				<div class="row">
-					
-					<div class="span3 bs-docs-sidebar visible-desktop visible-tablet" style="min-height: 1080px;">
-        				
-        				{{#view App.FeedView}}
-						
-							{{#each post in controller}}
-							
-								<div style="border-top: 1px solid black; padding-bottom: 2.0em;">
-        							{{post.text}}
-        							<br/><br/>
-        						</div>
-        					
-        					{{/each}}
-        				
-						{{/view}}
-        				
-        				<div style="border-top: 1px solid black; padding-bottom: 2.0em;">
-        					Wiki-Places
-        					<br/><br/>
-        					Book flights from Helsinki to Tashkent (from 219e)
-        				</div>
-        				
-        				
-        				<div style="border-top: 1px solid black; padding-bottom: 2.0em;">
-        					Wiki-Places
-        					<br/><br/>
-        					Book hostels in Tashkent (from 31e)
-        				</div>
-					
-        			
-      				</div>
-      
-					
-					<div class="span9">
-						
-						<div class="row">
-						
-						<div class="span9">
-							
-						<div id="centerSection">	
-							
-							<!--
-							<div class="title">
-								<span>{{viewName}}</span>
-							</div>
-							
-							<div class="contentControl">
-								{{#each App.controlsController}}
-									{{#view App.ControlView contentBinding="actionName" class="controlItem"}}
-										<a {{action "triggerAction"}}>{{view.content}}</a>
-									{{/view}}
-								{{/each}}
-							</div>
-							-->
-							
-							{{#view App.CenterSectionContentView class="centerSectionContent"}}
-							
-								{{outlet}}
-						
-							{{/view}}
-					
-						</div>
-						
-						</div>
-						</div>
-						
-					</div>
-				
-				</div>
-				
-				
-				
-			</div>
-			
-		</script>
-		
-		<script type="text/x-handlebars" data-template-name="placeInputViewTemplate">
-			
-			{{#view view.InputField class="placeInput"}}
-				{{#view view.InputFieldSelected}}{{view.displayValue}}{{/view}}
-				{{view view.InputFieldEdit}}
-			{{/view}}
-			
-			
-			{{#view view.AutocompleteView class="placeAutocompleteBox"}}
-			
-			<ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu" style="display: block; position: static; margin-bottom: 5px; width: 100%">
-			
-				{{#each item in view.controller}}
-					<li><a {{action selectItem item}} tabindex="-1">{{item.displayValue}}</a></li>
-				{{/each}}
-			
-			</ul>
-			
-			{{/view}}
-			
-			
-		</script>
-		
-		
-		<script type="text/x-handlebars" data-template-name="tripInputViewTemplate">
-			
-			{{#view view.InputField class="placeInput"}}
-				{{#view view.InputFieldSelected}}{{view.displayValue}}{{/view}}
-				{{view view.InputFieldEdit}}
-			{{/view}}
-			
-			{{#view view.AutocompleteView class="placeAutocompleteBox"}}
-				
-				
-				{{#if view.hasSearchString}}
-					<div><a {{action saveTrip}} tabindex="-1" style="color: blue; text-decoration: none;">Add new trip</a> ({{view.parentView.searchString}})</div>
-				{{/if}}
-				
-				<ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu" style="display: block; position: static; margin-bottom: 5px; width: 100%">
-				
-				{{#each item in view.controller}}
-					<li><a {{action selectItem item}} tabindex="-1">{{item.displayValue}}</a></li>
-				{{/each}}
-				</ul>
-			
-			{{/view}}
-			
-		</script>
 
-		<script type="text/x-handlebars" data-template-name="route">
+		<div id="map"></div>
 		
-			<h2 style="line-height: 23px;">{{from}} - {{to}}</h2>
+		<script type="text/x-handlebars" data-template-name="application">
 			
-			<br/><br/>
-			
-			{{#each entry in entries}}
-				<div style="">
-					<a {{action selectEntry entry}}>&gt;&gt;</a>&nbsp;&nbsp;By {{entry.by.textValue}} / {{entry.type.textValue}} / Cost: {{entry.cost}}&nbsp;&nbsp;&nbsp;&nbsp;from Anonymous
-				</div>
-			{{/each}}
-			
-		</script>
+		<div id="wrap">
 		
-		<script type="text/x-handlebars" data-template-name="find">
-			
-			<div class="searchBox">
-				
-				<div class="left">
-					<div class="searchInput">{{view App.StoredPlaceInputView valueBinding="view.searchLocation" class="searchPlace"}}</div>
-					<div class="map" id="findMap">
+			<div class="navbar navbar-fixed-top">
+
+				<div class="navbar-inner">
+
+					<div class="container">
+
+						<a class="brand" href="#">Wiki-Routes</a>
+						<ul class="nav">
+							{{#each label in navLabels}}
+								{{#view label}}<a {{action selectNavLabel view.value}}>{{view.value}}</a>{{/view}}
+							{{/each}}
+						</ul>
+						<ul class="nav" style="float: right;">
+							<li>
+								<a href="#contact" style="padding: 10px 0px 10px;">Log In</a>
+							</li>
+						</ul>
+
 					</div>
 				</div>
-				
+			</div>
+
+			<div class="container">
+
+				<div class="row">
+
+					<div class="span12">
+
+						<div class="row">
+
+							<div class="span3 bs-docs-sidebar visible-desktop visible-tablet" style="min-height: 1080px;">
+
+								{{#view App.FeedView}}
+
+									{{#each post in controller}}
+
+										<div style="border-top: 1px solid black; padding-bottom: 2.0em;">
+											{{post.text}}
+											<br/>
+											<br/>
+										</div>
+
+									{{/each}}
+
+								{{/view}}
+
+								<div style="border-top: 1px solid black; padding-bottom: 2.0em;">
+									Wiki-Places
+									<br/>
+									<br/>
+									Book flights from Helsinki to Tashkent (from 219e)
+								</div>
+
+								<div style="border-top: 1px solid black; padding-bottom: 2.0em;">
+									Wiki-Places
+									<br/>
+									<br/>
+									Book hostels in Tashkent (from 31e)
+								</div>
+
+							</div>
+
+							<div id="centerSection" class="span9">
+
+								{{outlet}}
+
+							</div>
+
+						</div>
+
+					</div>
+
+				</div>
+
 			</div>
 			
-			<div class="searchResults">
-				
-					<div style="display: inline; float: left; height: 5em; width: 48%;">
-						<div class="latTitle">FROM</div>
-						<div class="partResults">
-						{{#each entry in view.fromSuggestions}}
-							<a {{action selectEntry entry}}>{{entry.from.displayValue}} - {{entry.to.displayValue}}</a><br/>
+			</script>
+			
+			<script type="text/x-handlebars" data-template-name="placeInputViewTemplate">
+
+				{{#view view.InputField class="placeInput"}}
+					{{#view view.InputFieldSelected}}{{view.displayValue}}{{/view}}
+					{{view view.InputFieldEdit}}
+				{{/view}}
+
+				{{#view view.AutocompleteView class="placeAutocompleteBox"}}
+
+					<ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu" style="display: block; position: static; margin-bottom: 5px; width: 100%">
+
+						{{#each item in view.controller}}
+							<li><a {{action selectItem item}} tabindex="-1">{{item.displayValue}}</a></li>
 						{{/each}}
-						</div>
-					</div>
+
+					</ul>
+
+				{{/view}}
+
+			</script>
+
+			<script type="text/x-handlebars" data-template-name="tripInputViewTemplate">
+
+				{{#view view.InputField class="placeInput"}}
+					{{#view view.InputFieldSelected}}{{view.displayValue}}{{/view}}
+					{{view view.InputFieldEdit}}
+				{{/view}}
+
+				{{#view view.AutocompleteView class="placeAutocompleteBox"}}
+
+					{{#if view.hasSearchString}}
+						<div><a {{action saveTrip}} tabindex="-1" style="color: blue; text-decoration: none;">Add new trip</a> ({{view.parentView.searchString}})</div>
+					{{/if}}
+
+					<ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu" style="display: block; position: static; margin-bottom: 5px; width: 100%">
+
+						{{#each item in view.controller}}
+							<li><a {{action selectItem item}} tabindex="-1">{{item.displayValue}}</a></li>
+						{{/each}}
+					</ul>
+
+				{{/view}}
+
+			</script>
+
+			<script type="text/x-handlebars" data-template-name="route">
+
+				<h2 style="line-height: 23px;">{{from}} - {{to}}</h2>
+
+				<br/>
+				<br/>
+
+				{{#each entry in entries}}
 					
-					<div style="display: inline; float: right; height: 9em; width: 48%;">
-						<div class="latTitle">TO</div>
+					<div style="">
+						<a {{action selectEntry entry}}>&gt;&gt;</a>&nbsp;&nbsp;By {{entry.by.textValue}} / {{entry.type.textValue}} / Cost: {{entry.cost}}&nbsp;&nbsp;&nbsp;&nbsp;from Anonymous
+					</div>
+				
+				{{/each}}
+
+			</script>
+			
+			<script type="text/x-handlebars" data-template-name="find">
+
+				<div class="searchBox">
+
+					<div class="left">
+						<div class="searchInput">
+							{{view App.StoredPlaceInputView valueBinding="view.searchLocation" class="searchPlace"}}
+						</div>
+						<div class="map" id="findMap"></div>
+					</div>
+
+				</div>
+
+				<div class="searchResults">
+
+					<div style="display: inline; float: left; height: 5em; width: 48%;">
+						<div class="latTitle">
+							FROM
+						</div>
 						<div class="partResults">
-							{{#each entry in view.toSuggestions}}
-								<a {{action selectEntry entry}}>{{entry.from.displayValue}} - {{entry.to.displayValue}}</a><br/>
+							{{#each entry in view.fromSuggestions}}
+								<a {{action selectEntry entry}}>{{entry.from.displayValue}} - {{entry.to.displayValue}}</a>
+								<br/>
 							{{/each}}
 						</div>
 					</div>
-					
-			</div>
-			
-		</script>
-		
-		
-		<script type="text/x-handlebars" data-template-name="placeAutocompleteViewTemplate">
-			
-			
-			
-		</script>
-		
-		<script type="text/x-handlebars" data-template-name="entry/reference">
-			BLAH BLAH
-		</script>
-		
-		<script type="text/x-handlebars" data-template-name="entry/edit/date">
-			
-			<div style="float: left;">
-				{{#view App.TextSelectListView valueBinding="date" class="selectList"}}
-					{{#view App.ListItemView}}today{{/view}}&nbsp;&nbsp;
-					{{#view App.ListItemView}}this month{{/view}}&nbsp;&nbsp;
-					{{#view App.ListItemView}}this year{{/view}}
-				{{/view}}
-			</div>
-		
-		</script>
-		
-		
-		<script type="text/x-handlebars" data-template-name="entry/edit/reference">
-			
-			<div style="width: 100%; margin-bottom: 10px;">
-				<div style="display: inline-block; text-align: left; padding-left: 0.2em;">Reference</div>
-				<div style="display: inline-block; width: 60%">
-					<input style="width: 100%; padding: 4px 0px; margin-bottom: 0px;" type="text"></input>
+
+					<div style="display: inline; float: right; height: 9em; width: 48%;">
+						<div class="latTitle">
+							TO
+						</div>
+						<div class="partResults">
+							{{#each entry in view.toSuggestions}}
+								<a {{action selectEntry entry}}>{{entry.from.displayValue}} - {{entry.to.displayValue}}</a>
+								<br/>
+							{{/each}}
+						</div>
+					</div>
+
 				</div>
-			</div>
-						
-		</script>
-		
-		<script type="text/x-handlebars" data-template-name="entry/edit">
+
+			</script>
+
+			<script type="text/x-handlebars" data-template-name="placeAutocompleteViewTemplate"></script>
+
+			<script type="text/x-handlebars" data-template-name="entry/reference">
+				BLAH BLAH
+			</script>
 			
-			<div class="routeInfoInput">
+			<script type="text/x-handlebars" data-template-name="entry/edit/date">
+
+				<div style="float: left;">
+					{{#view App.TextSelectListView valueBinding="date" class="selectList"}}
+						{{#view App.ListItemView}}today{{/view}}&nbsp;&nbsp;
+						{{#view App.ListItemView}}this month{{/view}}&nbsp;&nbsp;
+						{{#view App.ListItemView}}this year{{/view}}
+					{{/view}}
+				</div>
+
+			</script>
+
+
+			<script type="text/x-handlebars" data-template-name="entry/edit">
 				
-				<div style="margin: 0px auto; max-width: 40em;">
+				<div class="row" style="min-height: 2.4em">
+					
+					<div class="span1">
+						Type <span style="color: red;">*</span>
+					</div>
 				
-				<div class="tripleColumn" style="margin-bottom: 1.0em; margin-top: 0em;">
-					<div class="columnLeft" align="right">Type</div>
-					<div class="columnCenter">
+					<div class="span5">
 						{{#view App.EntryTypeSelectView valueBinding="type" class="selectList"}}
 							{{#view App.ListItemView}}Travel{{/view}}&nbsp;
 							{{#view App.ListItemView}}Research{{/view}}&nbsp;
@@ -293,34 +268,52 @@
 							{{#view App.ListItemView}}Ride{{/view}}
 						{{/view}}
 					</div>
-					<div class="columnRight visible-desktop" align="center"></div>
-        		</div>
-        		
-				<div class="tripleColumn">
-					
-					<div class="columnLeft" align="right">Trip</div> 
-					<div class="columnCenter">{{view App.TripInputView valueBinding="trip"}}</div>
-					<div class="columnRight visible-desktop" align="center">Select or create a trip</div>
-					
+				
 				</div>
 				
+				<br/>
 				
-				<div class="tripleColumn">
-					<div class="columnLeft" align="right">from</div>
-					<div class="columnCenter">{{view App.PlaceInputView valueBinding="from"}}</div>
-					<div class="columnRight visible-desktop" align="center">Origin</div>
+				<div class="row" style="min-height: 2.4em">
+					<div class="span1">
+						Trip
+					</div>
+					<div class="span4">
+						{{view App.TripInputView valueBinding="trip"}}
+					</div>
+					<div class="span2 visible-desktop">
+						Select or create a trip
+					</div>
 				</div>
 				
-				<div class="tripleColumn">
-					<div class="columnLeft" align="right">to</div>
-					<div class="columnCenter">{{view App.PlaceInputView valueBinding="to"}}</div>
-					<div class="columnRight visible-desktop" align="center">Destination</div>
-        		</div>
+				<div class="row"  style="min-height: 2.4em">
+					<div class="span1">
+						From <span style="color: red;">*</span>
+					</div>
+					<div class="span4">
+						{{view App.PlaceInputView valueBinding="from"}}
+					</div>
+					<div class="span2 visible-desktop">
+						Origin
+					</div>
+				</div>
 				
+				<div class="row" style="min-height: 2.4em">
+					<div class="span1">
+						To <span style="color: red;">*</span>
+					</div>
+					<div class="span4">
+						{{view App.PlaceInputView valueBinding="to"}}
+					</div>
+					<div class="span2 visible-desktop">
+						Destination
+					</div>
+				</div>
 				
-				<div class="tripleColumn">
-					<div class="columnLeft" align="right">by</div>
-					<div class="columnCenter">
+				<div class="row" style="min-height: 2.4em">
+					<div class="span1">
+						By <span style="color: red;">*</span>
+					</div>
+					<div class="span4">
 						{{#view App.TransportTypeSelectView valueBinding="by" class="selectList"}}
 							{{#view App.ListItemView}}bus{{/view}}
 							{{#view App.ListItemView}}plane{{/view}}
@@ -328,262 +321,243 @@
 							{{#view App.ListItemView}}other{{/view}}
 						{{/view}}
 					</div>
-					<div class="columnRight visible-desktop">Mode of transportation and identifying information. Eg. <i>Train 365, United Airlines Flight 110, Bus to NYC Grand Central Terminal etc.</i></div>
+					<div class="span2 visible-desktop">
+						Mode of transportation
+					</div>
 				</div>
 				
-				<div class="tripleColumn" style="margin-top: 0.4em;">
-					<div class="columnLeft" align="right"></div>
-					<div class="columnCenter">
-						{{view Ember.TextField valueBinding="byId" class="byId" placeholder="Number, destination or other id..." }}
+				<div class="row" style="min-height: 2.4em">
+					<div class="span1">
+					</div>
+					<div class="span4">
+						{{view Ember.TextField valueBinding="byId" placeholder="Number, destination or other id..." }}
+					</div>
+					<div class="span2 visible-desktop">
+						Transport identification or description
+					</div>
+				</div>
+				
+				<!-- and identifying information. Eg. <i>Train 365, United Airlines Flight 110, Bus to NYC Grand Central Terminal etc.</i> -->
+				
+				<div class="row" style="min-height: 2.4em">
+					<div class="span1">
+						Cost
+					</div>
+					<div class="span4">
+						{{view Ember.TextField valueBinding="cost" placeholder="Exact or approximate cost" }}
+					</div>
+					<div class="span2 visible-desktop">
+					</div>
+				</div>
+				
+				<div class="row" style="min-height: 2.4em">
+					<div class="span1">
+					</div>
+					<div class="span4">
 						{{view Ember.TextField valueBinding="byDepTime" class="byDepTime" placeholder="Dep. time" }}
 						{{view Ember.TextField valueBinding="byArrTime" class="byArrTime" placeholder="Arr. time" }}
-						<div style="display: inline; float: left; margin-left: 0.4em; vertical-align: middle; padding: 4px 0px;">+&nbsp;</div>
-						{{view Ember.TextField valueBinding="byAddDays" class="byAddDays" placeholder="0" }}
-						<div style="display: inline; float: left; vertical-align: middle; padding: 4px 0px;">&nbsp;days</div>
+						+ {{view Ember.TextField valueBinding="byAddDays" class="byAddDays" placeholder="0" }} days
 					</div>
-					<div class="columnRight visible-desktop"></div>
+					<div class="span2 visible-desktop">
+					</div>
 				</div>
 				
-				<div class="tripleColumn"  style="margin-top: 3.2em;">
-					<div class="columnLeft" align="right"></div>
-					<div class="columnCenter">
-						{{view Ember.TextField valueBinding="scheduleInfo" class="scheduleInfo" placeholder="Schedule info, link to timetables..." }}
+				<div class="row" style="min-height: 2.4em">
+					<div class="span1">
+						Schedule
 					</div>
-					<div class="columnRight visible-desktop">Eg. <i>Daily, Wed and Fri</i> OR <i>www.nationalrail.co.uk/times_fares/</i></div>
+					<div class="span4">
+						{{view Ember.TextField valueBinding="scheduleInfo" placeholder="Schedule info, link to timetables..." }}
+					</div>
+					<div class="span2 visible-desktop">
+						Eg. <i>Daily, Wed and Fri</i> OR <i>www.nationalrail.co.uk/times_fares/</i>
+					</div>
 				</div>
 				
-				<div class="tripleColumn">
-					<div class="columnLeft" align="right">Cost</div>
-					<div class="columnCenter">
-						{{view Ember.TextField valueBinding="cost" class="cost" placeholder="Exact or approximate cost" }}
+				<div class="row" style="min-height: 2.4em">
+					<div class="span1">
+						Date of departure <span style="color: red;">*</span>
 					</div>
-					<div class="columnRight visible-desktop"></div>
-				</div>
-				
-				<div class="tripleColumn">
-					
-					<div class="columnLeft" align="right"></div>
-					
-					<div class="columnCenter">
-						<div style="float: left; margin-right: 4%; vertical-align: middle; padding: 4px 0px;">Departure Date</div>
-						<div style="padding: 4px 0px;" class="visibleMini">&nbsp;</div>
-						<div class="depDate">
-							{{view Ember.TextField valueBinding="depDateYear" class="depDateYear" placeholder="YYYY" }}
-							{{view Ember.TextField valueBinding="depDateMonth" class="depDateMonth" placeholder="MM" }}
-							{{view Ember.TextField valueBinding="depDateDay" class="depDateDay" placeholder="DD" }}
-						</div>
-						
+					<div class="span4">
+						{{view Ember.TextField valueBinding="depDateYear" class="depDateYear" placeholder="YYYY" }}
+						{{view Ember.TextField valueBinding="depDateMonth" class="depDateMonth" placeholder="MM" }}
+						{{view Ember.TextField valueBinding="depDateDay" class="depDateDay" placeholder="DD" }}
 					</div>
-					
-					<div class="columnRight visible-desktop">
+					<div class="span2 visible-desktop">
 						When did you travel or plan to travel?
 					</div>
-					
 				</div>
 				
-				<div class="tripleColumn" style="margin-top: 2.6em;">
-				<div class="columnLeft" align="right"></div>
-					<div class="columnCenter">
-						
+				<div class="row" style="min-height: 2.4em">
+					<div class="span1">
 					</div>
-					<div class="columnRight visible-desktop">
+					<div class="span4">
 						<a {{action "saveEntry"}} class="btn btn-primary">Save</a>
 					</div>
-				</div>
-				</div>
-				
-				</div>
-				
-			</div>
-			
-			
-		</script>
-		
-		<script type="text/x-handlebars" data-template-name="entry">
-			{{outlet}}
-	    </script>
-	   
-		<script type="text/x-handlebars" data-template-name="entry/view">
-			
-			<div class="routeInfoInput">
-				
-				<div style="margin: 0px auto; max-width: 40em;">
-				
-				<div class="tripleColumn" style="margin-bottom: 1.0em; margin-top: 0em;">
-					<div class="columnLeft" align="right">Type</div>
-					{{type.textValue}}
-					<div class="columnRight visible-desktop" align="center"></div>
-        		</div>
-        		
-				<div class="tripleColumn">
-					
-					<div class="columnLeft" align="right">Trip</div> 
-					<div class="columnCenter">{{trip.displayValue}}</div>
-					<div class="columnRight visible-desktop" align="center"></div>
-					
-				</div>
-				
-				
-				<div class="tripleColumn">
-					<div class="columnLeft" align="right">from</div>
-					<div class="columnCenter">{{from.displayValue}}</div>
-					<div class="columnRight visible-desktop" align="center"></div>
-				</div>
-				
-				<div class="tripleColumn">
-					<div class="columnLeft" align="right">to</div>
-					<div class="columnCenter">{{to.displayValue}}</div>
-					<div class="columnRight visible-desktop" align="center"></div>
-        		</div>
-				
-				
-				<div class="tripleColumn">
-					<div class="columnLeft" align="right">by</div>
-					<div class="columnCenter">
-						{{by.textValue}}
+					<div class="span2 visible-desktop">
 					</div>
-					<div class="columnRight visible-desktop"></div>
 				</div>
 				
-				<div class="tripleColumn" style="margin-top: 0.4em;">
-					<div class="columnLeft" align="right"></div>
-					<div class="columnCenter">
-						{{byId}}
-						{{byDepTime}}
-						{{byArrTime}}
-						<div style="display: inline; float: left; margin-left: 0.4em; vertical-align: middle; padding: 4px 0px;">+&nbsp;</div>
-						{{byAddDays}}
-						<div style="display: inline; float: left; vertical-align: middle; padding: 4px 0px;">&nbsp;days</div>
+
+
+			</script>
+
+			<script type="text/x-handlebars" data-template-name="entry">
+				{{outlet}}
+			</script>
+
+			<script type="text/x-handlebars" data-template-name="entry/view">
+
+				<div class="row">
+					<div class="span4">
+						Type: {{type.textValue}}
 					</div>
-					<div class="columnRight visible-desktop"></div>
-				</div>
-				
-				<div class="tripleColumn"  style="margin-top: 3.2em;">
-					<div class="columnLeft" align="right"></div>
-					<div class="columnCenter">
-						{{scheduleInfo}}
+					<div class="span4">
+						Trip: {{trip.displayValue}}
 					</div>
-					<div class="columnRight visible-desktop"></div>
 				</div>
 				
-				<div class="tripleColumn">
-					<div class="columnLeft" align="right">Cost</div>
-					<div class="columnCenter">
-						{{cost}}
+				<br/>
+
+				<div class="row">
+					<div class="span8">
+						<div id="entryMap" style="width: 99%; height: 200px; border: 1px solid black;">[MAP]</div> 
 					</div>
-					<div class="columnRight visible-desktop"></div>
 				</div>
 				
-				<div class="tripleColumn">
+				<div class="row">
 					
-					<div class="columnLeft" align="right"></div>
-					
-					<div class="columnCenter">
-						<div style="float: left; margin-right: 4%; vertical-align: middle; padding: 4px 0px;">Departure Date</div>
-						<div style="padding: 4px 0px;" class="visibleMini">&nbsp;</div>
-						<div class="depDate">
-							{{depDateYear}}
-							{{depDateMonth}}
-							{{depDateDay}}
+					<div class="span4">
+						<div class="row">
+							<div class="span1">
+								FROM
+							</div>
+							<div class="span3">
+								{{from.displayValue}}
+							</div>
 						</div>
+					</div>
 						
+					<div class="span4">
+						<div class="row">
+							<div class="span1">
+								TO
+							</div>
+							<div class="span3">
+								{{to.displayValue}}
+							</div>
+						</div>
 					</div>
-					
-					<div class="columnRight visible-desktop">
+				
+				</div>				
+				
+				<br/>
+				
+				<div class="row">
+					<div class="span8">
+						By {{by.textValue}}. {{byId}}
 					</div>
-					
 				</div>
 				
+				<div class="row">
+					<div class="span5">
+						Departure: {{byDepTime}}&nbsp;&nbsp;&nbsp;
+						Arrival: {{byArrTime}}&nbsp;&nbsp;&nbsp;
+						+ {{byAddDays}} days
+					</div>
+					<div class="span3">
+						Travel Date: {{depDateYear}} {{depDateMonth}} {{depDateDay}}
+					</div>
 				</div>
 				
-			</div>
-			
-			<div style="padding-left: 50%; padding-bottom: 1.0em;">
-				<a {{action "saveEntry"}} class="btn btn-primary">Save</a>
-			</div>
-			
-			
-		</script>
-		
-		<script type="text/x-handlebars" data-template-name="testViewTemplate">
-        		
-        		jjhjhj
-        		
-        		{{view.SubView}}
-        		
+				<br/>
 				
-        		{{view view.SubView}}
-					
-        </script>
-		
-		<!-- Prompt IE 6 users to install Chrome Frame. Remove this if you support IE 6.
-		chromium.org/developers/how-tos/chrome-frame-getting-started -->
-		<!--[if lt IE 7]><p class=chromeframe>Your browser is <em>ancient!</em> <a href="http://browsehappy.com/">Upgrade to a different browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to experience this site.</p><![endif]-->
+				<div class="row">
+					<div class="span5">
+						Schedule: {{scheduleInfo}}
+					</div>
+					<div class="span3">
+						Cost: {{cost}}
+					</div>
+				</div>
 
+			</script>
 
-		<!-- JavaScript at the bottom for fast page loading -->
+			<script type="text/x-handlebars" data-template-name="testViewTemplate">
 
-		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
-		<script>
-			window.jQuery || document.write('<script src="js/libs/jquery-1.8.3.min.js"><\/script>')
-		</script>
-		
-		<script src="js/libs/bootstrap.js"></script>
-		
-		<script src="js/libs/handlebars-1.0.0.beta.6.js"></script>
-		<script src="js/libs/ember-latest.js"></script>
-		<script src="js/libs/json2.js"></script>
-		<script src="js/app.js"></script>
-		<script src="js/transition.js"></script>
-		<script src="js/selectlist.js"></script>
-		<script src="js/autocompleteinput.js"></script>
-		<script src="js/entry.js"></script>
-		<script src="js/test.js"></script>
-		<script src="js/router.js"></script>
-	
-		<script>
-			
-			$('*').live('webkitTransitionEnd transitionend msTransitionEnd oTransitionEnd', function () {
-    			$(this).trigger('trans-end');
-			});
+				jjhjhj
 
-			$(document).ready( function() {
-            	
-            	// Cache for performance
-            	var $body = $('body'); 
+				{{view.SubView}}
 
-            	var setBodyScale = function() {
-            	
-            		var scaleSource = $body.width(),
-                	scaleFactor = 0.1,                     
-                	maxScale = 100,
-                	minScale = 30;
-					
-					// Multiply the width of the body by the scaling factor
-                	var fontSize = scaleSource * scaleFactor;
+				{{view view.SubView}}
 
-                	if(fontSize > maxScale) fontSize = maxScale;
-                	if(fontSize < minScale) fontSize = minScale;
+			</script>
 
-                	$('body').css('font-size', fontSize + '%');
-            	
-            	}
-				
-				
-            	$(window).resize(function() {
-            		
-            		//setBodyScale();
-            		
-            	});
-            	
-            	//Fire it when the page first loads
-            	//setBodyScale();
-            	
-        	});
-        
-		</script>	
-		
-		
+			<!-- Prompt IE 6 users to install Chrome Frame. Remove this if you support IE 6.
+			chromium.org/developers/how-tos/chrome-frame-getting-started -->
+			<!--[if lt IE 7]><p class=chromeframe>Your browser is <em>ancient!</em> <a href="http://browsehappy.com/">Upgrade to a different browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to experience this site.</p><![endif]-->
+
+			<!-- JavaScript at the bottom for fast page loading -->
+
+			<script
+			src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+			<script>
+window.jQuery
+|| document
+.write('<script src="js/libs/jquery-1.8.3.min.js"><\/script>');
+			</script>
+
+			<script src="js/libs/bootstrap.js"></script>
+
+			<script src="js/libs/handlebars-1.0.0.beta.6.js"></script>
+			<script src="js/libs/ember-latest.js"></script>
+			<script src="js/libs/json2.js"></script>
+			<script src="js/app.js"></script>
+			<script src="js/transition.js"></script>
+			<script src="js/selectlist.js"></script>
+			<script src="js/autocompleteinput.js"></script>
+			<script src="js/entry.js"></script>
+			<script src="js/test.js"></script>
+			<script src="js/router.js"></script>
+
+			<script>
+				$('*').live('webkitTransitionEnd transitionend msTransitionEnd oTransitionEnd', function() {
+					$(this).trigger('trans-end');
+				});
+
+				$(document).ready(function() {
+
+					// Cache for performance
+					var $body = $('body');
+
+					var setBodyScale = function() {
+
+						var scaleSource = $body.width(), scaleFactor = 0.1, maxScale = 100, minScale = 30;
+
+						// Multiply the width of the body by the scaling factor
+						var fontSize = scaleSource * scaleFactor;
+
+						if (fontSize > maxScale)
+							fontSize = maxScale;
+						if (fontSize < minScale)
+							fontSize = minScale;
+
+						$('body').css('font-size', fontSize + '%');
+
+					}
+
+					$(window).resize(function() {
+
+						//setBodyScale();
+
+					});
+
+					//Fire it when the page first loads
+					//setBodyScale();
+
+				});
+			</script>
+
 	</body>
-	
+
 </html>

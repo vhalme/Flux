@@ -215,7 +215,7 @@ App.Model = Ember.Object.extend({
   			data: json,
   			success: function(data) {
   				console.log("success: "+data.id);
-  				location.href="#/entry/"+data.id;
+  				location.href="#/entry/"+data.id+"/view";
   			}
   
 		});

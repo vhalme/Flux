@@ -194,27 +194,17 @@ App.EntryView = Em.View.extend({
     	var contentType = Math.random();
 		this.set('contentType', contentType);
 		
-    	//this.transitIn();
-		
 		
 	},
 	
 	
 	actionTriggered: function() {
 		
-		//var action = App.controlsController.get('selectedAction');
-		
 		if(action == "save") {
 			
 			var entry = this.get('controller.content');
 			entry.save();
 			
-			//App.controlsController.set('content', []);
-			
-		}
-		
-		if(action != null) {
-			//App.controlsController.set('selectedAction', null);	
 		}
 		
 	}.observes('App.controlsController.selectedAction'),
@@ -223,8 +213,6 @@ App.EntryView = Em.View.extend({
 	contentChanged: function() {
 		
 		var entry = this.get('controller.content');
-		
-		console.log("CONTENT CHANGED!!!");
 		
 		if(entry != undefined) {
 			
@@ -241,28 +229,11 @@ App.EntryView = Em.View.extend({
 			
 		}
 		
-		
 		var element = this.$();
 		
 		var contentType = Math.random();
 		this.set('contentType', contentType);
 		
-		/*
-		if(element != undefined) {
-			
-			//element.toggleClass("slideIn");
-			
-			var clone = this.get('oldContentElem');
-			clone.css("z-index", "-1");
-			
-			if(clone != undefined) {
-				element.append(clone);
-				this.transitOut(clone);
-			}
-			
-			
-		}
-		*/
 		
 	}.observes('controller.content')
 	
@@ -311,6 +282,7 @@ App.EntryContentView = Ember.View.extend({
 	{
 		
 		var clone = this.$().clone();
+		clone.css("position", "absolute");
 		clone.css("z-index", "-1");
     	this.$().replaceWith(clone);
     	
@@ -346,7 +318,57 @@ App.EntryContentView = Ember.View.extend({
 
 App.EntryViewView = App.EntryContentView.extend({
 	
-	controllerBinding: 'parentView.controller'
+	controllerBinding: 'parentView.controller',
+	
+	entryLoaded: function() {
+		
+		var entry = this.get('controller.content');
+		
+		if(entry == undefined) {
+			return;	
+		}
+		
+		var from = entry.get('from');
+		
+		
+		var styles = [
+		              {
+		            	    "stylers": [
+		            	      { "saturation": -100 }
+		            	    ]
+		            	  }
+		            	];
+		
+		var styledMap = new google.maps.StyledMapType(styles,
+			    {name: "Styled Map"});
+		
+		var mapOptions = {
+        	
+        	center: new google.maps.LatLng(from.lat, from.lng),
+          	zoom: 8,
+          	mapTypeId: google.maps.MapTypeId.ROADMAP,
+          	panControl: false,
+            zoomControl: false,
+            mapTypeControl: false,
+            scaleControl: false,
+            streetViewControl: false,
+            overviewMapControl: false,
+            
+            mapTypeControlOptions: {
+                mapTypeIds: [google.maps.MapTypeId.ROADMAP, 'map_style']
+            }
+		
+        };
+        
+        var map = new google.maps.Map(document.getElementById("entryMap"), mapOptions);
+        
+        map.mapTypes.set('map_style', styledMap);
+        map.setMapTypeId('map_style');
+        
+        this.set('map', map);
+        
+        
+	}.observes('App.controller.searchTags')
 	
 });
 
