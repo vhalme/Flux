@@ -183,7 +183,7 @@
 				{{#each entry in entries}}
 					
 					<div style="">
-						<a {{action selectEntry entry}}>&gt;&gt;</a>&nbsp;&nbsp;By {{entry.by.textValue}} / {{entry.type.textValue}} / Cost: {{entry.cost}}&nbsp;&nbsp;&nbsp;&nbsp;from Anonymous
+						<a href="#" {{action selectEntry entry}}>&gt;&gt;</a>&nbsp;&nbsp;By {{entry.by.textValue}} / {{entry.type.textValue}} / Cost: {{entry.cost}}&nbsp;&nbsp;&nbsp;&nbsp;from Anonymous
 					</div>
 				
 				{{/each}}
@@ -197,7 +197,7 @@
 					<div class="span9 searchBox">
 						
 						<div class="searchInput">
-							{{view App.StoredPlaceInputView valueBinding="view.searchLocation" class="searchPlace"}}
+							{{view App.StoredPlaceInputView valueBinding="view.searchLocation"}}
 						</div>
 						
 						<div class="map" id="searchMap"></div>
@@ -221,14 +221,14 @@
 				
 					<div class="span4" style="text-align: center;">
 						{{#each entry in view.fromSuggestions}}
-							<a {{action selectEntry entry}}>{{entry.from.displayValue}} - {{entry.to.displayValue}}</a>
+							<a href="#" {{action selectEntry entry}}>{{entry.from.displayValue}} - {{entry.to.displayValue}}</a>
 							<br/>
 						{{/each}}
 					</div>
 					
 					<div class="span4" style="text-align: center;">
 						{{#each entry in view.toSuggestions}}
-							<a {{action selectEntry entry}}>{{entry.from.displayValue}} - {{entry.to.displayValue}}</a>
+							<a href="#" {{action selectEntry entry}}>{{entry.from.displayValue}} - {{entry.to.displayValue}}</a>
 							<br/>
 						{{/each}}
 					</div>

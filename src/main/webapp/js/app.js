@@ -1,4 +1,6 @@
-var App = Ember.Application.create();
+var App = Ember.Application.create({
+    
+});
 
 App.map = new google.maps.Map(document.getElementById("map"), {});
 

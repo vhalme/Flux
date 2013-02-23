@@ -285,6 +285,10 @@ App.AutocompleteInputView = Ember.View.extend({
 			
 			displayValueBinding: 'parentView.value.displayValue',
 			
+			touchEnd: function() {
+				this.click();
+			},
+			
 			click: function() {
 				
 				var displayValue = this.get('displayValue');

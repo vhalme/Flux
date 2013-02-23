@@ -268,10 +268,6 @@ header .logo {
 	z-index: 1;
 }
 
-.searchBox .searchInput input {
-	margin-left: -6px;
-}
-
 .searchBox .right {
 	display: inline-block;
 	width: 50%;	
