@@ -36,7 +36,7 @@ App.ApplicationController = Ember.Controller.extend({
 	searchTags: [],
 	
 	navLabels: [ 
-	             App.NavLabelView.create({ active: true, value: "New", uri: "#/entry/new" }), 
+	             App.NavLabelView.create({ active: true, value: "New", uri: "#/entry/new/edit" }), 
 	             App.NavLabelView.create({ active: false, value: "Find", uri: "#/find" }), 
 	             App.NavLabelView.create({ active: false, value: "Trips", uri: "#/trips" })   
 	           ],
@@ -406,7 +406,7 @@ App.FindView = Em.View.extend({
 		
         };
         
-        var map = new google.maps.Map(document.getElementById("findMap"), mapOptions);
+        var map = new google.maps.Map(document.getElementById("searchMap"), mapOptions);
         
         map.mapTypes.set('map_style', styledMap);
         map.setMapTypeId('map_style');
@@ -680,7 +680,7 @@ App.RouteController = Ember.Controller.extend({
 	},
 	
 	selectEntry: function(entry) {
-		location.href="#/entry/"+entry.id;
+		location.href="#/entry/"+entry.id+"/view";
 	},
 	
 	paramsChanged: function() {

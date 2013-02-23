@@ -232,6 +232,7 @@ header .logo {
 
 .nooverflow {
 	
+	width: 100%;
 	margin-left: 100%;
 	background: white;
 	
@@ -239,9 +240,7 @@ header .logo {
 
 .searchBox {
 	
-	/*-webkit-transform: perspective(600px) translateY(-340px) translateZ(-180px) rotateX(90deg);*/
 	background: white;
-	border: 1px solid black;
 	
 }
 
@@ -255,20 +254,21 @@ header .logo {
 	width: 48%;
 }
 
-.searchBox .left .map {
+.searchBox .map {
 	height: 20em;
 	background: #808080;
 }
 
-.searchBox .left .searchInput {
-	width: 90%;
+.searchBox .searchInput {
+	width: 16em;
 	top: 0.2em;
-	left: 5%;
+	margin-left: 50%;
+	left: -8em;
 	position: absolute;
 	z-index: 1;
 }
 
-.searchBox .left .searchInput input {
+.searchBox .searchInput input {
 	margin-left: -6px;
 }
 

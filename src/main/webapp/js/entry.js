@@ -156,6 +156,13 @@ App.EntryController = Ember.ObjectController.extend({
 		var entry = this.get('content');
 		entry.save();
 		
+	},
+	
+	editEntry: function() {
+		
+		var entry = this.get('content');
+		location.href = "#/entry/"+entry.get('id')+"/edit";
+		
 	}
 	
 	

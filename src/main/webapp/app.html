@@ -191,45 +191,50 @@
 			</script>
 			
 			<script type="text/x-handlebars" data-template-name="find">
-
-				<div class="searchBox">
-
-					<div class="left">
+				
+				<div class="row">
+				
+					<div class="span9 searchBox">
+						
 						<div class="searchInput">
 							{{view App.StoredPlaceInputView valueBinding="view.searchLocation" class="searchPlace"}}
 						</div>
-						<div class="map" id="findMap"></div>
+						
+						<div class="map" id="searchMap"></div>
+						
 					</div>
-
+				
 				</div>
-
-				<div class="searchResults">
-
-					<div style="display: inline; float: left; height: 5em; width: 48%;">
-						<div class="latTitle">
-							FROM
-						</div>
-						<div class="partResults">
-							{{#each entry in view.fromSuggestions}}
-								<a {{action selectEntry entry}}>{{entry.from.displayValue}} - {{entry.to.displayValue}}</a>
-								<br/>
-							{{/each}}
-						</div>
+				
+				<div class="row">
+				
+					<div class="span4" style="text-align: center;">
+						FROM
 					</div>
-
-					<div style="display: inline; float: right; height: 9em; width: 48%;">
-						<div class="latTitle">
-							TO
-						</div>
-						<div class="partResults">
-							{{#each entry in view.toSuggestions}}
-								<a {{action selectEntry entry}}>{{entry.from.displayValue}} - {{entry.to.displayValue}}</a>
-								<br/>
-							{{/each}}
-						</div>
+					<div class="span4" style="text-align: center;">
+						TO
 					</div>
-
+					
 				</div>
+				
+				<div class="row">
+				
+					<div class="span4" style="text-align: center;">
+						{{#each entry in view.fromSuggestions}}
+							<a {{action selectEntry entry}}>{{entry.from.displayValue}} - {{entry.to.displayValue}}</a>
+							<br/>
+						{{/each}}
+					</div>
+					
+					<div class="span4" style="text-align: center;">
+						{{#each entry in view.toSuggestions}}
+							<a {{action selectEntry entry}}>{{entry.from.displayValue}} - {{entry.to.displayValue}}</a>
+							<br/>
+						{{/each}}
+					</div>
+					
+				</div>
+				
 
 			</script>
 
@@ -395,12 +400,8 @@
 				<br/>
 				
 				<div class="row">
-					<div class="span1">
-					</div>
-					<div class="span4">
-						<a {{action "saveEntry"}} class="btn btn-primary" style="display: inline; float: right;">Save</a>
-					</div>
-					<div class="span2 visible-desktop">
+					<div class="span8">
+						<a {{action "saveEntry"}} class="btn btn-primary" style="display: inline; float: right; margin-right: 2%;">Save</a>
 					</div>
 				</div>
 				
@@ -484,6 +485,14 @@
 					</div>
 					<div class="span3">
 						Cost: {{cost}}
+					</div>
+				</div>
+				
+				<br/>
+				
+				<div class="row">
+					<div class="span8">
+						<a {{action "editEntry"}} class="btn btn-primary" style="display: inline; float: right; margin-right: 2%;">Edit</a>
 					</div>
 				</div>
 
