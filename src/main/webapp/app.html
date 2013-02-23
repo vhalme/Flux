@@ -132,7 +132,7 @@
 
 				{{#view view.InputField class="placeInput"}}
 					{{#view view.InputFieldSelected}}{{view.displayValue}}{{/view}}
-					{{view view.InputFieldEdit}}
+					{{view view.InputFieldEdit class="fullWidth"}}
 				{{/view}}
 
 				{{#view view.AutocompleteView class="placeAutocompleteBox"}}
@@ -148,12 +148,12 @@
 				{{/view}}
 
 			</script>
-
+			
 			<script type="text/x-handlebars" data-template-name="tripInputViewTemplate">
 
 				{{#view view.InputField class="placeInput"}}
 					{{#view view.InputFieldSelected}}{{view.displayValue}}{{/view}}
-					{{view view.InputFieldEdit}}
+					{{view view.InputFieldEdit class="fullWidth"}}
 				{{/view}}
 
 				{{#view view.AutocompleteView class="placeAutocompleteBox"}}
@@ -327,6 +327,9 @@
 					<div class="span2 visible-desktop">
 						Mode of transportation
 					</div>
+				</div>
+				
+				<div class="visible-phone" style="height: 0.5em";>
 				</div>
 				
 				<div class="row">

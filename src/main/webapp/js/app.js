@@ -446,6 +446,7 @@ App.FindView = Em.View.extend({
     	this.$().replaceWith(clone);
     	
     	clone.css("z-index", "-1");
+    	clone.css("position", "absolute");
     	
     	var container = $("centerSection");
     	
