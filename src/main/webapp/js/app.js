@@ -628,22 +628,26 @@ App.FeedController = Ember.ArrayController.extend({
 		var controller = this;
 		
 		$.ajax({  
-        url : "https://search.twitter.com/search.json?q="+query+"&lang=en&callback=?",
-        dataType : "json",  
-        timeout:15000,  
-        success : function(data)  
-        {  
-              var results = data.results;
+			
+			url : "https://search.twitter.com/search.json?q="+query+"&lang=en&callback=?",
+			dataType : "json",  
+			timeout:15000,  
+			
+			success : function(data)  {  
+				
+				var results = data.results;
               
-              for(var i=0; i<results.length; i++) {
-              	var post = results[i];
-        		controller.addObject(post);      	
-              }
-        },  
-        error : function()  
-        {
-            alert("Failure!");
-        },
+				for(var i=0; i<results.length; i++) {
+					var post = results[i];
+					controller.addObject(post);      	
+				}
+			},  
+			
+			error : function(error)  
+			{
+				console.log("Failure!");
+				console.log(error);
+			},
     });  
 		
 	}
@@ -758,7 +762,35 @@ App.TripsIndexView = Ember.View.extend({
 
 
 App.TripController = Ember.ObjectController.extend({
+
+	getEntries: function(tripId) {
 		
+		var controller = this;
+		
+		console.log("get entries:");
+		
+		$.get("service/entry?tripId="+tripId, function(data) {
+			console.log(data);
+			controller.set('content.entries', data);
+			
+		});
+		
+	},
+	
+	selectEntry: function(entry) {
+		location.href = "#/entry/"+entry.id+"/view";
+	},
+	
+	idChanged: function() {
+		
+		var id = this.get('content.id');
+		
+		if(id != undefined) {
+			this.getEntries(id);
+		}
+		
+	}.observes('content.id')
+	
 });
 
 App.TripView = Ember.View.extend({

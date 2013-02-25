@@ -99,7 +99,7 @@ App.Entry = App.Model.extend({
 		
 		if(this.get('data') == null) {
 			this.set('data', {});
-			this.set('data.trip', App.Trip.create( { displayValue: "(none)" } ));
+			this.set('data.trip', { displayValue: "(none)" });
 			this.set('data.route', {});
 		}
 		
@@ -122,7 +122,6 @@ App.EntryController = Ember.ObjectController.extend({
 	showChange: function() {
 		
 		//App.controlsController.set('content', [ { actionName: "save" } ]);
-		
 		
 		var type = this.get('content.type');
 		var date = this.get('content.date');

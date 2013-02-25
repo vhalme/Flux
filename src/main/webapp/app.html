@@ -295,7 +295,11 @@
 				
 				{{displayValue}}
 				
-				<br/>
+				<br/><br/>
+				
+				{{#each entry in entries}}
+					<a href="#" {{action selectEntry entry}}>{{entry.route.from.displayValue}} - {{entry.route.to.displayValue}}</a><br/>
+				{{/each}}
 				
 			</script>
 			

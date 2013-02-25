@@ -183,15 +183,19 @@ public class TravellerService {
 	@GET
     @Path("/entry")
     @Produces({ MediaType.APPLICATION_JSON })
-    public List<Entry> listEntries(@QueryParam("routeId") String routeId) {
+    public List<Entry> listEntries(@QueryParam("tripId") String tripId, @QueryParam("routeId") String routeId) {
 		
 		List<Entry> entries = new ArrayList<Entry>();
 		
-		Route route = routeRepository.findOne(routeId);
+		if(routeId != null) {
 		
-		if(route != null) {
-			
+			Route route = routeRepository.findOne(routeId);
 			entries = entryRepository.findByRoute(route);
+			
+		} else if(tripId != null) {
+			
+			Trip trip = tripRepository.findOne(tripId);
+			entries = entryRepository.findByTrip(trip);
 			
 		} else {
 			

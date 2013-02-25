@@ -154,7 +154,7 @@ App.TripAutocompleteController = App.ResourceAutocompleteController.extend({
 	saveTrip: function() {
 		var tripName = this.get('searchString');
 		console.log("SAVE TRIP: "+tripName);
-		this.selectItem(App.Trip.create( { displayValue: tripName } ));
+		this.selectItem({ displayValue: tripName });
 	}
 	
 });
