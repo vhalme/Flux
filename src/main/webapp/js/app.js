@@ -154,7 +154,7 @@ App.RouteRoute = Ember.Route.extend({
 		console.log("updating params");
 		
     	App.controller.set('viewName', "New entry");
-    	controller.set('fromto', params.params);
+    	controller.set('routeId', params.params);
     	
   		//console.log("viewname "+App.controller.get('viewName'));
 	
@@ -206,7 +206,7 @@ App.Model = Ember.Object.extend({
 		
 		var json = JSON.stringify(this.get('data'), null, 2);
 		
-		//console.log("sending: \n"+json);
+		console.log("sending: \n"+json);
 		
 		$.ajax({
   			
@@ -332,19 +332,10 @@ App.FindController = Ember.Controller.extend({
 	
 	content: Ember.Object.create( { from: null, to: null } ),
 	
-	selectFromTerm: function(param) {
-		this.set('to', null);
-		this.set('from', param.from);
-	},
-
-	selectToTerm: function(param) {
-		this.set('from', null);
-		this.set('to', param.to);
-	},
-	
-	selectEntry: function(entry) {
-		location.href = "#/route/from="+entry.get('from').id+"&to="+entry.get('to').id;	
+	selectRoute: function(route) {
+		location.href = "#/route/"+route.id;
 	}
+	
 	
 });
 
@@ -494,67 +485,24 @@ App.FindView = Em.View.extend({
 			return;
 		}
 		
-		$.get("service/entry?from="+searchLocation.id, function(data) {
+		$.get("service/route?from="+searchLocation.id, function(data) {
 			for(var i=0; i<data.length; i++) {
 				toSuggestions.addObject(
-					App.Entry.create({ data: data[i] })
+					data[i]
 				);
 			}
 		});
 		
-		$.get("service/entry?to="+searchLocation.id, function(data) {
+		$.get("service/route?to="+searchLocation.id, function(data) {
 			for(var i=0; i<data.length; i++) {
 				fromSuggestions.addObject(
-					App.Entry.create({ data: data[i] })
+					data[i]
 				);
 			}
 		});
 		
-	}.observes('searchLocation'),
+	}.observes('searchLocation')
 	
-	searchTermsSelected: function() {
-		
-		var from = this.get('controller.from');
-		var to = this.get('controller.to');
-		
-		if(this.get('searchLocation') == undefined) {
-			return;
-		}
-		
-		if(from == undefined && to == undefined) {
-			return;
-		}
-		
-		if(from != null) {
-			to = this.get('searchLocation');
-		} else if(to != null) {
-			from = this.get('searchLocation');
-		}
-		
-		var results = this.get('results');
-		results.clear();
-		
-		if(from == null && to == null) {
-			return;
-		}
-		
-		console.log(from.id+" "+to.id);
-		
-		var view = this;
-		var oldDocHeight = $(document).height();
-		
-		$.get("service/entry?from="+from.id+"&to="+to.id, function(data) {
-			
-			for(var i=0; i<data.length; i++) {
-				results.addObject(
-					App.Entry.create({ data: data[i] })
-				);
-			}
-			
-			
-		});
-		
-	}.observes('controller.from', 'controller.to')
 	
 });
 
@@ -642,7 +590,7 @@ App.FeedView = Ember.View.extend({
 
 App.RouteController = Ember.Controller.extend({
 	
-	fromto: undefined,
+	routeId: undefined,
 	
 	from: undefined,
 	to: undefined,
@@ -656,7 +604,7 @@ App.RouteController = Ember.Controller.extend({
 		
 	},
 	
-	getEntries: function(from, to) {
+	getEntries: function(routeId) {
 		
 		var entries = this.get('entries');
 		
@@ -664,13 +612,13 @@ App.RouteController = Ember.Controller.extend({
 		
 		var controller = this;
 		
-		$.get("service/entry?from="+from+"&to="+to, function(data) {
+		$.get("service/entry?routeId="+routeId, function(data) {
 			
 			console.log(data);
 			
 			if(data.length > 0) {
-				controller.set('from', data[0].from.displayValue);
-				controller.set('to', data[0].to.displayValue);		
+				controller.set('from', data[0].route.from.displayValue);
+				controller.set('to', data[0].route.to.displayValue);		
 			}
 			
 			for(var i=0; i<data.length; i++) {
@@ -688,17 +636,11 @@ App.RouteController = Ember.Controller.extend({
 	
 	paramsChanged: function() {
 		
-		var fromto = this.get('fromto');
+		var routeId = this.get('routeId');
 		
-		var paramArr = fromto.split("&");
-		var fromParam = paramArr[0];
-		var toParam = paramArr[1];
-		var fromVal = fromParam.split("=")[1];
-		var toVal = toParam.split("=")[1];
+		this.getEntries(routeId);
 		
-		this.getEntries(fromVal, toVal);
-		
-	}.observes('fromto')
+	}.observes('routeId')
 	
 	
 });

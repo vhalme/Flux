@@ -179,11 +179,38 @@
 
 				<br/>
 				<br/>
-
+				
+				<div class="row entryRow">
+					<div class="span2">
+						<b>Transport</b>
+					</div>
+					<div class="span2">
+						<b>Cost</b>
+					</div>
+					<div class="span2">
+						<b>Type</b>
+					</div>
+					<div class="span2" style="text-align: right; float: right;">
+						 <b>Contributed by</b>
+					</div>
+				</div>
+					
 				{{#each entry in entries}}
 					
-					<div style="">
-						<a href="#" {{action selectEntry entry}}>&gt;&gt;</a>&nbsp;&nbsp;By {{entry.by.textValue}} / {{entry.type.textValue}} / Cost: {{entry.cost}}&nbsp;&nbsp;&nbsp;&nbsp;from Anonymous
+					<div class="row entryRow">
+						<div class="span2">
+							<a href="#" {{action selectEntry entry}}>&gt;&gt;</a>&nbsp;&nbsp;
+							{{entry.by.textValue}}
+						</div>
+						<div class="span2">
+							{{entry.cost}}
+						</div>
+						<div class="span2">
+							{{entry.type.textValue}}
+						</div>
+						<div class="span2" style="text-align: right; float: right;">
+						 	<i>Anonymous</i>
+						 </div>
 					</div>
 				
 				{{/each}}
@@ -220,15 +247,15 @@
 				<div class="row">
 				
 					<div class="span4" style="text-align: center;">
-						{{#each entry in view.fromSuggestions}}
-							<a href="#" {{action selectEntry entry}}>{{entry.from.displayValue}} - {{entry.to.displayValue}}</a>
+						{{#each route in view.fromSuggestions}}
+							<a href="#" {{action selectRoute route}}>{{route.from.displayValue}} - {{route.to.displayValue}}</a>
 							<br/>
 						{{/each}}
 					</div>
 					
 					<div class="span4" style="text-align: center;">
-						{{#each entry in view.toSuggestions}}
-							<a href="#" {{action selectEntry entry}}>{{entry.from.displayValue}} - {{entry.to.displayValue}}</a>
+						{{#each route in view.toSuggestions}}
+							<a href="#" {{action selectRoute route}}>{{route.from.displayValue}} - {{route.to.displayValue}}</a>
 							<br/>
 						{{/each}}
 					</div>

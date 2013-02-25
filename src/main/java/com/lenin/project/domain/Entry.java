@@ -20,10 +20,7 @@ public class Entry implements Serializable {
 	private Trip trip;
 	
 	@DBRef
-	private Place from;
-	
-	@DBRef
-	private Place to;
+	private Route route;
 	
 	private SelectListItem by;
 	
@@ -79,18 +76,11 @@ public class Entry implements Serializable {
 		this.trip = trip;
 	}
 	
-	public Place getFrom() {
-		return from;
+	public Route getRoute() {
+		return route;
 	}
-	public void setFrom(Place from) {
-		this.from = from;
-	}
-	
-	public Place getTo() {
-		return to;
-	}
-	public void setTo(Place to) {
-		this.to = to;
+	public void setRoute(Route route) {
+		this.route = route;
 	}
 	
 	public SelectListItem getBy() {

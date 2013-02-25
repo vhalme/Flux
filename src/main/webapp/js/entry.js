@@ -79,8 +79,9 @@ App.Entry = App.Model.extend({
 	dateBinding: 'data.date',
 	referenceBinding: 'data.reference',
 	tripBinding: 'data.trip',
-	fromBinding: 'data.from',
-	toBinding: 'data.to',
+	routeBinding: 'data.route',
+	fromBinding: 'data.route.from',
+	toBinding: 'data.route.to',
 	byBinding: 'data.by',
 	byIdBinding: 'data.byId',
 	byDepTimeBinding: 'data.byDepTime',
@@ -99,6 +100,7 @@ App.Entry = App.Model.extend({
 		if(this.get('data') == null) {
 			this.set('data', {});
 			this.set('data.trip', App.Trip.create( { displayValue: "(none)" } ));
+			this.set('data.route', {});
 		}
 		
 	}

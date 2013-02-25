@@ -541,7 +541,8 @@
   }
   
   .span2 {
-    width: 104px;
+  	width: 102px;
+    /*width: 104px;*/
   }
   .span1 {
     width: 42px;

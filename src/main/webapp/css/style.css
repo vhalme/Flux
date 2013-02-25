@@ -241,6 +241,7 @@ header .logo {
 .searchBox {
 	
 	background: white;
+	position: relative;
 	
 }
 
@@ -464,4 +465,14 @@ header .logo {
 .editEntry .typeSelect .selectList {
 	padding-left: 50%;
 	margin-left: -9em;
+}
+
+.entryRow {
+	border-bottom: 1px solid black; 
+	padding-bottom: 0.4em; 
+	margin-bottom: 0.4em;
+}
+
+.clickableDiv {
+	
 }

@@ -24,6 +24,7 @@
 		<mongo:repository id="entryRepository" mongo-template-ref="mongoTemplate" />
 		<mongo:repository id="placeRepository" mongo-template-ref="mongoTemplate" />
 		<mongo:repository id="tripRepository" mongo-template-ref="mongoTemplate" />
+		<mongo:repository id="routeRepository" mongo-template-ref="mongoTemplate" />
 	</mongo:repositories>
 	
 	<bean id="mongoTemplate" class="org.springframework.data.mongodb.core.MongoTemplate">

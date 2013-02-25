@@ -18,9 +18,11 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 
 import com.lenin.project.domain.Entry;
 import com.lenin.project.domain.Place;
+import com.lenin.project.domain.Route;
 import com.lenin.project.domain.Trip;
 import com.lenin.project.repositories.EntryRepository;
 import com.lenin.project.repositories.PlaceRepository;
+import com.lenin.project.repositories.RouteRepository;
 import com.lenin.project.repositories.TripRepository;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
@@ -42,6 +44,8 @@ public class TravellerService {
 	@Autowired
 	private TripRepository tripRepository;
 	
+	@Autowired
+	private RouteRepository routeRepository;
 	
 	public TravellerService() {
 		
@@ -75,57 +79,68 @@ public class TravellerService {
 	@Produces({ MediaType.APPLICATION_JSON })
     public Entry saveEntry(Entry entry) {
 		
-		Trip trip = entry.getTrip();
-		Place from = entry.getFrom();
-		Place to = entry.getTo();
+		Route route = processRoute(entry.getRoute());
+		entry.setRoute(route);
 		
+		Trip trip = entry.getTrip();
 		if(trip != null && !trip.displayValue.equals("(none)")) {
 			entry.setTrip(tripRepository.save(trip));
 		}
 		
-		processPlace(entry, from, "from");
-		processPlace(entry, to, "to");
-		
+		System.out.println("Saving entry...");
 		return entryRepository.save(entry);
 	
 	}
 	
-	private void processPlace(Entry entry, Place place, String direction) {
+	private Route processRoute(Route route) {
 		
-		if(place != null) {
+		Place from = processPlace(route.getFrom());
+		Place to = processPlace(route.getTo());
 		
-			List<Place> matches = 
-					placeRepository.findMatchingPlaces(place.getDisplayValue());
-			
-			Place dbPlace = null;
-			
-			if(matches.size() > 0) {
-				dbPlace = matches.get(0);
-			} else {
-				dbPlace = placeRepository.save(place);
-			}
-			
-			if(direction.equals("from")) {
-				entry.setFrom(dbPlace);
-			} else if(direction.equals("to")) {
-				entry.setTo(dbPlace);
-			}
-			
+		System.out.println(from.getDisplayValue()+"/"+from.getId());
+		System.out.println(to.getDisplayValue()+"/"+to.getId());
+		
+		List<Route> matchingRoutes = routeRepository.findByFromAndTo(from, to);
+		
+		Route dbRoute = null;
+		
+		if(matchingRoutes.size() == 0) {
+			System.out.println("Saving route...");
+			route.setFrom(from);
+			route.setTo(to);
+			dbRoute = routeRepository.save(route);
 		} else {
-			
-			// Validation exception: Missing place
-			
+			dbRoute = matchingRoutes.get(0);
 		}
+		
+		return dbRoute;
 		
 	}
 	
+	private Place processPlace(Place place) {
+		
+		List<Place> matches = 
+				placeRepository.findMatchingPlaces(place.getDisplayValue());
+		
+		Place dbPlace = null;
+		
+		if(matches.size() == 0) {
+			System.out.println("Saving place...");
+			dbPlace = placeRepository.save(place);
+		} else {
+			dbPlace = matches.get(0);
+		}
+		
+		return dbPlace;
+		
+	}
 	
 	@GET
-    @Path("/entry")
+    @Path("/route")
     @Produces({ MediaType.APPLICATION_JSON })
-    public List<Entry> list(@QueryParam("from") String from, @QueryParam("to") String to) {
+    public List<Route> listRoutes(@QueryParam("from") String from, @QueryParam("to") String to) {
 		
-		List<Entry> entries = new ArrayList<Entry>();
+		List<Route> routes = new ArrayList<Route>();
 		
 		Place fromPlace = null;
 		Place toPlace = null;
@@ -142,15 +157,41 @@ public class TravellerService {
 		
 		if(from != null && to == null) {
 			
-			entries = entryRepository.findByFrom(fromPlace);
+			routes = routeRepository.findByFrom(fromPlace);
 			
 		} else if(from == null && to != null) {
 			
-			entries = entryRepository.findByTo(toPlace);
+			routes = routeRepository.findByTo(toPlace);
 		
 		} else if(from != null && to != null) {
 			
-			entries = entryRepository.findByFromAndTo(fromPlace, toPlace);
+			routes = routeRepository.findByFromAndTo(fromPlace, toPlace);
+			
+		} else {
+			
+			routes = routeRepository.findAll();
+			
+		}
+		
+		System.out.println(routes);
+        
+		return routes;
+    
+	}
+	
+	
+	@GET
+    @Path("/entry")
+    @Produces({ MediaType.APPLICATION_JSON })
+    public List<Entry> listEntries(@QueryParam("routeId") String routeId) {
+		
+		List<Entry> entries = new ArrayList<Entry>();
+		
+		Route route = routeRepository.findOne(routeId);
+		
+		if(route != null) {
+			
+			entries = entryRepository.findByRoute(route);
 			
 		} else {
 			
@@ -202,6 +243,7 @@ public class TravellerService {
     
 	}
 	
+	
 	@GET
     @Path("/deleteall")
     @Produces({ MediaType.TEXT_PLAIN })
@@ -210,6 +252,7 @@ public class TravellerService {
 		entryRepository.deleteAll();
 		placeRepository.deleteAll();
 		tripRepository.deleteAll();
+		routeRepository.deleteAll();
 		
 		return "OK";
     
