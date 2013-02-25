@@ -111,10 +111,53 @@ App.Router.map(function() {
   		this.route("edit", { path: "/edit" });
   	});
   	
-  	this.resource("route", { path: "/route/:params" }, function() {
+  	this.resource("route", { path: "/route/:route_id" }, function() {
   		this.route("edit", { path: "/edit" });
   	});
   	
+  	this.resource("trip", { path: "/trip/:trip_id" }, function() {
+  		this.route("view", { path: "/view" });
+  		this.route("edit", { path: "/edit" });
+  	});
+  	
+  	this.resource("trips", { path: "/trips" }, function() {
+  		this.route("index", { path: "/" });
+  	});
+  	
+});
+
+
+App.TripsIndexRoute = Ember.Route.extend({
+	
+	model: function() {
+		console.log("trips model");
+		return App.Trip.findAll();
+	},
+	
+	setupController: function(controller, model) {
+    	console.log("trips controller");
+    	console.log(model);
+    	console.log(controller);
+    	controller.set('content', model);
+  	}
+		
+});
+
+
+App.TripRoute = Ember.Route.extend({
+	
+	model: function(params) {
+		console.log("1 trip model");
+		return App.Trip.findOne(params.trip_id);
+	},
+	
+	setupController: function(controller, model) {
+    	console.log("1 trip controller");
+    	console.log(model);
+    	console.log(controller);
+    	controller.set('content', model);
+  	}
+	
 });
 
 
@@ -154,7 +197,7 @@ App.RouteRoute = Ember.Route.extend({
 		console.log("updating params");
 		
     	App.controller.set('viewName', "New entry");
-    	controller.set('routeId', params.params);
+    	controller.set('routeId', params.route_id);
     	
   		//console.log("viewname "+App.controller.get('viewName'));
 	
@@ -233,6 +276,54 @@ App.Model = Ember.Object.extend({
 
 App.Model.reopenClass({
 	
+	findAll: function() {
+		
+		var model = this;
+		var result = Ember.ArrayProxy.create({
+			content: []
+		})
+		
+		$.ajax({
+  			
+  			type: "GET",
+  			url: "service/"+model.path,
+  			dataType: "json",
+  			contentType: 'application/json',
+  			success: function(data) {
+  				console.log("content received: "+data);
+  				for(var i=0; i<data.length; i++) {
+  					result.addObject(data[i]);
+  				}
+  			}
+  
+		});
+		
+		return result;
+		
+	},
+	
+	findOne: function(id) {
+		
+		var model = this.create();
+		console.log(model)
+		
+		$.ajax({
+  			
+  			type: "GET",
+  			url: "service/"+model.path+"/"+id,
+  			dataType: "json",
+  			contentType: 'application/json',
+  			success: function(data) {
+  				console.log("content received: "+data);
+  				model.set('data', data);
+  			}
+  
+		});
+		
+		return model;
+		
+	},
+	
 	find: function(id, controller) {
 		
 		var model = this;
@@ -250,7 +341,7 @@ App.Model.reopenClass({
   				//App.get('controller').set('viewName', data.from.displayValue+" - "+data.to.displayValue);
   			}
   
-		})
+		});
 		
 	}
 		
@@ -261,21 +352,14 @@ App.Trip = App.Model.extend({
 	
 	path: "trip",
 	
-	id: null,
-	displayValue: null,
+	idBinding: 'data.id',
+	displayValueBinding: 'data.displayValue'
 	
-	/*
-	init: function() {
-		
-		this._super();
-		
-		if(this.get('data') == null) {
-			this.set('data', {});
-		}
-		
-	}
-	*/
 	
+});
+
+App.Trip.reopenClass({
+	path: "trip"
 });
 
 
@@ -657,6 +741,27 @@ App.RouteView = Ember.View.extend({
 		
 		
 	}.observes('controller.from')
+	
+});
+
+App.TripsIndexController = Ember.ArrayController.extend({
+	
+	selectTrip: function(trip) {
+		location.href = "#/trip/"+trip.id;
+	}
+		
+});
+
+App.TripsIndexView = Ember.View.extend({
+	
+});
+
+
+App.TripController = Ember.ObjectController.extend({
+		
+});
+
+App.TripView = Ember.View.extend({
 	
 });
 

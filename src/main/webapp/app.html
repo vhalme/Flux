@@ -279,7 +279,26 @@
 
 			</script>
 
-
+			
+			<script type="text/x-handlebars" data-template-name="trips/index">
+				
+				Trips
+				<br/><br/>
+				
+				{{#each trip in controller}}
+					<a href="#" {{action selectTrip trip}}>{{trip.displayValue}}</a><br/>
+				{{/each}}
+				
+			</script>
+			
+			<script type="text/x-handlebars" data-template-name="trip">
+				
+				{{displayValue}}
+				
+				<br/>
+				
+			</script>
+			
 			<script type="text/x-handlebars" data-template-name="entry/edit">
 				
 			<div class="editEntry">
@@ -438,7 +457,7 @@
 			</div>
 
 			</script>
-
+			
 			<script type="text/x-handlebars" data-template-name="entry">
 				{{outlet}}
 			</script>

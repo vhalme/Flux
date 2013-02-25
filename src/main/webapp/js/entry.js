@@ -112,15 +112,6 @@ App.Entry.reopenClass({
 });
 
 
-App.Trip = App.Model.extend({
-	
-	path: "trip",
-	
-	id: null,
-	displayValue: null
-	
-});
-
 App.EntryController = Ember.ObjectController.extend({
 	
 	

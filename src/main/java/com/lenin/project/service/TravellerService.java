@@ -243,6 +243,17 @@ public class TravellerService {
     
 	}
 	
+	@GET
+    @Path("/trip/{id}")
+    @Produces({ MediaType.APPLICATION_JSON })
+    public Trip findTrip(@PathParam("id") String id) {
+		
+		Trip trip = tripRepository.findOne(id);
+		System.out.println(trip);
+        
+		return trip;
+    
+	}
 	
 	@GET
     @Path("/deleteall")
