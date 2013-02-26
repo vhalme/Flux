@@ -196,7 +196,6 @@ App.RouteRoute = Ember.Route.extend({
 		
 		console.log("updating params");
 		
-    	App.controller.set('viewName', "New entry");
     	controller.set('routeId', params.route_id);
     	
   		//console.log("viewname "+App.controller.get('viewName'));
@@ -705,7 +704,7 @@ App.FeedController = Ember.ArrayController.extend({
 						
 						image: post.profile_image_url,
 						from: post.from_user_name,
-						date: post.created_at,
+						date: post.created_at.substring(0, 22),
 						
   						template: Ember.Handlebars.compile(post.text)
 					
@@ -783,10 +782,27 @@ App.RouteController = Ember.Controller.extend({
 				controller.set('to', data[0].route.to.displayValue);		
 			}
 			
+			var rowBg = "#ffffff";
+			
 			for(var i=0; i<data.length; i++) {
-				entries.addObject(
-					App.Entry.create({ data: data[i] })
-				);
+				
+				var entry = App.Entry.create({ data: data[i] });
+				
+				var entryView = Ember.View.create({
+					
+					didInsertElement: function() {
+						
+						rowBg = rowBg == "#f2f2f2" ? "#ffffff" : "#f2f2f2";
+						this.$().css("background", rowBg);
+						
+					}
+				
+				});
+				
+				entry.set('view', entryView);
+				
+				entries.addObject(entry);
+				
 			}
 		});
 		
@@ -843,9 +859,36 @@ App.TripController = Ember.ObjectController.extend({
 		
 		console.log("get entries:");
 		
+		
 		$.get("service/entry?tripId="+tripId, function(data) {
-			console.log(data);
-			controller.set('content.entries', data);
+			
+			var entries = [];
+			
+			var rowBg = "#ffffff";
+			
+			for(var i=0; i<data.length; i++) {
+				
+				var entry = App.Entry.create({ data: data[i] });
+				
+				var entryView = Ember.View.extend({
+					
+					didInsertElement: function() {
+						
+						rowBg = rowBg == "#f2f2f2" ? "#ffffff" : "#f2f2f2";
+						this.$().css("background", rowBg);
+						
+					}
+					
+					
+				});
+				
+				entry.set('view', entryView);
+				
+				entries.addObject(entry);
+				
+			}
+			
+			controller.set('content.entries', entries);
 			
 		});
 		
@@ -950,7 +993,6 @@ App.TripView = Ember.View.extend({
 	}.observes('controller.content.entries')
 	
 });
-
 
 App.router = App.Router.create();
 App.initialize(App.router);
