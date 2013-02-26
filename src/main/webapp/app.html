@@ -293,13 +293,26 @@
 			
 			<script type="text/x-handlebars" data-template-name="trip">
 				
-				{{displayValue}}
+				<div class="row">
+					
+					<div class="span4">
+						
+						{{displayValue}}	
+						
+						<br/><br/>
 				
-				<br/><br/>
+						{{#each entry in entries}}
+							<a href="#" {{action selectEntry entry}}>{{entry.route.from.displayValue}} - {{entry.route.to.displayValue}}</a><br/>
+						{{/each}}
 				
-				{{#each entry in entries}}
-					<a href="#" {{action selectEntry entry}}>{{entry.route.from.displayValue}} - {{entry.route.to.displayValue}}</a><br/>
-				{{/each}}
+					</div>
+					
+					<div id="tripMap" class="span4">
+						
+					</div>
+					
+				</div>
+				
 				
 			</script>
 			

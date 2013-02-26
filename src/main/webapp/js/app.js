@@ -468,7 +468,7 @@ App.FindView = Em.View.extend({
 		var mapOptions = {
         	
         	center: new google.maps.LatLng(-34.397, 150.644),
-          	zoom: 8,
+          	zoom: 6,
           	mapTypeId: google.maps.MapTypeId.ROADMAP,
           	panControl: false,
             zoomControl: false,
@@ -569,21 +569,61 @@ App.FindView = Em.View.extend({
 			return;
 		}
 		
+		
+		var bounds = new google.maps.LatLngBounds();
+		
 		$.get("service/route?from="+searchLocation.id, function(data) {
 			for(var i=0; i<data.length; i++) {
-				toSuggestions.addObject(
-					data[i]
-				);
+				
+				var route = data[i];
+				toSuggestions.addObject(route);
+				
+				var routeCoordinates = [];
+				routeCoordinates[0] = new google.maps.LatLng(route.to.lat, route.to.lng);
+    			routeCoordinates[1] = new google.maps.LatLng(searchLocation.lat, searchLocation.lng);
+    	
+    			bounds.extend(routeCoordinates[0]);
+    			bounds.extend(routeCoordinates[1]);
+    			
+    			
+    			var routePath = new google.maps.Polyline({
+    				path: routeCoordinates,
+    				strokeColor: "#FF0000",
+    				strokeOpacity: 1.0,
+    				strokeWeight: 2
+  				});
+			
+				routePath.setMap(map);
+		
 			}
 		});
 		
 		$.get("service/route?to="+searchLocation.id, function(data) {
 			for(var i=0; i<data.length; i++) {
-				fromSuggestions.addObject(
-					data[i]
-				);
+				
+				var route = data[i];
+				fromSuggestions.addObject(route);
+				
+				var routeCoordinates = [];
+				routeCoordinates[0] = new google.maps.LatLng(route.from.lat, route.from.lng);
+    			routeCoordinates[1] = new google.maps.LatLng(searchLocation.lat, searchLocation.lng);
+    	
+    			bounds.extend(routeCoordinates[0]);
+    			bounds.extend(routeCoordinates[1]);
+    	
+    			var routePath = new google.maps.Polyline({
+    				path: routeCoordinates,
+    				strokeColor: "#00FF00",
+    				strokeOpacity: 1.0,
+    				strokeWeight: 2
+  				});
+			
+				routePath.setMap(map);
+				
 			}
 		});
+		
+		map.setZoom(6);
 		
 	}.observes('searchLocation')
 	
@@ -663,13 +703,13 @@ App.FeedView = Ember.View.extend({
 	
 	didInsertElement: function() {
 		
-		this.get('controller').getContent(["Helsinki"]);
+		//this.get('controller').getContent(["Helsinki"]);
 		
 	},
 	
 	searchTagsChanged: function() {
 		
-		this.get('controller').getContent(App.controller.get('searchTags'));
+		//this.get('controller').getContent(App.controller.get('searchTags'));
 		
 	}.observes('App.controller.searchTags')
 	
@@ -794,6 +834,86 @@ App.TripController = Ember.ObjectController.extend({
 });
 
 App.TripView = Ember.View.extend({
+	
+	map: undefined,
+	
+	entryLoaded: function() {
+		
+		var trip = this.get('controller.content');
+		var entries = trip.get('entries');
+		
+		if(entries == undefined) {			
+			return;
+		}
+		
+		console.log("ENTRIES:");
+		console.log(entries);
+		
+		var from = entries[0].route.from;
+		
+		console.log(from);
+		
+		var styles = [
+		              {
+		            	    "stylers": [
+		            	      { "saturation": -100 }
+		            	    ]
+		            	  }
+		            	];
+		
+		var styledMap = new google.maps.StyledMapType(styles,
+			    {name: "Styled Map"});
+		
+		var mapOptions = {
+        	
+        	center: new google.maps.LatLng(from.lat, from.lng),
+          	zoom: 8,
+          	mapTypeId: google.maps.MapTypeId.ROADMAP,
+          	panControl: false,
+            zoomControl: false,
+            mapTypeControl: false,
+            scaleControl: false,
+            streetViewControl: false,
+            overviewMapControl: false,
+            
+            mapTypeControlOptions: {
+                mapTypeIds: [google.maps.MapTypeId.ROADMAP, 'map_style']
+            }
+		
+        };
+        
+        var map = new google.maps.Map(document.getElementById("tripMap"), mapOptions);
+        
+        map.mapTypes.set('map_style', styledMap);
+        map.setMapTypeId('map_style');
+        
+        this.set('map', map);
+        
+        var tripPaths = [];
+        var bounds = new google.maps.LatLngBounds();
+    	
+        for(var i=0; i<entries.length; i++) {
+    		
+    		tripPaths[i] = [];
+    		tripPaths[i][0] = new google.maps.LatLng(entries[i].route.from.lat, entries[i].route.from.lng);
+    		tripPaths[i][1] = new google.maps.LatLng(entries[i].route.to.lat, entries[i].route.to.lng)
+    		
+    		bounds.extend(tripPaths[i][0]);
+    		bounds.extend(tripPaths[i][1]);
+    		
+    		var tripPath = new google.maps.Polyline({
+    			path: tripPaths[i],
+    			strokeColor: "#FF0000",
+    			strokeOpacity: 1.0,
+    			strokeWeight: 2
+  			});
+			
+			tripPath.setMap(map);
+    	}
+		
+		map.fitBounds(bounds);
+        
+	}.observes('controller.content.entries')
 	
 });
 

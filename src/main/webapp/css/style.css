@@ -476,3 +476,7 @@ header .logo {
 .clickableDiv {
 	
 }
+
+#tripMap {
+	min-height: 30em;
+}

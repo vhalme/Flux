@@ -328,7 +328,7 @@ App.EntryViewView = App.EntryContentView.extend({
 		}
 		
 		var from = entry.get('from');
-		
+		var to = entry.get('to');
 		
 		var styles = [
 		              {
@@ -366,6 +366,24 @@ App.EntryViewView = App.EntryContentView.extend({
         
         this.set('map', map);
         
+        var tripCoordinates = [];
+    	tripCoordinates[0] = new google.maps.LatLng(from.lat, from.lng);
+    	tripCoordinates[1] = new google.maps.LatLng(to.lat, to.lng);
+    	
+    	var bounds = new google.maps.LatLngBounds();
+    	bounds.extend(tripCoordinates[0]);
+    	bounds.extend(tripCoordinates[1]);
+    	
+    	var tripPath = new google.maps.Polyline({
+    		path: tripCoordinates,
+    		strokeColor: "#FF0000",
+    		strokeOpacity: 1.0,
+    		strokeWeight: 2
+  		});
+			
+		tripPath.setMap(map);
+		
+		map.fitBounds(bounds);
         
 	}.observes('App.controller.searchTags')
 	
