@@ -230,7 +230,7 @@ App.FindRoute = Ember.Route.extend({
 App.IndexRoute = Ember.Route.extend({
 	
 	enter: function() {
-    	location.href = "#/entry/new";
+    	location.href = "#/entry/new/edit";
   	}
   	
 });
@@ -678,8 +678,41 @@ App.FeedController = Ember.ArrayController.extend({
 				var results = data.results;
               
 				for(var i=0; i<results.length; i++) {
+					
+					console.log(results[i]);
+					
 					var post = results[i];
-					controller.addObject(post);      	
+					var text = post.text;
+					
+					var urlIndex = text.indexOf("http://");
+					
+					if(urlIndex != -1) {
+						
+						var text1 = text.substring(0, urlIndex);
+						var text2 = text.substring(urlIndex, text.length);
+						
+						var spaceIndex = text2.indexOf(" ");
+						var urlEnd = spaceIndex != -1 ? spaceIndex : text2.length;
+						var url = text2.substring(0, urlEnd);
+						var text3 = text2.substring(urlEnd);
+						var finalText = text1 + "<a href=\""+url+"\">"+url+"</a>" + text3;
+						post.text = finalText;
+						
+						
+					}
+					
+					var feedItemView = Ember.View.create({
+						
+						image: post.profile_image_url,
+						from: post.from_user_name,
+						date: post.created_at,
+						
+  						template: Ember.Handlebars.compile(post.text)
+					
+					});
+					
+					controller.addObject(feedItemView);      	
+				
 				}
 			},  
 			
@@ -694,6 +727,7 @@ App.FeedController = Ember.ArrayController.extend({
 	
 });
 
+
 App.FeedView = Ember.View.extend({
 	
 	init: function() {
@@ -703,7 +737,7 @@ App.FeedView = Ember.View.extend({
 	
 	didInsertElement: function() {
 		
-		this.get('controller').getContent(["Helsinki"]);
+		//this.get('controller').getContent(["Helsinki"]);
 		
 	},
 	

@@ -86,10 +86,22 @@
 
 									{{#each post in controller}}
 
-										<div style="border-top: 1px solid black; padding-bottom: 2.0em;">
-											{{post.text}}
-											<br/>
-											<br/>
+										<div style="padding-bottom: 2.0em;">
+											<div>
+												<div style="display: inline-block;">
+													<img {{bindAttr src="post.image"}} />
+												</div>
+												<div style="display: inline-block;">
+													<div style="height: 2.3em;">
+														{{post.from}}
+														<br/>
+														{{post.date}}
+													</div>
+												</div>
+											</div>
+											<div style="padding-top: 0.2em;">
+												{{view post}}
+											</div>
 										</div>
 
 									{{/each}}
