@@ -705,7 +705,7 @@ App.FeedController = Ember.ArrayController.extend({
 						
 						image: post.profile_image_url,
 						from: post.from_user_name,
-						date: post.created_at,
+						date: post.created_at.substring(0, 22),
 						
   						template: Ember.Handlebars.compile(post.text)
 					
