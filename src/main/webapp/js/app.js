@@ -703,13 +703,13 @@ App.FeedView = Ember.View.extend({
 	
 	didInsertElement: function() {
 		
-		//this.get('controller').getContent(["Helsinki"]);
+		this.get('controller').getContent(["Helsinki"]);
 		
 	},
 	
 	searchTagsChanged: function() {
 		
-		//this.get('controller').getContent(App.controller.get('searchTags'));
+		this.get('controller').getContent(App.controller.get('searchTags'));
 		
 	}.observes('App.controller.searchTags')
 	
