@@ -408,6 +408,20 @@ App.FindController = Ember.Controller.extend({
 	
 	selectRoute: function(route) {
 		location.href = "#/route/"+route.id;
+	},
+	
+	newFromEntry: function(name) {
+		
+		var nameEncoded = encodeURIComponent(name);
+		location.href = "#/entry/new?fromName="+nameEncoded+"/edit";
+		
+	},
+	
+	newToEntry: function(name) {
+		
+		var nameEncoded = encodeURIComponent(name);
+		location.href = "#/entry/new?toName="+nameEncoded+"/edit";
+		
 	}
 	
 	
@@ -546,17 +560,20 @@ App.FindView = Em.View.extend({
 		var toSuggestions = this.get('toSuggestions');
 		var fromSuggestions = this.get('fromSuggestions');
 		
+		console.log("search terms changed:");
+		console.log(searchLocation);
+		console.log(searchLocation.id+"/"+searchLocation.localityName);
+		
+		if(searchLocation.localityName == undefined) {
+			return;
+		}
+		
 		var map = this.get('map');
 		var location = new google.maps.LatLng(searchLocation.lat, searchLocation.lng);
 		map.setCenter(location);
 		
 		toSuggestions.clear();
 		fromSuggestions.clear();
-		
-		if(searchLocation.length == 0) {
-			return;
-		}
-		
 		
 		var bounds = new google.maps.LatLngBounds();
 		
@@ -613,7 +630,7 @@ App.FindView = Em.View.extend({
 		
 		map.setZoom(6);
 		
-	}.observes('searchLocation')
+	}.observes('searchLocation.localityName')
 	
 	
 });
@@ -725,7 +742,7 @@ App.FeedView = Ember.View.extend({
 	
 	didInsertElement: function() {
 		
-		//this.get('controller').getContent(["Helsinki"]);
+		this.get('controller').getContent(["Helsinki"]);
 		
 	},
 	
@@ -771,20 +788,17 @@ App.RouteController = Ember.Controller.extend({
 				controller.set('to', data[0].route.to.displayValue);		
 			}
 			
-			var rowBg = "#ffffff";
+			var bgClass = "bgWhite";
 			
 			for(var i=0; i<data.length; i++) {
 				
 				var entry = App.Entry.create({ data: data[i] });
 				
-				var entryView = Ember.View.create({
+				bgClass = bgClass == "bgGrey" ? "bgWhite" : "bgGrey";
 					
-					didInsertElement: function() {
-						
-						rowBg = rowBg == "#f2f2f2" ? "#ffffff" : "#f2f2f2";
-						this.$().css("background", rowBg);
-						
-					}
+				var entryView = Ember.View.extend({
+					
+					classNames: [ bgClass ]
 				
 				});
 				
@@ -889,8 +903,15 @@ App.TripController = Ember.ObjectController.extend({
 	
 	newEntry: function() {
 		
+		var entries = this.get('content.entries');
+		var lastEntryParam = "";
+		if(entries.length > 0) {
+			var lastEntry = entries[entries.length-1];
+			lastEntryParam = "&fromName="+lastEntry.route.to.displayValue;
+		}
+		
 		var id = this.get('content.id');
-		location.href = "#/entry/new?tripId="+id+"/edit";
+		location.href = "#/entry/new?tripId="+id+lastEntryParam+"/edit";
 		
 	},
 	

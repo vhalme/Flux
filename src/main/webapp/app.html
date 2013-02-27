@@ -240,7 +240,7 @@
 					<div class="span9 searchBox">
 						
 						<div class="searchInput">
-							{{view App.StoredPlaceInputView valueBinding="view.searchLocation"}}
+							{{view App.PlaceInputView valueBinding="view.searchLocation"}}
 						</div>
 						
 						<div class="map" id="searchMap"></div>
@@ -252,31 +252,55 @@
 				<div class="row">
 				
 					<div class="span4" style="text-align: center;">
-						FROM
+						<div class="row">
+							<div class="span4" style="text-align: center;">
+								TO
+							</div>
+						</div>
+						<div class="row">
+							
+							<div class="span4" style="text-align: center;">
+								{{#each route in view.fromSuggestions}}
+									<a href="#" {{action selectRoute route}}>{{route.from.displayValue}} - {{route.to.displayValue}}</a>
+									<br/>
+								{{/each}}
+							</div>
+							
+							<div class="span4" style="text-align: center; margin-top: 1.0em;">
+								<a href="#" {{action newToEntry view.searchLocation.displayValue}}>
+									Add new entry
+								</a> for a route to {{view.searchLocation.displayValue}}
+							</div>
+							
+						</div>
 					</div>
+					
 					<div class="span4" style="text-align: center;">
-						TO
+						<div class="row">
+							<div class="span4" style="text-align: center;">
+								FROM
+							</div>
+						</div>
+						<div class="row">
+							
+							<div class="span4" style="text-align: center;">
+								{{#each route in view.toSuggestions}}
+									<a href="#" {{action selectRoute route}}>{{route.from.displayValue}} - {{route.to.displayValue}}</a>
+									<br/>
+								{{/each}}
+							</div>
+							
+							<div class="span4" style="text-align: center; margin-top: 1.0em;">
+								<a href="#" {{action newFromEntry view.searchLocation.displayValue}}>
+									Add new entry
+								</a> for a route from {{view.searchLocation.displayValue}}
+							</div>
+							
+						</div>
 					</div>
 					
 				</div>
 				
-				<div class="row">
-				
-					<div class="span4" style="text-align: center;">
-						{{#each route in view.fromSuggestions}}
-							<a href="#" {{action selectRoute route}}>{{route.from.displayValue}} - {{route.to.displayValue}}</a>
-							<br/>
-						{{/each}}
-					</div>
-					
-					<div class="span4" style="text-align: center;">
-						{{#each route in view.toSuggestions}}
-							<a href="#" {{action selectRoute route}}>{{route.from.displayValue}} - {{route.to.displayValue}}</a>
-							<br/>
-						{{/each}}
-					</div>
-					
-				</div>
 				
 
 			</script>
@@ -296,18 +320,44 @@
 			</script>
 
 			
+			
 			<script type="text/x-handlebars" data-template-name="trips/index">
 				
 				<div class="row">
+					
 					{{#each trip in controller}}
-						<div class="span2">
+						<div class="span2" style="text-align: center; margin-bottom: 2.0em;">
 							<img src="img/NoPhotos.png" class="img-polaroid" />
 							<div style="text-align: center; margin-top: 0.4em;">
 								<a href="#" {{action selectTrip trip}}>{{trip.displayValue}}</a>
 							</div>
 						</div>
 					{{/each}}
+					
+					<div class="span2 visible-desktop">
+						
+						<div style="text-align: center;">
+							<input type="text" placeHolder="New trip" style="margin-bottom: 0px; padding: 4px 6px; width: 100%;"/>
+						</div>
+						<div style="text-align: center; margin-top: 1.0em;">
+							<a {{action "newTrip"}} class="btn btn-primary" style="display: inline;">Create</a>
+						</div>
+					
+					</div>
+					
+					<div class="span3 hidden-desktop">
+						
+						<div style="text-align: center;">
+							<input type="text" placeHolder="New trip" style="margin-bottom: 0px; padding: 4px 6px; width: 100%;"/>
+						</div>
+						<div style="text-align: center; margin-top: 1.0em;">
+							<a {{action "newTrip"}} class="btn btn-primary" style="display: inline;">Create</a>
+						</div>
+					
+					</div>
+						
 				</div>
+				
 				
 			</script>
 			
@@ -331,7 +381,7 @@
 						</div>
 						
 						{{#each entry in entries}}
-							{{#view entry.view class="row entryRow"}}
+							{{#view entry.view class="row tripEntryRow"}}
 								<div class="span4 entryCell">
 									<a href="#" {{action selectEntry entry}}>{{entry.route.from.displayValue}} - {{entry.route.to.displayValue}}</a><br/>
 								</div>
@@ -352,8 +402,8 @@
 			<script type="text/x-handlebars" data-template-name="entry/edit">
 				
 			<div class="editEntry">
-					
-				<div class="row" style="min-height: 2.4em">
+				
+				<div class="row">
 					
 					<div class="span1">
 						Type <span style="color: red;">*</span>
@@ -384,7 +434,7 @@
 					</div>
 				</div>
 				
-				<div class="row">
+				<div class="row" style="margin-top: 0.4em;">
 					<div class="span1">
 						From <span style="color: red;">*</span>
 					</div>
@@ -396,7 +446,7 @@
 					</div>
 				</div>
 				
-				<div class="row">
+				<div class="row" style="margin-top: 0.4em;">
 					<div class="span1">
 						To <span style="color: red;">*</span>
 					</div>
@@ -408,7 +458,7 @@
 					</div>
 				</div>
 				
-				<div class="row">
+				<div class="row" style="margin-top: 0.4em;">
 					<div class="span1">
 						By <span style="color: red;">*</span>
 					</div>
@@ -425,7 +475,10 @@
 					</div>
 				</div>
 				
-				<div class="visible-phone" style="height: 0.5em";>
+				<div class="row" style="margin-top: 1.0em;">
+					<div class="span8">
+						<b>Additional information</b>
+					</div>
 				</div>
 				
 				<div class="row">
@@ -480,11 +533,9 @@
 					</div>
 				</div>
 				
-				<br/>
-				
 				<div class="row">
 					<div class="span1" style="line-height: 1.0em;">
-						Date of departure <span style="color: red;">*</span>
+						Date of departure
 					</div>
 					<div class="span4">
 						{{view Ember.TextField valueBinding="depDateYear" class="depDateYear" placeholder="YYYY" }}
@@ -670,6 +721,7 @@ window.jQuery
 					//setBodyScale();
 
 				});
+				
 			</script>
 
 	</body>

@@ -68,42 +68,7 @@ App.MapAutocompleteController = App.AutocompleteController.extend({
 		
 		console.log("HANDLE SELECTION!");
 		
-		var displayValue = item.get('displayValue');
-		
-		var geocoder = new google.maps.Geocoder();
-		
-		geocoder.geocode( { 'address': displayValue }, function(results, status) {
-		
-			if(status == google.maps.GeocoderStatus.OK) {
-				
-				var result = results[0];
-				
-				var lat = result.geometry.location.lat();
-				var lng = result.geometry.location.lng();
-				var locality = null;
-				
-				var addressComponents = result.address_components;
-				for(var i=0; i<addressComponents.length; i++) {
-					var component = addressComponents[i];
-					var types = component.types;
-					if(types[0] == "locality" && types[1] == "political") {
-						locality = component.long_name;
-					}
-				}
-				
-				console.log("locality: "+locality);
-				
-				item.set('lat', lat);
-				item.set('lng', lng);
-				item.set('localityName', locality);
-				
-				//App.controller.set('searchTags', [ locality ]);
-				
-			} else {
-		        alert("Geocode was not successful for the following reason: " + status);
-		    }
-		   
-		});
+		App.getPlaceDetails(item, function(result) {});
 		
 		
 	}
@@ -185,6 +150,7 @@ App.AutocompleteInputView = Ember.View.extend({
 	InputField: Ember.View.extend({
 		
 		valueBinding: 'parentView.value',
+		autocompleteControllerBinding: 'parentView.autocompleteController',
 		
 		searchStringBinding: 'parentView.searchString',
 		isEditableBinding: 'parentView.isEditable',
@@ -311,10 +277,15 @@ App.AutocompleteInputView = Ember.View.extend({
 			
 		},
 		
+		didInsertElement: function() {
+			//alert(this.get('value.displayValue'));
+		},
+		
 		refreshContent: function() {
 			
 			
 			var selectedItem = this.get('parentView.value');
+			console.log("refreshing content");
 			console.log(selectedItem);
 			
 			if(selectedItem != null) {
@@ -436,9 +407,13 @@ App.AutocompleteInputView = Ember.View.extend({
 			parentView.set('searchString', item.displayValue);
 			parentView.set('isEditable', false);
 			
-			this.set('visible', false);
+			console.log("set value to view");
+			console.log(item);
+			console.log(parentView);
 			
 			parentView.handleSelection(item);
+			
+			this.set('visible', false);
 			
 		}.observes('controller.selectedItem')
 		
@@ -454,8 +429,20 @@ App.AutocompleteInputView = Ember.View.extend({
 	},
 	
 	showContent: function() {
-		//console.log("input content changed ");
-	}.observes('value')
+		
+		var value = this.get('value');
+		console.log("value changed");
+		console.log(value);
+		
+		if(value != undefined) {
+			var autocompleteController = this.get('autocompleteController');
+			if(autocompleteController.get('selectedItem') == undefined) {
+				console.log("will handle selection...");
+				autocompleteController.selectItem(Ember.Object.create(value));
+			}
+		}
+		
+	}.observes('value.displayValue')
 	
 });
 
@@ -522,3 +509,75 @@ App.StoredPlaceInputView = App.AutocompleteInputView.extend({
 	}
 	
 });
+
+App.getGeocodingDetails = function(item, callback) {
+	
+	var displayValue = item.get('displayValue');
+	
+	var geocoder = new google.maps.Geocoder();
+	
+	geocoder.geocode( { 'address': displayValue }, function(results, status) {
+	
+		if(status == google.maps.GeocoderStatus.OK) {
+			
+			var result = results[0];
+			
+			var lat = result.geometry.location.lat();
+			var lng = result.geometry.location.lng();
+			var locality = null;
+			
+			var addressComponents = result.address_components;
+			for(var i=0; i<addressComponents.length; i++) {
+				var component = addressComponents[i];
+				var types = component.types;
+				if(types[0] == "locality" && types[1] == "political") {
+					locality = component.long_name;
+				}
+			}
+			
+			console.log("locality: "+locality);
+			
+			item.set('lat', lat);
+			item.set('lng', lng);
+			item.set('localityName', locality);
+			
+			//App.controller.set('searchTags', [ locality ]);
+			
+			callback(item);
+			
+		} else {
+	        alert("Geocode was not successful for the following reason: " + status);
+	    }
+	   
+	});
+	
+};
+
+App.getPlaceDetails = function(item, callback) {
+	
+	var displayValue = item.get('displayValue');
+	
+	$.get("service/place?name="+encodeURIComponent(displayValue), function(result) {
+		
+		if(result.length > 0 && result[0].id != undefined) {
+			
+			var place = result[0];
+			
+			item.set('id', place.id);
+			item.set('lat', place.lat);
+			item.set('lng', place.lng);
+			item.set('localityName', place.localityName);
+			
+			callback(item);
+			
+		} else {
+			
+			App.getGeocodingDetails(item, function(result) {});
+			
+		}
+		
+	});
+	
+	
+	
+};
