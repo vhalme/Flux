@@ -80,7 +80,7 @@
 
 						<div class="row">
 
-							<div class="span3 bs-docs-sidebar visible-desktop visible-tablet" style="min-height: 1080px;">
+							<div class="span3-sidebar bs-docs-sidebar visible-desktop visible-tablet" style="min-height: 1080px;">
 
 								{{#view App.FeedView}}
 
@@ -202,16 +202,17 @@
 					<div class="span2">
 						<b>Type</b>
 					</div>
-					<div class="span2" style="text-align: right; float: right;">
+					<div class="span2" style="text-align: right;">
 						 <b>Contributed by</b>
 					</div>
+					
 				</div>
 					
 				{{#each entry in entries}}
 					
-					<div class="row entryRow">
+					
+					{{#view entry.view class="row entryRow"}}
 						<div class="span2">
-							<a href="#" {{action selectEntry entry}}>&gt;&gt;</a>&nbsp;&nbsp;
 							{{entry.by.textValue}}
 						</div>
 						<div class="span2">
@@ -220,11 +221,14 @@
 						<div class="span2">
 							{{entry.type.textValue}}
 						</div>
-						<div class="span2" style="text-align: right; float: right;">
+						<div class="span2" style="text-align: right;">
 						 	<i>Anonymous</i>
-						 </div>
-					</div>
-				
+						</div>
+						<div class="span1" style="text-align: right;">
+						 	<a href="#" {{action selectEntry entry}}>View</a>
+						</div>
+					{{/view}}
+					
 				{{/each}}
 
 			</script>
@@ -309,12 +313,15 @@
 					
 					<div class="span4">
 						
-						{{displayValue}}	
+						<h2>{{displayValue}}</h2>
 						
-						<br/><br/>
-				
+						
 						{{#each entry in entries}}
-							<a href="#" {{action selectEntry entry}}>{{entry.route.from.displayValue}} - {{entry.route.to.displayValue}}</a><br/>
+							{{#view entry.view class="row entryRow"}}
+								<div class="span4">
+									<a href="#" {{action selectEntry entry}}>{{entry.route.from.displayValue}} - {{entry.route.to.displayValue}}</a><br/>
+								</div>
+							{{/view}}
 						{{/each}}
 				
 					</div>
