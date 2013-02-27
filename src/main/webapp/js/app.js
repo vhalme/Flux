@@ -33,8 +33,6 @@ App.NavLabelView = Ember.View.extend({
 
 App.ApplicationController = Ember.Controller.extend({
 	
-	viewName: "",
-	
 	searchTags: [],
 	
 	navLabels: [ 
@@ -198,13 +196,11 @@ App.RouteRoute = Ember.Route.extend({
 		
     	controller.set('routeId', params.route_id);
     	
-  		//console.log("viewname "+App.controller.get('viewName'));
 	
 	},
 	
 	setupController: function(controller, model) {
 		
-		//console.log("setup ctrl");
 		this.set('controller', controller);
   		this.model(this.get('params'), true);
   		
@@ -218,9 +214,6 @@ App.FindRoute = Ember.Route.extend({
 	setupController: function(controller, model) {
 		
 		controller.set('content', Ember.Object.create({ from: null, to: null }));
-		
-		//App.controller.selectNavLabel("Find");
-		App.controller.set('viewName', "Find");
   		
   	}
   	
@@ -336,8 +329,6 @@ App.Model.reopenClass({
   			success: function(data) {
   				console.log("content received: "+data);
   				controller.modelUpdated(data);
-  				//controller.set('content', App.Entry.create({ data: data }));
-  				//App.get('controller').set('viewName', data.from.displayValue+" - "+data.to.displayValue);
   			}
   
 		});
@@ -424,8 +415,6 @@ App.FindController = Ember.Controller.extend({
 
 
 App.FindView = Em.View.extend({
-	
-	//classNames: [ "withOverflow" ],
 	
 	map: undefined,
 	
@@ -896,6 +885,13 @@ App.TripController = Ember.ObjectController.extend({
 	
 	selectEntry: function(entry) {
 		location.href = "#/entry/"+entry.id+"/view";
+	},
+	
+	newEntry: function() {
+		
+		var id = this.get('content.id');
+		location.href = "#/entry/new?tripId="+id+"/edit";
+		
 	},
 	
 	idChanged: function() {

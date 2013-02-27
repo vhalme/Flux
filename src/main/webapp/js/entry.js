@@ -6,8 +6,8 @@ App.EntryRoute = Ember.Route.extend({
 	
 	model: function(params, firstLoad) {
 		
-		//console.log("PARAMS("+firstLoad+"): ");
-		//console.log(params);
+		console.log("PARAMS("+firstLoad+"): ");
+		console.log(params);
 		
 		var controller = this.get('controller');
 		
@@ -33,19 +33,17 @@ App.EntryRoute = Ember.Route.extend({
 		
     	if(params.entry_id == "new") {
     		
-    		App.controller.set('viewName', "New entry");
     		//App.controller.selectNavLabel("New");
     		
     		controller.set('content', App.Entry.create());
     	
     	} else {
     		
-    		App.controller.set('viewName', "");
+    		console.log("find one with id "+params.entry_id);
     		App.Entry.find(params.entry_id, controller);
   		
   		}
   		
-  		//console.log("viewname "+App.controller.get('viewName'));
 	
 	},
 	

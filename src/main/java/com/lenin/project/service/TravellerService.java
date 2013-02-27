@@ -213,7 +213,14 @@ public class TravellerService {
 	@GET
     @Path("/entry/{id}")
     @Produces({ MediaType.APPLICATION_JSON })
-    public Entry find(@PathParam("id") String id) {
+    public Entry find(@PathParam("id") String id, @QueryParam("tripId") String tripId) {
+		
+		if(tripId != null) {
+			Trip trip = tripRepository.findOne(tripId);
+			Entry entry = new Entry();
+			entry.setTrip(trip);
+			return entry;
+		}
 		
 		Entry entry = entryRepository.findOne(id);
 		System.out.println(entry);

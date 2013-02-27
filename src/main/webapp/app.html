@@ -298,27 +298,41 @@
 			
 			<script type="text/x-handlebars" data-template-name="trips/index">
 				
-				Trips
-				<br/><br/>
-				
-				{{#each trip in controller}}
-					<a href="#" {{action selectTrip trip}}>{{trip.displayValue}}</a><br/>
-				{{/each}}
+				<div class="row">
+					{{#each trip in controller}}
+						<div class="span2">
+							<img src="img/NoPhotos.png" class="img-polaroid" />
+							<div style="text-align: center; margin-top: 0.4em;">
+								<a href="#" {{action selectTrip trip}}>{{trip.displayValue}}</a>
+							</div>
+						</div>
+					{{/each}}
+				</div>
 				
 			</script>
 			
 			<script type="text/x-handlebars" data-template-name="trip">
 				
+				<div class="row hidden-desktop">
+					<div class="span8">
+						<h2>{{displayValue}}</h2>
+					</div>
+				</div>
+				
 				<div class="row">
+					
+					<div id="tripMap" class="span4" style="margin-bottom: 1.0em;">
+					</div>
 					
 					<div class="span4">
 						
-						<h2>{{displayValue}}</h2>
-						
+						<div class="visible-desktop" style="margin-bottom: 1.0em;">
+							<h2>{{displayValue}}</h2>
+						</div>
 						
 						{{#each entry in entries}}
 							{{#view entry.view class="row entryRow"}}
-								<div class="span4">
+								<div class="span4 entryCell">
 									<a href="#" {{action selectEntry entry}}>{{entry.route.from.displayValue}} - {{entry.route.to.displayValue}}</a><br/>
 								</div>
 							{{/view}}
@@ -326,8 +340,8 @@
 				
 					</div>
 					
-					<div id="tripMap" class="span4">
-						
+					<div class="span4" style="margin-top: 2.0em;">
+						<a {{action "newEntry"}} class="btn btn-primary" style="display: inline; float: right; margin-right: 2%;">New entry</a>
 					</div>
 					
 				</div>
