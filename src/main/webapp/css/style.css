@@ -497,3 +497,10 @@ header .logo {
 #tripMap {
 	min-height: 30em;
 }
+
+.newTripInput {
+	margin-bottom: 0px; 
+	margin-top: 0.4em;
+	padding: 4px 6px;
+	width: 98%;
+}

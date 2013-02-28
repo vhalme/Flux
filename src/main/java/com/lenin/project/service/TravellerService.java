@@ -92,6 +92,19 @@ public class TravellerService {
 	
 	}
 	
+	
+	@PUT
+    @Path("/trip")
+    @Consumes({ MediaType.APPLICATION_JSON })
+	@Produces({ MediaType.APPLICATION_JSON })
+    public Trip saveTrip(Trip trip) {
+		
+		System.out.println("Saving trip...");
+		return tripRepository.save(trip);
+	
+	}
+	
+	
 	private Route processRoute(Route route) {
 		
 		Place from = processPlace(route.getFrom());

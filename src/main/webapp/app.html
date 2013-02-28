@@ -326,35 +326,26 @@
 				<div class="row">
 					
 					{{#each trip in controller}}
-						<div class="span2" style="text-align: center; margin-bottom: 2.0em;">
+						<div class="span2-trips" style="text-align: center;">
 							<img src="img/NoPhotos.png" class="img-polaroid" />
-							<div style="text-align: center; margin-top: 0.4em;">
+							<div style="text-align: center; margin-top: 0.6em; margin-bottom: 0.2em;">
 								<a href="#" {{action selectTrip trip}}>{{trip.displayValue}}</a>
 							</div>
 						</div>
 					{{/each}}
-					
-					<div class="span2 visible-desktop">
 						
-						<div style="text-align: center;">
-							<input type="text" placeHolder="New trip" style="margin-bottom: 0px; padding: 4px 6px; width: 100%;"/>
+					<div class="span2-trips">
+						
+						<div class="tripBox" style="text-align: center; border: 1px dashed #ccc; padding-right: 4px; padding-left: 4px;">
+							<div style="text-align: center; padding-top: 50%; margin-top: -0.6em;">
+								<a {{action "addNewTrip"}} class="btn btn-primary" style="display: inline;">Create</a>
+							</div>
 						</div>
-						<div style="text-align: center; margin-top: 1.0em;">
-							<a {{action "newTrip"}} class="btn btn-primary" style="display: inline;">Create</a>
-						</div>
+						
+						{{view Ember.TextField valueBinding="newTrip.displayValue" class="newTripInput" placeholder="New trip name"}}
 					
 					</div>
 					
-					<div class="span3 hidden-desktop">
-						
-						<div style="text-align: center;">
-							<input type="text" placeHolder="New trip" style="margin-bottom: 0px; padding: 4px 6px; width: 100%;"/>
-						</div>
-						<div style="text-align: center; margin-top: 1.0em;">
-							<a {{action "newTrip"}} class="btn btn-primary" style="display: inline;">Create</a>
-						</div>
-					
-					</div>
 						
 				</div>
 				
@@ -567,10 +558,18 @@
 
 				<div class="row">
 					<div class="span4-entryview">
-						Type: {{type.textValue}}
+						<span {{bindAttr class=":label isTravel:label-success isAd:label-warning isResearch:label-important isRide:label-info"}}>
+							{{type.textValue}}
+						</span>
 					</div>
 					<div class="span4-entryview">
-						Trip: {{trip.displayValue}}
+						
+						{{#if tripDefined}}
+							Trip: <a href="#" {{action gotoTrip}}>{{trip.displayValue}}</a>
+						{{else}}
+							Trip: {{trip.displayValue}}
+						{{/if}}
+						
 					</div>
 				</div>
 				

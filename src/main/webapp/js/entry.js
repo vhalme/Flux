@@ -153,8 +153,44 @@ App.EntryController = Ember.ObjectController.extend({
 		var entry = this.get('content');
 		location.href = "#/entry/"+entry.get('id')+"/edit";
 		
-	}
+	},
 	
+	isTravel: false,
+	isAd: false,
+	isResearch: false,
+	isRide: false,
+	
+	typeChanged: function() {
+		
+		var type = this.get('content.type');
+		
+		if(type != undefined) {
+			this.set('isTravel', type.textValue == 'Travel');
+			this.set('isAd', type.textValue == 'Advertisement');
+			this.set('isResearch', type.textValue == 'Research');
+			this.set('isRide', type.textValue == 'Ride');
+		}
+		
+	}.observes('content.type'),
+	
+	tripDefined: false,
+	
+	typeChanged: function() {
+		
+		var trip = this.get('content.trip');
+		
+		if(trip != undefined) {
+			this.set('tripDefined', trip.id != undefined);
+		} else {
+			this.set('tripDefined', false);
+		}
+		
+	}.observes('content.trip'),
+	
+	gotoTrip: function() {
+		var trip = this.get('content.trip');
+		location.href = "#/trip/"+trip.id;
+	}
 	
 });
 
@@ -316,6 +352,16 @@ App.EntryContentView = Ember.View.extend({
 App.EntryViewView = App.EntryContentView.extend({
 	
 	controllerBinding: 'parentView.controller',
+	
+	TypeLabelView: Ember.View.extend({
+		
+		classNames: [ "label" ],
+	
+		classNameBindings: 'active',
+	
+		active: false
+		
+	}),
 	
 	entryLoaded: function() {
 		

@@ -239,6 +239,8 @@ App.Model = Ember.Object.extend({
 	
 	save: function() {
 		
+		var path = this.get('path');
+		
 		var json = JSON.stringify(this.get('data'), null, 2);
 		
 		console.log("sending: \n"+json);
@@ -246,13 +248,13 @@ App.Model = Ember.Object.extend({
 		$.ajax({
   			
   			type: "PUT",
-  			url: "service/"+this.get('path'),
+  			url: "service/"+path,
   			dataType: "json",
   			contentType: 'application/json',
   			data: json,
   			success: function(data) {
   				console.log("success: "+data.id);
-  				location.href="#/entry/"+data.id+"/view";
+  				location.href="#/"+path+"/"+data.id+"/view";
   			}
   
 		});
@@ -843,13 +845,51 @@ App.RouteView = Ember.View.extend({
 
 App.TripsIndexController = Ember.ArrayController.extend({
 	
-	selectTrip: function(trip) {
-		location.href = "#/trip/"+trip.id;
-	}
+	newTrip: undefined,
+	
+	init: function() {
 		
+		this._super();
+		
+		var trip = App.Trip.create({
+			data: {
+				displayValue: undefined,
+			}
+		});
+		
+		this.set('newTrip', trip);
+	
+	},
+	
+	selectTrip: function(trip) {
+		
+		location.href = "#/trip/"+trip.id;
+	
+	},
+	
+	addNewTrip: function() {
+		
+		var trip = this.get('newTrip');
+		
+		trip.save();
+		
+	}
+	
 });
 
 App.TripsIndexView = Ember.View.extend({
+	
+	didInsertElement: function() {
+		
+		var trip = App.Trip.create({
+			data: {
+				displayValue: undefined,
+			}
+		});
+		
+		this.set('controller.newTrip', trip);
+		
+	}
 	
 });
 
