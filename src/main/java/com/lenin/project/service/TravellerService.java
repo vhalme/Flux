@@ -92,6 +92,19 @@ public class TravellerService {
 	
 	}
 	
+	
+	@PUT
+    @Path("/trip")
+    @Consumes({ MediaType.APPLICATION_JSON })
+	@Produces({ MediaType.APPLICATION_JSON })
+    public Trip saveTrip(Trip trip) {
+		
+		System.out.println("Saving trip...");
+		return tripRepository.save(trip);
+	
+	}
+	
+	
 	private Route processRoute(Route route) {
 		
 		Place from = processPlace(route.getFrom());
@@ -213,9 +226,48 @@ public class TravellerService {
 	@GET
     @Path("/entry/{id}")
     @Produces({ MediaType.APPLICATION_JSON })
-    public Entry find(@PathParam("id") String id) {
+    public Entry find(@PathParam("id") String id, 
+    		@QueryParam("tripId") String tripId, @QueryParam("fromName") String fromName, @QueryParam("toName") String toName) {
 		
-		Entry entry = entryRepository.findOne(id);
+		Trip trip = new Trip();
+		trip.setDisplayValue("(none)");
+		
+		Entry entry = new Entry();
+		entry.setTrip(trip);
+		
+		if(id != null && !id.equals("new")) {
+			entry = entryRepository.findOne(id);
+			System.out.println(entry);
+			return entry;
+		}
+		
+		if(tripId != null) {
+			
+			trip = tripRepository.findOne(tripId);
+			entry.setTrip(trip);
+		
+		}
+		
+		if(fromName != null || toName != null) {
+			
+			Route route = new Route();
+			
+			if(fromName != null) {
+				Place from = new Place();
+				from.setDisplayValue(fromName);
+				route.setFrom(from);
+			}
+			
+			if(toName != null) {
+				Place to = new Place();
+				to.setDisplayValue(toName);
+				route.setTo(to);
+			}
+
+			entry.setRoute(route);
+			
+		}
+		
 		System.out.println(entry);
         
 		return entry;
@@ -226,9 +278,20 @@ public class TravellerService {
 	@GET
     @Path("/place")
     @Produces({ MediaType.APPLICATION_JSON })
-    public List<Place> listPlaces() {
+    public List<Place> listPlaces(@QueryParam("name") String name) {
 		
-		List<Place> places = placeRepository.findAll();
+		List<Place> places = new ArrayList<Place>();
+		
+		if(name != null) {
+			
+			places = placeRepository.findMatchingPlaces(name);
+			
+		} else {
+			
+			places = placeRepository.findAll();
+		
+		}
+		
 		System.out.println(places);
         
 		return places;

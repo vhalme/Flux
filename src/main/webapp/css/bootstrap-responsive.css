@@ -144,26 +144,41 @@
     width: 970px;
   }
   .span9 {
-    width: 870px;
+    width: 852px;
   }
+  
   .span8 {
     width: 770px;
   }
+  .span8-entryview {
+    width: 770px;
+  }
+  
   .span7 {
     width: 670px;
   }
   .span6 {
     width: 570px;
   }
+  
   .span5 {
     width: 470px;
   }
+  
   .span4 {
+    width: 370px;
+  }
+  
+  .span4-findview {
     width: 370px;
   }
   
   .span4-entryview {
     width: 370px;
+  }
+  
+  .span4-entryedit {
+    width: 470px;
   }
   
   .span3 {
@@ -181,9 +196,31 @@
   .span2 {
     width: 170px;
   }
+  
+  .span2-routeview {
+    width: 170px;
+  }
+  
+  .span2-trips {
+    width: 230px;
+    height: 300px;
+  }
+  
+  
+  .tripBox {
+	width: 226px;
+	height: 226px;
+  }
+
   .span1 {
     width: 70px;
   }
+  
+  .span1-routeview {
+  	width: 44px;
+  	padding-right: 8px;
+  }
+
   .offset12 {
     margin-left: 1230px;
   }
@@ -509,19 +546,27 @@
     width: 600px;
   }
   .span9 {
-    width: 470px;
+    width: 452px;
     padding-left: 12px;
    /*width: 538px;*/
   }
+  
   .span8 {
-    width: 476px;
+  	/* width: 476px; */
+    width: 460px;
   }
+  
+  .span8-entryview {
+    width: 452px;
+  }
+  
   .span7 {
     width: 414px;
   }
   .span6 {
     width: 352px;
   }
+  
   .span5 {
     width: 290px;
   }
@@ -529,6 +574,19 @@
   .span4 {
   	width: 320px;
     /*width: 228px;*/
+  }
+  
+  .span4-findview {
+  	width: 100%;
+    /*width: 228px;*/
+  }
+  
+  .span4-entryview {
+    width: 224px;
+  }
+  
+  .span4-entryedit {
+    width: 330px;
   }
   
   .span3 {
@@ -539,10 +597,6 @@
     width: 220px;
   }
   
-  .span4-entryview {
-    width: 224px;
-  }
-  
   .span3-entryview {
    	width: 166px;
   }
@@ -551,9 +605,32 @@
   	width: 86px;
     /*width: 104px;*/
   }
+  
+  .span2-routeview {
+  	width: 82px;
+    /*width: 104px;*/
+  }
+  
+  .span2-trips {
+  	width: 170px;
+  	height: 240px;
+    /*width: 104px;*/
+  }
+  
+  .tripBox {
+	width: 170px;
+	height: 170px;
+  }
+  
   .span1 {
     width: 42px;
   }
+  
+  .span1-routeview {
+   	margin-right: 2px;
+   	width: 32px;
+  }
+  
   .offset12 {
     margin-left: 764px;
   }
@@ -835,6 +912,35 @@
   }
 }
 
+@media(min-width: 360px) {
+	
+	.editEntry .transportSelect .selectList {
+		padding-left: 50%;
+		margin-left: -110px;
+	}
+
+	.editEntry .typeSelect .selectList {
+		padding-left: 50%;
+		margin-left: -162px;
+	}
+	
+}
+
+@media(max-width: 360px) {
+	.editEntry .typeSelect .selectList {
+		padding-left: 0px;
+		margin-left: 2px;
+  	}
+}
+
+@media(max-width: 224px) {
+
+	.editEntry .transportSelect .selectList {
+		padding-left: 0px;
+		margin-left: 2px;
+  	}
+}
+
 @media (max-width: 767px) {
   body {
     padding-right: 20px;
@@ -872,6 +978,12 @@
     float: none;
     margin-left: 0;
   }
+  
+
+  .span9 {
+  	width: 96%;
+  }
+ 
   [class*="span"],
   .uneditable-input[class*="span"],
   .row-fluid [class*="span"] {
@@ -883,6 +995,24 @@
        -moz-box-sizing: border-box;
             box-sizing: border-box;
   }
+ 	
+ .span2-trips {
+ 	display: block;
+    float: none;
+    width: 230px;
+    margin-bottom: 3.0em;
+    margin-left: auto;
+    margin-right: auto;
+    -webkit-box-sizing: border-box;
+       -moz-box-sizing: border-box;
+            box-sizing: border-box;
+  }
+  
+  .tripBox {
+	width: 226px; 
+	height: 226px;
+  }
+   
   .span12,
   .row-fluid .span12 {
     width: 100%;

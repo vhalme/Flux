@@ -6,8 +6,8 @@ App.EntryRoute = Ember.Route.extend({
 	
 	model: function(params, firstLoad) {
 		
-		//console.log("PARAMS("+firstLoad+"): ");
-		//console.log(params);
+		console.log("PARAMS("+firstLoad+"): ");
+		console.log(params);
 		
 		var controller = this.get('controller');
 		
@@ -33,19 +33,17 @@ App.EntryRoute = Ember.Route.extend({
 		
     	if(params.entry_id == "new") {
     		
-    		App.controller.set('viewName', "New entry");
     		//App.controller.selectNavLabel("New");
     		
     		controller.set('content', App.Entry.create());
     	
     	} else {
     		
-    		App.controller.set('viewName', "");
+    		console.log("find one with id "+params.entry_id);
     		App.Entry.find(params.entry_id, controller);
   		
   		}
   		
-  		//console.log("viewname "+App.controller.get('viewName'));
 	
 	},
 	
@@ -103,7 +101,40 @@ App.Entry = App.Model.extend({
 			this.set('data.route', {});
 		}
 		
-	}
+	},
+	
+	typeDefined: function() {
+		return this.get('type') != undefined;
+	}.property('typeDefined'),
+	
+	isTravel: function() {
+		return this.get('type').textValue == 'Travel';
+	}.property('isTravel'),
+	
+	isResearch: function() {
+		return this.get('type').textValue == 'Research';
+	}.property('isResearch'),
+	
+	isAd: function() {
+		return this.get('type').textValue == 'Advertisement';
+	}.property('isAd'),
+	
+	isRide: function() {
+		return this.get('type').textValue == 'Ride';
+	}.property('isRide'),
+	
+	tripDefined: function() {
+		
+		var trip = this.get('trip');
+			
+		if(trip != undefined) {
+			return trip.id != undefined;
+		} else {
+			return false;
+		}
+		
+	}.property('tripDefined')
+	
 	
 });
 
@@ -155,8 +186,12 @@ App.EntryController = Ember.ObjectController.extend({
 		var entry = this.get('content');
 		location.href = "#/entry/"+entry.get('id')+"/edit";
 		
-	}
+	},
 	
+	gotoTrip: function() {
+		var trip = this.get('content.trip');
+		location.href = "#/trip/"+trip.id;
+	}
 	
 });
 
@@ -318,6 +353,16 @@ App.EntryContentView = Ember.View.extend({
 App.EntryViewView = App.EntryContentView.extend({
 	
 	controllerBinding: 'parentView.controller',
+	
+	TypeLabelView: Ember.View.extend({
+		
+		classNames: [ "label" ],
+	
+		classNameBindings: 'active',
+	
+		active: false
+		
+	}),
 	
 	entryLoaded: function() {
 		
