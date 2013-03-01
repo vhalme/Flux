@@ -80,7 +80,8 @@
 
 						<div class="row">
 
-							<div class="span3-sidebar bs-docs-sidebar visible-desktop visible-tablet" style="min-height: 1080px;">
+							<div class="span3-sidebar bs-docs-sidebar visible-desktop visible-tablet" 
+							style="background: #f2f2f2; padding-left: 12px; padding-right: 6px; padding-top: 20px; margin-top: -20px;">
 
 								{{#view App.FeedView}}
 
@@ -89,7 +90,7 @@
 										<div style="padding-bottom: 2.0em;">
 											<div>
 												<div style="display: inline-block;">
-													<img {{bindAttr src="post.image"}} />
+													<img {{bindAttr src="post.image"}} style="border-radius: 6px;"/>
 												</div>
 												<div style="display: inline-block;">
 													<div style="height: 2.3em;">
@@ -179,6 +180,7 @@
 						{{#each item in view.controller}}
 							<li><a {{action selectItem item}} tabindex="-1">{{item.displayValue}}</a></li>
 						{{/each}}
+						
 					</ul>
 
 				{{/view}}
@@ -193,16 +195,16 @@
 				<br/>
 				
 				<div class="row entryRow">
-					<div class="span2">
+					<div class="span2-routeview">
 						<b>Transport</b>
 					</div>
-					<div class="span2">
+					<div class="span2-routeview">
 						<b>Cost</b>
 					</div>
-					<div class="span2">
+					<div class="span2-routeview">
 						<b>Type</b>
 					</div>
-					<div class="span2" style="text-align: right;">
+					<div class="span2-routeview" style="text-align: right;">
 						 <b>Contributed by</b>
 					</div>
 					
@@ -212,19 +214,33 @@
 					
 					
 					{{#view entry.view class="row entryRow"}}
-						<div class="span2">
-							{{entry.by.textValue}}
+						<div class="span2-routeview">
+							{{#if entry.by.textValue}}
+								{{entry.by.textValue}}
+							{{else}}
+								N/A
+							{{/if}}
 						</div>
-						<div class="span2">
-							{{entry.cost}}
+						<div class="span2-routeview">
+							{{#if entry.cost}}
+								{{entry.cost}}
+							{{else}}
+								N/A
+							{{/if}}
 						</div>
-						<div class="span2">
-							{{entry.type.textValue}}
+						<div class="span2-routeview">
+							{{#if entry.typeDefined}}
+								<span {{bindAttr class=":label entry.isTravel:label-success entry.isAd:label-warning entry.isResearch:label-important entry.isRide:label-info"}}>
+									{{entry.type.textValue}}
+								</span>
+							{{else}}
+								N/A
+							{{/if}}
 						</div>
-						<div class="span2" style="text-align: right;">
+						<div class="span2-routeview" style="text-align: right;">
 						 	<i>Anonymous</i>
 						</div>
-						<div class="span1" style="text-align: right;">
+						<div class="span1-routeview" style="text-align: right;">
 						 	<a href="#" {{action selectEntry entry}}>View</a>
 						</div>
 					{{/view}}
@@ -237,7 +253,7 @@
 				
 				<div class="row">
 				
-					<div class="span9 searchBox">
+					<div class="span8 searchBox">
 						
 						<div class="searchInput">
 							{{view App.PlaceInputView valueBinding="view.searchLocation"}}
@@ -251,22 +267,22 @@
 				
 				<div class="row">
 				
-					<div class="span4" style="text-align: center;">
+					<div class="span4-findview" style="text-align: center;">
 						<div class="row">
-							<div class="span4" style="text-align: center;">
+							<div class="span4-findview" style="text-align: center;">
 								TO
 							</div>
 						</div>
-						<div class="row">
+						<div class="row" style="margin-bottom: 1.0em;">
 							
-							<div class="span4" style="text-align: center;">
+							<div class="span4-findview" style="text-align: center;">
 								{{#each route in view.fromSuggestions}}
 									<a href="#" {{action selectRoute route}}>{{route.from.displayValue}} - {{route.to.displayValue}}</a>
 									<br/>
 								{{/each}}
 							</div>
 							
-							<div class="span4" style="text-align: center; margin-top: 1.0em;">
+							<div class="span4-findview" style="text-align: center; margin-top: 1.0em;">
 								<a href="#" {{action newToEntry view.searchLocation.displayValue}}>
 									Add new entry
 								</a> for a route to {{view.searchLocation.displayValue}}
@@ -275,22 +291,22 @@
 						</div>
 					</div>
 					
-					<div class="span4" style="text-align: center;">
+					<div class="span4-findview" style="text-align: center;">
 						<div class="row">
-							<div class="span4" style="text-align: center;">
+							<div class="span4-findview" style="text-align: center;">
 								FROM
 							</div>
 						</div>
-						<div class="row">
+						<div class="row" style="margin-bottom: 1.0em;">
 							
-							<div class="span4" style="text-align: center;">
+							<div class="span4-findview" style="text-align: center;">
 								{{#each route in view.toSuggestions}}
 									<a href="#" {{action selectRoute route}}>{{route.from.displayValue}} - {{route.to.displayValue}}</a>
 									<br/>
 								{{/each}}
 							</div>
 							
-							<div class="span4" style="text-align: center; margin-top: 1.0em;">
+							<div class="span4-findview" style="text-align: center; margin-top: 1.0em;">
 								<a href="#" {{action newFromEntry view.searchLocation.displayValue}}>
 									Add new entry
 								</a> for a route from {{view.searchLocation.displayValue}}
@@ -400,8 +416,8 @@
 						Type <span style="color: red;">*</span>
 					</div>
 				
-					<div class="span4 typeSelect">
-						{{#view App.EntryTypeSelectView valueBinding="type" class="selectList"}}
+					<div class="span4-entryedit typeSelect">
+						{{#view App.EntryTypeSelectView valueBinding="type" class="btn-group"}}
 							{{#view App.ListItemView}}Travel{{/view}}&nbsp;
 							{{#view App.ListItemView}}Research{{/view}}&nbsp;
 							{{#view App.ListItemView}}Advertisement{{/view}}&nbsp;
@@ -417,7 +433,7 @@
 					<div class="span1">
 						Trip
 					</div>
-					<div class="span4" style="text-align: center;">
+					<div class="span4-entryedit" style="text-align: center;">
 						{{view App.TripInputView valueBinding="trip"}}
 					</div>
 					<div class="span2 visible-desktop">
@@ -429,7 +445,7 @@
 					<div class="span1">
 						From <span style="color: red;">*</span>
 					</div>
-					<div class="span4" style="text-align: center;">
+					<div class="span4-entryedit" style="text-align: center;">
 						{{view App.PlaceInputView valueBinding="from"}}
 					</div>
 					<div class="span2 visible-desktop">
@@ -441,7 +457,7 @@
 					<div class="span1">
 						To <span style="color: red;">*</span>
 					</div>
-					<div class="span4" style="text-align: center;">
+					<div class="span4-entryedit" style="text-align: center;">
 						{{view App.PlaceInputView valueBinding="to"}}
 					</div>
 					<div class="span2 visible-desktop">
@@ -453,8 +469,8 @@
 					<div class="span1">
 						By <span style="color: red;">*</span>
 					</div>
-					<div class="span4 transportSelect">
-						{{#view App.TransportTypeSelectView valueBinding="by" class="selectList"}}
+					<div class="span4-entryedit transportSelect">
+						{{#view App.TransportTypeSelectView valueBinding="by" class="btn-group"}}
 							{{#view App.ListItemView}}bus{{/view}}
 							{{#view App.ListItemView}}plane{{/view}}
 							{{#view App.ListItemView}}train{{/view}}
@@ -466,7 +482,7 @@
 					</div>
 				</div>
 				
-				<div class="row" style="margin-top: 1.0em;">
+				<div class="row" style="margin-top: 1.4em;">
 					<div class="span8">
 						<b>Additional information</b>
 					</div>
@@ -476,7 +492,7 @@
 					<div class="span1" style="line-height: 1.0em;">
 						Transport details
 					</div>
-					<div class="span4">
+					<div class="span4-entryedit">
 						{{view Ember.TextField valueBinding="byId" class="fullWidth" placeholder="Number, destination or other id..." }}
 					</div>
 					<div class="span2 visible-desktop">
@@ -490,7 +506,7 @@
 					<div class="span1">
 						Travel time
 					</div>
-					<div class="span4">
+					<div class="span4-entryedit">
 						{{view Ember.TextField valueBinding="byDepTime" class="byDepTime" placeholder="Dep. time" }}
 						{{view Ember.TextField valueBinding="byArrTime" class="byArrTime" placeholder="Arr. time" }}
 						<div style="margin-left: 1.0em;margin-right: 0.5em;display: inline;float: left;">+</div>
@@ -505,7 +521,7 @@
 					<div class="span1">
 						Schedule
 					</div>
-					<div class="span4">
+					<div class="span4-entryedit">
 						{{view Ember.TextField valueBinding="scheduleInfo" class="fullWidth" placeholder="Schedule info, link to timetables..." }}
 					</div>
 					<div class="span2 visible-desktop">
@@ -517,7 +533,7 @@
 					<div class="span1">
 						Cost
 					</div>
-					<div class="span4">
+					<div class="span4-entryedit">
 						{{view Ember.TextField valueBinding="cost" class="fullWidth" placeholder="Exact or approximate cost" }}
 					</div>
 					<div class="span2 visible-desktop">
@@ -528,7 +544,7 @@
 					<div class="span1" style="line-height: 1.0em;">
 						Date of departure
 					</div>
-					<div class="span4">
+					<div class="span4-entryedit">
 						{{view Ember.TextField valueBinding="depDateYear" class="depDateYear" placeholder="YYYY" }}
 						{{view Ember.TextField valueBinding="depDateMonth" class="depDateMonth" placeholder="MM" }}
 						{{view Ember.TextField valueBinding="depDateDay" class="depDateDay" placeholder="DD" }}
@@ -558,9 +574,13 @@
 
 				<div class="row">
 					<div class="span4-entryview">
-						<span {{bindAttr class=":label isTravel:label-success isAd:label-warning isResearch:label-important isRide:label-info"}}>
-							{{type.textValue}}
-						</span>
+						
+						{{#if typeDefined}}
+							<span {{bindAttr class=":label isTravel:label-success isAd:label-warning isResearch:label-important isRide:label-info"}}>
+								{{type.textValue}}
+							</span>
+						{{/if}}
+						
 					</div>
 					<div class="span4-entryview">
 						
@@ -576,7 +596,7 @@
 				<br/>
 
 				<div class="row">
-					<div class="span8">
+					<div class="span8-entryview">
 						<div id="entryMap" style="width: 98%; height: 200px; border: 1px solid black;">[MAP]</div> 
 					</div>
 				</div>

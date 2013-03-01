@@ -19,13 +19,15 @@ App.ListItemContent = Ember.Object.extend({
 
 App.ListItemView = Ember.View.extend({
 	
-	classNames: [ 'selectListItem' ],
+	tagName: 'button',
+	
+	classNames: [ 'btn' ],
 		
-	classNameBindings: [ 'selected' ],
+	classNameBindings: [ 'active' ],
 		
 	index: undefined,
 	
-	selected: false,
+	active: false,
 	
 	init: function() {
 		
@@ -77,7 +79,7 @@ App.SelectListView = Ember.View.extend({
 			
 			var itemView = itemViews[i];
 			if(i != index) {
-				itemView.set('selected', false);
+				itemView.set('active', false);
 			}
 			
 		}
@@ -101,12 +103,12 @@ App.SelectListView = Ember.View.extend({
 			var itemView = itemViews[i];
 			
 			if(i != itemIndex) {
-				itemView.set('selected', false);
+				itemView.set('active', false);
 			} else {
 				var itemContent = itemView.get('controller.content');
 				itemContent.set('data', value);
 				this.set('selectedItem', itemContent);
-				itemView.set('selected', true);
+				itemView.set('active', true);
 			}
 			
 		}

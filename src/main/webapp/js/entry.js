@@ -101,7 +101,40 @@ App.Entry = App.Model.extend({
 			this.set('data.route', {});
 		}
 		
-	}
+	},
+	
+	typeDefined: function() {
+		return this.get('type') != undefined;
+	}.property('typeDefined'),
+	
+	isTravel: function() {
+		return this.get('type').textValue == 'Travel';
+	}.property('isTravel'),
+	
+	isResearch: function() {
+		return this.get('type').textValue == 'Research';
+	}.property('isResearch'),
+	
+	isAd: function() {
+		return this.get('type').textValue == 'Advertisement';
+	}.property('isAd'),
+	
+	isRide: function() {
+		return this.get('type').textValue == 'Ride';
+	}.property('isRide'),
+	
+	tripDefined: function() {
+		
+		var trip = this.get('trip');
+			
+		if(trip != undefined) {
+			return trip.id != undefined;
+		} else {
+			return false;
+		}
+		
+	}.property('tripDefined')
+	
 	
 });
 
@@ -154,38 +187,6 @@ App.EntryController = Ember.ObjectController.extend({
 		location.href = "#/entry/"+entry.get('id')+"/edit";
 		
 	},
-	
-	isTravel: false,
-	isAd: false,
-	isResearch: false,
-	isRide: false,
-	
-	typeChanged: function() {
-		
-		var type = this.get('content.type');
-		
-		if(type != undefined) {
-			this.set('isTravel', type.textValue == 'Travel');
-			this.set('isAd', type.textValue == 'Advertisement');
-			this.set('isResearch', type.textValue == 'Research');
-			this.set('isRide', type.textValue == 'Ride');
-		}
-		
-	}.observes('content.type'),
-	
-	tripDefined: false,
-	
-	typeChanged: function() {
-		
-		var trip = this.get('content.trip');
-		
-		if(trip != undefined) {
-			this.set('tripDefined', trip.id != undefined);
-		} else {
-			this.set('tripDefined', false);
-		}
-		
-	}.observes('content.trip'),
 	
 	gotoTrip: function() {
 		var trip = this.get('content.trip');

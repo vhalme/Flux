@@ -446,7 +446,7 @@ header .logo {
 }
 
 .editEntry .row {
-	min-height: 2.4em;
+	min-height: 2.6em;
 }
 
 .editEntry .span1 {
@@ -457,14 +457,8 @@ header .logo {
 	width: 95%;	
 }
 
-.editEntry .transportSelect .selectList {
-	padding-left: 50%;
-	margin-left: -4.8em;	
-}
-
-.editEntry .typeSelect .selectList {
-	padding-left: 50%;
-	margin-left: -9em;
+.editEntry .typeSelect {
+	position: relative;	
 }
 
 .entryRow {
