@@ -47,10 +47,10 @@ App.MapAutocompleteController = App.AutocompleteController.extend({
 		
 		var service = new google.maps.places.AutocompleteService();
 		
-	    service.getQueryPredictions({ input: searchString }, function(results, status) {
+	    service.getPlacePredictions({ input: searchString, types: [ "(cities)" ] }, function(results, status) {
 	    	
 	    	if(results.length == 0) {
-	    		results[0] = { description: "No results" }
+	    		results[0] = { description: "No results" };
 	    	}
 	    	
 	    	for(var i = 0; i < results.length; i++) {
@@ -564,6 +564,7 @@ App.getPlaceDetails = function(item, callback) {
 			var place = result[0];
 			
 			item.set('id', place.id);
+			item.set('locationId', place.locationId);
 			item.set('lat', place.lat);
 			item.set('lng', place.lng);
 			item.set('localityName', place.localityName);

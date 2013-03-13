@@ -161,25 +161,34 @@ public class TravellerService {
 		System.out.println(from.getDisplayValue()+"/"+from.getId());
 		System.out.println(to.getDisplayValue()+"/"+to.getId());
 		
-		List<Route> matchingRoutes = routeRepository.findByFromAndTo(from, to);
+		List<Route> matchingFromRoutes = routeRepository.findByFrom(from);
+		List<Route> matchingToRoutes = routeRepository.findByTo(to);
+		
+		if(matchingFromRoutes.size() > 0 && matchingToRoutes.size() > 0) {
+			
+			for(Route fromRoute : matchingFromRoutes) {
+				for(Route toRoute : matchingToRoutes) {
+					
+					if(fromRoute.getId() == toRoute.getId()) {
+						
+						System.out.println("Found route: "+fromRoute.getId()+"/"+fromRoute.getFrom().getDisplayValue()+"-"+fromRoute.getTo().getDisplayValue());
+						return fromRoute;
+						
+					}
+					
+				}
+			}
+			
+		}
+		
 		//List<Route> matchingRoutes = mongoTemplate.find(query(where("from.displayValue").is(from.getDisplayValue()).and("to.displayValue").is(to.getDisplayValue())), Route.class);
 		
-		for(Route r : matchingRoutes) {
-			System.out.println("MR: "+r.getId()+"/"+r.getFrom().getDisplayValue()+"-"+r.getTo().getDisplayValue());
-		}
-		
-		Route dbRoute = null;
-		
-		if(matchingRoutes.size() == 0) {
-			System.out.println("Saving route...");
-			route.setFrom(from);
-			route.setTo(to);
-			dbRoute = routeRepository.save(route);
-		} else {
-			dbRoute = matchingRoutes.get(0);
-		}
-		
-		return dbRoute;
+		System.out.println("Saving route...");
+			
+		route.setFrom(from);
+		route.setTo(to);
+			
+		return routeRepository.save(route);
 		
 	}
 	
@@ -191,8 +200,20 @@ public class TravellerService {
 		Place dbPlace = null;
 		
 		if(matches.size() == 0) {
+			
 			System.out.println("Saving place...");
+			
+			String placeLat = place.getLat().toString();
+			String placeLng = place.getLng().toString();
+			
+			placeLat = placeLat.replace(".", "P");
+			placeLng = placeLng.replace(".", "P");
+			
+			String locationId = placeLat + "C" + placeLng;
+			place.setLocationId(locationId);
+			
 			dbPlace = placeRepository.save(place);
+		
 		} else {
 			dbPlace = matches.get(0);
 		}
@@ -204,32 +225,30 @@ public class TravellerService {
 	@GET
     @Path("/route")
     @Produces({ MediaType.APPLICATION_JSON })
-    public List<Route> listRoutes(@QueryParam("from") String from, @QueryParam("to") String to) {
+    public List<Route> listRoutes(@QueryParam("fromId") String fromId, @QueryParam("toId") String toId) {
 		
 		List<Route> routes = new ArrayList<Route>();
 		
 		Place fromPlace = null;
 		Place toPlace = null;
 		
-		if(from != null) {
-			fromPlace = new Place();
-			fromPlace.setId(from);
+		if(fromId != null) {
+			fromPlace = placeRepository.findOne(fromId);
 		}
 		
-		if(to != null) {
-			toPlace = new Place();
-			toPlace.setId(to);
+		if(toId != null) {
+			toPlace = placeRepository.findOne(toId);
 		}
 		
-		if(from != null && to == null) {
+		if(fromId != null && toId == null) {
 			
 			routes = routeRepository.findByFrom(fromPlace);
 			
-		} else if(from == null && to != null) {
+		} else if(fromId == null && toId != null) {
 			
 			routes = routeRepository.findByTo(toPlace);
 		
-		} else if(from != null && to != null) {
+		} else if(fromId != null && toId != null) {
 			
 			routes = routeRepository.findByFromAndTo(fromPlace, toPlace);
 			

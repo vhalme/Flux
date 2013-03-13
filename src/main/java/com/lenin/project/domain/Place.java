@@ -14,6 +14,8 @@ public class Place implements Serializable {
 	@Id
 	private String id;
 	
+	private String locationId;
+	
 	private String displayValue;
 	private Double lat;
 	private Double lng;
@@ -33,6 +35,14 @@ public class Place implements Serializable {
 	}
 	
 	
+	public String getLocationId() {
+		return locationId;
+	}
+
+	public void setLocationId(String locationId) {
+		this.locationId = locationId;
+	}
+
 	public String getDisplayValue() {
 		return displayValue;
 	}

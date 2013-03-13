@@ -12,6 +12,8 @@ public interface PlaceRepository extends MongoRepository<Place, String> {
 	@Query(value="{ 'displayValue' : ?0 }")
 	List<Place> findMatchingPlaces(String displayValue);
 	
+	Place findByLocationId(String locationId);
+	
 	List<Place> findAll();
 	
 	Place save(Place place);

@@ -579,7 +579,7 @@ App.FindView = Em.View.extend({
 		
 		var bounds = new google.maps.LatLngBounds();
 		
-		$.get("service/route?from="+searchLocation.id, function(data) {
+		$.get("service/route?fromId="+searchLocation.id, function(data) {
 			for(var i=0; i<data.length; i++) {
 				
 				var route = data[i];
@@ -605,7 +605,7 @@ App.FindView = Em.View.extend({
 			}
 		});
 		
-		$.get("service/route?to="+searchLocation.id, function(data) {
+		$.get("service/route?toId="+searchLocation.id, function(data) {
 			for(var i=0; i<data.length; i++) {
 				
 				var route = data[i];
