@@ -1,6 +1,7 @@
 package com.lenin.project.service;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
@@ -13,8 +14,13 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Query;
+
+import static org.springframework.data.mongodb.core.query.Criteria.where;
+import static org.springframework.data.mongodb.core.query.Query.query;
 
 import com.lenin.project.domain.Entry;
 import com.lenin.project.domain.Place;
@@ -25,6 +31,8 @@ import com.lenin.project.repositories.PlaceRepository;
 import com.lenin.project.repositories.RouteRepository;
 import com.lenin.project.repositories.TripRepository;
 import com.mongodb.BasicDBObject;
+import com.mongodb.DBCollection;
+import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
 
@@ -55,9 +63,49 @@ public class TravellerService {
 	@GET
     @Path("/test")
     @Produces({ MediaType.TEXT_PLAIN })
-    public String test() {
-        return "Test OK!";
-    }
+    public String test(@QueryParam("fromId") String fromId, @QueryParam("toId") String toId) {
+		
+		//System.out.println(fromId);
+		//System.out.println(toId);
+		
+		Place from = placeRepository.findOne(fromId);
+		//from.setId("jekld");
+		Place to = placeRepository.findOne(toId);
+
+		List<Route> matchingRoutes = routeRepository.findByToAndFrom(to, from);
+		//List<Route> matchingRoutes = routeRepository.findByFromAndTo(from, to);
+		//List<Route> matchingRoutes = routeRepository.findMatchingRoutes(from.getId(), to.getId());
+		//List<Route> matchingRoutes = mongoTemplate.find(query(where("from.id").is(fromId).and("to.id").is(toId)), Route.class);
+		//List<Route> matchingRoutes = mongoTemplate.find(new Query(where("from._id").is("51310c700356bd17883ef94b")), Route.class);
+		
+		/*
+		DBCollection collection = mongoTemplate.getCollection("route");
+		
+		DBObject fromObj = new BasicDBObject("_id", new ObjectId("51310c700356bd17883ef94b"));
+		DBObject searchById = new BasicDBObject("from", fromObj);
+		DBCursor cursor = collection.find(fromObj);
+		while (cursor.hasNext()) {
+			
+			System.out.println(cursor.next());
+			
+		}
+		
+		DBObject obj = collection.findOne();
+		*/
+		
+		String result = "";
+		
+		for(Route r : matchingRoutes) {
+			String s = r.getId()+"/"+r.getFrom().getDisplayValue()+"-"+r.getTo().getDisplayValue();
+			System.out.println("MR: "+s);;
+			
+			result += s+"\r\n";
+			
+		}
+		
+        return result;
+    
+	}
 	
 	
 	@POST
@@ -114,6 +162,11 @@ public class TravellerService {
 		System.out.println(to.getDisplayValue()+"/"+to.getId());
 		
 		List<Route> matchingRoutes = routeRepository.findByFromAndTo(from, to);
+		//List<Route> matchingRoutes = mongoTemplate.find(query(where("from.displayValue").is(from.getDisplayValue()).and("to.displayValue").is(to.getDisplayValue())), Route.class);
+		
+		for(Route r : matchingRoutes) {
+			System.out.println("MR: "+r.getId()+"/"+r.getFrom().getDisplayValue()+"-"+r.getTo().getDisplayValue());
+		}
 		
 		Route dbRoute = null;
 		

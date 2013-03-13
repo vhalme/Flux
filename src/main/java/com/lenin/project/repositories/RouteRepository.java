@@ -15,7 +15,12 @@ public interface RouteRepository extends MongoRepository<Route, String> {
 	
 	List<Route> findByTo(Place to);
 	
+	@Query(value="{ 'from.id' : ?0, 'to.id' : ?1 }")
+	List<Route> findMatchingRoutes(String fromId, String toId);
+	
 	List<Route> findByFromAndTo(Place from, Place to);
+	
+	List<Route> findByToAndFrom(Place to, Place from);
 	
 	List<Route> findAll();
 	

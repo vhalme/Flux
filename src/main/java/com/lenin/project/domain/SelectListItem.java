@@ -2,6 +2,9 @@ package com.lenin.project.domain;
 
 import java.io.Serializable;
 
+import org.springframework.data.mongodb.core.mapping.Document;
+
+@Document(collection="entries")
 public class SelectListItem implements Serializable {
 
 	private static final long serialVersionUID = -9220599999668987782L;
