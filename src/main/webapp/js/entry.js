@@ -177,7 +177,9 @@ App.EntryController = Ember.ObjectController.extend({
 	saveEntry: function() {
 			
 		var entry = this.get('content');
-		entry.save();
+		entry.save(function(data) {
+			location.href="#/entry/"+data.id+"/view";
+		});
 		
 	},
 	

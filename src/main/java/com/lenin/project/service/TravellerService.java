@@ -22,10 +22,12 @@ import org.springframework.data.mongodb.core.query.Query;
 import static org.springframework.data.mongodb.core.query.Criteria.where;
 import static org.springframework.data.mongodb.core.query.Query.query;
 
+import com.lenin.project.domain.Comment;
 import com.lenin.project.domain.Entry;
 import com.lenin.project.domain.Place;
 import com.lenin.project.domain.Route;
 import com.lenin.project.domain.Trip;
+import com.lenin.project.repositories.CommentRepository;
 import com.lenin.project.repositories.EntryRepository;
 import com.lenin.project.repositories.PlaceRepository;
 import com.lenin.project.repositories.RouteRepository;
@@ -54,6 +56,9 @@ public class TravellerService {
 	
 	@Autowired
 	private RouteRepository routeRepository;
+	
+	@Autowired
+	private CommentRepository commentRepository;
 	
 	public TravellerService() {
 		
@@ -266,6 +271,19 @@ public class TravellerService {
 	
 	
 	@GET
+    @Path("/route/{id}")
+    @Produces({ MediaType.APPLICATION_JSON })
+    public Route findRoute(@PathParam("id") String id) {
+		
+		Route route = routeRepository.findOne(id);
+		System.out.println(route);
+        
+		return route;
+    
+	}
+	
+	
+	@GET
     @Path("/entry")
     @Produces({ MediaType.APPLICATION_JSON })
     public List<Entry> listEntries(@QueryParam("tripId") String tripId, @QueryParam("routeId") String routeId) {
@@ -301,11 +319,14 @@ public class TravellerService {
     public Entry find(@PathParam("id") String id, 
     		@QueryParam("tripId") String tripId, @QueryParam("fromName") String fromName, @QueryParam("toName") String toName) {
 		
+		Entry entry = new Entry();
+		
 		Trip trip = new Trip();
 		trip.setDisplayValue("(none)");
-		
-		Entry entry = new Entry();
 		entry.setTrip(trip);
+		
+		Route route = new Route();
+		entry.setRoute(route);
 		
 		if(id != null && !id.equals("new")) {
 			entry = entryRepository.findOne(id);
@@ -321,8 +342,6 @@ public class TravellerService {
 		}
 		
 		if(fromName != null || toName != null) {
-			
-			Route route = new Route();
 			
 			if(fromName != null) {
 				Place from = new Place();
@@ -391,6 +410,42 @@ public class TravellerService {
 		System.out.println(trip);
         
 		return trip;
+    
+	}
+	
+	
+	@GET
+    @Path("/comment")
+    @Produces({ MediaType.APPLICATION_JSON })
+    public List<Comment> listComments(@QueryParam("parentId") String parentId) {
+		
+		List<Comment> comments = commentRepository.findByParentId(parentId);
+		System.out.println(comments);
+        
+		return comments;
+    
+	}
+	
+	
+	@PUT
+    @Path("/comment")
+    @Consumes({ MediaType.APPLICATION_JSON })
+	@Produces({ MediaType.APPLICATION_JSON })
+    public Comment saveComment(Comment comment) {
+		
+		System.out.println("Saving comment...");
+		return commentRepository.save(comment);
+	
+	}
+	
+	@GET
+    @Path("/deletecomments")
+    @Produces({ MediaType.TEXT_PLAIN })
+    public String deleteComments() {
+		
+		commentRepository.deleteAll();
+		
+		return "OK";
     
 	}
 	

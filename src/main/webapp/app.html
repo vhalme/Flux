@@ -36,7 +36,6 @@
 
 		<!-- Google fonts -->
 		<link href='http://fonts.googleapis.com/css?family=Lato:400,700' rel='stylesheet' type='text/css'>
-		<link href="http://fonts.googleapis.com/css?family=Lora" rel="stylesheet" type="text/css">
 
 		<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?libraries=places&sensor=false&key=AIzaSyDzX1uyPzyjs9OrHhIEyvqfA_Z2k5wxb1U"></script>
 
@@ -246,6 +245,13 @@
 					{{/view}}
 					
 				{{/each}}
+				
+				
+				<div class="row entryRow">
+					<div class="span8" style="margin-top: 2.0em;">
+						{{view App.CommentsView}}
+					</div>
+				</div>
 
 			</script>
 			
@@ -265,6 +271,7 @@
 				
 				</div>
 				
+				{{#if view.searchLocationDefined}}
 				<div class="row">
 				
 					<div class="span4-findview" style="text-align: center;">
@@ -316,7 +323,13 @@
 					</div>
 					
 				</div>
-				
+				{{else}}
+				<div class="row">
+					<div class="span8" style="padding-top: 2.0em; text-align: center;">
+						Type in a location to search relevant routes.
+					</div>
+				</div>
+				{{/if}}
 				
 
 			</script>
@@ -378,10 +391,10 @@
 				
 				<div class="row">
 					
-					<div id="tripMap" class="span4" style="margin-bottom: 1.0em;">
+					<div id="tripMap" class="span4-tripview" style="margin-bottom: 1.0em;">
 					</div>
 					
-					<div class="span4">
+					<div class="span4-tripview">
 						
 						<div class="visible-desktop" style="margin-bottom: 1.0em;">
 							<h2>{{displayValue}}</h2>
@@ -389,7 +402,7 @@
 						
 						{{#each entry in entries}}
 							{{#view entry.view class="row tripEntryRow"}}
-								<div class="span4 entryCell">
+								<div class="span4-tripview entryCell">
 									<a href="#" {{action selectEntry entry}}>{{entry.route.from.displayValue}} - {{entry.route.to.displayValue}}</a><br/>
 								</div>
 							{{/view}}
@@ -397,13 +410,53 @@
 				
 					</div>
 					
-					<div class="span4" style="margin-top: 2.0em;">
+					<div class="span4-tripview" style="margin-top: 2.0em;">
 						<a {{action "newEntry"}} class="btn btn-primary" style="display: inline; float: right; margin-right: 2%;">New entry</a>
 					</div>
 					
 				</div>
 				
+				<div class="row">
+					<div class="span8" style="margin-top: 3.0em; margin-bottom: 2.0em;">
+						{{view App.CommentsView}}
+					</div>
+				</div>
 				
+			</script>
+			
+			<script type="text/x-handlebars" data-template-name="comments">
+				
+				<div style="background: rgb(242, 242, 242); padding-left: 1.0em; padding-top: 0.5em; padding-bottom: 1.0em;">
+					
+					<div>
+						<b>Post comment</b>
+					</div>
+					
+					{{view Ember.TextArea valueBinding="controller.commentBody" class="commentTextArea"}}
+					
+					<div>
+						<a {{action "postComment"}} class="btn btn-primary" style="display: inline;">Post</a>
+					</div>
+					
+				</div>
+				
+				<br/><br/>
+				
+				{{#each comment in controller}}
+					
+					<div style="padding-bottom: 1.0em; margin-top: 1.0em; border-bottom: 1px solid #f0f0f0;">
+						
+						<div style="margin-bottom: 1.0em;">
+							<div style="display: inline;"><i>Anonymous</i></div>
+							<div style="display: inline; float: right;">Date: 2013-03-21 15:12</div>
+						</div>
+						<div>
+							{{comment.commentBody}}
+						</div>
+					</div>
+					
+				{{/each}}
+			
 			</script>
 			
 			<script type="text/x-handlebars" data-template-name="entry/edit">
@@ -664,6 +717,12 @@
 						<a {{action "editEntry"}} class="btn btn-primary" style="display: inline; float: right; margin-right: 2%;">Edit</a>
 					</div>
 				</div>
+				
+				<div class="row">
+					<div class="span8" style="margin-top: 2.0em;">
+						{{view App.CommentsView}}
+					</div>
+				</div>
 
 			</script>
 
@@ -701,9 +760,14 @@ window.jQuery
 			<script src="js/selectlist.js"></script>
 			<script src="js/autocompleteinput.js"></script>
 			<script src="js/entry.js"></script>
-			<script src="js/test.js"></script>
+			<script src="js/find.js"></script>
+			<script src="js/feed.js"></script>
+			<script src="js/route.js"></script>
+			<script src="js/trip.js"></script>
+			<script src="js/comment.js"></script>
 			<script src="js/router.js"></script>
-
+			<script src="js/test.js"></script>
+			
 			<script>
 				$('*').live('webkitTransitionEnd transitionend msTransitionEnd oTransitionEnd', function() {
 					$(this).trigger('trans-end');

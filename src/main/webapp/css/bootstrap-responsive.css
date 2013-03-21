@@ -169,6 +169,10 @@
     width: 370px;
   }
   
+  .span4-tripview {
+    width: 370px;
+  }
+  
   .span4-findview {
     width: 370px;
   }
@@ -573,6 +577,11 @@
   
   .span4 {
   	width: 320px;
+    /*width: 228px;*/
+  }
+  
+  .span4-tripview {
+  	width: 452px;
     /*width: 228px;*/
   }
   
