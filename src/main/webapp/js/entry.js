@@ -108,19 +108,19 @@ App.Entry = App.Model.extend({
 	}.property('typeDefined'),
 	
 	isTravel: function() {
-		return this.get('type').textValue == 'Travel';
+		return this.get('typeDefined') == true && this.get('type').textValue == 'Travel';
 	}.property('isTravel'),
 	
 	isResearch: function() {
-		return this.get('type').textValue == 'Research';
+		return this.get('typeDefined') == true && this.get('type').textValue == 'Research';
 	}.property('isResearch'),
 	
 	isAd: function() {
-		return this.get('type').textValue == 'Advertisement';
+		return this.get('typeDefined') == true && this.get('type').textValue == 'Advertisement';
 	}.property('isAd'),
 	
 	isRide: function() {
-		return this.get('type').textValue == 'Ride';
+		return this.get('typeDefined') == true && this.get('type').textValue == 'Ride';
 	}.property('isRide'),
 	
 	tripDefined: function() {

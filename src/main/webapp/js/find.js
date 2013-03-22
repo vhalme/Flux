@@ -1,17 +1,12 @@
 App.FindRoute = Ember.Route.extend({
 	
-	setupController: function(controller, model) {
-		
-		controller.set('content', Ember.Object.create({ from: null, to: null }));
-  		
-  	}
   	
 });
 
 
 App.FindController = Ember.Controller.extend({
 	
-	content: Ember.Object.create( { from: null, to: null } ),
+	searchLocation: undefined,
 	
 	selectRoute: function(route) {
 		location.href = "#/route/"+route.id;
@@ -41,9 +36,9 @@ App.FindView = Em.View.extend({
 	
 	searchLocation: undefined,
 	
-	fromSuggestions: undefined,
+	fromSuggestions: Ember.ArrayProxy.create({ content: [] }),
 	
-	toSuggestions: undefined,
+	toSuggestions: Ember.ArrayProxy.create({ content: [] }),
 	
 	results: undefined,
 	
@@ -51,15 +46,19 @@ App.FindView = Em.View.extend({
 	
 	searchLocationDefined: false,
 	
+	controller: App.FindController.create(),
+	
+	/*
 	init: function() {
 		
 		this._super();
 		
-		this.set('fromSuggestions', Ember.ArrayProxy.create({ content: [] }));
-		this.set('toSuggestions', Ember.ArrayProxy.create({ content: [] }));
-		this.set('results', Ember.ArrayProxy.create({ content: [] }));
+		//this.set('fromSuggestions', Ember.ArrayProxy.create({ content: [] }));
+		//this.set('toSuggestions', Ember.ArrayProxy.create({ content: [] }));
+		//this.set('results', Ember.ArrayProxy.create({ content: [] }));
 		
 	},
+	*/
 	
 	didInsertElement: function() {
 		
@@ -124,6 +123,10 @@ App.FindView = Em.View.extend({
 			//searchResults.addClass("searchResultsSlideUp");
 		}, 10);
     	
+		var searchLocation = this.get('controller.searchLocation');
+		if(searchLocation != undefined) {
+			this.set('searchLocation', searchLocation);
+		};
 		
 	},
 	
@@ -177,6 +180,13 @@ App.FindView = Em.View.extend({
 		if(searchLocation.localityName == undefined) {
 			return;
 		}
+		
+		if(searchLocation == this.get('controller.searchLocation')) {
+			return;
+		} else {
+			this.set('controller.searchLocation', searchLocation);
+		}
+		
 		
 		this.set('searchLocationDefined', true);
 		

@@ -12,52 +12,6 @@ App.RouteRoute = Ember.Route.extend({
     	controller.set('content', model);
   	}
 	
-	/*
-	params: undefined,
-	
-	controller: undefined,
-	
-	model: function(params, firstLoad) {
-		
-		console.log("PARAMS("+firstLoad+"): ");
-		console.log(params);
-		
-		var controller = this.get('controller');
-		
-		if(params != undefined) {
-			
-			var oldParams = this.get('params');
-			
-			console.log("paramscheck: "+(oldParams == params));
-			
-			if(oldParams == params && firstLoad == undefined) {
-				console.log("failed params check....");
-				return;
-			} else {
-				this.set('params', params);
-			}
-			
-		}
-		
-		if(!controller) {
-			console.log("no controller");
-			return;
-		}
-		
-		console.log("updating params");
-		
-    	controller.set('routeId', params.route_id);
-    	
-	
-	},
-	
-	setupController: function(controller, model) {
-		
-		this.set('controller', controller);
-  		this.model(this.get('params'), true);
-  		
-  	}
-  	*/
 	
 });
 

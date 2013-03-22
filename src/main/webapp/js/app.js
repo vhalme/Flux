@@ -100,6 +100,14 @@ App.ControlView = Ember.View.extend({
 
 App.Router.map(function() {
 	
+	this.resource("login", function() {
+		this.route("index", { path: "/" });
+	});
+	
+	this.resource("register", function() {
+		this.route("index", { path: "/" });
+	});
+	
 	this.resource("find", function() {
 		this.route("index", { path: "/" });
 	});

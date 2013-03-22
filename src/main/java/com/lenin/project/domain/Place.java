@@ -6,7 +6,7 @@ import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-@Document(collection="routes")
+
 public class Place implements Serializable {
 	
 	private static final long serialVersionUID = -1171859637013720134L;

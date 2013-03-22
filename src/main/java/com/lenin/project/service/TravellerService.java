@@ -169,12 +169,17 @@ public class TravellerService {
 		List<Route> matchingFromRoutes = routeRepository.findByFrom(from);
 		List<Route> matchingToRoutes = routeRepository.findByTo(to);
 		
+		System.out.println("Matching FROM routes:"+matchingFromRoutes.size());
+		System.out.println("Matching TO routes:"+matchingToRoutes.size());
+		
 		if(matchingFromRoutes.size() > 0 && matchingToRoutes.size() > 0) {
 			
 			for(Route fromRoute : matchingFromRoutes) {
 				for(Route toRoute : matchingToRoutes) {
 					
-					if(fromRoute.getId() == toRoute.getId()) {
+					System.out.println("fromRouteId: "+fromRoute.getId()+" / toRouteId: "+toRoute.getId());
+					
+					if(fromRoute.getId().equals(toRoute.getId())) {
 						
 						System.out.println("Found route: "+fromRoute.getId()+"/"+fromRoute.getFrom().getDisplayValue()+"-"+fromRoute.getTo().getDisplayValue());
 						return fromRoute;
@@ -232,6 +237,8 @@ public class TravellerService {
     @Produces({ MediaType.APPLICATION_JSON })
     public List<Route> listRoutes(@QueryParam("fromId") String fromId, @QueryParam("toId") String toId) {
 		
+		System.out.println("fromId="+fromId+"/toId="+toId);
+		
 		List<Route> routes = new ArrayList<Route>();
 		
 		Place fromPlace = null;
@@ -245,19 +252,21 @@ public class TravellerService {
 			toPlace = placeRepository.findOne(toId);
 		}
 		
-		if(fromId != null && toId == null) {
+		System.out.println("fromPlace="+fromPlace+"/toPlace="+toPlace);
+		
+		if(fromPlace != null && toPlace == null) {
 			
 			routes = routeRepository.findByFrom(fromPlace);
 			
-		} else if(fromId == null && toId != null) {
+		} else if(fromPlace == null && toPlace != null) {
 			
 			routes = routeRepository.findByTo(toPlace);
 		
-		} else if(fromId != null && toId != null) {
+		} else if(fromPlace != null && toPlace != null) {
 			
 			routes = routeRepository.findByFromAndTo(fromPlace, toPlace);
 			
-		} else {
+		} else if(fromId == null && toId == null) {
 			
 			routes = routeRepository.findAll();
 			
@@ -458,6 +467,7 @@ public class TravellerService {
 		placeRepository.deleteAll();
 		tripRepository.deleteAll();
 		routeRepository.deleteAll();
+		commentRepository.deleteAll();
 		
 		return "OK";
     
