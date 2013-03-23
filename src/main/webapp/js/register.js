@@ -5,7 +5,9 @@ App.RegisterRoute = Ember.Route.extend({
 
 App.RegisterController = Ember.Controller.extend({
 	
-	testVal: "test2"
+	email: undefined,
+	
+	password: undefined,
 	
 });
 
