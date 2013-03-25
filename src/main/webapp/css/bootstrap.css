@@ -6205,3 +6205,7 @@ a.badge:focus {
 .affix {
   position: fixed;
 }
+
+.loginLabel {
+  	text-align: right;
+  }

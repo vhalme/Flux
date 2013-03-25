@@ -503,3 +503,7 @@ header .logo {
 	width: 95%;
 	max-width: 320px;	
 }
+
+.textfieldFull {
+	width: 100%;	
+}

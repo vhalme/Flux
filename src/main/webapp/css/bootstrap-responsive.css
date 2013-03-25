@@ -512,6 +512,10 @@
   .row-fluid .thumbnails {
     margin-left: 0;
   }
+  
+  .loginLabel {
+  	text-align: right;
+  }
 }
 
 @media (min-width: 768px) and (max-width: 979px) {
@@ -919,6 +923,11 @@
   .uneditable-input.span1 {
     width: 28px;
   }
+  
+  .loginLabel {
+  	text-align: right;
+  }
+  
 }
 
 @media(min-width: 360px) {
@@ -988,7 +997,6 @@
     margin-left: 0;
   }
   
-
   .span9 {
   	width: 96%;
   }
@@ -1070,6 +1078,11 @@
   .modal.fade.in {
     top: 20px;
   }
+  
+  .loginLabel {
+  	text-align: left;
+  }
+  
 }
 
 @media (max-width: 480px) {

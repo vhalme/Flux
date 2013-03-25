@@ -257,17 +257,91 @@
 			
 			<script type="text/x-handlebars" data-template-name="login">
 				
-				Username: {{view Ember.TextField valueBinding="username"}}<br/>
-				Password: {{view Ember.TextField valueBinding="password"}}<br/>
-				<a href="#" {{action login}}>Log In</a>
-				<br/><br/>
+				<div class="row">
+					
+					<div class="span8">
+						
+					</div>
+					
+				</div>
 				
-				<a href="#facebook">Facebook login</a><br/>
+				<div class="row">
 				
-				<br/><br/>
+					<div class="span4">
+						
+						<div class="row">
+							
+							<div class="span2">
+								E-mail or username:
+							</div>
+						
+							<div class="span2">
+								{{view Ember.TextField valueBinding="username" class="textfieldFull"}}
+							</div>
+							
+						</div>
+						
+						<div class="row">
+							
+							<div class="span2">
+								Password:
+							</div>
+						
+							<div class="span2">
+								{{view Ember.TextField valueBinding="password" class="textfieldFull"}}
+							</div>
+						
+						</div>
+						
+						<div class="row">
+							
+							<div class="span2">
+							</div>
+						
+							<div class="span2">
+								<a href="#" {{action login}} class="btn btn-primary">Log In</a>
+							</div>
+						
+						</div>
+					
+					</div>
+					
+					<div class="span4" style="text-align: center;">
+						dskjskhfdkjs
+					</div>
+					
+				</div>
 				
-				<a href="#/register">Register</a>
-				<br/><br/>
+				
+				<div class="row">
+				
+					<div class="span8">
+						<div class="span3">
+						</div>
+						<div class="span3">
+							
+						</div>
+					</div>
+					
+				</div>
+				
+				<div class="row" style="margin-top: 4.0em;">
+					
+					<div class="span6">
+						
+						Not registered? Click the "Register" button to get started.
+						<br/><br/>
+						<b>Why register?</b> As a registered user you will be able to contribute 
+						under your own username and manage your own contributions.
+						
+					</div>
+					
+					<div class="span2" style="text-align: center;">
+						<a href="#/register" class="btn btn-primary">Register</a>
+					</div>
+					
+				</div>
+				
 				
 			</script>
 			
@@ -276,7 +350,14 @@
 				<div class="row">
 				
 					<div class="span8">
-						<div class="span2">
+					</div>
+				
+				</div>
+				
+				<div class="row">
+				
+					<div class="span8">
+						<div class="span2 loginLabel">
 							E-mail:
 						</div>
 						<div class="span3">
@@ -289,7 +370,7 @@
 				<div class="row">
 				
 					<div class="span8">
-						<div class="span2">
+						<div class="span2 loginLabel">
 							Username:
 						</div>
 						<div class="span3">
@@ -302,7 +383,7 @@
 				<div class="row">
 				
 					<div class="span8">
-						<div class="span2">
+						<div class="span2 loginLabel">
 							Password:
 						</div>
 						<div class="span3">
