@@ -191,6 +191,11 @@ header .logo {
 	visibility: visible;
 }
 
+.invisible {
+	display: none;
+	visibility: hidden;
+}
+
 .selectList {
 	
 	margin-left: auto;

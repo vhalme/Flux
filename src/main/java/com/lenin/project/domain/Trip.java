@@ -15,6 +15,12 @@ public class Trip implements Serializable {
 	
 	public String displayValue;
 	
+	public String coverPhoto = "img/NoPhotos.png";
+	
+	public String albumUrl;
+	
+	public String albumName;
+	
 	public Trip() {
 	}
 	
@@ -32,5 +38,31 @@ public class Trip implements Serializable {
 	public void setDisplayValue(String displayValue) {
 		this.displayValue = displayValue;
 	}
+
+	public String getCoverPhoto() {
+		return coverPhoto;
+	}
+
+	public void setCoverPhoto(String coverPhoto) {
+		this.coverPhoto = coverPhoto;
+	}
+
+	public String getAlbumUrl() {
+		return albumUrl;
+	}
+
+	public void setAlbumUrl(String albumUrl) {
+		this.albumUrl = albumUrl;
+	}
+
+	public String getAlbumName() {
+		return albumName;
+	}
+
+	public void setAlbumName(String albumName) {
+		this.albumName = albumName;
+	}
+	
+	
 
 }

@@ -257,87 +257,61 @@
 			
 			<script type="text/x-handlebars" data-template-name="login">
 				
-				<div class="row">
+				<div class="row" style="margin-bottom: 2.0em;">
 					
 					<div class="span8">
-						
+						<h2>Log In</h2>
 					</div>
 					
 				</div>
 				
 				<div class="row">
 				
+					<div class="span4 loginLabel">
+						E-mail or username:
+					</div>
+						
 					<div class="span4">
-						
-						<div class="row">
-							
-							<div class="span2">
-								E-mail or username:
-							</div>
-						
-							<div class="span2">
-								{{view Ember.TextField valueBinding="username" class="textfieldFull"}}
-							</div>
-							
-						</div>
-						
-						<div class="row">
-							
-							<div class="span2">
-								Password:
-							</div>
-						
-							<div class="span2">
-								{{view Ember.TextField valueBinding="password" class="textfieldFull"}}
-							</div>
-						
-						</div>
-						
-						<div class="row">
-							
-							<div class="span2">
-							</div>
-						
-							<div class="span2">
-								<a href="#" {{action login}} class="btn btn-primary">Log In</a>
-							</div>
-						
-						</div>
-					
+						{{view Ember.TextField valueBinding="username"}}
 					</div>
-					
-					<div class="span4" style="text-align: center;">
-						dskjskhfdkjs
-					</div>
-					
+							
 				</div>
-				
-				
+						
 				<div class="row">
-				
-					<div class="span8">
-						<div class="span3">
-						</div>
-						<div class="span3">
 							
-						</div>
+					<div class="span4 loginLabel">
+						Password:
 					</div>
-					
+						
+					<div class="span4">
+						{{view Ember.TextField valueBinding="password"}}
+					</div>
+						
+				</div>
+						
+				<div class="row">
+							
+					<div class="span4">
+					</div>
+						
+					<div class="span4">
+						<a href="#" {{action login}} class="btn btn-primary">Log In</a>
+					</div>
+						
 				</div>
 				
-				<div class="row" style="margin-top: 4.0em;">
+				
+				<div class="row" style="margin-top: 2.0em; padding-top: 2.0em; border-top: 1px solid #d0d0d0;">
 					
-					<div class="span6">
+					<div class="span8" style="text-align: center;">
 						
 						Not registered? Click the "Register" button to get started.
+						<br/><br/>
+						<a href="#/register" class="btn btn-primary">Register</a>
 						<br/><br/>
 						<b>Why register?</b> As a registered user you will be able to contribute 
 						under your own username and manage your own contributions.
 						
-					</div>
-					
-					<div class="span2" style="text-align: center;">
-						<a href="#/register" class="btn btn-primary">Register</a>
 					</div>
 					
 				</div>
@@ -347,62 +321,57 @@
 			
 			<script type="text/x-handlebars" data-template-name="register">
 				
-				<div class="row">
+				<div class="row" style="margin-bottom: 2.0em;">
 				
 					<div class="span8">
+						<h2>Register</h2>
 					</div>
 				
 				</div>
 				
 				<div class="row">
 				
-					<div class="span8">
-						<div class="span2 loginLabel">
-							E-mail:
-						</div>
-						<div class="span3">
-							{{view Ember.TextField valueBinding="email"}}
-						</div>
+					<div class="span4-login loginLabel">
+						E-mail:
+					</div>
+					<div class="span4-login">
+						{{view Ember.TextField valueBinding="email"}}
+					</div>
+					
+				</div>
+				
+				<div class="row">
+					
+					<div class="span4-login loginLabel">
+						Username:
+					</div>
+					<div class="span4-login">
+						{{view Ember.TextField valueBinding="username"}}
 					</div>
 					
 				</div>
 				
 				<div class="row">
 				
-					<div class="span8">
-						<div class="span2 loginLabel">
-							Username:
-						</div>
-						<div class="span3">
-							{{view Ember.TextField valueBinding="username"}}
-						</div>
+					<div class="span4-login loginLabel">
+						Password:
 					</div>
-					
-				</div>
-				
-				<div class="row">
-				
-					<div class="span8">
-						<div class="span2 loginLabel">
-							Password:
-						</div>
-						<div class="span3">
-							{{view Ember.TextField valueBinding="password"}}
-						</div>
+					<div class="span4-login">
+						{{view Ember.TextField valueBinding="password"}}
 					</div>
 					
 				</div>
 				
 				<div class="row" style="margin-bottom: 1.4em;">
 					
-					<div class="span8">
-						<div class="span4">
-							<a href="#" {{action register}} class="btn btn-primary">Register</a>
-						</div>
+					<div class="span4-login">
 					</div>
 					
+					<div class="span4-login">
+						<a href="#" {{action register}} class="btn btn-primary">Register</a>
+					</div>
+
 				</div>
-				
 				
 			</script>
 			
@@ -508,7 +477,7 @@
 					
 					{{#each trip in controller}}
 						<div class="span2-trips" style="text-align: center;">
-							<img src="img/NoPhotos.png" class="img-polaroid" />
+							<img {{bindAttr src="trip.coverPhoto"}} class="img-polaroid" style="width: 95%" />
 							<div style="text-align: center; margin-top: 0.6em; margin-bottom: 0.2em;">
 								<a href="#" {{action selectTrip trip}}>{{trip.displayValue}}</a>
 							</div>
@@ -535,22 +504,34 @@
 			
 			<script type="text/x-handlebars" data-template-name="trip">
 				
-				<div class="row hidden-desktop">
-					<div class="span8">
-						<h2>{{displayValue}}</h2>
-					</div>
-				</div>
-				
 				<div class="row">
 					
-					<div id="tripMap" class="span4-tripview" style="margin-bottom: 1.0em;">
+					<div class="span4-tripview">
+						<h2>{{displayValue}}</h2>
 					</div>
 					
 					<div class="span4-tripview">
 						
-						<div class="visible-desktop" style="margin-bottom: 1.0em;">
-							<h2>{{displayValue}}</h2>
-						</div>
+						{{#view Ember.View classNameBindings="albumUrlVisible:invisible:visible"}}
+							<div style="margin-bottom: 0.4em;">Album: {{albumName}}</div>
+							<div style="margin-bottom: 1.0em;"><a href="#" {{action openAlbumUrlInput}}>Set photo album</a></div>
+						{{/view}}
+						
+						{{#view classNameBindings="albumUrlVisible:visible:invisible"}}
+							Album URL: <br/>
+							{{view Ember.TextField valueBinding="albumUrl"}} <a {{action "setAlbumUrl"}} class="btn btn-primary" style="margin-top: -0.7em;">OK</a>
+						{{/view}}
+						
+					</div>
+					
+				</div>
+				
+				<div class="row">
+					
+					<div id="tripMap" class="span8" style="margin-bottom: 1.0em;">
+					</div>
+					
+					<div class="span8">
 						
 						{{#each entry in entries}}
 							{{#view entry.view class="row tripEntryRow"}}
@@ -562,7 +543,7 @@
 				
 					</div>
 					
-					<div class="span4-tripview" style="margin-top: 2.0em;">
+					<div class="span8" style="margin-top: 2.0em;">
 						<a {{action "newEntry"}} class="btn btn-primary" style="display: inline; float: right; margin-right: 2%;">New entry</a>
 					</div>
 					

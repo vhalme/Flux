@@ -37,6 +37,9 @@ App.Trip = App.Model.extend({
 	path: "trip",
 	
 	idBinding: 'data.id',
+	coverPhotoBinding: 'data.coverPhoto',
+	albumUrlBinding: 'data.albumUrl',
+	albumNameBinding: 'data.albumName',
 	displayValueBinding: 'data.displayValue'
 	
 	
@@ -74,6 +77,7 @@ App.TripsIndexController = Ember.ArrayController.extend({
 	addNewTrip: function() {
 		
 		var trip = this.get('newTrip');
+		trip.set('coverPhoto', "img/NoPhotos.png");
 		
 		trip.save(function(data) {
 			location.href="#/trip/"+data.id+"/view";
@@ -101,6 +105,8 @@ App.TripsIndexView = Ember.View.extend({
 
 
 App.TripController = Ember.ObjectController.extend({
+	
+	albumUrlVisible: false,
 	
 	getEntries: function(tripId) {
 		
@@ -141,6 +147,43 @@ App.TripController = Ember.ObjectController.extend({
 			
 		});
 		
+		var albumUrl = this.get('content.albumUrl');
+		
+		$.get(albumUrl, function(data) {
+			
+			var entries = data.feed.entry;
+			console.log(data);
+			
+			var photos = [];
+			
+			for(var i=0; i<entries.length; i++) {
+				
+				var georss = entries[i].georss$where;
+				
+				if(georss != undefined) {
+					
+					var posStr = georss.gml$Point.gml$pos.$t;
+					var coords = posStr.split(" ");
+					var lat = parseFloat(coords[0]);
+					var lng = parseFloat(coords[1]);
+					
+					var photo = { 
+							src: entries[i].content.src,
+							latLng: { lat: lat, lng: lng } 
+					};
+					
+					photos.addObject(photo);
+					
+					console.log(photo);
+	
+				}
+				
+			}
+			
+			controller.set('content.photos', photos);
+			
+		});
+		
 	},
 	
 	selectEntry: function(entry) {
@@ -161,6 +204,43 @@ App.TripController = Ember.ObjectController.extend({
 		
 	},
 	
+	openAlbumUrlInput: function() {
+		
+		this.set('albumUrlVisible', true);
+		
+	},
+	
+	setAlbumUrl: function() {
+		
+		this.set('albumUrlVisible', false);
+		
+		var albumUrl = this.get('content.albumUrl');
+		
+		if(albumUrl != undefined && albumUrl.length > 0) {
+			
+			console.log("album url: "+this.get('content.albumUrl'));
+			
+			var trip = this.get('content');
+			
+			$.get(albumUrl, function(data) {
+				
+				var coverPhoto = data.feed.icon.$t;
+				var albumName = data.feed.title.$t;
+				
+				console.log("cover photo: "+coverPhoto);
+				
+				trip.set('data.coverPhoto', coverPhoto);
+				trip.set('data.albumName', albumName);
+				
+				trip.save(function(data) {
+				});
+				
+			});
+			
+		}
+		
+	},
+	
 	idChanged: function() {
 		
 		var id = this.get('content.id');
@@ -177,6 +257,16 @@ App.TripView = Ember.View.extend({
 	
 	map: undefined,
 	
+	albumUrlVisibleBinding: 'controller.albumUrlVisible',
+	
+	AlbumUrlInputView: Ember.TextField.extend({
+		
+		albumUrlVisibleBinding: 'parentView.albumUrlVisible',
+		
+        classNameBindings: 'albumUrlVisible:visible:invisible'
+        
+	}),
+    
 	entryLoaded: function() {
 		
 		var trip = this.get('controller.content');
@@ -188,10 +278,6 @@ App.TripView = Ember.View.extend({
 		
 		console.log("ENTRIES:");
 		console.log(entries);
-		
-		var from = entries[0].route.from;
-		
-		console.log(from);
 		
 		var styles = [
 		              {
@@ -206,7 +292,7 @@ App.TripView = Ember.View.extend({
 		
 		var mapOptions = {
         	
-        	center: new google.maps.LatLng(from.lat, from.lng),
+        	center: new google.maps.LatLng(0, 0),
           	zoom: 8,
           	mapTypeId: google.maps.MapTypeId.ROADMAP,
           	panControl: false,
@@ -252,7 +338,64 @@ App.TripView = Ember.View.extend({
     	}
 		
 		map.fitBounds(bounds);
+		
         
-	}.observes('controller.content.entries')
+	}.observes('controller.content.entries'),
+	
+	photosLoaded: function() {
+		
+		var photos = this.get('controller.content.photos');
+		
+		if(photos == undefined) {
+			return;
+		}
+		
+		var map = this.get('map');
+		
+		for(var i=0; i<photos.length; i++) {
+			
+			var photo = photos[i];
+			
+			var latlng = new google.maps.LatLng(photos[i].latLng.lat, photos[i].latLng.lng);
+
+			var marker = new google.maps.Marker({
+			    position: latlng,
+			    title: "Click to view full photo",
+			    map: map
+			});
+			
+			
+			this.addMarkerMessage(marker, photos[i].src);
+			
+			
+		}
+		
+	}.observes('controller.content.photos'),
+	
+	addMarkerMessage: function(marker, photoSrc) {
+		
+		var map = this.get('map');
+		
+		var contentString = "<img src=\""+photoSrc+"\" width=\"150px\"/>";
+		
+		var infowindow = new google.maps.InfoWindow(
+				{ 
+					content: contentString
+			     
+				});
+		
+		google.maps.event.addListener(marker, 'mouseover', function() {
+			infowindow.open(map, marker);
+		});
+		
+		google.maps.event.addListener(marker, 'mouseout', function() {
+			infowindow.close();
+		});
+		
+		google.maps.event.addListener(marker, 'click', function() {
+			location.href = photoSrc;
+		});
+		
+	}
 	
 });
