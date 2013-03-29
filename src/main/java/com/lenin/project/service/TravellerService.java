@@ -27,11 +27,13 @@ import com.lenin.project.domain.Entry;
 import com.lenin.project.domain.Place;
 import com.lenin.project.domain.Route;
 import com.lenin.project.domain.Trip;
+import com.lenin.project.domain.User;
 import com.lenin.project.repositories.CommentRepository;
 import com.lenin.project.repositories.EntryRepository;
 import com.lenin.project.repositories.PlaceRepository;
 import com.lenin.project.repositories.RouteRepository;
 import com.lenin.project.repositories.TripRepository;
+import com.lenin.project.repositories.UserRepository;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
@@ -59,6 +61,9 @@ public class TravellerService {
 	
 	@Autowired
 	private CommentRepository commentRepository;
+	
+	@Autowired
+	private UserRepository userRepository;
 	
 	public TravellerService() {
 		
@@ -112,6 +117,30 @@ public class TravellerService {
     
 	}
 	
+	
+	@POST
+    @Path("/register")
+	@Consumes({ MediaType.APPLICATION_JSON })
+	@Produces({ MediaType.TEXT_PLAIN })
+    public String register(User user) {
+        
+		System.out.println("Registering user: "+user);
+		
+		userRepository.save(user);
+		
+		return "OK!";
+    
+	}
+	
+	
+	@GET
+    @Path("/user")
+	@Produces({ MediaType.APPLICATION_JSON })
+    public List<User> listUsers() {
+        
+		return userRepository.findAll();
+	
+	}
 	
 	@POST
     @Path("/entry")

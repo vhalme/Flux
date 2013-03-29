@@ -19,6 +19,7 @@ public class Entry implements Serializable {
 	private SelectListItem date;
 	private String reference;
 	
+	@DBRef
 	private Trip trip;
 	
 	@DBRef
