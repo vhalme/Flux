@@ -1,0 +1,25 @@
+{
+  "manifest_version": 2,
+
+  "name": "One-click Kittens",
+  "description": "This extension demonstrates a browser action with kittens.",
+  "version": "1.0",
+
+  "permissions": [
+    "storage"
+  ],
+  
+  "content_scripts": [ {
+    "js": [ "jquery-1.9.1.min.js", "flux-ext.js"  ],
+    "matches": [ "http://*/*", "https://*/*"]
+  }],
+    
+  "browser_action": {
+    "default_icon": "icon.png",
+    "default_popup": "flux.html"
+  },
+  
+  "background": {
+  	"scripts": ["background.js"]
+  }
+}
