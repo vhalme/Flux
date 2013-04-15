@@ -1,0 +1,182 @@
+<html lang="en" ng-app="myApp">
+
+	<head>
+
+		<meta charset="utf-8">
+		<title>FLUX</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="description" content="">
+		<meta name="author" content="">
+
+		<!-- Le styles -->
+		<link href="css/bootstrap.css" rel="stylesheet">
+		<style>
+			body {
+				padding-top: 60px;
+				/* 60px to make the container go all the way to the bottom of the topbar */
+			}
+		</style>
+		<link href="css/bootstrap-responsive.css" rel="stylesheet">
+
+		<script src="jquery-1.9.1.min.js"></script>
+		<script src="hmac-sha512.js"></script>
+		<script src="angular.min.js"></script>
+
+		<script src="btce.js"></script>
+		<script src="flux2-ang.js"></script>
+
+	</head>
+
+	<body ng-controller="AppCtrl">
+
+		<div class="container">
+			
+			<div class="row">
+
+				<div class="span6">					
+					
+					<div class="row">
+						
+						<div class="span6">
+							<b>BUY RATE DELTA</b> {{buyMargin}}
+						</div>
+					
+					</div>
+					
+					<div class="row" style="margin-top: 1.0em;">
+						
+						<div class="span3">
+							<b>AVAILABLE USD:</b> {{usd|truncate:6:""}}
+						</div>
+						
+						<div class="span3">
+							<b>SELL RATE:</b> {{currentSellPrice|truncate:6:""}}
+						</div>
+						
+					</div>
+					
+					<div class="row" style="margin-top: 2.0em;">
+						<div class="span1">
+    						<b>AMOUNT</b>
+    					</div>
+    					<div class="span1">
+    						<b>RATE</b>
+    					</div>
+    					<div class="span1">
+    						<b>PROFIT</b>
+    					</div>
+					</div>
+					
+					<div class="row" ng-repeat="buy in buyHistory">
+						
+						<div class="span1">
+    						{{buy.amount|truncate:6:""}}
+    					</div>
+    					<div class="span1">
+    						{{buy.rate|truncate:6:""}}
+    					</div>
+    					<div class="span1">
+    						{{buyProfit(buy.rate)|truncate:6:""}}
+    					</div>
+    					<div class="span1">
+    						<a href="#">Sell</a>
+    					</div>
+    				
+					</div>
+					
+				</div>
+				
+				<div class="span6">
+						
+					<div class="row">
+						
+						<div class="span6">
+							<b>SELL RATE DELTA</b> {{sellMargin}}
+						</div>
+					
+					</div>
+					
+					<div class="row" style="margin-top: 1.0em;">
+						
+						<div class="span3">
+							<b>AVAILABLE LTC:</b> {{ltc|truncate:6:""}}
+						</div>
+						
+						<div class="span3">
+							<b>BUY RATE:</b> {{currentBuyPrice|truncate:6:""}}
+						</div>
+						
+					</div>
+					
+					<div class="row" style="margin-top: 2.0em;">
+						<div class="span1">
+    						<b>AMOUNT</b>
+    					</div>
+    					<div class="span1">
+    						<b>RATE</b>
+    					</div>
+    					<div class="span1">
+    						<b>PROFIT</b>
+    					</div>
+					</div>
+					
+					<div class="row" ng-repeat="sell in sellHistory">
+						
+						<div class="span1">
+    						{{sell.amount|truncate:6:""}}
+    					</div>
+    					<div class="span1">
+    						{{sell.rate|truncate:6:""}}
+    					</div>
+    					<div class="span1">
+    						{{sellProfit(sell.rate)|truncate:6:""}}
+    					</div>
+    					<div class="span1">
+    						<a href="#">Buy</a>
+    					</div>
+    					
+					</div>
+				
+				</div>
+				
+			</div>
+			
+			<div class="row" style="margin-top: 4.0em;">
+				
+				<div class="span12">
+					
+					Refresh in {{refreshCounter}} seconds.
+					<br/>
+					<input type="button" id="updateBtn" value="Test 1" onclick="javascript:app.test1();"/>
+					<input type="button" id="suggestBtn" value="Test 2" onclick="javascript:app.test2();"/>
+					
+					<button ng-click="lowerPrice()">
+						price--
+					</button>
+					<button ng-click="raisePrice()">
+						price++
+					</button>
+					
+					<button ng-click="addMoney()">
+						money++
+					</button>
+					<button ng-click="addCoins()">
+						coins++
+					</button>
+
+					<br/>
+					<br/>
+					
+					<button ng-click="start()">
+						Start
+					</button>
+
+				</div>
+			
+			</div>
+		
+		</div>
+
+	</body>
+	
+</html>

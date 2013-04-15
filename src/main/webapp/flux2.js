@@ -62,10 +62,16 @@ var app = {
    			refresh: function() {
    				
    				API.getInfo(function(info) {
-   					this.ltc = info.return.funds.ltc;
-   					this.usd = info.return.funds.usd;
-   					$("#cur1").html(this.usd);
-   					$("#cur2").html(this.ltc);
+   					
+   					if(info.success == 1) {
+   						this.ltc = info.return.funds.ltc;
+   						this.usd = info.return.funds.usd;
+   						$("#cur1").html(this.usd);
+   						$("#cur2").html(this.ltc);
+   					} else {
+   						console.log(info);
+   					}
+   					
    				});
    				
    				var context = this;
