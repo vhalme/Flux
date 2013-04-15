@@ -1,9 +1,25 @@
 package com.lenin.project.service;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLConnection;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
+import javax.net.ssl.HttpsURLConnection;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -14,7 +30,19 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
+import org.apache.commons.codec.binary.Hex;
+import org.apache.cxf.jaxrs.utils.HttpUtils;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ByteArrayEntity;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.bson.types.ObjectId;
+import org.codehaus.jettison.json.JSONException;
+import org.codehaus.jettison.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Query;
@@ -44,6 +72,11 @@ import com.mongodb.util.JSON;
 @Path("/")
 public class TravellerService {
 	
+	private static long _nonce = System.currentTimeMillis() / 10000L;
+	
+	private static String _key = "UABV5DX1-IS9DZ3Z7-1U0GMB5L-JIWGZLKY-ZIC5NOYV";
+	private static String _secret = "cd07af6d2be3ee3257321ab6c1b14316eacbed89d6967b60be5a68642513ea22";
+	
 	@Autowired
 	private MongoTemplate mongoTemplate;
 	
@@ -68,6 +101,206 @@ public class TravellerService {
 	public TravellerService() {
 		
 	}
+	
+	@GET
+	@Path("/rates")
+    @Produces({ MediaType.TEXT_PLAIN })
+    public String getRates() {
+		
+		String result = "";
+		
+	    try {
+	    	
+	    	//Create connection
+	    	HttpClient client = new DefaultHttpClient();
+	    	HttpGet get = new HttpGet("https://btc-e.com/api/2/ltc_usd/ticker");
+	    	
+	    	HttpResponse response = client.execute(get);
+	    	HttpEntity entity = response.getEntity();
+	    	
+	    	if (entity != null) {
+	    	    
+	    		InputStream instream = entity.getContent();
+	    	    
+	    	    try {
+	    	        
+	    	    	BufferedReader in = 
+	    	        		new BufferedReader(new InputStreamReader(instream));
+	    	        
+	    	        String inputLine;
+	    	        
+	    	        while ((inputLine = in.readLine()) != null) {
+	    	            //System.out.println(inputLine);
+	    	            result += inputLine;
+	    	        }
+	    	        
+	    	        in.close();
+	    	    
+	    	    } finally {
+	    	        
+	    	    	instream.close();
+	    	    
+	    	    }
+	    	
+	    	}
+	    	
+	    	
+
+	    } catch (Exception e) {
+
+	      e.printStackTrace();
+	      return null;
+
+	    }
+	    
+		return result;
+		
+	}
+	
+	@GET
+	@Path("/funds")
+    @Produces({ MediaType.TEXT_PLAIN })
+    public String getFunds() {
+		
+		HashMap<String, String> params = new HashMap<String, String>();
+		JSONObject json = authenticatedHTTPRequest("getInfo", null);
+		
+		return "test //";
+		
+	}
+	
+	
+	private final JSONObject authenticatedHTTPRequest(String method, Map<String, String> arguments) {
+        
+		HashMap<String, String> headerLines = 
+				new HashMap<String, String>();  // Create a new map for the header lines.
+        
+		Mac mac;
+        
+		SecretKeySpec key = null;
+ 
+        if(arguments == null) {  // If the user provided no arguments, just create an empty argument array.
+        	arguments = new HashMap<String, String>();
+        }
+       
+        arguments.put("method", method);  // Add the method to the post data.
+        
+        System.out.println("nonce = "+_nonce);
+        arguments.put("nonce",  "" + ++_nonce);  // Add the dummy nonce.
+        
+        String postData = "";
+ 
+        for(Iterator argumentIterator = arguments.entrySet().iterator(); argumentIterator.hasNext(); ) {
+            
+        	Map.Entry argument = (Map.Entry)argumentIterator.next();
+           
+            if( postData.length() > 0) {
+                postData += "&";
+            }
+            
+            postData += argument.getKey() + "=" + argument.getValue();
+        
+        }
+ 
+        // Create a new secret key
+        try {
+            key = new SecretKeySpec(_secret.getBytes("UTF-8"), "HmacSHA512" );
+        } catch(UnsupportedEncodingException uee) {
+            System.err.println( "Unsupported encoding exception: " + uee.toString());
+            return null;
+        }
+ 
+        // Create a new mac
+        try {
+            mac = Mac.getInstance("HmacSHA512" );
+        } catch(NoSuchAlgorithmException nsae) {
+            System.err.println( "No such algorithm exception: " + nsae.toString());
+            return null;
+        }
+ 
+        // Init mac with key.
+        try {
+            mac.init( key);
+        } catch(InvalidKeyException ike) {
+            System.err.println("Invalid key exception: " + ike.toString());
+            return null;
+        }
+ 
+        // Add the key to the header lines.
+        headerLines.put("Key", _key);
+        
+        HttpClient client = new DefaultHttpClient();
+    	HttpPost post = new HttpPost("https://btc-e.com/tapi");
+    	post.addHeader("Key", _key);
+    	
+        // Encode the post data by the secret and encode the result as base64.
+        try {
+        	
+        	System.out.println("params: "+postData);
+        	
+        	String sign = Hex.encodeHexString(mac.doFinal(postData.getBytes("UTF-8")));
+            headerLines.put("Sign", sign);
+            post.addHeader("Sign", "");
+            post.setEntity(new ByteArrayEntity(postData.getBytes()));
+            
+        } catch(UnsupportedEncodingException uee) {
+            System.err.println("Unsupported encoding exception: " + uee.toString());
+            return null;
+        }
+        
+        
+        
+        // Now do the actual request
+        //String requestResult = HttpUtils.httpPost("https://btc-e.com/tapi", headerLines, postData);
+        
+        String requestResult = null;
+        
+        try {
+        	
+        	HttpResponse response = client.execute(post);
+        	BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+        	
+        	System.out.println("Ready to read result...");
+        	
+        	String line = null;
+        	while((line = rd.readLine()) != null) {
+        		System.out.println(line);
+        		requestResult = line;
+        	}
+        	
+        } catch(IOException ioe) {
+        	ioe.printStackTrace();
+        }
+        
+        if(requestResult != null) {   // The request worked
+ 
+            try {
+            	
+                // Convert the HTTP request return value to JSON to parse further.
+                JSONObject jsonResult = new JSONObject(requestResult);
+ 
+                // Check, if the request was successful
+                int success = jsonResult.getInt("success");
+ 
+                if(success == 0) {  // The request failed.
+                    String errorMessage = jsonResult.getString("error");
+                   
+                    System.err.println("btc-e.com trade API request failed: " + errorMessage);
+ 
+                    return null;
+                } else {  // Request succeeded!
+                    return jsonResult.getJSONObject( "return");
+                }
+ 
+            } catch(JSONException je) {
+                System.err.println( "Cannot parse json request result: " + je.toString());
+ 
+                return null;  // An error occured...
+            }
+        }
+ 
+        return null;  // The request failed.
+    }
 	
 	
 	@GET
