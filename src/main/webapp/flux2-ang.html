@@ -33,7 +33,7 @@
 			
 			<div class="row" style="margin-bottom: 2.0em;">
 						
-				<div class="span6" style="text-align: center;">
+				<div class="span4" style="text-align: center;">
 					<button ng-click="lowerPrice()">
 						price--
 					</button>
@@ -41,8 +41,9 @@
 						price++
 					</button>
 				</div>
-				
-				<div class="span6" style="text-align: center;">
+				<div class="span4" style="text-align: center;">
+				</div>
+				<div class="span4" style="text-align: center;">
 					<button ng-click="addMoney()">
 						money++
 					</button>
@@ -68,7 +69,7 @@
 					<div class="row" style="margin-top: 1.0em;">
 						
 						<div class="span3">
-							<b>USD CASHOUT:</b> {{usdCashout()|truncate:6:""}}
+							<b>USD CASHOUT:</b> {{usdCashout()|truncate:6:""}} / {{fixedUsdCashout()|truncate:6:""}}
 							<br/>
 							<b>AVAILABLE USD:</b> {{usd|truncate:6:""}} / <i>{{unusedUsd|truncate:6:""}}</i>
 						</div>
@@ -102,8 +103,10 @@
     					<div class="span1">
     						{{buyProfit(buy)|truncate:6:""}}
     					</div>
-    					<div class="span1">
-    						<a href="#">Sell</a>
+    					<div class="span2">
+    						<a href="" ng-click="manualSell(buy, true)">S</a>
+    						<a href="" ng-click="manualSell(buy, false)">SR</a>
+    						<a href="" ng-click="forgetTransaction(buy, 'buy')">R</a>
     					</div>
     				
 					</div>
@@ -115,7 +118,7 @@
 					<div class="row" style="margin-top: 1.0em;">
 						
 						<div class="span3">
-							<b>LTC CASHOUT:</b> {{ltcCashout()|truncate:6:""}}
+							<b>LTC CASHOUT:</b> {{ltcCashout()|truncate:6:""}} / {{fixedLtcCashout()|truncate:6:""}}
 							<br/>
 							<b>AVAILABLE LTC:</b> {{ltc|truncate:6:""}} / <i>{{unusedLtc|truncate:6:""}}</i>
 						</div>
@@ -150,7 +153,9 @@
     						{{sellProfit(sell)|truncate:6:""}}
     					</div>
     					<div class="span1">
-    						<a href="#">Buy</a>
+    						<a href="" ng-click="manualBuy(sell.amount, true)">B</a>
+    						<a href="" ng-click="manualBuy(sell.amount, false)">BR</a>
+    						<a href="" ng-click="forgetTransaction(sell, 'sell')">R</a>
     					</div>
     					
 					</div>
