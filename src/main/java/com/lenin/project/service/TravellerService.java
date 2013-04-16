@@ -34,12 +34,15 @@ import org.apache.commons.codec.binary.Hex;
 import org.apache.cxf.jaxrs.utils.HttpUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
 import org.bson.types.ObjectId;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
@@ -74,8 +77,8 @@ public class TravellerService {
 	
 	private static long _nonce = System.currentTimeMillis() / 10000L;
 	
-	private static String _key = "UABV5DX1-IS9DZ3Z7-1U0GMB5L-JIWGZLKY-ZIC5NOYV";
-	private static String _secret = "cd07af6d2be3ee3257321ab6c1b14316eacbed89d6967b60be5a68642513ea22";
+	private static String _key = "HDF1N2X1-JOJQJ5TA-1M8PGVXA-50Y2VXQ4-6GMWYJUX";
+	private static String _secret = "c26da13ab58cf0f834ed16041343c078dd36f9ba3d839b5baa79666d1be20870";
 	
 	@Autowired
 	private MongoTemplate mongoTemplate;
@@ -158,148 +161,101 @@ public class TravellerService {
 	}
 	
 	@GET
-	@Path("/funds")
+	@Path("/info")
     @Produces({ MediaType.TEXT_PLAIN })
-    public String getFunds() {
+    public String getInfo() {
 		
-		HashMap<String, String> params = new HashMap<String, String>();
-		JSONObject json = authenticatedHTTPRequest("getInfo", null);
+		return authenticatedHTTPRequest("getInfo", null);
 		
-		return "test //";
+	}
+	
+	@POST
+	@Path("/trade")
+	@Consumes({ MediaType.TEXT_PLAIN })
+    @Produces({ MediaType.TEXT_PLAIN })
+    public String trade(String query) {
+		
+		String[] params = query.split("&");
+		List<NameValuePair> methodParams = new ArrayList<NameValuePair>();
+		
+		for(String param : params) {
+			String[] name_value = param.split("=");
+			methodParams.add(new BasicNameValuePair(name_value[0], name_value[1]));
+		}
+		
+		return authenticatedHTTPRequest("getInfo", methodParams);
 		
 	}
 	
 	
-	private final JSONObject authenticatedHTTPRequest(String method, Map<String, String> arguments) {
+	private String authenticatedHTTPRequest(String method, List<NameValuePair> methodParams) {
         
-		HashMap<String, String> headerLines = 
-				new HashMap<String, String>();  // Create a new map for the header lines.
+		// Request parameters and other properties.
+        List<NameValuePair> params = new ArrayList<NameValuePair>(2);
+        params.add(new BasicNameValuePair("method", method));
+        params.add(new BasicNameValuePair("nonce", "" + ++_nonce));
         
-		Mac mac;
-        
-		SecretKeySpec key = null;
- 
-        if(arguments == null) {  // If the user provided no arguments, just create an empty argument array.
-        	arguments = new HashMap<String, String>();
-        }
-       
-        arguments.put("method", method);  // Add the method to the post data.
-        
-        System.out.println("nonce = "+_nonce);
-        arguments.put("nonce",  "" + ++_nonce);  // Add the dummy nonce.
-        
-        String postData = "";
- 
-        for(Iterator argumentIterator = arguments.entrySet().iterator(); argumentIterator.hasNext(); ) {
-            
-        	Map.Entry argument = (Map.Entry)argumentIterator.next();
-           
-            if( postData.length() > 0) {
-                postData += "&";
-            }
-            
-            postData += argument.getKey() + "=" + argument.getValue();
-        
-        }
- 
-        // Create a new secret key
-        try {
-            key = new SecretKeySpec(_secret.getBytes("UTF-8"), "HmacSHA512" );
-        } catch(UnsupportedEncodingException uee) {
-            System.err.println( "Unsupported encoding exception: " + uee.toString());
-            return null;
-        }
- 
-        // Create a new mac
-        try {
-            mac = Mac.getInstance("HmacSHA512" );
-        } catch(NoSuchAlgorithmException nsae) {
-            System.err.println( "No such algorithm exception: " + nsae.toString());
-            return null;
-        }
- 
-        // Init mac with key.
-        try {
-            mac.init( key);
-        } catch(InvalidKeyException ike) {
-            System.err.println("Invalid key exception: " + ike.toString());
-            return null;
-        }
- 
-        // Add the key to the header lines.
-        headerLines.put("Key", _key);
-        
-        HttpClient client = new DefaultHttpClient();
-    	HttpPost post = new HttpPost("https://btc-e.com/tapi");
-    	post.addHeader("Key", _key);
+        String paramsString = "method="+method+"&nonce="+_nonce;
     	
-        // Encode the post data by the secret and encode the result as base64.
-        try {
-        	
-        	System.out.println("params: "+postData);
-        	
-        	String sign = Hex.encodeHexString(mac.doFinal(postData.getBytes("UTF-8")));
-            headerLines.put("Sign", sign);
-            post.addHeader("Sign", "");
-            post.setEntity(new ByteArrayEntity(postData.getBytes()));
-            
-        } catch(UnsupportedEncodingException uee) {
-            System.err.println("Unsupported encoding exception: " + uee.toString());
-            return null;
-        }
-        
-        
-        
-        // Now do the actual request
-        //String requestResult = HttpUtils.httpPost("https://btc-e.com/tapi", headerLines, postData);
-        
-        String requestResult = null;
-        
-        try {
-        	
-        	HttpResponse response = client.execute(post);
-        	BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
-        	
-        	System.out.println("Ready to read result...");
-        	
-        	String line = null;
-        	while((line = rd.readLine()) != null) {
-        		System.out.println(line);
-        		requestResult = line;
+        if(methodParams != null) {
+        	for(NameValuePair nvp : methodParams) {
+        		params.add(nvp);
+        		paramsString += "&"+nvp.getName()+"="+nvp.getValue();
         	}
-        	
-        } catch(IOException ioe) {
-        	ioe.printStackTrace();
         }
         
-        if(requestResult != null) {   // The request worked
- 
-            try {
-            	
-                // Convert the HTTP request return value to JSON to parse further.
-                JSONObject jsonResult = new JSONObject(requestResult);
- 
-                // Check, if the request was successful
-                int success = jsonResult.getInt("success");
- 
-                if(success == 0) {  // The request failed.
-                    String errorMessage = jsonResult.getString("error");
-                   
-                    System.err.println("btc-e.com trade API request failed: " + errorMessage);
- 
-                    return null;
-                } else {  // Request succeeded!
-                    return jsonResult.getJSONObject( "return");
-                }
- 
-            } catch(JSONException je) {
-                System.err.println( "Cannot parse json request result: " + je.toString());
- 
-                return null;  // An error occured...
-            }
+        System.out.println(paramsString);
+        
+        HttpClient httpclient = new DefaultHttpClient();
+        HttpPost httppost = new HttpPost("https://btc-e.com/tapi");
+        
+        try {
+        	
+        	UrlEncodedFormEntity uefe = new UrlEncodedFormEntity(params, "UTF-8");
+            httppost.setEntity(uefe);
+            
+    		SecretKeySpec key = new SecretKeySpec(_secret.getBytes("UTF-8"), "HmacSHA512");
+    		Mac mac = Mac.getInstance("HmacSHA512" );
+        	mac.init(key);
+        	
+        	String sign = Hex.encodeHexString(mac.doFinal(paramsString.getBytes("UTF-8")));
+        	httppost.addHeader("Key", _key);
+        	httppost.addHeader("Sign", sign);
+        	
+        } catch(Exception e) {
+        	e.printStackTrace();
         }
- 
-        return null;  // The request failed.
+        
+        String result = "";
+        
+        try {
+        
+        	//Execute and get the response.
+        	HttpResponse response = httpclient.execute(httppost);
+        	HttpEntity entity = response.getEntity();
+
+        	if(entity != null) {
+        	
+        		InputStream instream = entity.getContent();
+            
+        		BufferedReader rd = new BufferedReader(new InputStreamReader(instream));
+        		System.out.println("Ready to read result...");
+        	
+        		String line = null;
+        		while((line = rd.readLine()) != null) {
+            		result += line;
+            	}
+            	
+        	}
+            
+        } catch(Exception e) {
+    		e.printStackTrace();
+    	}
+        
+        System.out.println(result);
+        return result;
+        
+        
     }
 	
 	
