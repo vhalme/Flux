@@ -2,28 +2,39 @@ var live = false;
 
 function AppCtrl($scope, $routeParams, $http) {
 	
-	$scope.refreshCounter = 15;
+	$scope.intervalIds = { main: 0, loop: 0 };
+	
+	$scope.refreshInterval = 1;
+	$scope.refreshCounter = 0;
 	
 	$scope.leverage = 40;
-	$scope.profitTarget = 0.0000001;
+	$scope.profitTarget = 0.1;
 	$scope.aggressivity = 0.5;
+	$scope.rateBuffer = 0;
+	$scope.tradeChunk = 10;
 	
 	$scope.usd = 0;
 	$scope.ltc = 0;
-
-	$scope.lastBuyPrice = 0;
-	$scope.lastSellPrice = 0;
+	$scope.unusedUsd = 0;
+	$scope.unusedLtc = 0;
 	
+	$scope.currentPrice = 0.11;
 	$scope.currentBuyPrice = 0.11;
 	$scope.currentSellPrice = 0.11;
+	$scope.rateChange = 0;
 	
-	$scope.buyMargin = 0;
-	$scope.sellMargin = 0;
+	$scope.buyHistory = [];
+	$scope.sellHistory = [];
 	
-	$scope.buyHistory = {};
-	$scope.sellHistory = {};
+	$scope.init = function() {
+		delete localStorage.buyHistory;
+		delete localStorage.sellHistory;
+		delete localStorage.usd;
+		delete localStorage.ltc;
+	};
 	
 	$scope.start = function() {
+		
 		
 		if(localStorage.buyHistory != undefined) {
 			$scope.buyHistory = JSON.parse(localStorage.buyHistory);
@@ -33,32 +44,57 @@ function AppCtrl($scope, $routeParams, $http) {
 			$scope.sellHistory = JSON.parse(localStorage.sellHistory);
 		}
 		
+		
 		console.log("starting");
 		
 		if(live) {
 			$scope.refresh();
 		} else {
-			$scope.usd = 50;
-			$scope.ltc = 50;
-			$scope.currentBuyPrice = 2.36;
-			$scope.currentSellPrice = 2.36;
+			
+			if(localStorage.usd != undefined) {
+				$scope.usd = parseFloat(localStorage.usd);
+			} else {
+				$scope.usd = 50;
+				localStorage.usd = 50;
+			}
+			
+			if(localStorage.ltc != undefined) {
+				$scope.ltc = parseFloat(localStorage.ltc);
+			} else {
+				$scope.ltc = 50;
+				localStorage.ltc = 50;
+			}
+			
+			$scope.currentBuyPrice = 0.5 + Math.random()*4;
+			$scope.currentSellPrice = $scope.currentBuyPrice - 0.02;
+			$scope.currentPrice = $scope.currentBuyPrice - 0.01;
+			$scope.oldPrice = $scope.currentPrice;
 		}
 		
-		setInterval( function() { 
+		$scope.intervalIds.counter = setInterval( function() { 
 			$scope.$apply( function() {
 				$scope.refreshCounter--; 
 			});
 		}, 1000);
 		
-		setInterval( function() { 
+		$scope.intervalIds.loop = setInterval( function() { 
 			$scope.$apply( function() {
 				$scope.loop();
 			});
-		}, 15000);
+		}, $scope.refreshInterval*1000);
 		
 		
 	
 	};
+	
+	$scope.stop = function() {
+		
+		console.log("stopping...");
+		
+		clearInterval($scope.intervalIds.counter);
+		clearInterval($scope.intervalIds.loop);
+		
+	}
 	
 	$scope.loop = function() {
 		
@@ -73,7 +109,7 @@ function AppCtrl($scope, $routeParams, $http) {
 	$scope.refresh = function() {
 		
 		if(live) {
-			$scope.refreshCounter = 15;
+			$scope.refreshCounter = $scope.refreshInterval;
 		}
 		
 		API.getInfo(function(info) {
@@ -92,19 +128,14 @@ function AppCtrl($scope, $routeParams, $http) {
 			
 			function(data)  { 
 				
+				$scope.currentPrice = data.ticker.last;
 				$scope.currentBuyPrice = data.ticker.buy;
 				$scope.currentSellPrice = data.ticker.sell;
-					
-				if($scope.lastSellPrice == 0) {
-					$scope.lastSellPrice = $scope.currentSellPrice;
-					$scope.lastBuyPrice = $scope.currentBuyPrice;
+				
+				if($scope.oldPrice == 0) {
+					$scope.oldPrice = $scope.currentPrice;
 				}
-					
-				if($scope.lastSellPrice == 0) {
-					$scope.lastSellPrice = $scope.currentSellPrice;
-					$scope.lastBuyPrice = $scope.currentBuyPrice;
-				}
-					
+				
 				$scope.update();
 					
 			}
@@ -118,31 +149,44 @@ function AppCtrl($scope, $routeParams, $http) {
 	$scope.update = function() {
 	
 		if(!live) {
-			$scope.refreshCounter = 15;
+			$scope.refreshCounter = $scope.refreshInterval;
 		}
 		
-		$scope.buyMargin = $scope.lastBuyPrice - $scope.currentBuyPrice;
-		$scope.sellMargin = $scope.currentSellPrice - $scope.lastSellPrice;
+		$scope.rateChange = $scope.currentPrice - $scope.oldPrice;
+		//console.log($scope.currentPrice+" - "+$scope.oldPrice+" = "+$scope.rateChange);
 		
 		var buyAmount = $scope.calcBuyAmount();
 		var sellAmount = $scope.calcSellAmount();
 		
 		if(buyAmount > 0) {
 			$scope.buy(buyAmount);
-		} else {
-			if($scope.buyMargin > $scope.profitTarget && $scope.usd > 3) {
-				buyAmount = ($scope.usd * $scope.aggressivity) / ($scope.currentBuyPrice + 0.01);
-				$scope.buy(buyAmount);
-			}
+			$scope.oldPrice = $scope.currentPrice;
 		}
 		
 		if(sellAmount > 0) {
 			$scope.sell(sellAmount);
-		} else {
-			if($scope.sellMargin > $scope.profitTarget && $scope.ltc > 1) {
-				sellAmount = $scope.ltc * $scope.aggressivity;
+			$scope.oldPrice = $scope.currentPrice;
+		}
+		
+		if(sellAmount == 0 && buyAmount == 0) {
+			
+			//console.log(sellAmount+"/"+buyAmount+"/"+$scope.rateChange);
+			
+			if($scope.rateChange >= $scope.profitTarget && $scope.unusedLtc >= $scope.tradeChunk) {
+			
+				sellAmount = $scope.tradeChunk;
 				$scope.sell(sellAmount);
+				$scope.oldPrice = $scope.currentPrice;
+				console.log("old price: "+$scope.oldPrice);
+			
+			} else if($scope.rateChange <= -$scope.profitTarget && $scope.unusedUsd >= ($scope.tradeChunk * $scope.actualBuyPrice())) {
+			
+				buyAmount = $scope.tradeChunk;
+				$scope.buy(buyAmount);
+				$scope.oldPrice = $scope.currentPrice;
+		
 			}
+			
 		}
 		
 			
@@ -152,36 +196,50 @@ function AppCtrl($scope, $routeParams, $http) {
 	$scope.calcBuyAmount = function() {
    		
 		var calculatedBuyAmount = 0;
+		
+		var usedUsd = 0;
+		
+		var splicedIds = [];
+		
+		for(var i=0; i<$scope.sellHistory.length; i++) {
 			
-		for(var key in $scope.sellHistory) {
-			
-			var entry = $scope.sellHistory[key];
+			var entry = $scope.sellHistory[i];
 			
 			var priceVal = parseFloat(entry.rate);
 			var amountVal = parseFloat(entry.amount);
 			var usdAmount = amountVal * priceVal;
-				
+			
 			if($scope.currentBuyPrice <= (priceVal - $scope.profitTarget)) {
 					
-				var actualBuyPrice = $scope.currentBuyPrice + 0.01;
+				var actualBuyPrice = $scope.actualBuyPrice();
 					
 				var newBuyAmount = 
-					calculatedBuyAmount + (usdAmount / actualBuyPrice);
+					calculatedBuyAmount + amountVal; //(usdAmount / actualBuyPrice);
 					
 				if($scope.usd > (newBuyAmount * actualBuyPrice)) {
 					calculatedBuyAmount = newBuyAmount;
-					delete $scope.sellHistory[key];
-					console.log("buyFor += "+(newBuyAmount * actualBuyPrice));
+					splicedIds.push(i);
+					console.log("buy "+amountVal+" for "+(amountVal * actualBuyPrice));
 				} else {
 					console.log("OUT OF COINS!");
 					break;
 				}
 						
 					
+			} else {
+				
+				usedUsd += usdAmount;
+				
 			}
 				
 		}
-			
+		
+		for(var i=0; i<splicedIds.length; i++) {
+			$scope.sellHistory.splice(splicedIds[i], 1);
+		}
+		
+		$scope.unusedUsd = $scope.usd - usedUsd;
+		
 		var buyAmount = 0;
 			
 		if(calculatedBuyAmount > 0) {
@@ -196,33 +254,50 @@ function AppCtrl($scope, $routeParams, $http) {
 	$scope.calcSellAmount = function() {
 	   	
 		var calculatedSellAmount = 0;
+		
+		var usedLtc = 0;
+		
+		var splicedIds = [];
+		
+		for(var i=0; i<$scope.buyHistory.length; i++) {
 			
-		for(var key in $scope.buyHistory) {
-			
-			var entry = $scope.buyHistory[key];
-			var priceVal = parseFloat(entry.price);
+			var entry = $scope.buyHistory[i];
+			var priceVal = parseFloat(entry.rate);
 			var amountVal = parseFloat(entry.amount);
 			
+			//console.log($scope.currentSellPrice+" >= "+(priceVal + $scope.profitTarget));
+			//console.log($scope.currentSellPrice >= (priceVal + $scope.profitTarget));
+			
 			if($scope.currentSellPrice >= (priceVal + $scope.profitTarget)) {
-					
-				console.log("YES!");
-					
+				
+				var actualSellPrice = $scope.actualSellPrice();
+				
 				var newSellAmount = calculatedSellAmount + amountVal;
 					
 				if($scope.ltc > newSellAmount) {
 					calculatedSellAmount = newSellAmount;
-					delete $scope.buyHistory[key];
-					console.log("sellAmount += "+amountVal);
+					splicedIds.push(i);
+					console.log("sell "+amountVal+" for "+(amountVal * actualSellPrice));
 				} else {
 					console.log("OUT OF USD!")
 					break;
 				}
 					
+			} else {
+				
+				usedLtc += amountVal;
+				
 			}
 				
 					
 		}
-			
+		
+		for(var i=0; i<splicedIds.length; i++) {
+			$scope.buyHistory.splice(splicedIds[i], 1);
+		}
+		
+		$scope.unusedLtc = $scope.ltc - usedLtc;
+		
 		var sellAmount = 0;
 			
 		if(calculatedSellAmount > 0) {
@@ -236,7 +311,7 @@ function AppCtrl($scope, $routeParams, $http) {
 	
 	$scope.buy = function(buyAmount) {
 		
-		var actualRate = $scope.currentBuyPrice + 0.01;
+		var actualRate = $scope.actualBuyPrice();
 		
 		if(!live) {
 			
@@ -247,6 +322,9 @@ function AppCtrl($scope, $routeParams, $http) {
 			
 			$scope.usd = newUsdVal;
 			$scope.ltc = newLtcVal;
+			
+			localStorage.usd = $scope.usd;
+			localStorage.ltc = $scope.ltc;
 			
 			$scope.logBuy(buyAmount);
 			
@@ -283,7 +361,7 @@ function AppCtrl($scope, $routeParams, $http) {
 	
 	$scope.sell = function(sellAmount) {
 		
-		var actualRate = $scope.currentSellPrice - 0.01;
+		var actualRate = $scope.actualSellPrice();
 		
 		if(!live) {
 			
@@ -294,6 +372,9 @@ function AppCtrl($scope, $routeParams, $http) {
 			
 			$scope.usd = newUsdVal;
 			$scope.ltc = newLtcVal;
+			
+			localStorage.usd = $scope.usd;
+			localStorage.ltc = $scope.ltc;
 			
 			$scope.logSell(sellAmount);
 			
@@ -331,7 +412,7 @@ function AppCtrl($scope, $routeParams, $http) {
 		
 		var date = new Date();
 		
-		$scope.buyHistory[date.getTime()] = { rate: $scope.currentBuyPrice, amount: buyAmount };
+		$scope.buyHistory.push({ rate: $scope.currentBuyPrice, amount: buyAmount });
 		
 		console.log("BUY HISTORY:");
 		console.log($scope.buyHistory);
@@ -352,7 +433,7 @@ function AppCtrl($scope, $routeParams, $http) {
 		
 		var date = new Date();
 		
-		$scope.sellHistory[date.getTime()] = { rate: $scope.currentSellPrice, amount: sellAmount };
+		$scope.sellHistory.push({ rate: $scope.currentSellPrice, amount: sellAmount });
 		
 		console.log("BUY HISTORY:");
 		console.log($scope.buyHistory);
@@ -368,40 +449,85 @@ function AppCtrl($scope, $routeParams, $http) {
 		
 	};
 	
+	$scope.actualSellPrice = function() {
+		return $scope.currentSellPrice - $scope.rateBuffer;
+	}
+	
+	$scope.actualBuyPrice = function() {
+		return $scope.currentBuyPrice + $scope.rateBuffer;
+	}
 		
 	$scope.raisePrice = function() {
 		
-		$scope.currentSellPrice += Math.random()*0.02;
-		$scope.currentBuyPrice = $scope.currentSellPrice + (0.01 * Math.random());
-			
+		var random = true;
+		
+		if(random) {
+			$scope.currentSellPrice += parseFloat(Math.random()*0.01);
+			$scope.currentBuyPrice = $scope.currentSellPrice + parseFloat(0.005 * Math.random());
+			$scope.currentPrice = $scope.currentSellPrice + parseFloat(0.00025 * Math.random());
+		} else {
+			$scope.currentSellPrice += 0.1000;
+			$scope.currentBuyPrice = $scope.currentSellPrice;
+			$scope.currentPrice = $scope.currentSellPrice;
+		}
+		
 	};
 		
 	$scope.lowerPrice = function() {
 		
-		$scope.currentSellPrice -= Math.random()*0.02;
-		$scope.currentBuyPrice = $scope.currentSellPrice + (0.01 * Math.random());
+		var random = true;
+		
+		if(random) {
+			var priceChange = -parseFloat(Math.random()*0.01);
+			if($scope.currentSellPrice + priceChange > 0.1) {
+				$scope.currentSellPrice += priceChange;
+				$scope.currentBuyPrice = $scope.currentSellPrice + parseFloat(0.005 * Math.random());
+				$scope.currentPrice = $scope.currentSellPrice + parseFloat(0.00025 * Math.random());
+			}
+		} else {
+			$scope.currentSellPrice -= 0.1000;
+			$scope.currentBuyPrice = $scope.currentSellPrice;
+			$scope.currentPrice = $scope.currentSellPrice;
+		}
 				
 	};
 	
 	$scope.addMoney = function() {
 		
 		$scope.usd += 10;
+		localStorage.usd = $scope.usd;
 		
 	};
 	
 	$scope.addCoins = function() {
 		
 		$scope.ltc += 10;
-		
+		localStorage.ltc = $scope.ltc;
+	
 	};
 	
-	$scope.buyProfit = function(rate) {
-		return 1-(rate / ($scope.currentSellPrice - 0.01));
+	$scope.buyProfit = function(buy) {
+		return 1.0000-(buy.rate / ($scope.actualSellPrice()));
 	};
 	
-	$scope.sellProfit = function(rate) {
-		return (rate / ($scope.currentBuyPrice + 0.01))-1;
+	$scope.sellProfit = function(sell) {
+		return (sell.rate / ($scope.actualBuyPrice()))-1.0000;
 	};
+	
+	$scope.ltcCashout = function() {
+		return $scope.ltc + ($scope.usd / $scope.actualBuyPrice());
+	};
+	
+	$scope.usdCashout = function() {
+		return $scope.usd + ($scope.ltc * $scope.actualSellPrice());
+	}
+	
+	$scope.buySort = $scope.buyProfit;
+	$scope.buySortReverse = true;
+	
+	$scope.sellSort = $scope.sellProfit;
+	$scope.sellSortReverse = true;
+	
 	
 };
 
@@ -410,6 +536,8 @@ angular.module('myApp', ['filters']);
 angular.module('filters', []).filter('truncate', function () {
     
 	return function (text, length, end) {
+		
+		text = ""+text;
 		
 		if(isNaN(length))
 			length = 10;

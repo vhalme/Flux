@@ -31,22 +31,46 @@
 
 		<div class="container">
 			
+			<div class="row" style="margin-bottom: 2.0em;">
+						
+				<div class="span6" style="text-align: center;">
+					<button ng-click="lowerPrice()">
+						price--
+					</button>
+					<button ng-click="raisePrice()">
+						price++
+					</button>
+				</div>
+				
+				<div class="span6" style="text-align: center;">
+					<button ng-click="addMoney()">
+						money++
+					</button>
+					<button ng-click="addCoins()">
+						coins++
+					</button>
+				</div>
+					
+			</div>
+			
+			<div class="row" style="margin-bottom: 2.0em;">
+						
+				<div class="span12" style="text-align: center;">
+					<b>RATE CHANGE:</b> {{rateChange}}
+				</div>
+					
+			</div>
+							
 			<div class="row">
 
 				<div class="span6">					
 					
-					<div class="row">
-						
-						<div class="span6">
-							<b>BUY RATE DELTA</b> {{buyMargin}}
-						</div>
-					
-					</div>
-					
 					<div class="row" style="margin-top: 1.0em;">
 						
 						<div class="span3">
-							<b>AVAILABLE USD:</b> {{usd|truncate:6:""}}
+							<b>USD CASHOUT:</b> {{usdCashout()|truncate:6:""}}
+							<br/>
+							<b>AVAILABLE USD:</b> {{usd|truncate:6:""}} / <i>{{unusedUsd|truncate:6:""}}</i>
 						</div>
 						
 						<div class="span3">
@@ -57,26 +81,26 @@
 					
 					<div class="row" style="margin-top: 2.0em;">
 						<div class="span1">
-    						<b>AMOUNT</b>
+							<a href="" ng-click="buySort='amount'; buySortReverse=!buySortReverse">AMOUNT</a>
+    					</div>
+    					<div class="span2">
+    						<a href="" ng-click="buySort='rate'; buySortReverse=!buySortReverse">BUY RATE</a>
     					</div>
     					<div class="span1">
-    						<b>RATE</b>
-    					</div>
-    					<div class="span1">
-    						<b>PROFIT</b>
+    						<a href="" ng-click="buySort=buyProfit; buySortReverse=!buySortReverse">PROFIT</a>
     					</div>
 					</div>
 					
-					<div class="row" ng-repeat="buy in buyHistory">
+					<div class="row" ng-repeat="buy in buyHistory | orderBy:buySort:!buySortReverse">
 						
 						<div class="span1">
     						{{buy.amount|truncate:6:""}}
     					</div>
-    					<div class="span1">
+    					<div class="span2">
     						{{buy.rate|truncate:6:""}}
     					</div>
     					<div class="span1">
-    						{{buyProfit(buy.rate)|truncate:6:""}}
+    						{{buyProfit(buy)|truncate:6:""}}
     					</div>
     					<div class="span1">
     						<a href="#">Sell</a>
@@ -87,19 +111,13 @@
 				</div>
 				
 				<div class="span6">
-						
-					<div class="row">
-						
-						<div class="span6">
-							<b>SELL RATE DELTA</b> {{sellMargin}}
-						</div>
-					
-					</div>
 					
 					<div class="row" style="margin-top: 1.0em;">
 						
 						<div class="span3">
-							<b>AVAILABLE LTC:</b> {{ltc|truncate:6:""}}
+							<b>LTC CASHOUT:</b> {{ltcCashout()|truncate:6:""}}
+							<br/>
+							<b>AVAILABLE LTC:</b> {{ltc|truncate:6:""}} / <i>{{unusedLtc|truncate:6:""}}</i>
 						</div>
 						
 						<div class="span3">
@@ -110,26 +128,26 @@
 					
 					<div class="row" style="margin-top: 2.0em;">
 						<div class="span1">
-    						<b>AMOUNT</b>
+							<a href="" ng-click="sellSort='amount'; sellSortReverse=!sellSortReverse">AMOUNT</a>
+    					</div>
+    					<div class="span2">
+    						<a href="" ng-click="sellSort='rate'; sellSortReverse=!sellSortReverse">SELL RATE</a>
     					</div>
     					<div class="span1">
-    						<b>RATE</b>
-    					</div>
-    					<div class="span1">
-    						<b>PROFIT</b>
+    						<a href="" ng-click="sellSort=sellProfit; sellSortReverse=!sellSortReverse">PROFIT</a>
     					</div>
 					</div>
 					
-					<div class="row" ng-repeat="sell in sellHistory">
+					<div class="row" ng-repeat="sell in sellHistory | orderBy:sellSort:!sellSortReverse">
 						
 						<div class="span1">
     						{{sell.amount|truncate:6:""}}
     					</div>
-    					<div class="span1">
+    					<div class="span2">
     						{{sell.rate|truncate:6:""}}
     					</div>
     					<div class="span1">
-    						{{sellProfit(sell.rate)|truncate:6:""}}
+    						{{sellProfit(sell)|truncate:6:""}}
     					</div>
     					<div class="span1">
     						<a href="#">Buy</a>
@@ -143,32 +161,19 @@
 			
 			<div class="row" style="margin-top: 4.0em;">
 				
-				<div class="span12">
+				<div class="span12" styl="text-align: center;">
 					
 					Refresh in {{refreshCounter}} seconds.
-					<br/>
-					<input type="button" id="updateBtn" value="Test 1" onclick="javascript:app.test1();"/>
-					<input type="button" id="suggestBtn" value="Test 2" onclick="javascript:app.test2();"/>
-					
-					<button ng-click="lowerPrice()">
-						price--
-					</button>
-					<button ng-click="raisePrice()">
-						price++
-					</button>
-					
-					<button ng-click="addMoney()">
-						money++
-					</button>
-					<button ng-click="addCoins()">
-						coins++
-					</button>
 
 					<br/>
 					<br/>
 					
 					<button ng-click="start()">
 						Start
+					</button>
+					
+					<button ng-click="stop()">
+						Stop
 					</button>
 
 				</div>
