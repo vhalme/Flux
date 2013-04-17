@@ -17,6 +17,7 @@
 			}
 		</style>
 		<link href="css/bootstrap-responsive.css" rel="stylesheet">
+		<link href="flux.css" rel="stylesheet">
 
 		<script src="jquery-1.9.1.min.js"></script>
 		<script src="hmac-sha512.js"></script>
@@ -92,7 +93,7 @@
     					</div>
 					</div>
 					
-					<div class="row" ng-repeat="buy in buyHistory | orderBy:buySort:!buySortReverse">
+					<div class="row" ng-class="{ profit: buyProfit(buy) > 0, loss: buyProfit(buy) < 0 }" ng-repeat="buy in testHistory.transactions['buy'] | orderBy:buySort:!buySortReverse">
 						
 						<div class="span1">
     						{{buy.amount|truncate:6:""}}
@@ -103,10 +104,10 @@
     					<div class="span1">
     						{{buyProfit(buy)|truncate:6:""}}
     					</div>
-    					<div class="span2">
-    						<a href="" ng-click="manualSell(buy, true)">S</a>
-    						<a href="" ng-click="manualSell(buy, false)">SR</a>
-    						<a href="" ng-click="forgetTransaction(buy, 'buy')">R</a>
+    					<div class="span2" style="background: white;">
+    						<a style="margin-left: 1.0em;" href="" ng-click="reverseTrade(buy, true)">S</a>
+    						<a href="" ng-click="reverseTrade(buy, false)">SR</a>
+    						<a href="" ng-click="removeTransaction(buy)">R</a>
     					</div>
     				
 					</div>
@@ -141,7 +142,7 @@
     					</div>
 					</div>
 					
-					<div class="row" ng-repeat="sell in sellHistory | orderBy:sellSort:!sellSortReverse">
+					<div class="row"  ng-class="{ profit: sellProfit(sell) > 0, loss: sellProfit(sell) < 0 }" ng-repeat="sell in testHistory.transactions['sell'] | orderBy:sellSort:!sellSortReverse">
 						
 						<div class="span1">
     						{{sell.amount|truncate:6:""}}
@@ -152,10 +153,10 @@
     					<div class="span1">
     						{{sellProfit(sell)|truncate:6:""}}
     					</div>
-    					<div class="span1">
-    						<a href="" ng-click="manualBuy(sell.amount, true)">B</a>
-    						<a href="" ng-click="manualBuy(sell.amount, false)">BR</a>
-    						<a href="" ng-click="forgetTransaction(sell, 'sell')">R</a>
+    					<div class="span2" style="background: white;">
+    						<a style="margin-left: 1.0em;" href="" ng-click="reverseTrade(sell, true)">B</a>
+    						<a href="" ng-click="reverseTrade(sell, false)">BR</a>
+    						<a href="" ng-click="removeTransaction(sell)">R</a>
     					</div>
     					
 					</div>
