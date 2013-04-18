@@ -379,8 +379,30 @@ function AppCtrl($scope, $routeParams, $http) {
 		
 		var actualTradeRate = $scope.actualTradeRate(transaction.type);
 		
-		if(!live) {
+		if(live) {
 			
+			API.trade("ltc_usd", ""+transaction.type, ""+actualTradeRate, ""+transaction.amount, function(order) {
+				
+				console.log(order);
+			
+				if(order.success == 1) {
+				
+					if(save) {
+						$scope.logTransaction(transaction);
+					}
+				
+					performed();
+				
+				} else {
+					
+					_nonce = Math.round((new Date()).getTime() / 10000);
+					
+				}
+				
+			});
+			
+		} else {
+		
 			if(transaction.type == "buy") {
 				
 				$scope.usd -= transaction.amount * actualTradeRate;
@@ -402,30 +424,7 @@ function AppCtrl($scope, $routeParams, $http) {
 			
 			performed();
 			
-			return;
-			
 		}
-
-		
-		API.trade("ltc_usd", transaction.type, actualTradeRate, transaction.amount, function(order) {
-			
-			console.log(order);
-			
-			if(order.success == 1) {
-				
-				if(save) {
-					$scope.logTransaction(transaction);
-				}
-				
-				performed();
-				
-			} else {
-					
-				_nonce = Math.round((new Date()).getTime() / 10000);
-					
-			}
-			
-		});
 			
 			
 	};
