@@ -36,13 +36,13 @@ var API = {
 		    //console.log("nonce: "+params.nonce);
 		    
 		    var query = $.param(params);
-		    var mySign = CryptoJS.HmacSHA512(query,"8f7f6ff388f421b5c465704e84f0c29cfdc58b5e366263e603e69ceb47c67d7d").toString();
+		    var mySign = CryptoJS.HmacSHA512(query,"a93adec600bd65960d26d779343b70700fbb4a93e333e15350b2bb1a21fb46de").toString();
 		    $.ajax({
 		    	async : false,
 		    	type : 'POST',
 		    	url : this.url,
 		    	headers : {
-					Key: "X1VFCRHG-ZALQDSQS-RNKZXWCN-0W356ZQB-DOJE2XSD",
+					Key: "XSR43QT2-B7PBL6EY-U6JCVFCM-7IMTI26B-7XEL3DGO",
 					Sign: mySign
 		    	},
 		    	dataType : 'json',

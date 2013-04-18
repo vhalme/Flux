@@ -1,16 +1,14 @@
-var live = false;
+var live = true;
 
 function AppCtrl($scope, $routeParams, $http) {
 	
 	$scope.intervalIds = { main: 0, loop: 0 };
 	
-	$scope.refreshInterval = 1;
+	$scope.refreshInterval = 15;
 	$scope.refreshCounter = 0;
 	
-	$scope.leverage = 40;
-	$scope.profitTarget = 0.1;
-	$scope.aggressivity = 0.5;
-	$scope.rateBuffer = 0;
+	$scope.profitTarget = 0.026;
+	$scope.rateBuffer = 0.001;
 	$scope.tradeChunk = 10;
 	
 	$scope.usd = 0;
@@ -32,9 +30,11 @@ function AppCtrl($scope, $routeParams, $http) {
 		usd: 0
 	};
 	
-	$scope.history = {
+	$scope.liveHistory = {
 			transactions: { "buy": [], "sell": [] }
 	};
+	
+	$scope.history = undefined;
 	
 	$scope.buyHistory = [];
 	$scope.sellHistory = [];
@@ -52,13 +52,19 @@ function AppCtrl($scope, $routeParams, $http) {
 		
 		if(live) {
 			
-			if(localStorage.history != undefined) {
-				$scope.history = JSON.parse(localStorage.history);
+			$scope.refreshInterval = 15;
+			
+			if(localStorage.liveHistory != undefined) {
+				$scope.liveHistory = JSON.parse(localStorage.liveHistory);
 			}
+			
+			$scope.history = $scope.liveHistory;
 			
 			$scope.refresh();
 		
 		} else {
+			
+			$scope.refreshInterval = 1;
 			
 			if(localStorage.testHistory != undefined) {
 				$scope.testHistory = JSON.parse(localStorage.testHistory);
@@ -69,10 +75,13 @@ function AppCtrl($scope, $routeParams, $http) {
 				$scope.ltc = 50;
 			}
 			
+			$scope.history = $scope.testHistory;
+			
 			$scope.currentBuyPrice = 0.5 + Math.random()*4;
 			$scope.currentSellPrice = $scope.currentBuyPrice - 0.02;
 			$scope.currentPrice = $scope.currentBuyPrice - 0.01;
 			$scope.oldPrice = $scope.currentPrice;
+		
 		}
 		
 		$scope.intervalIds.counter = setInterval( function() { 
@@ -203,7 +212,7 @@ function AppCtrl($scope, $routeParams, $http) {
 		var transactions;
 		
 		if(live) {
-			transactions = $scope.history.transactions["sell"];
+			transactions = $scope.liveHistory.transactions["sell"];
 		} else {
 			transactions = $scope.testHistory.transactions["sell"];
 		}
@@ -259,7 +268,7 @@ function AppCtrl($scope, $routeParams, $http) {
 		var transactions;
 		
 		if(live) {
-			transactions = $scope.history.transactions["buy"];
+			transactions = $scope.liveHistory.transactions["buy"];
 		} else {
 			transactions = $scope.testHistory.transactions["buy"];
 		}
@@ -315,7 +324,7 @@ function AppCtrl($scope, $routeParams, $http) {
 		var transactionIndex; 
 		
 		if(live) {
-			transactionIndex = $scope.transactionIndex($scope.history.transactions[transaction.type], transaction);
+			transactionIndex = $scope.transactionIndex($scope.liveHistory.transactions[transaction.type], transaction);
 		} else {
 			transactionIndex = $scope.transactionIndex($scope.testHistory.transactions[transaction.type], transaction);
 		}
@@ -398,7 +407,7 @@ function AppCtrl($scope, $routeParams, $http) {
 		}
 
 		
-		API.trade("ltc_usd", type, actualTrade, transaction.amount, function(order) {
+		API.trade("ltc_usd", transaction.type, actualTradeRate, transaction.amount, function(order) {
 			
 			console.log(order);
 			
@@ -425,7 +434,7 @@ function AppCtrl($scope, $routeParams, $http) {
 	$scope.logTransaction = function(transaction) {
 		
 		if(live) {
-			$scope.history.transactions[transaction.type].push(transaction);
+			$scope.liveHistory.transactions[transaction.type].push(transaction);
 		} else {
 			$scope.testHistory.transactions[transaction.type].push(transaction);
 			console.log($scope.testHistory);
@@ -443,8 +452,8 @@ function AppCtrl($scope, $routeParams, $http) {
 		var historyJson;
 		
 		if(live) {
-			historyJson = JSON.stringify($scope.history);
-			localStorage.history = historyJson;
+			historyJson = JSON.stringify($scope.liveHistory);
+			localStorage.liveHistory = historyJson;
 		} else {
 			historyJson = JSON.stringify($scope.testHistory);
 			localStorage.testHistory = historyJson;
@@ -458,8 +467,8 @@ function AppCtrl($scope, $routeParams, $http) {
 	$scope.removeTransaction = function(transaction) {
 		
 		if(live) {
-			var transactionIndex = $scope.transactionIndex($scope.history.transactions[transaction.type], transaction);
-			$scope.history.transactions[transaction.type].splice(transactionIndex, 1);
+			var transactionIndex = $scope.transactionIndex($scope.liveHistory.transactions[transaction.type], transaction);
+			$scope.liveHistory.transactions[transaction.type].splice(transactionIndex, 1);
 		} else {
 			var transactionIndex = $scope.transactionIndex($scope.testHistory.transactions[transaction.type], transaction);
 			$scope.testHistory.transactions[transaction.type].splice(transactionIndex, 1);

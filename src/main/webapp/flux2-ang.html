@@ -62,6 +62,26 @@
 				</div>
 					
 			</div>
+			
+			<div class="row" style="margin-bottom: 2.0em;">
+						
+				<div class="span12" style="text-align: center;">
+					
+					<span>Profit target: </span>
+					<input style="width: 4.0em;" type="text" ng-model="profitTarget"/>
+					<span> USD</span>
+					
+					<span style="margin-left: 2.0em;">Trade chunk size: </span>
+					<input style="width: 4.0em;" type="text" ng-model="tradeChunk"/>
+					<span> LTC</span>
+					
+					<span style="margin-left: 2.0em;">Rate buffer: </span>
+					<input style="width: 4.0em;" type="text" ng-model="rateBuffer"/>
+					<span> LTC</span>
+					
+				</div>
+					
+			</div>
 							
 			<div class="row">
 
@@ -93,7 +113,7 @@
     					</div>
 					</div>
 					
-					<div class="row" ng-class="{ profit: buyProfit(buy) > 0, loss: buyProfit(buy) < 0 }" ng-repeat="buy in testHistory.transactions['buy'] | orderBy:buySort:!buySortReverse">
+					<div class="row" ng-class="{ profit: buyProfit(buy) > 0, loss: buyProfit(buy) < 0 }" ng-repeat="buy in history.transactions['buy'] | orderBy:buySort:!buySortReverse">
 						
 						<div class="span1">
     						{{buy.amount|truncate:6:""}}
@@ -142,7 +162,7 @@
     					</div>
 					</div>
 					
-					<div class="row"  ng-class="{ profit: sellProfit(sell) > 0, loss: sellProfit(sell) < 0 }" ng-repeat="sell in testHistory.transactions['sell'] | orderBy:sellSort:!sellSortReverse">
+					<div class="row"  ng-class="{ profit: sellProfit(sell) > 0, loss: sellProfit(sell) < 0 }" ng-repeat="sell in history.transactions['sell'] | orderBy:sellSort:!sellSortReverse">
 						
 						<div class="span1">
     						{{sell.amount|truncate:6:""}}
