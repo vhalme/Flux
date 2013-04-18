@@ -90,12 +90,14 @@
 					<div class="row" style="margin-top: 1.0em;">
 						
 						<div class="span3">
-							<b>USD CASHOUT:</b> {{usdCashout()|truncate:6:""}} / {{fixedUsdCashout()|truncate:6:""}}
+							<b>USD CASHOUT:</b> {{usdCashout()|truncate:6:""}}
 							<br/>
-							<b>AVAILABLE USD:</b> {{usd|truncate:6:""}} / <i>{{unusedUsd|truncate:6:""}}</i>
+							<b>AVAILABLE USD:</b> {{usd|truncate:6:""}}
 						</div>
 						
 						<div class="span3">
+							<b>USD REVENUE:</b> {{usdRevenue|truncate:6:""}}
+							<br/>
 							<b>SELL RATE:</b> {{currentSellPrice|truncate:6:""}}
 						</div>
 						
@@ -139,9 +141,9 @@
 					<div class="row" style="margin-top: 1.0em;">
 						
 						<div class="span3">
-							<b>LTC CASHOUT:</b> {{ltcCashout()|truncate:6:""}} / {{fixedLtcCashout()|truncate:6:""}}
+							<b>LTC CASHOUT:</b> {{ltcCashout()|truncate:6:""}}
 							<br/>
-							<b>AVAILABLE LTC:</b> {{ltc|truncate:6:""}} / <i>{{unusedLtc|truncate:6:""}}</i>
+							<b>AVAILABLE LTC:</b> {{ltc|truncate:6:""}}
 						</div>
 						
 						<div class="span3">

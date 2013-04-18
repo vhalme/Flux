@@ -1,4 +1,4 @@
-var live = true;
+var live = false;
 
 function AppCtrl($scope, $routeParams, $http) {
 	
@@ -15,6 +15,7 @@ function AppCtrl($scope, $routeParams, $http) {
 	$scope.ltc = 0;
 	$scope.unusedUsd = 0;
 	$scope.unusedLtc = 0;
+	$scope.usdRevenue = 0;
 	
 	$scope.currentPrice = 0;
 	$scope.oldPrice = 0;
@@ -26,12 +27,14 @@ function AppCtrl($scope, $routeParams, $http) {
 	
 	$scope.testHistory = {
 		transactions: { "buy": [], "sell": [] },
+		usdRevenue: 0,
 		ltc: 0,
 		usd: 0
 	};
 	
 	$scope.liveHistory = {
-			transactions: { "buy": [], "sell": [] }
+		transactions: { "buy": [], "sell": [] },
+		usdRevenue: 0
 	};
 	
 	$scope.history = undefined;
@@ -56,6 +59,7 @@ function AppCtrl($scope, $routeParams, $http) {
 			
 			if(localStorage.liveHistory != undefined) {
 				$scope.liveHistory = JSON.parse(localStorage.liveHistory);
+				$scope.usdRevenue = parseFloat($scope.liveHistory.usdRevenue);
 			}
 			
 			$scope.history = $scope.liveHistory;
@@ -70,14 +74,15 @@ function AppCtrl($scope, $routeParams, $http) {
 				$scope.testHistory = JSON.parse(localStorage.testHistory);
 				$scope.usd = parseFloat($scope.testHistory.usd);
 				$scope.ltc = parseFloat($scope.testHistory.ltc);
+				$scope.usdRevenue = parseFloat($scope.testHistory.usdRevenue);
 			} else {
-				$scope.usd = 50;
-				$scope.ltc = 50;
+				$scope.usd = 80;
+				$scope.ltc = 40;
 			}
 			
 			$scope.history = $scope.testHistory;
 			
-			$scope.currentBuyPrice = 0.5 + Math.random()*4;
+			$scope.currentBuyPrice = 2.0; //0.5 + Math.random()*4;
 			$scope.currentSellPrice = $scope.currentBuyPrice - 0.02;
 			$scope.currentPrice = $scope.currentBuyPrice - 0.01;
 			$scope.oldPrice = $scope.currentPrice;
@@ -184,15 +189,13 @@ function AppCtrl($scope, $routeParams, $http) {
 		
 		if(reversibleBuys.length == 0 && reversibleSells.length == 0) {
 			
-			//console.log(sellAmount+"/"+buyAmount+"/"+$scope.rateChange);
-			
-			if($scope.rateChange >= $scope.profitTarget && $scope.unusedLtc >= $scope.tradeChunk) {
+			if($scope.currentSellPrice - $scope.highestSell() >= $scope.profitTarget && $scope.ltc >= $scope.tradeChunk) {
 				
 				var sellTransaction = $scope.createTransaction($scope.tradeChunk, "sell", 1);
 				$scope.performTransaction(sellTransaction, true, function() {});
 				$scope.oldPrice = $scope.currentPrice;
 			
-			} else if($scope.rateChange <= -$scope.profitTarget && $scope.unusedUsd >= ($scope.tradeChunk * $scope.actualTradeRate("buy"))) {
+			} else if($scope.currentBuyPrice - $scope.lowestBuy() <= -$scope.profitTarget && $scope.usd >= ($scope.tradeChunk * $scope.actualTradeRate("buy"))) {
 			
 				var buyTransaction = $scope.createTransaction($scope.tradeChunk, "buy", 1);
 				$scope.performTransaction(buyTransaction, true, function() {});
@@ -205,6 +208,59 @@ function AppCtrl($scope, $routeParams, $http) {
 			
 	};
 	
+	
+	$scope.lowestBuy = function() {
+		
+		var buyTransactions;
+		var lowest = 99;
+		
+		if(live) {
+			buyTransactions = $scope.liveHistory.transactions["buy"];
+		} else {
+			buyTransactions = $scope.testHistory.transactions["buy"];
+		}
+		
+		if(buyTransactions.length == 0) {
+			return $scope.oldPrice;
+		}
+		
+		for(var i=0; i<buyTransactions.length; i++) {
+			var buyTransaction = buyTransactions[i];
+			if(buyTransaction.rate < lowest) {
+				lowest = buyTransaction.rate;
+			}
+		}
+		
+		return lowest;
+		
+	};
+	
+	
+	$scope.highestSell = function() {
+		
+		var sellTransactions;
+		var highest = 0;
+		
+		if(live) {
+			sellTransactions = $scope.liveHistory.transactions["sell"];
+		} else {
+			sellTransactions = $scope.testHistory.transactions["sell"];
+		}
+		
+		if(sellTransactions.length == 0) {
+			return $scope.oldPrice;
+		}
+		
+		for(var i=0; i<sellTransactions.length; i++) {
+			var sellTransaction = sellTransactions[i];
+			if(sellTransaction.rate > highest) {
+				highest = sellTransaction.rate;
+			}
+		}
+		
+		return highest;
+		
+	};
 	
 	
 	$scope.getReversibleSells = function() {
@@ -237,7 +293,7 @@ function AppCtrl($scope, $routeParams, $http) {
 				var actualBuyRate = $scope.actualTradeRate("buy");
 				
 				var newBuyAmount = 
-					calculatedBuyAmount + amountVal; //(usdAmount / actualBuyPrice);
+					calculatedBuyAmount + amountVal; // (usdAmount / actualBuyRate); //
 					
 				if($scope.usd > (newBuyAmount * actualBuyRate)) {
 					calculatedBuyAmount = newBuyAmount;
@@ -335,7 +391,24 @@ function AppCtrl($scope, $routeParams, $http) {
 		var reverseTransaction = $scope.createReverseTransaction(transaction);
 		
 		$scope.performTransaction(reverseTransaction, save, function() {
+			
 			$scope.removeTransaction(transaction);
+			
+			if(reverseTransaction.type == "sell") {
+				
+				var transactionRevenue = 
+					(reverseTransaction.amount*reverseTransaction.rate) - (transaction.amount*transaction.rate);
+				
+				$scope.usdRevenue += transactionRevenue;
+				
+				if(live) {
+					$scope.liveHistory.usdRevenue = $scope.usdRevenue;
+				} else {
+					$scope.testHistory.usdRevenue = $scope.usdRevenue;
+				}
+				
+			}
+			
 		});
 		
 		
@@ -386,12 +459,12 @@ function AppCtrl($scope, $routeParams, $http) {
 				console.log(order);
 			
 				if(order.success == 1) {
-				
+					
+					performed();
+					
 					if(save) {
 						$scope.logTransaction(transaction);
 					}
-				
-					performed();
 				
 				} else {
 					
@@ -418,11 +491,12 @@ function AppCtrl($scope, $routeParams, $http) {
 			$scope.testHistory.usd = $scope.usd;
 			$scope.testHistory.ltc = $scope.ltc;
 			
+			performed();
+			
 			if(save) {
 				$scope.logTransaction(transaction);
 			}
 			
-			performed();
 			
 		}
 			
