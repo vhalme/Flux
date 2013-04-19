@@ -45,8 +45,14 @@
 				<div class="span4" style="text-align: center;">
 				</div>
 				<div class="span4" style="text-align: center;">
+					<button ng-click="removeMoney()">
+						money--
+					</button>
 					<button ng-click="addMoney()">
 						money++
+					</button>
+					<button style="margin-left: 1.0em;" ng-click="removeCoins()">
+						coins--
 					</button>
 					<button ng-click="addCoins()">
 						coins++
@@ -98,40 +104,53 @@
 						<div class="span3">
 							<b>USD REVENUE:</b> {{usdRevenue|truncate:6:""}}
 							<br/>
-							<b>SELL RATE:</b> {{currentSellPrice|truncate:6:""}}
+							<b>BUY RATE:</b> {{currentBuyPrice|truncate:6:""}}
 						</div>
 						
 					</div>
 					
 					<div class="row" style="margin-top: 2.0em;">
+						<div class="span6">
+							<b>MY SELLS</b>
+						</div>
+					</div>
+					
+					<div class="row" style="margin-top: 0.7em;">
 						<div class="span1">
-							<a href="" ng-click="buySort='amount'; buySortReverse=!buySortReverse">AMOUNT</a>
-    					</div>
-    					<div class="span2">
-    						<a href="" ng-click="buySort='rate'; buySortReverse=!buySortReverse">BUY RATE</a>
+							<a href="" ng-click="sellSort='amount'; sellSortReverse=!sellSortReverse">LTC</a>
     					</div>
     					<div class="span1">
-    						<a href="" ng-click="buySort=buyProfit; buySortReverse=!buySortReverse">PROFIT</a>
+							<a href="" ng-click="buySort='amount'; buySortReverse=!buySortReverse">USD</a>
+    					</div>
+    					<div class="span1">
+    						<a href="" ng-click="sellSort='rate'; sellSortReverse=!sellSortReverse">RATE</a>
+    					</div>
+    					<div class="span2">
+    						<a href="" ng-click="sellSort=sellProfit; sellSortReverse=!sellSortReverse">PROFIT</a>
+    						(<a href="" ng-click="changeProfitFormat('sell')">{{otherProfitFormat('sell')}}</a>)
     					</div>
 					</div>
 					
-					<div class="row" ng-class="{ profit: buyProfit(buy) > 0, loss: buyProfit(buy) < 0 }" ng-repeat="buy in history.transactions['buy'] | orderBy:buySort:!buySortReverse">
+					<div class="row"  ng-class="{ profit: sellProfit(sell) > 0, loss: sellProfit(sell) < 0 }" ng-repeat="sell in history.transactions['sell'] | orderBy:sellSort:!sellSortReverse">
 						
 						<div class="span1">
-    						{{buy.amount|truncate:6:""}}
-    					</div>
-    					<div class="span2">
-    						{{buy.rate|truncate:6:""}}
+    						{{sell.amount|truncate:6:""}}
     					</div>
     					<div class="span1">
-    						{{buyProfit(buy)|truncate:6:""}}
+    						{{(sell.rate*sell.amount)|truncate:6:""}}
+    					</div>
+    					<div class="span1">
+    						{{sell.rate|truncate:6:""}}
+    					</div>
+    					<div class="span1">
+    						{{sellProfit(sell)|truncate:6:""}}{{sellProfitFormat}}
     					</div>
     					<div class="span2" style="background: white;">
-    						<a style="margin-left: 1.0em;" href="" ng-click="reverseTrade(buy, true)">S</a>
-    						<a href="" ng-click="reverseTrade(buy, false)">SR</a>
-    						<a href="" ng-click="removeTransaction(buy)">R</a>
+    						<a style="margin-left: 1.0em;" href="" ng-click="reverseTrade(sell, true)">B</a>
+    						<a href="" ng-click="reverseTrade(sell, false)">BR</a>
+    						<a href="" ng-click="removeTransaction(sell)">R</a>
     					</div>
-    				
+    					
 					</div>
 					
 				</div>
@@ -147,40 +166,53 @@
 						</div>
 						
 						<div class="span3">
-							<b>BUY RATE:</b> {{currentBuyPrice|truncate:6:""}}
+							<b>SELL RATE:</b> {{currentSellPrice|truncate:6:""}}
 						</div>
 						
 					</div>
 					
 					<div class="row" style="margin-top: 2.0em;">
+						<div class="span6">
+							<b>MY BUYS</b>
+						</div>
+					</div>
+					
+					<div class="row" style="margin-top: 0.7em;">
 						<div class="span1">
-							<a href="" ng-click="sellSort='amount'; sellSortReverse=!sellSortReverse">AMOUNT</a>
-    					</div>
-    					<div class="span2">
-    						<a href="" ng-click="sellSort='rate'; sellSortReverse=!sellSortReverse">SELL RATE</a>
+							<a href="" ng-click="buySort='amount'; buySortReverse=!buySortReverse">LTC</a>
     					</div>
     					<div class="span1">
-    						<a href="" ng-click="sellSort=sellProfit; sellSortReverse=!sellSortReverse">PROFIT</a>
+							<a href="" ng-click="buySort='amount'; buySortReverse=!buySortReverse">USD</a>
+    					</div>
+    					<div class="span1">
+    						<a href="" ng-click="buySort='rate'; buySortReverse=!buySortReverse">RATE</a>
+    					</div>
+    					<div class="span2">
+    						<a href="" ng-click="buySort=buyProfit; buySortReverse=!buySortReverse">PROFIT</a>
+    						(<a href="" ng-click="changeProfitFormat('buy')">{{otherProfitFormat('buy')}}</a>)
     					</div>
 					</div>
 					
-					<div class="row"  ng-class="{ profit: sellProfit(sell) > 0, loss: sellProfit(sell) < 0 }" ng-repeat="sell in history.transactions['sell'] | orderBy:sellSort:!sellSortReverse">
+					<div class="row" ng-class="{ profit: buyProfit(buy) > 0, loss: buyProfit(buy) < 0 }" ng-repeat="buy in history.transactions['buy'] | orderBy:buySort:!buySortReverse">
 						
 						<div class="span1">
-    						{{sell.amount|truncate:6:""}}
-    					</div>
-    					<div class="span2">
-    						{{sell.rate|truncate:6:""}}
+    						{{buy.amount|truncate:6:""}}
     					</div>
     					<div class="span1">
-    						{{sellProfit(sell)|truncate:6:""}}
+    						{{(buy.rate*buy.amount)|truncate:6:""}}
+    					</div>
+    					<div class="span1">
+    						{{buy.rate|truncate:6:""}}
+    					</div>
+    					<div class="span1">
+    						{{buyProfit(buy)|truncate:6:""}}{{buyProfitFormat}}
     					</div>
     					<div class="span2" style="background: white;">
-    						<a style="margin-left: 1.0em;" href="" ng-click="reverseTrade(sell, true)">B</a>
-    						<a href="" ng-click="reverseTrade(sell, false)">BR</a>
-    						<a href="" ng-click="removeTransaction(sell)">R</a>
+    						<a style="margin-left: 1.0em;" href="" ng-click="reverseTrade(buy, true)">S</a>
+    						<a href="" ng-click="reverseTrade(buy, false)">SR</a>
+    						<a href="" ng-click="removeTransaction(buy)">R</a>
     					</div>
-    					
+    				
 					</div>
 				
 				</div>
