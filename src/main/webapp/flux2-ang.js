@@ -28,6 +28,8 @@ function AppCtrl($scope, $routeParams, $http) {
 	$scope.rateChange = 0;
 	$scope.cashoutRate = 1;
 	
+	$scope.tradeAuto = true;
+	
 	$scope.trackManualTransactions = true;
 	$scope.rateAuto = true;
 	$scope.rateBuffered = true;
@@ -758,6 +760,9 @@ function AppCtrl($scope, $routeParams, $http) {
 	
 	
 	/* Variable properties */
+	
+	$scope.showAutoTrading = true;
+	$scope.showManualTrading = true;
 	
 	$scope.buySort = $scope.buyProfit;
 	$scope.buySortReverse = true;
