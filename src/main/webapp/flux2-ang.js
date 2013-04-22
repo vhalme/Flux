@@ -10,9 +10,9 @@ function AppCtrl($scope, $routeParams, $http) {
 	$scope.profitTarget = 0.05;
 	$scope.rateBuffer = 0.001;
 	$scope.tradeChunk = 10;
-	$scope.buyCeiling = 2.4;
-	$scope.sellFloor = 2.4;
-	$scope.entryRate = 2.4;
+	$scope.buyCeiling = 2.0;
+	$scope.sellFloor = 2.0;
+	$scope.entryRate = 2.0;
 	
 	$scope.usd = 0;
 	$scope.ltc = 0;
@@ -85,7 +85,7 @@ function AppCtrl($scope, $routeParams, $http) {
 			
 			$scope.history = $scope.testHistory;
 			
-			$scope.currentBuyPrice = 2.4; //0.5 + Math.random()*4;
+			$scope.currentBuyPrice = 2.0; //0.5 + Math.random()*4;
 			$scope.currentSellPrice = $scope.currentBuyPrice - 0.02;
 			$scope.currentPrice = $scope.currentBuyPrice - 0.01;
 			$scope.oldPrice = $scope.currentPrice;
