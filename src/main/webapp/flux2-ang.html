@@ -9,19 +9,20 @@
 		<meta name="author" content="">
 
 		<!-- Le styles -->
-		<link href="css/bootstrap.css" rel="stylesheet">
+		<link href="bootstrap.css" rel="stylesheet">
 		<style>
 			body {
 				padding-top: 60px;
 				/* 60px to make the container go all the way to the bottom of the topbar */
 			}
 		</style>
-		<link href="css/bootstrap-responsive.css" rel="stylesheet">
+		<link href="bootstrap-responsive.css" rel="stylesheet">
 		<link href="flux.css" rel="stylesheet">
 
 		<script src="jquery-1.9.1.min.js"></script>
 		<script src="hmac-sha512.js"></script>
 		<script src="angular.min.js"></script>
+		<script src="js/libs/bootstrap.js"></script>
 
 		<script src="btce.js"></script>
 		<script src="flux2-ang.js"></script>
@@ -43,6 +44,7 @@
 					</button>
 				</div>
 				<div class="span4" style="text-align: center;">
+					<b>RATE CHANGE:</b> {{rateChange}}
 				</div>
 				<div class="span4" style="text-align: center;">
 					<button ng-click="removeMoney()">
@@ -57,14 +59,6 @@
 					<button ng-click="addCoins()">
 						coins++
 					</button>
-				</div>
-					
-			</div>
-			
-			<div class="row" style="margin-bottom: 2.0em;">
-						
-				<div class="span12" style="text-align: center;">
-					<b>RATE CHANGE:</b> {{rateChange}}
 				</div>
 					
 			</div>
@@ -88,7 +82,82 @@
 				</div>
 					
 			</div>
-							
+			
+			<div class="row">
+				
+				<div class="span12" style="border-bottom: 1px solid black; padding-bottom: 0.3em; margin-bottom: 2.0em;">
+					
+					<div class="row">
+						
+						<div class="span4">
+							<div class="row">
+								<div class="span2" style="border-top: 1px solid black; margin-top: 1.0em; padding-top: 0.3em;">
+									USD [<a href="#">All</a>] [<a href="#">1/2</a>]<br/>
+									<input style="width: 100%; margin-bottom: 0px; margin-top: 0.15em;" type="text" ng-model="buyUsd"/>
+								</div>
+								<div class="span2" style="border-top: 1px solid black; margin-top: 1.0em; padding-top: 0.3em;">
+									LTC [<a href="#">All</a>] [<a href="#">1/2</a>]<br/>
+									<input style="width: 100%; margin-bottom: 0px; margin-top: 0.15em;" type="text" ng-model="buyLtc"/>
+								</div>
+							</div>
+							<div class="row">
+								<div class="span4">
+									<button style="width: 100%; margin-top: 0.15em;" ng-click="start()">
+										Buy
+									</button>
+								</div>
+							</div>
+						</div>
+						
+						<div class="span4" style="border-top: 1px solid black; margin-top: 1.0em; padding-top: 0.3em;">
+							<div style="width: 100%">
+								<div style="display: inline-block; width: 38%;">
+									Buy rate<br/>
+									<input style="width: 5.0em; margin-bottom: 0px; margin-top: 0.15em;" type="text" ng-model="manualBuyRate"/>
+								</div>
+								<div style="display: inline-block; width: 20%; text-align: center;">
+									<span>Track</span><br/>
+									<input type="checkbox" style="margin-top: 0.25em; margin-bottom: 0.35em;" ng-model="rateAuto" />
+								</div>
+								<div style="display: inline-block; width: 38%; text-align: right;">
+									Sell rate<br/>
+									<input style="width: 5.0em; margin-bottom: 0px; margin-top: 0.15em;" type="text" ng-model="manualSellRate"/>
+								</div>
+							</div>
+							<div style="width: 100%; padding-top: 0.4em; text-align: center;">
+								<input type="checkbox" style="margin-top: -2px;" ng-model="rateAuto" /> Auto
+								<input type="checkbox" style="margin-top: -2px; margin-left: 1.0em;" ng-model="rateBuffered" /> Buf.
+								<input style="width: 4.0em; margin-bottom: 0px;" type="text" ng-model="rateBuffer"/>
+							</div>
+						</div>
+						
+						<div class="span4">
+							<div class="row">
+								<div class="span2" style="border-top: 1px solid black; margin-top: 1.0em; padding-top: 0.3em;">
+									LTC [<a href="#">All</a>] [<a href="#">1/2</a>]<br/>
+									<input style="width: 100%; margin-bottom: 0px; margin-top: 0.15em;" type="text" ng-model="sellLtc"/>
+								</div>
+								<div class="span2" style="border-top: 1px solid black; margin-top: 1.0em; padding-top: 0.3em;">
+									USD [<a href="#">All</a>] [<a href="#">1/2</a>]<br/>
+									<input style="width: 100%; margin-bottom: 0px; margin-top: 0.15em;" type="text" ng-model="sellUsd"/>
+								</div>
+							</div>
+							<div class="row">
+								<div class="span4">
+									<button style="width: 100%; margin-top: 0.15em;" ng-click="start()">
+										Sell
+									</button>
+								</div>
+							</div>
+						</div>
+						
+					</div>
+					
+					
+				</div>
+				
+			</div>
+				
 			<div class="row">
 
 				<div class="span6">					
@@ -109,7 +178,35 @@
 						
 					</div>
 					
-					<div class="row" style="margin-top: 2.0em;">
+				</div>
+				
+				<div class="span6">
+					
+					<div class="row" style="margin-top: 1.0em;">
+						
+						<div class="span3">
+							<b>LTC CASHOUT:</b> {{ltcCashout()|truncate:6:""}}
+							<br/>
+							<b>AVAILABLE LTC:</b> {{ltc|truncate:6:""}}
+						</div>
+						
+						<div class="span3">
+							<b>LTC REVENUE:</b> 0
+							<br/>
+							<b>SELL RATE:</b> {{currentSellPrice|truncate:6:""}}
+						</div>
+						
+					</div>
+				
+				</div>
+				
+			</div>
+			
+			<div class="row" style="margin-top: 2.0em;">
+			
+				<div class="span6">
+					
+					<div class="row">
 						<div class="span6">
 							<b>MY SELLS</b>
 						</div>
@@ -156,22 +253,8 @@
 				</div>
 				
 				<div class="span6">
-					
-					<div class="row" style="margin-top: 1.0em;">
-						
-						<div class="span3">
-							<b>LTC CASHOUT:</b> {{ltcCashout()|truncate:6:""}}
-							<br/>
-							<b>AVAILABLE LTC:</b> {{ltc|truncate:6:""}}
-						</div>
-						
-						<div class="span3">
-							<b>SELL RATE:</b> {{currentSellPrice|truncate:6:""}}
-						</div>
-						
-					</div>
-					
-					<div class="row" style="margin-top: 2.0em;">
+				
+					<div class="row">
 						<div class="span6">
 							<b>MY BUYS</b>
 						</div>
@@ -214,9 +297,9 @@
     					</div>
     				
 					</div>
-				
+					
 				</div>
-				
+			
 			</div>
 			
 			<div class="row" style="margin-top: 4.0em;">

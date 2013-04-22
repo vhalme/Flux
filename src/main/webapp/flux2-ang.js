@@ -26,8 +26,16 @@ function AppCtrl($scope, $routeParams, $http) {
 	$scope.currentBuyPrice = 0;
 	$scope.currentSellPrice = 0;
 	$scope.rateChange = 0;
-	
 	$scope.cashoutRate = 1;
+	
+	$scope.rateAuto = true;
+	$scope.rateBuffered = true;
+	$scope.buyLtc = 0;
+	$scope.buyUsd = 0;
+	$scope.sellLtc = 0;
+	$scope.sellUsd = 0;
+	$scope.manualSellRate = 0;
+	$scope.manualBuyRate = 0;
 	
 	$scope.testHistory = {
 		transactions: { "buy": [], "sell": [] },
@@ -737,6 +745,56 @@ function AppCtrl($scope, $routeParams, $http) {
 	
 	$scope.buyProfitFormat = "%";
 	$scope.sellProfitFormat = "%";
+	
+	
+	
+	/* Watchers */
+	
+	$scope.firstPassConvert = true;
+	
+	$scope.$watch('buyLtc', function(value) {
+		
+	    if (value && value !== '' && value !== '0') {
+	    	
+	    	if($scope.firstPassConvert) {
+	    		$scope.firstPassConvert = false;
+	    		var usd = $scope.truncate(parseFloat(value)*$scope.currentBuyPrice, 6);
+	    		$scope.buyUsd = usd;
+	    	} else {
+	    		$scope.firstPassConvert = true;
+	    	}
+	    	
+	    }
+	}, true);
+	
+	$scope.$watch('buyUsd', function(value) {
+		
+		if (value && value !== '' && value !== '0') {
+		
+			if($scope.firstPassConvert) {
+				$scope.firstPassConvert = false;
+				var ltc = $scope.truncate(parseFloat(value)/$scope.currentBuyPrice, 6);
+				$scope.buyLtc = ltc;
+			} else {
+				$scope.firstPassConvert = true;
+			}
+			
+		}
+    	
+	}, true);
+	
+	$scope.truncate = function(val, length) {
+		
+		val = ""+val;
+		
+		if(val.length > length) {
+			val = val.substring(0, length);
+		}
+		
+		return parseFloat(val);
+		
+	}
+	
 	
 	
 };
