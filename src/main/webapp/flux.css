@@ -11,3 +11,21 @@
 	background: #FF8080;
 	
 }
+
+.visible {
+	display: none;
+	visibility: hidden;
+}
+
+.hidden {
+	display: block;
+	visibility: visible;
+}
+
+.disabled {
+	disabled: true;
+}
+
+.enabled {
+	disabled: false;
+}

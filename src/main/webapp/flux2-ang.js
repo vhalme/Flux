@@ -28,6 +28,7 @@ function AppCtrl($scope, $routeParams, $http) {
 	$scope.rateChange = 0;
 	$scope.cashoutRate = 1;
 	
+	$scope.trackManualTransactions = true;
 	$scope.rateAuto = true;
 	$scope.rateBuffered = true;
 	$scope.buyLtc = 0;
@@ -206,7 +207,7 @@ function AppCtrl($scope, $routeParams, $http) {
 			if($scope.currentSellPrice - $scope.highestSell() >= parseFloat($scope.profitTarget) && 
 				$scope.ltc >= tradeChunk && $scope.currentSellPrice > $scope.sellFloor) {
 				
-				var sellTransaction = $scope.createTransaction(tradeChunk, "sell", 1);
+				var sellTransaction = $scope.createTransaction(tradeChunk, $scope.actualTradeRate("sell"), "sell", 1);
 				$scope.performTransaction(sellTransaction, true, function() {});
 				$scope.oldPrice = $scope.currentPrice;
 			
@@ -214,7 +215,7 @@ function AppCtrl($scope, $routeParams, $http) {
 				-(parseFloat($scope.profitTarget)*1) && $scope.currentBuyPrice < $scope.buyCeiling &&
 				$scope.usd >= (tradeChunk * $scope.actualTradeRate("buy"))) {
 			
-				var buyTransaction = $scope.createTransaction(tradeChunk, "buy", 1);
+				var buyTransaction = $scope.createTransaction(tradeChunk, $scope.actualTradeRate("buy"), "buy", 1);
 				$scope.performTransaction(buyTransaction, true, function() {});
 				$scope.oldPrice = $scope.currentPrice;
 				
@@ -390,6 +391,27 @@ function AppCtrl($scope, $routeParams, $http) {
 	};
 	
 	
+	$scope.manualTransaction = function(type) {
+		
+		var amount;
+		var rate;
+		
+		if(type == "buy") {
+			rate = $scope.manualBuyRate;
+			amount = $scope.buyLtc;
+		} else if(type == "sell") {
+			rate = $scope.manualSellRate;
+			amount = $scope.sellLtc;
+		}
+		
+		var transaction = $scope.createTransaction(amount, rate, type, 1);
+		
+		$scope.performTransaction(transaction, $scope.trackManualTransactions, function() {
+			
+		});
+		
+	}
+	
 	$scope.reverseTrade = function(transaction, save) {
 		
 		console.log("reverse trading...");
@@ -452,16 +474,16 @@ function AppCtrl($scope, $routeParams, $http) {
 		
 		console.log("REVERSED TYPE TO "+reverseType);
 		
-		return $scope.createTransaction(transaction.amount, reverseType, 1);
+		return $scope.createTransaction(transaction.amount, $scope.actualTradeRate(reverseType), reverseType, 1);
 		
 	};
 	
-	$scope.createTransaction = function(amount, type, ttl) {
+	$scope.createTransaction = function(amount, rate, type, ttl) {
 		
 		var transaction = { 
 				
 				time: (new Date()).getTime(),
-				rate: $scope.actualTradeRate(type), 
+				rate: rate, 
 				amount: amount,
 				type: type,
 				ttl: ttl
@@ -758,7 +780,7 @@ function AppCtrl($scope, $routeParams, $http) {
 	    	
 	    	if($scope.firstPassConvert) {
 	    		$scope.firstPassConvert = false;
-	    		var usd = $scope.truncate(parseFloat(value)*$scope.currentBuyPrice, 6);
+	    		var usd = $scope.truncate(parseFloat(value)*$scope.manualBuyRate, 6);
 	    		$scope.buyUsd = usd;
 	    	} else {
 	    		$scope.firstPassConvert = true;
@@ -773,7 +795,7 @@ function AppCtrl($scope, $routeParams, $http) {
 		
 			if($scope.firstPassConvert) {
 				$scope.firstPassConvert = false;
-				var ltc = $scope.truncate(parseFloat(value)/$scope.currentBuyPrice, 6);
+				var ltc = $scope.truncate(parseFloat(value)/$scope.manualBuyRate, 6);
 				$scope.buyLtc = ltc;
 			} else {
 				$scope.firstPassConvert = true;
@@ -781,6 +803,53 @@ function AppCtrl($scope, $routeParams, $http) {
 			
 		}
     	
+	}, true);
+	
+	$scope.$watch('sellLtc', function(value) {
+		
+	    if (value && value !== '' && value !== '0') {
+	    	
+	    	if($scope.firstPassConvert) {
+	    		$scope.firstPassConvert = false;
+	    		var usd = $scope.truncate(parseFloat(value)*$scope.manualSellRate, 6);
+	    		$scope.sellUsd = usd;
+	    	} else {
+	    		$scope.firstPassConvert = true;
+	    	}
+	    	
+	    }
+	}, true);
+	
+	$scope.$watch('sellUsd', function(value) {
+		
+		if (value && value !== '' && value !== '0') {
+		
+			if($scope.firstPassConvert) {
+				$scope.firstPassConvert = false;
+				var ltc = $scope.truncate(parseFloat(value)/$scope.manualSellRate, 6);
+				$scope.sellLtc = ltc;
+			} else {
+				$scope.firstPassConvert = true;
+			}
+			
+		}
+    	
+	}, true);
+	
+	$scope.$watch('currentBuyPrice', function(value) {
+		
+		if($scope.rateAuto) {
+	    	$scope.manualBuyRate = $scope.truncate($scope.currentBuyPrice, 6);
+	    }
+		
+	}, true);
+	
+	$scope.$watch('currentSellPrice', function(value) {
+		
+		if($scope.rateAuto) {
+	    	$scope.manualSellRate = $scope.truncate($scope.currentSellPrice, 6);
+	    }
+		
 	}, true);
 	
 	$scope.truncate = function(val, length) {
