@@ -197,7 +197,7 @@
 						</div>
 						
 						<div class="span3">
-							<b>USD REVENUE:</b> {{usdRevenue|truncate:6:""}}
+							<b>USD REVENUE:</b> {{user.profitUsd|truncate:6:""}}
 							<br/>
 							<b>BUY RATE:</b> {{currentBuyPrice|truncate:6:""}}
 						</div>
@@ -254,7 +254,7 @@
     					</div>
 					</div>
 					
-					<div class="row"  ng-class="{ profit: sellProfit(sell) > 0, loss: sellProfit(sell) < 0 }" ng-repeat="sell in history.transactions['sell'] | orderBy:sellSort:!sellSortReverse">
+					<div class="row"  ng-class="{ profit: sellProfit(sell) > 0, loss: sellProfit(sell) < 0 }" ng-repeat="sell in transactions['sell'] | orderBy:sellSort:!sellSortReverse">
 						
 						<div class="span1">
     						{{sell.amount|truncate:6:""}}
@@ -302,7 +302,7 @@
     					</div>
 					</div>
 					
-					<div class="row" ng-class="{ profit: buyProfit(buy) > 0, loss: buyProfit(buy) < 0 }" ng-repeat="buy in history.transactions['buy'] | orderBy:buySort:!buySortReverse">
+					<div class="row" ng-class="{ profit: buyProfit(buy) > 0, loss: buyProfit(buy) < 0 }" ng-repeat="buy in transactions['buy'] | orderBy:buySort:!buySortReverse">
 						
 						<div class="span1">
     						{{buy.amount|truncate:6:""}}

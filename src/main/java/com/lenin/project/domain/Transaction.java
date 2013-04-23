@@ -7,7 +7,7 @@ import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 
-public class TradeRequest extends BtceApiCall implements Serializable {
+public class Transaction extends BtceApiCall implements Serializable {
 	
 	
 	private static final long serialVersionUID = 2034644454740810443L;
@@ -15,13 +15,21 @@ public class TradeRequest extends BtceApiCall implements Serializable {
 	@DBRef
 	private User user;
 	
+	@DBRef
+	private Transaction reverseTransaction;
+	
+	
+	private Boolean save;
+	
+	private Long time;
+	
 	private Double rate;
 	private Double amount;
 	private String pair;
 	private String type;
 	
 	
-	public TradeRequest() {
+	public Transaction() {
 		
 	}
 
@@ -33,6 +41,38 @@ public class TradeRequest extends BtceApiCall implements Serializable {
 
 	public void setUser(User user) {
 		this.user = user;
+	}
+
+	
+
+	public Transaction getReverseTransaction() {
+		return reverseTransaction;
+	}
+
+
+	public void setReverseTransaction(Transaction reverseTransaction) {
+		this.reverseTransaction = reverseTransaction;
+	}
+
+
+	public Boolean getSave() {
+		return save;
+	}
+
+
+	public void setSave(Boolean save) {
+		this.save = save;
+	}
+
+	
+
+	public Long getTime() {
+		return time;
+	}
+
+
+	public void setTime(Long time) {
+		this.time = time;
 	}
 
 

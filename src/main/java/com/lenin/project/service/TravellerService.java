@@ -4,12 +4,13 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.Date;
 import java.util.List;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
@@ -33,8 +34,8 @@ import org.codehaus.jettison.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
-import com.lenin.project.domain.InfoRequest;
-import com.lenin.project.domain.TradeRequest;
+import com.lenin.project.domain.RateQuote;
+import com.lenin.project.domain.Transaction;
 import com.lenin.project.domain.User;
 import com.lenin.project.repositories.CommentRepository;
 import com.lenin.project.repositories.TransactionRepository;
@@ -43,8 +44,6 @@ import com.lenin.project.repositories.UserRepository;
 
 @Path("/")
 public class TravellerService {
-	
-	private boolean live = false;
 	
 	private static long _nonce = System.currentTimeMillis() / 10000L;
 	
@@ -70,64 +69,90 @@ public class TravellerService {
 	
 	@GET
 	@Path("/rates")
-    @Produces({ MediaType.TEXT_PLAIN })
-    public String getRates() {
+    @Produces({ MediaType.APPLICATION_JSON })
+    public RequestResponse getRates(@HeaderParam("User-Id") String userId) {
 		
-		String result = "";
+		User user = userRepository.findByUsername(userId);
 		
-	    try {
+		RequestResponse response = new RequestResponse();
+		
+		if(user.getLive()) {
+		
+			try {
 	    	
-	    	//Create connection
-	    	HttpClient client = new DefaultHttpClient();
-	    	HttpGet get = new HttpGet("https://btc-e.com/api/2/ltc_usd/ticker");
+				//Create connection
+				HttpClient client = new DefaultHttpClient();
+				HttpGet get = new HttpGet("https://btc-e.com/api/2/ltc_usd/ticker");
 	    	
-	    	HttpResponse response = client.execute(get);
-	    	HttpEntity entity = response.getEntity();
-	    	
-	    	if (entity != null) {
+				HttpResponse httpResponse = client.execute(get);
+				HttpEntity entity = httpResponse.getEntity();
+				
+				if(entity != null) {
 	    	    
-	    		InputStream instream = entity.getContent();
-	    	    
-	    	    try {
+					InputStream instream = entity.getContent();
+	    	       
+					BufferedReader in = 
+						new BufferedReader(new InputStreamReader(instream));
 	    	        
-	    	    	BufferedReader in = 
-	    	        		new BufferedReader(new InputStreamReader(instream));
+					String resultStr = "";
+					String inputLine = null;
+						
+					while((inputLine = in.readLine()) != null) {
+						//System.out.println(inputLine);
+						resultStr += inputLine;
+					}
 	    	        
-	    	        String inputLine;
-	    	        
-	    	        while ((inputLine = in.readLine()) != null) {
-	    	            //System.out.println(inputLine);
-	    	            result += inputLine;
-	    	        }
-	    	        
-	    	        in.close();
-	    	    
-	    	    } finally {
-	    	        
+					in.close();
 	    	    	instream.close();
+	    	    	
+	    	    	JSONObject jsonResult = new JSONObject(resultStr);
+	    	    	JSONObject ticker = jsonResult.getJSONObject("ticker");
+	    	    	
+	    	    	RateQuote rateQuote = new RateQuote();
+	    	    	rateQuote.setDate(new Date());
+	    	    	rateQuote.setPair("ltc_usd");
+	    	    	rateQuote.setLast(ticker.getDouble("last"));
+	    	    	rateQuote.setBuy(ticker.getDouble("buy"));
+	    	    	rateQuote.setSell(ticker.getDouble("sell"));
+	    	    	
+	    	    	response.setSuccess(1);
+	    	    	response.setData(rateQuote);
+	    	    	
+				}
+	    	
+	    	} catch (Exception e) {
+
+	    		e.printStackTrace();
+	  	      	return null;
+
+	  	    }
+
+	    	
+		} else {
+			
+			RateQuote rateQuote = new RateQuote();
+	    	rateQuote.setDate(new Date());
+	    	rateQuote.setPair("ltc_usd");
+	    	rateQuote.setLast(2.1);
+	    	rateQuote.setBuy(2.1);
+	    	rateQuote.setSell(2.1);
+	    	
+			response.setSuccess(1);
+			response.setData(rateQuote);
+			
+		}
+
 	    	    
-	    	    }
-	    	
-	    	}
-	    	
-	    	
-
-	    } catch (Exception e) {
-
-	      e.printStackTrace();
-	      return null;
-
-	    }
-	    
-		return result;
+		return response;
 		
 	}
 	
-	@POST
+	
+	@GET
 	@Path("/info")
 	@Consumes({ MediaType.APPLICATION_JSON })
     @Produces({ MediaType.APPLICATION_JSON })
-    public RequestResponse getInfo(@HeaderParam("User-Id") String userId, InfoRequest infoRequest) {
+    public RequestResponse getInfo(@HeaderParam("User-Id") String userId) {
 		
 		User user = userRepository.findByUsername(userId);
 		
@@ -182,14 +207,54 @@ public class TravellerService {
 		
 	}
 	
-	@POST
-	@Path("/trade")
+	
+	@GET
+    @Path("/transaction")
+	@Produces({ MediaType.APPLICATION_JSON })
+    public List<Transaction> getTransactions(@HeaderParam("User-Id") String userId, @QueryParam("type") String type) {
+        
+		User user = userRepository.findByUsername(userId);
+		
+		if(type != null) {
+			return transactionRepository.findByUserAndType(user, type);
+		} else if(user != null) {
+			return transactionRepository.findByUser(user);
+		} else {
+			return transactionRepository.findAll();
+		}
+		
+	}
+	
+	
+	@DELETE
+	@Path("/transaction")
 	@Consumes({ MediaType.APPLICATION_JSON })
     @Produces({ MediaType.APPLICATION_JSON })
-    public RequestResponse trade(@HeaderParam("User-Id") String userId, TradeRequest tradeRequest) {
+	public RequestResponse deleteTransaction(@HeaderParam("User-Id") String userId, Transaction transaction) {
 		
 		User user = userRepository.findByUsername(userId);
-		tradeRequest.setUser(user);
+		
+		transactionRepository.delete(transaction);
+		
+		RequestResponse response = new RequestResponse();
+		response.setSuccess(1);
+		
+		List<Transaction> transactions = getTransactions(userId, null);
+		response.setData(transactions);
+		
+		return response;
+		
+	}
+	
+	
+	@POST
+	@Path("/transaction")
+	@Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
+    public RequestResponse postTransaction(@HeaderParam("User-Id") String userId, Transaction transaction) {
+		
+		User user = userRepository.findByUsername(userId);
+		transaction.setUser(user);
 		
 		RequestResponse response = new RequestResponse();
 		
@@ -197,10 +262,10 @@ public class TravellerService {
 			
 			List<NameValuePair> methodParams = new ArrayList<NameValuePair>();
 			methodParams.add(new BasicNameValuePair("method", "Trade"));
-			methodParams.add(new BasicNameValuePair("type", tradeRequest.getType()));
-			methodParams.add(new BasicNameValuePair("pair", tradeRequest.getPair()));
-			methodParams.add(new BasicNameValuePair("amount", ""+tradeRequest.getAmount()));
-			methodParams.add(new BasicNameValuePair("rate", ""+tradeRequest.getRate()));
+			methodParams.add(new BasicNameValuePair("type", transaction.getType()));
+			methodParams.add(new BasicNameValuePair("pair", transaction.getPair()));
+			methodParams.add(new BasicNameValuePair("amount", ""+transaction.getAmount()));
+			methodParams.add(new BasicNameValuePair("rate", ""+transaction.getRate()));
 			
 			JSONObject tradeResult = authenticatedHTTPRequest(methodParams);
 			
@@ -211,10 +276,7 @@ public class TravellerService {
 				
 				if(success == 1) {
 					
-					executeTrade(user, tradeRequest);
-					
-					userRepository.save(user);
-					transactionRepository.save(tradeRequest);
+					executeTransaction(user, transaction);
 					
 				}
 				
@@ -229,36 +291,66 @@ public class TravellerService {
 			
 		} else {
 			
-			executeTrade(user, tradeRequest);
-			
-			userRepository.save(user);
-			transactionRepository.save(tradeRequest);
+			executeTransaction(user, transaction);
 			
 			response.setSuccess(1);
 			
 		}
 		
-		
+		List<Transaction> transactions = getTransactions(userId, null);
+		response.setData(transactions);
 		
 		return response;
 		
 	}
 	
 	
-	private void executeTrade(User user, TradeRequest tradeRequest) {
+	private void executeTransaction(User user, Transaction transaction) {
 		
-		Double usdVal = tradeRequest.getAmount() * tradeRequest.getRate();
+		Double usdVal = transaction.getAmount() * transaction.getRate();
 		
-		if(tradeRequest.getType().equals("buy")) {
+		if(transaction.getType().equals("buy")) {
 			
 			user.setUsd(user.getUsd() - usdVal);
-			user.setLtc(user.getLtc() + tradeRequest.getAmount());
+			user.setLtc(user.getLtc() + transaction.getAmount());
 			
-		} else if(tradeRequest.getType().equals("sell")) {
+		} else if(transaction.getType().equals("sell")) {
 			
 			user.setUsd(user.getUsd() + usdVal);
-			user.setLtc(user.getLtc() - tradeRequest.getAmount());
+			user.setLtc(user.getLtc() - transaction.getAmount());
 			
+		}
+		
+		Transaction reverseTransaction = transaction.getReverseTransaction();
+		
+		if(reverseTransaction != null) {
+			
+			Double transactionRevenue = 0.0;
+			
+			if(transaction.getType().equals("sell")) {
+				
+				transactionRevenue = 
+					(transaction.getAmount()*transaction.getRate()) - 
+					(reverseTransaction.getAmount()*reverseTransaction.getRate());
+			
+			} else if(transaction.getType().equals("buy")) {
+				
+				transactionRevenue = 
+						(reverseTransaction.getAmount()*reverseTransaction.getRate()) -
+						(transaction.getAmount()*transaction.getRate());
+			
+			}
+				
+			user.setProfitUsd(user.getProfitUsd() + transactionRevenue);
+			
+			transactionRepository.delete(reverseTransaction);
+			
+		}
+		
+		userRepository.save(user);
+		
+		if(transaction.getSave()) {
+			transactionRepository.save(transaction);
 		}
 		
 	}
@@ -353,24 +445,6 @@ public class TravellerService {
 	
 	
 	@GET
-    @Path("/transaction")
-	@Produces({ MediaType.APPLICATION_JSON })
-    public List<TradeRequest> listTransactions(@HeaderParam("User-Id") String userId, @QueryParam("type") String type) {
-        
-		User user = userRepository.findByUsername(userId);
-		
-		if(type != null) {
-			return transactionRepository.findByUserAndType(user, type);
-		} else if(user != null) {
-			return transactionRepository.findByUser(user);
-		} else {
-			return transactionRepository.findAll();
-		}
-		
-	}
-	
-	
-	@GET
     @Path("/test")
     @Produces({ MediaType.TEXT_PLAIN })
     public String test(@QueryParam("fromId") String fromId, @QueryParam("toId") String toId) {
@@ -386,6 +460,32 @@ public class TravellerService {
 		testUser.setLive(true);
 		
 		userRepository.save(testUser);
+		
+        return result;
+    
+	}
+	
+	@GET
+    @Path("/init")
+    @Produces({ MediaType.TEXT_PLAIN })
+    public String initUsers(@QueryParam("fromId") String fromId, @QueryParam("toId") String toId) {
+		
+		//System.out.println(fromId);
+		//System.out.println(toId);
+		
+		String result = "test";
+		
+		User testUser1 = new User();
+		testUser1.setUsername("testUser123");
+		testUser1.setLive(false);
+		
+		userRepository.save(testUser1);
+		
+		User testUser2 = new User();
+		testUser2.setUsername("testUser456");
+		testUser2.setLive(true);
+		
+		userRepository.save(testUser2);
 		
         return result;
     

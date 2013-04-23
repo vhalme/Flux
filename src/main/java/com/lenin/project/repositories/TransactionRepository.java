@@ -4,20 +4,20 @@ import java.util.List;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
 
-import com.lenin.project.domain.TradeRequest;
+import com.lenin.project.domain.Transaction;
 import com.lenin.project.domain.User;
 
-public interface TransactionRepository extends MongoRepository<TradeRequest, String> {
+public interface TransactionRepository extends MongoRepository<Transaction, String> {
 	
-	List<TradeRequest> findByUser(User user);
+	List<Transaction> findByUser(User user);
 	
-	List<TradeRequest> findByUserAndType(User user, String type);
+	List<Transaction> findByUserAndType(User user, String type);
 	
-	List<TradeRequest> findAll();
+	List<Transaction> findAll();
 	
-	TradeRequest save(TradeRequest tradeRequest);
+	Transaction save(Transaction transaction);
 	
-	void delete(TradeRequest tradeRequest);
+	void delete(Transaction transaction);
 	
 	void deleteAll();
 	
