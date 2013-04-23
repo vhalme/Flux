@@ -20,8 +20,6 @@ var _nonce = Math.round((new Date()).getTime() / 10000);
  */
 var API = {
 		
-		
-		url: 'https://btc-e.com/tapi',
 		funds: undefined,
 		openOrders: undefined,
 		rights: undefined,
@@ -30,25 +28,23 @@ var API = {
 		/**
 		 * Send the request to the server synchronously.
 		 */
-		send: function(params, success){
+		send: function(url, params, success) {
 			
-		    params.nonce = ++_nonce;
-		    //console.log("nonce: "+params.nonce);
-		    
 		    var query = $.param(params);
-		    var mySign = CryptoJS.HmacSHA512(query,"a93adec600bd65960d26d779343b70700fbb4a93e333e15350b2bb1a21fb46de").toString();
+		    
 		    $.ajax({
 		    	async : false,
-		    	type : 'POST',
-		    	url : this.url,
-		    	headers : {
-					Key: "XSR43QT2-B7PBL6EY-U6JCVFCM-7IMTI26B-7XEL3DGO",
-					Sign: mySign
+		    	type : "POST",
+		    	url : url,
+		    	dataType: "json",
+	  			contentType: "application/json",
+	  			headers : {
+					"User-Id": "testUser123"
 		    	},
-		    	dataType : 'json',
-		    	data : params,
+		    	data : JSON.stringify(params, null, 2),
 		    	success : success
 		    });
+		
 		},
 		
 		/**
@@ -62,38 +58,8 @@ var API = {
 		      method : "getInfo",
 		    };
 		    
-			var obj;
-		    
-			this.send(params, callback);
+			this.send("service/info", params, callback);
 			
-			/*
-			var success = function(data, text) {
-				
-				if(data.success===1){
-					
-					obj = data.return;
-					self.funds = data.return.funds;
-					self.openOrders = data.return.open_orders;
-					self.rights = data.return.rights;
-					self.transactionCount = data.return.transaction_count;
-		        
-				} else{
-		          
-					obj = data.error;
-		        
-				}
-		        
-				callback(data);
-				
-				return data;
-		    
-			};
-		    
-			
-			this.send(params, success);
-		 
-		    return obj;
-			*/
 			
 		},
 		
@@ -111,11 +77,11 @@ var API = {
 		 * parameter explanation.
 		 */
 		transHistory: function(paramObj){
-		  
+			
 			var params = {
 					method : "TransHistory"
 			};
-		  
+			
 			$.extend(params,paramObj);
 			
 			var obj;
@@ -231,24 +197,7 @@ var API = {
 					amount : amount
 		    };
 			
-			this.send(params, callback);
-			
-			/*
-		    var obj;
-		    var success = function(data,text){
-		    	
-		    	if(data.success === 1){
-		    		obj = data.return;
-		    		self.funds = data.return.funds;
-		        } else {
-		        	obj = data.error;
-		        }
-		    	
-		      };
-		      
-		      this.send(params,success);
-		      return obj;
-			*/
+			this.send("service/trade", params, callback);
 			
 		},
 		

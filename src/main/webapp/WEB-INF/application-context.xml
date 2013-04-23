@@ -21,6 +21,7 @@
 	<mongo:mongo host="127.0.0.1" port="27017"/>
 	
 	<mongo:repositories base-package="com.lenin.project.repositories">
+		<mongo:repository id="transactionRepository" mongo-template-ref="mongoTemplate" />
 		<mongo:repository id="commentRepository" mongo-template-ref="mongoTemplate" />
 		<mongo:repository id="userRepository" mongo-template-ref="mongoTemplate" />
 	</mongo:repositories>

@@ -1,4 +1,4 @@
-var live = false;
+var live = true;
 
 function AppCtrl($scope, $routeParams, $http) {
 	
@@ -11,9 +11,9 @@ function AppCtrl($scope, $routeParams, $http) {
 	$scope.rateBuffer = 0.001;
 	$scope.tradeChunk = 10;
 
-	$scope.buyCeiling = 2.0;
-	$scope.sellFloor = 2.0;
-	$scope.entryRate = 2.0;
+	$scope.buyCeiling = 2.5;
+	$scope.sellFloor = 2.5;
+	$scope.entryRate = 2.5;
 	
 	$scope.usd = 0;
 	$scope.ltc = 0;
@@ -97,7 +97,7 @@ function AppCtrl($scope, $routeParams, $http) {
 			
 			$scope.history = $scope.testHistory;
 			
-			$scope.currentBuyPrice = 2.0; //0.5 + Math.random()*4;
+			$scope.currentBuyPrice = 2.5; //0.5 + Math.random()*4;
 			$scope.currentSellPrice = $scope.currentBuyPrice - 0.02;
 			$scope.currentPrice = $scope.currentBuyPrice - 0.01;
 			$scope.oldPrice = $scope.currentPrice;
@@ -145,13 +145,13 @@ function AppCtrl($scope, $routeParams, $http) {
 			$scope.refreshCounter = $scope.refreshInterval;
 		}
 		
-		API.getInfo(function(info) {
+		API.getInfo(function(response) {
 			
-			if(info.success == 1) {
-				$scope.ltc = info.return.funds.ltc;
-				$scope.usd = info.return.funds.usd;
+			if(response.success == 1) {
+				$scope.ltc = response.data.ltc;
+				$scope.usd = response.data.usd;
 			} else {
-				console.log(info);
+				console.log(response);
 				_nonce = Math.round((new Date()).getTime() / 10000);
 			}
 			

@@ -8,6 +8,8 @@ import com.lenin.project.domain.User;
 
 public interface UserRepository extends MongoRepository<User, String> {
 	
+	User findByUsername(String username);
+	
 	List<User> findAll();
 	
 	User save(User user);
