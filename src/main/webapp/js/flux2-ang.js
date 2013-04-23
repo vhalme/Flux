@@ -57,6 +57,8 @@ function AppCtrl($scope, $routeParams, $http) {
 	$scope.buyHistory = [];
 	$scope.sellHistory = [];
 	
+	$scope.transactions = [];
+	
 	$scope.init = function() {
 		delete localStorage.buyHistory;
 		delete localStorage.sellHistory;
