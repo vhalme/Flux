@@ -1,5 +1,5 @@
 /*!
- * Bootstrap Responsive v2.3.0
+ * Bootstrap Responsive v2.3.1
  *
  * Copyright 2012 Twitter, Inc
  * Licensed under the Apache License v2.0
@@ -78,7 +78,6 @@
   .hidden-tablet {
     display: none !important;
   }
-
 }
 
 @media (max-width: 767px) {
@@ -144,91 +143,32 @@
     width: 970px;
   }
   .span9 {
-    width: 852px;
+    width: 870px;
   }
-  
   .span8 {
     width: 770px;
   }
-  .span8-entryview {
-    width: 770px;
-  }
-  
   .span7 {
     width: 670px;
   }
   .span6 {
     width: 570px;
   }
-  
   .span5 {
     width: 470px;
   }
-  
   .span4 {
     width: 370px;
   }
-  
-  .span4-login {
-    width: 370px;
-  }
-  
-  .span4-tripview {
-    width: 370px;
-  }
-  
-  .span4-findview {
-    width: 370px;
-  }
-  
-  .span4-entryview {
-    width: 370px;
-  }
-  
-  .span4-entryedit {
-    width: 470px;
-  }
-  
   .span3 {
     width: 270px;
   }
-  
-  .span3-entryview {
-    width: 270px;
-  }
-  
-  .span3-sidebar {
-    width: 270px;
-  }
-  
   .span2 {
     width: 170px;
   }
-  
-  .span2-routeview {
-    width: 170px;
-  }
-  
-  .span2-trips {
-    width: 230px;
-    height: 300px;
-  }
-  
-  
-  .tripBox {
-	width: 226px;
-	height: 226px;
-  }
-
   .span1 {
     width: 70px;
   }
-  
-  .span1-routeview {
-  	width: 44px;
-  	padding-right: 8px;
-  }
-
   .offset12 {
     margin-left: 1230px;
   }
@@ -516,10 +456,6 @@
   .row-fluid .thumbnails {
     margin-left: 0;
   }
-  
-  .loginLabel {
-  	text-align: right;
-  }
 }
 
 @media (min-width: 768px) and (max-width: 979px) {
@@ -548,8 +484,7 @@
     width: 724px;
   }
   .span12 {
-  	width: 724px;
-    /*width: 748px;*/
+    width: 724px;
   }
   .span11 {
     width: 662px;
@@ -558,100 +493,32 @@
     width: 600px;
   }
   .span9 {
-    width: 452px;
-    padding-left: 12px;
-   /*width: 538px;*/
+    width: 538px;
   }
-  
   .span8 {
-  	/* width: 476px; */
-    width: 460px;
+    width: 476px;
   }
-  
-  .span8-entryview {
-    width: 452px;
-  }
-  
   .span7 {
     width: 414px;
   }
   .span6 {
     width: 352px;
   }
-  
   .span5 {
     width: 290px;
   }
-  
   .span4 {
-  	width: 320px;
-    /*width: 228px;*/
+    width: 228px;
   }
-  
-  .span4-login {
-  	width: 212px;
-  }
-  
-  .span4-tripview {
-  	width: 452px;
-    /*width: 228px;*/
-  }
-  
-  .span4-findview {
-  	width: 100%;
-    /*width: 228px;*/
-  }
-  
-  .span4-entryview {
-    width: 224px;
-  }
-  
-  .span4-entryedit {
-    width: 330px;
-  }
-  
   .span3 {
     width: 166px;
   }
-  
-  .span3-sidebar {
-    width: 220px;
-  }
-  
-  .span3-entryview {
-   	width: 166px;
-  }
-  
   .span2 {
-  	width: 86px;
-    /*width: 104px;*/
+    width: 104px;
   }
-  
-  .span2-routeview {
-  	width: 82px;
-    /*width: 104px;*/
-  }
-  
-  .span2-trips {
-  	width: 170px;
-  	height: 240px;
-    /*width: 104px;*/
-  }
-  
-  .tripBox {
-	width: 170px;
-	height: 170px;
-  }
-  
   .span1 {
     width: 42px;
   }
-  
-  .span1-routeview {
-   	margin-right: 2px;
-   	width: 32px;
-  }
-  
   .offset12 {
     margin-left: 764px;
   }
@@ -688,7 +555,6 @@
   .offset1 {
     margin-left: 82px;
   }
-  
   .row-fluid {
     width: 100%;
     *zoom: 1;
@@ -931,40 +797,6 @@
   .uneditable-input.span1 {
     width: 28px;
   }
-  
-  .loginLabel {
-  	text-align: right;
-  }
-  
-}
-
-@media(min-width: 360px) {
-	
-	.editEntry .transportSelect .selectList {
-		padding-left: 50%;
-		margin-left: -110px;
-	}
-
-	.editEntry .typeSelect .selectList {
-		padding-left: 50%;
-		margin-left: -162px;
-	}
-	
-}
-
-@media(max-width: 360px) {
-	.editEntry .typeSelect .selectList {
-		padding-left: 0px;
-		margin-left: 2px;
-  	}
-}
-
-@media(max-width: 224px) {
-
-	.editEntry .transportSelect .selectList {
-		padding-left: 0px;
-		margin-left: 2px;
-  	}
 }
 
 @media (max-width: 767px) {
@@ -1004,11 +836,6 @@
     float: none;
     margin-left: 0;
   }
-  
-  .span9 {
-  	width: 96%;
-  }
- 
   [class*="span"],
   .uneditable-input[class*="span"],
   .row-fluid [class*="span"] {
@@ -1020,24 +847,6 @@
        -moz-box-sizing: border-box;
             box-sizing: border-box;
   }
- 	
- .span2-trips {
- 	display: block;
-    float: none;
-    width: 230px;
-    margin-bottom: 3.0em;
-    margin-left: auto;
-    margin-right: auto;
-    -webkit-box-sizing: border-box;
-       -moz-box-sizing: border-box;
-            box-sizing: border-box;
-  }
-  
-  .tripBox {
-	width: 226px; 
-	height: 226px;
-  }
-   
   .span12,
   .row-fluid .span12 {
     width: 100%;
@@ -1086,11 +895,6 @@
   .modal.fade.in {
     top: 20px;
   }
-  
-  .loginLabel {
-  	text-align: left;
-  }
-  
 }
 
 @media (max-width: 480px) {
@@ -1144,55 +948,6 @@
     position: static;
   }
 }
-
-@media (max-width: 400px) {
-	
-	.navbar .nav > li > a {
-		padding: 10px 6px 10px;
-	}
-
-}
-
-@media (min-width: 400px) and (max-width: 600px) {
-	
-	.navbar .nav > li > a {
-		padding: 10px 12px 10px;
-	}
-
-}
-
-@media (min-width: 440px) {
-	
-	.visibleMini {
-		display: none;
-	}
-	
-	.visibleNormal {
-		display: block;
-	}
-	
-	.depDate {
-		float: right;
-	}
-
-}
-
-@media (max-width: 440px) {
-	
-	.visibleMini {
-		display: block;
-	}
-	
-	.visibleNormal {
-		display: none;
-	}
-	
-	.depDate {
-		float: left;
-	}
-
-}
-
 
 @media (max-width: 979px) {
   body {

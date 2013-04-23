@@ -1,5 +1,5 @@
 /*!
- * Bootstrap v2.3.0
+ * Bootstrap v2.3.1
  *
  * Copyright 2012 Twitter, Inc
  * Licensed under the Apache License v2.0
@@ -305,13 +305,10 @@ a:focus {
 }
 
 .span9 {
-  width: 682px;
+  width: 700px;
 }
 
 .span8 {
-  width: 620px;
-}
-.span8-entryview {
   width: 620px;
 }
 
@@ -331,36 +328,7 @@ a:focus {
   width: 300px;
 }
 
-.span4-login {
-  width: 300px;
-}
-
-.span4-tripview {
-  width: 300px;
-}
-
-
-.span4-findview {
-  width: 300px;
-}
-
-.span4-entryview {
-  width: 300px;
-}
-
-.span4-entryedit {
-  width: 380px;
-}
-
 .span3 {
-  width: 220px;
-}
-
-.span3-entryview {
-  width: 220px;
-}
-
-.span3-sidebar {
   width: 220px;
 }
 
@@ -368,27 +336,8 @@ a:focus {
   width: 140px;
 }
 
-.span2-routeview {
-  width: 140px;
-}
-
-.span2-trips {
-  width: 170px;
-  height: 240px;
-}
-
-.tripBox {
-	width: 170px;
-	height: 170px;
-}
-
 .span1 {
   width: 60px;
-}
-
-.span1-routeview {
-  width: 34px;
-  padding-right: 8px;
 }
 
 .offset12 {
@@ -2996,16 +2945,13 @@ table th[class*="span"],
 }
 
 .dropdown-menu > li > a {
-	text-overflow: ellipsis;
-  display: inline-block;
-  padding: 3px 6px;
+  display: block;
+  padding: 3px 20px;
   clear: both;
   font-weight: normal;
   line-height: 20px;
   color: #333333;
   white-space: nowrap;
-  overflow: hidden;
-  width: 95%;
 }
 
 .dropdown-menu > li > a:hover,
@@ -3668,6 +3614,7 @@ input[type="submit"].btn.btn-mini {
   *display: inline;
   *margin-left: .3em;
   font-size: 0;
+  white-space: nowrap;
   vertical-align: middle;
   *zoom: 1;
 }
@@ -6209,7 +6156,3 @@ a.badge:focus {
 .affix {
   position: fixed;
 }
-
-.loginLabel {
-  	text-align: right;
-  }
