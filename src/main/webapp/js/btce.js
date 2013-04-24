@@ -101,6 +101,44 @@ var API = {
 		    
 			});
 			
+		},
+		
+		saveUserDetails: function(user, callback) {
+			
+			$.ajax({
+				
+				async: false,
+		    	type: "PUT",
+		    	url: "service/user",
+		    	dataType: "json",
+	  			contentType: "application/json",
+	  			headers: {
+					"User-Id": this.userId
+		    	},
+		    	data: angular.toJson(user),
+		    	success: callback
+		    
+			});
+			
+		},
+		
+		setRate: function(rate, callback) {
+			
+			$.ajax({
+				
+				async: false,
+		    	type: "POST",
+		    	url: "service/rate?rate="+rate,
+		    	dataType: "text",
+	  			contentType: "text/plain",
+	  			headers: {
+					"User-Id": this.userId
+		    	},
+		    	data: rate,
+		    	success: callback
+		    
+			});
+
 		}
 		
 

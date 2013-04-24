@@ -7,21 +7,24 @@ function AppCtrl($scope, $routeParams, $http) {
 	$scope.refreshInterval = 1;
 	$scope.refreshCounter = 0;
 	
-	$scope.profitTarget = 0.05;
-	$scope.rateBuffer = 0.001;
-	$scope.tradeChunk = 10;
-
-	$scope.buyCeiling = 2.5;
-	$scope.sellFloor = 2.5;
-	$scope.entryRate = 2.5;
-	
 	$scope.transactions = [];
 	
 	$scope.user = {
+		
+		uninitialized: true,
+		
 		profitUsd: 0,
+		
 		usd: 0,
-		ltc: 0
-	}
+		ltc: 0,
+		
+		profitTarget: 0,
+		rateBuffer: 0,
+		tradeChunk: 0,
+		buyCeiling: 0,
+		sellFloor: 0
+		
+	};
 	
 	
 	$scope.unusedUsd = 0;
@@ -102,7 +105,7 @@ function AppCtrl($scope, $routeParams, $http) {
 				
 				$scope.user = response.data;
 				
-				if(true) {
+				if($scope.user.live) {
 				
 					API.getRates(function(response) {
 					
@@ -294,9 +297,9 @@ function AppCtrl($scope, $routeParams, $http) {
 	$scope.actualTradeRate = function(type) {
 		
 		if(type == "buy") {
-			return $scope.currentBuyPrice - parseFloat($scope.rateBuffer);
+			return $scope.currentBuyPrice - parseFloat($scope.user.rateBuffer);
 		} else if(type == "sell") {
-			return $scope.currentSellPrice + parseFloat($scope.rateBuffer);
+			return $scope.currentSellPrice + parseFloat($scope.user.rateBuffer);
 		}
 		
 	}
@@ -373,6 +376,8 @@ function AppCtrl($scope, $routeParams, $http) {
 			$scope.currentPrice = $scope.currentSellPrice;
 		}
 		
+		API.setRate($scope.currentPrice, function() {});
+		
 	};
 		
 	$scope.lowerPrice = function() {
@@ -391,6 +396,8 @@ function AppCtrl($scope, $routeParams, $http) {
 			$scope.currentBuyPrice = $scope.currentSellPrice;
 			$scope.currentPrice = $scope.currentSellPrice;
 		}
+		
+		API.setRate($scope.currentPrice, function() {});
 				
 	};
 	
@@ -438,6 +445,7 @@ function AppCtrl($scope, $routeParams, $http) {
 	/* Watchers */
 	
 	$scope.firstPassConvert = true;
+	$scope.firstPassDetails = true;
 	
 	$scope.$watch('buyLtc', function(value) {
 		
@@ -514,6 +522,19 @@ function AppCtrl($scope, $routeParams, $http) {
 		if($scope.rateAuto) {
 	    	$scope.manualSellRate = $scope.truncate($scope.currentSellPrice, 6);
 	    }
+		
+	}, true);
+	
+	$scope.$watch('user', function(value) {
+		
+		if(!value.uninitialized) {
+				
+			console.log("profit target: "+value.profitTarget);
+			API.saveUserDetails(value, function(response) {
+				$scope.user = response;
+			});
+			
+		}
 		
 	}, true);
 	

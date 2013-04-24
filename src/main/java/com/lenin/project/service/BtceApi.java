@@ -36,6 +36,8 @@ public class BtceApi {
 	public static Double currentBuyRateLtcUsd = 0.0;
 	public static Double currentSellRateLtcUsd = 0.0;
 	
+	public static Double oldRateLtcUsd = 0.0;
+	
 	
 	public static void updateRates() {
 		
@@ -72,6 +74,10 @@ public class BtceApi {
     	    	currentRateLtcUsd = ticker.getDouble("last");
     	    	currentBuyRateLtcUsd = ticker.getDouble("buy");
     	    	currentSellRateLtcUsd = ticker.getDouble("sell");
+    	    	
+    	    	if(oldRateLtcUsd == 0.0) {
+    	    		oldRateLtcUsd = currentRateLtcUsd;
+    	    	}
     	    	
 			}
     	
