@@ -28,6 +28,12 @@ public class User implements Serializable {
 	private Double profitLtc = 6.0;
 	private Double profitBtc = 7.0;
 	
+	private Double profitTarget = 0.05;
+	private Double rateBuffer = 0.001;
+	private Double tradeChunk = 10.0;
+	private Double sellFloor = 2.5;
+	private Double buyCeiling = 2.5;
+	
 	
 	public User() {
 	}
@@ -120,8 +126,68 @@ public class User implements Serializable {
 		this.profitBtc = profitBtc;
 	}
 	
+	public Double getProfitTarget() {
+		return profitTarget;
+	}
+
+	public void setProfitTarget(Double profitTarget) {
+		this.profitTarget = profitTarget;
+	}
 	
+	public Double getRateBuffer() {
+		return rateBuffer;
+	}
+
+	public void setRateBuffer(Double rateBuffer) {
+		this.rateBuffer = rateBuffer;
+	}
+
+	public Double getTradeChunk() {
+		return tradeChunk;
+	}
+
+	public void setTradeChunk(Double tradeChunk) {
+		this.tradeChunk = tradeChunk;
+	}
+
 	
+	public Double getSellFloor() {
+		return sellFloor;
+	}
+
+	public void setSellFloor(Double sellFloor) {
+		this.sellFloor = sellFloor;
+	}
+
+	public Double getBuyCeiling() {
+		return buyCeiling;
+	}
+
+	public void setBuyCeiling(Double buyCeiling) {
+		this.buyCeiling = buyCeiling;
+	}
+
+	public Double getFunds(String fund) {
+		
+		if(fund.equals("usd")) {
+			return getUsd();
+		} else if(fund.equals("ltc")) {
+			return getLtc();
+		} else {
+			return null;
+		}
+		
+	}
+	
+	public void setFunds(String fund, Double amount) {
+		
+		if(fund.equals("usd")) {
+			setUsd(amount);
+		} else if(fund.equals("ltc")) {
+			setLtc(amount);
+		}
+		
+	}
 	
 
 }

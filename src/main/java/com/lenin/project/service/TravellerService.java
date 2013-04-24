@@ -33,6 +33,8 @@ import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Service;
 
 import com.lenin.project.domain.RateQuote;
 import com.lenin.project.domain.Transaction;
@@ -41,14 +43,9 @@ import com.lenin.project.repositories.CommentRepository;
 import com.lenin.project.repositories.TransactionRepository;
 import com.lenin.project.repositories.UserRepository;
 
-
+@Service
 @Path("/")
 public class TravellerService {
-	
-	private static long _nonce = System.currentTimeMillis() / 10000L;
-	
-	private static String _key = "XSR43QT2-B7PBL6EY-U6JCVFCM-7IMTI26B-7XEL3DGO";
-	private static String _secret = "a93adec600bd65960d26d779343b70700fbb4a93e333e15350b2bb1a21fb46de";
 	
 	@Autowired
 	private MongoTemplate mongoTemplate;
@@ -67,6 +64,26 @@ public class TravellerService {
 		
 	}
 	
+	@Scheduled(fixedDelay = 15000)
+	public void pollRates() {
+		
+		BtceApi.updateRates();
+		
+		List<User> users = userRepository.findAll();
+		
+		for(User user : users) {
+			
+			List<Transaction> buys = transactionRepository.findByUserAndType(user, "buy");
+			List<Transaction> sells = transactionRepository.findByUserAndType(user, "sell");
+			
+			AutoTrader autoTrader = new AutoTrader(user, buys, sells);
+			autoTrader.trade();
+			
+		}
+		
+	}
+	
+	
 	@GET
 	@Path("/rates")
     @Produces({ MediaType.APPLICATION_JSON })
@@ -78,64 +95,33 @@ public class TravellerService {
 		
 		if(user.getLive()) {
 		
-			try {
-	    	
-				//Create connection
-				HttpClient client = new DefaultHttpClient();
-				HttpGet get = new HttpGet("https://btc-e.com/api/2/ltc_usd/ticker");
-	    	
-				HttpResponse httpResponse = client.execute(get);
-				HttpEntity entity = httpResponse.getEntity();
-				
-				if(entity != null) {
-	    	    
-					InputStream instream = entity.getContent();
-	    	       
-					BufferedReader in = 
-						new BufferedReader(new InputStreamReader(instream));
-	    	        
-					String resultStr = "";
-					String inputLine = null;
-						
-					while((inputLine = in.readLine()) != null) {
-						//System.out.println(inputLine);
-						resultStr += inputLine;
-					}
-	    	        
-					in.close();
-	    	    	instream.close();
-	    	    	
-	    	    	JSONObject jsonResult = new JSONObject(resultStr);
-	    	    	JSONObject ticker = jsonResult.getJSONObject("ticker");
-	    	    	
-	    	    	RateQuote rateQuote = new RateQuote();
-	    	    	rateQuote.setDate(new Date());
-	    	    	rateQuote.setPair("ltc_usd");
-	    	    	rateQuote.setLast(ticker.getDouble("last"));
-	    	    	rateQuote.setBuy(ticker.getDouble("buy"));
-	    	    	rateQuote.setSell(ticker.getDouble("sell"));
-	    	    	
-	    	    	response.setSuccess(1);
-	    	    	response.setData(rateQuote);
-	    	    	
-				}
-	    	
-	    	} catch (Exception e) {
+			RateQuote rateQuote = new RateQuote();
+	    	rateQuote.setDate(new Date());
+	    	rateQuote.setPair("ltc_usd");
+	    	rateQuote.setLast(BtceApi.currentRateLtcUsd);
+	    	rateQuote.setBuy(BtceApi.currentBuyRateLtcUsd);
+	    	rateQuote.setSell(BtceApi.currentSellRateLtcUsd);
 
-	    		e.printStackTrace();
-	  	      	return null;
-
-	  	    }
-
-	    	
+	    	response.setSuccess(1);
+			response.setData(rateQuote);
+			
 		} else {
 			
+			RateQuote rateQuote = new RateQuote();
+	    	rateQuote.setDate(new Date());
+	    	rateQuote.setPair("ltc_usd");
+	    	rateQuote.setLast(BtceApi.currentRateLtcUsd);
+	    	rateQuote.setBuy(BtceApi.currentBuyRateLtcUsd);
+	    	rateQuote.setSell(BtceApi.currentSellRateLtcUsd);
+	    	
+	    	/*
 			RateQuote rateQuote = new RateQuote();
 	    	rateQuote.setDate(new Date());
 	    	rateQuote.setPair("ltc_usd");
 	    	rateQuote.setLast(2.1);
 	    	rateQuote.setBuy(2.1);
 	    	rateQuote.setSell(2.1);
+	    	*/
 	    	
 			response.setSuccess(1);
 			response.setData(rateQuote);
@@ -160,19 +146,17 @@ public class TravellerService {
 		
 		if(user.getLive()) {
 			
-			List<NameValuePair> methodParams = new ArrayList<NameValuePair>();
-			methodParams.add(new BasicNameValuePair("method", "getInfo"));
-			JSONObject userInfoResult = authenticatedHTTPRequest(methodParams);
+			JSONObject accountInfoResult = BtceApi.getAccountInfo();
 			
 			try {
 				
-				Integer success = userInfoResult.getInt("success");
+				Integer success = accountInfoResult.getInt("success");
 				response.setSuccess(success);
 				
 				if(success == 1) {
 					
 					JSONObject funds = 
-							userInfoResult
+							accountInfoResult
 								.getJSONObject("return")
 								.getJSONObject("funds");
 					
@@ -235,9 +219,15 @@ public class TravellerService {
 		User user = userRepository.findByUsername(userId);
 		
 		transactionRepository.delete(transaction);
+		transaction = transactionRepository.findOne(transaction.getId());
 		
 		RequestResponse response = new RequestResponse();
-		response.setSuccess(1);
+		
+		if(transaction == null) {
+			response.setSuccess(1);
+		} else {
+			response.setSuccess(0);
+		}
 		
 		List<Transaction> transactions = getTransactions(userId, null);
 		response.setData(transactions);
@@ -260,14 +250,7 @@ public class TravellerService {
 		
 		if(user.getLive()) {
 			
-			List<NameValuePair> methodParams = new ArrayList<NameValuePair>();
-			methodParams.add(new BasicNameValuePair("method", "Trade"));
-			methodParams.add(new BasicNameValuePair("type", transaction.getType()));
-			methodParams.add(new BasicNameValuePair("pair", transaction.getPair()));
-			methodParams.add(new BasicNameValuePair("amount", ""+transaction.getAmount()));
-			methodParams.add(new BasicNameValuePair("rate", ""+transaction.getRate()));
-			
-			JSONObject tradeResult = authenticatedHTTPRequest(methodParams);
+			JSONObject tradeResult = BtceApi.trade(transaction);
 			
 			try {
 				
@@ -356,92 +339,7 @@ public class TravellerService {
 	}
 	
 	
-	private JSONObject authenticatedHTTPRequest(List<NameValuePair> methodParams) {
-        
-		// Request parameters and other properties.
-        List<NameValuePair> params = new ArrayList<NameValuePair>(2);
-        params.add(new BasicNameValuePair("nonce", "" + ++_nonce));
-        
-        String paramsString = "nonce="+_nonce;
-    	
-        if(methodParams != null) {
-        	for(NameValuePair nvp : methodParams) {
-        		params.add(nvp);
-        		paramsString += "&"+nvp.getName()+"="+nvp.getValue();
-        	}
-        }
-        
-        System.out.println(paramsString);
-        
-        HttpClient httpclient = new DefaultHttpClient();
-        HttpPost httppost = new HttpPost("https://btc-e.com/tapi");
-        
-        try {
-        	
-        	UrlEncodedFormEntity uefe = new UrlEncodedFormEntity(params, "UTF-8");
-            httppost.setEntity(uefe);
-            
-    		SecretKeySpec key = new SecretKeySpec(_secret.getBytes("UTF-8"), "HmacSHA512");
-    		Mac mac = Mac.getInstance("HmacSHA512" );
-        	mac.init(key);
-        	
-        	String sign = Hex.encodeHexString(mac.doFinal(paramsString.getBytes("UTF-8")));
-        	httppost.addHeader("Key", _key);
-        	httppost.addHeader("Sign", sign);
-        	
-        } catch(Exception e) {
-        	e.printStackTrace();
-        }
-        
-        String result = "";
-        
-        try {
-        
-        	//Execute and get the response.
-        	HttpResponse response = httpclient.execute(httppost);
-        	HttpEntity entity = response.getEntity();
-
-        	if(entity != null) {
-        	
-        		InputStream instream = entity.getContent();
-        		
-        		BufferedReader rd = new BufferedReader(new InputStreamReader(instream));
-        		System.out.println("Ready to read result...");
-        	
-        		String line = null;
-        		while((line = rd.readLine()) != null) {
-            		result += line;
-            	}
-            	
-        	}
-            
-        } catch(Exception e) {
-    		
-        	e.printStackTrace();
-        	return null;
-        			
-        }
-        
-        try {
-        
-        	JSONObject jsonResult = new JSONObject(result);
-        	
-        	int success = jsonResult.getInt("success");
-        	
-        	System.out.println(result);
-        	
-        	return jsonResult;
-        	
-        } catch(JSONException e) {
-        	
-        	e.printStackTrace();
-        	return null;
-        	
-        }
-        
-        
-        
-    }
+	
 	
 	
 	@GET
@@ -449,20 +347,24 @@ public class TravellerService {
     @Produces({ MediaType.TEXT_PLAIN })
     public String test(@QueryParam("fromId") String fromId, @QueryParam("toId") String toId) {
 		
-		//System.out.println(fromId);
-		//System.out.println(toId);
 		
-		String result = "test";
-		
-		
-		User testUser = new User();
-		testUser.setUsername("testUser456");
-		testUser.setLive(true);
-		
-		userRepository.save(testUser);
-		
-        return result;
+        return "";
     
+	}
+	
+	@GET
+	@Path("/funds")
+    @Produces({ MediaType.TEXT_PLAIN })
+	public String changeFunds(@HeaderParam("User-Id") String userId,
+			@QueryParam("fund") String fund, @QueryParam("change") Double change) {
+		
+		User user = userRepository.findByUsername(userId);
+		user.setFunds(fund, user.getFunds(fund) + change);
+		
+		userRepository.save(user);
+		
+		return "OK";
+		
 	}
 	
 	@GET

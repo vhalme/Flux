@@ -2,6 +2,20 @@ var API = {
 		
 		userId: "testUser123",
 		
+		changeFunds: function(fund, change, callback) {
+			
+			$.ajax({
+		    	async: false,
+		    	type: "GET",
+		    	url: "service/funds?fund="+fund+"&change="+change,
+	  			headers: {
+					"User-Id": this.userId
+		    	},
+		    	success: callback
+		    });
+			
+		},
+		
 		getInfo: function(callback) {
 		
 			var params = {
@@ -75,7 +89,7 @@ var API = {
 			$.ajax({
 				
 				async: false,
-		    	type: "POST",
+		    	type: "DELETE",
 		    	url: "service/transaction",
 		    	dataType: "json",
 	  			contentType: "application/json",
