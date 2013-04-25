@@ -37,6 +37,12 @@ public class UserTrader {
 			
 			JSONObject tradeResult = BtceApi.trade(transaction, feeFactor);
 			
+			if(tradeResult == null) {
+				response.setSuccess(0);
+				response.setMessage("Could not get trade result.");
+				return response;
+			}
+			
 			try {
 				
 				Integer success = tradeResult.getInt("success");
@@ -44,7 +50,12 @@ public class UserTrader {
 				
 				if(success == 1) {
 					
+					System.out.println("Trade request posted successfully.");
 					executeTransaction(transaction);
+					
+				} else {
+					
+					System.out.println("Trade request failed: "+success);
 					
 				}
 				
@@ -132,9 +143,9 @@ public class UserTrader {
 	protected Double actualTradeRate(String type) {
 		
 		if(type == "buy") {
-			return BtceApi.currentBuyRateLtcUsd - user.getRateBuffer();
+			return user.getCurrentBuyRate()- user.getRateBuffer();
 		} else if(type == "sell") {
-			return BtceApi.currentSellRateLtcUsd + user.getRateBuffer();
+			return user.getCurrentSellRate() + user.getRateBuffer();
 		} else {
 			return null;
 		}
@@ -144,7 +155,7 @@ public class UserTrader {
 
 	protected RequestResponse reverseTrade(Transaction transaction, Boolean save) {
 		
-		System.out.println("reverse trading...");
+		System.out.println("Reverting transaction.");
 		
 		Transaction reverseTransaction = createReverseTransaction(transaction);
 		reverseTransaction.setSave(save);
@@ -166,7 +177,7 @@ public class UserTrader {
 			reverseType = "sell";
 		}
 		
-		System.out.println("REVERSED TYPE TO "+reverseType);
+		//System.out.println("REVERSED TYPE TO "+reverseType);
 		
 		Transaction reverseTransaction = 
 			BtceApi.createTransaction("ltc_usd", transaction.getAmount(), actualTradeRate(reverseType), reverseType);

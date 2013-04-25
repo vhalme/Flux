@@ -83,9 +83,9 @@ public class BtceApi {
     	    	
 			}
     	
-    	} catch (Exception e) {
-
-    		e.printStackTrace();
+    	} catch(Exception e) {
+    		
+    		//e.printStackTrace();
 
   	    }
 		
@@ -150,7 +150,7 @@ public class BtceApi {
         	}
         }
         
-        System.out.println(paramsString);
+        //System.out.println(paramsString);
         
         HttpClient httpclient = new DefaultHttpClient();
         HttpPost httppost = new HttpPost("https://btc-e.com/tapi");
@@ -185,7 +185,7 @@ public class BtceApi {
         		InputStream instream = entity.getContent();
         		
         		BufferedReader rd = new BufferedReader(new InputStreamReader(instream));
-        		System.out.println("Ready to read result...");
+        		//System.out.println("Ready to read result...");
         	
         		String line = null;
         		while((line = rd.readLine()) != null) {
@@ -196,24 +196,24 @@ public class BtceApi {
             
         } catch(Exception e) {
     		
-        	e.printStackTrace();
+        	System.out.println("Failed to make trade request: "+e.getMessage());
+        	//e.printStackTrace();
         	return null;
         			
         }
         
         try {
-        
+        	
+        	//System.out.println(result);
+        	
         	JSONObject jsonResult = new JSONObject(result);
-        	
-        	int success = jsonResult.getInt("success");
-        	
-        	System.out.println(result);
         	
         	return jsonResult;
         	
         } catch(JSONException e) {
         	
-        	e.printStackTrace();
+        	System.out.println("API server did not return a proper response. Error message: "+e.getMessage());
+        	//e.printStackTrace();
         	return null;
         	
         }

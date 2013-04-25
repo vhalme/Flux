@@ -3,9 +3,6 @@ package com.lenin.project.service;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.codehaus.jettison.json.JSONException;
-import org.codehaus.jettison.json.JSONObject;
-
 import com.lenin.project.domain.Transaction;
 import com.lenin.project.domain.User;
 import com.lenin.project.repositories.TransactionRepository;
@@ -21,6 +18,8 @@ public class AutoTrader extends UserTrader {
 	
 	
 	public void autoTrade() {
+		
+		//System.out.println("Autotrading for "+user.getUsername());
 		
 		List<Transaction> reversibleBuys = getReversibleBuys();
 		List<Transaction> reversibleSells = getReversibleSells();
@@ -39,36 +38,38 @@ public class AutoTrader extends UserTrader {
 			
 			Double highestSell = highestSell();
 			if(highestSell == null) {
-				highestSell = BtceApi.oldRateLtcUsd;
+				highestSell = user.getOldRate();
 			}
 			
 			Double lowestBuy = lowestBuy();
 			if(lowestBuy == null) {
-				lowestBuy = BtceApi.oldRateLtcUsd;
+				lowestBuy = user.getOldRate();
 			}
 			
-			//System.out.println(BtceApi.currentSellRateLtcUsd - highestSell);
-			//System.out.println(BtceApi.currentBuyRateLtcUsd - lowestBuy);
+			//System.out.println(BtceApi.currentSellRateLtcUsd+" - "+highestSell);
+			//System.out.println(BtceApi.currentBuyRateLtcUsd+" - "+lowestBuy);
 			
-			if(BtceApi.currentSellRateLtcUsd - highestSell >= user.getProfitTarget() && 
-				user.getLtc() >= tradeChunk && BtceApi.currentSellRateLtcUsd > user.getSellFloor()) {
+			if(user.getCurrentSellRate() - highestSell >= user.getProfitTarget() && 
+				user.getLtc() >= tradeChunk && user.getCurrentSellRate() > user.getSellFloor()) {
 				
 				Transaction sellTransaction = BtceApi.createTransaction("ltc_usd", tradeChunk, actualTradeRate("sell"), "sell");
 				sellTransaction.setSave(true);
 				
 				trade(sellTransaction);
-				BtceApi.oldRateLtcUsd = BtceApi.currentRateLtcUsd;
+				user.setOldRate(user.getCurrentRate());
+				userRepository.save(user);
 				
 			
-			} else if(BtceApi.currentBuyRateLtcUsd - lowestBuy <= 
-				-(user.getProfitTarget()*1) && BtceApi.currentBuyRateLtcUsd < user.getBuyCeiling() &&
+			} else if(user.getCurrentBuyRate() - lowestBuy <= 
+				-(user.getProfitTarget()*1) && user.getCurrentBuyRate() < user.getBuyCeiling() &&
 				user.getUsd() >= (tradeChunk * actualTradeRate("buy"))) {
 			
 				Transaction buyTransaction = BtceApi.createTransaction("ltc_usd", tradeChunk, actualTradeRate("buy"), "buy");
 				buyTransaction.setSave(true);
 				
 				trade(buyTransaction);
-				BtceApi.oldRateLtcUsd = BtceApi.currentRateLtcUsd;
+				user.setOldRate(user.getCurrentRate());
+				userRepository.save(user);
 				
 			}
 			
@@ -139,7 +140,7 @@ public class AutoTrader extends UserTrader {
 			Double amountVal = transaction.getAmount();
 			Double usdAmount = amountVal * rateVal;
 			
-			if(BtceApi.currentBuyRateLtcUsd <= (rateVal - user.getProfitTarget())) {
+			if(user.getCurrentBuyRate() <= (rateVal - user.getProfitTarget())) {
 					
 				Double actualBuyRate = actualTradeRate("buy");
 				
@@ -151,7 +152,7 @@ public class AutoTrader extends UserTrader {
 					reversibleTransactions.add(transaction);
 					System.out.println("buy "+amountVal+" for "+(amountVal * actualBuyRate));
 				} else {
-					System.out.println("OUT OF USD!");
+					//System.out.println("OUT OF USD!");
 					break;
 				}
 				
@@ -184,7 +185,7 @@ public class AutoTrader extends UserTrader {
 			Double amountVal = transaction.getAmount();
 			Double usdAmount = amountVal * rateVal;
 			
-			if(BtceApi.currentSellRateLtcUsd >= (rateVal + user.getProfitTarget())) {
+			if(user.getCurrentSellRate() >= (rateVal + user.getProfitTarget())) {
 				
 				Double actualSellRate = actualTradeRate("sell");
 				Double newSellAmount = calculatedSellAmount + amountVal;
@@ -194,7 +195,7 @@ public class AutoTrader extends UserTrader {
 					reversibleTransactions.add(transaction);
 					System.out.println("sell "+amountVal+" for "+(amountVal * actualSellRate));
 				} else {
-					System.out.println("OUT OF LTC!");
+					//System.out.println("OUT OF LTC!");
 					break;
 				}
 					

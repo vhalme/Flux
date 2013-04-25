@@ -124,14 +124,16 @@ function AppCtrl($scope, $routeParams, $http) {
 				
 					API.getRates(function(response) {
 					
-						$scope.user.currentRate = response.data.last;
-						$scope.user.currentBuyRate = response.data.buy;
-						$scope.user.currentSellRate = response.data.sell;
+						//$scope.user.currentRate = response.data.last;
+						//$scope.user.currentBuyRate = response.data.buy;
+						//$scope.user.currentSellRate = response.data.sell;
 						
+						/*
 						if($scope.user.oldRate == 0) {
 							$scope.user.oldRate = $scope.user.currentRate;
 						}
-					
+						*/
+						
 						API.getTransactions(function(transactions) {
 							
 							$scope.setTransactions(transactions);
@@ -396,9 +398,11 @@ function AppCtrl($scope, $routeParams, $http) {
 			$scope.user.currentRate = $scope.user.currentSellRate;
 		}
 		
+		/*
 		API.setRate($scope.user.currentRate, function(user) {
 			//$scope.user = user;
 		});
+		*/
 		
 	};
 		
@@ -419,15 +423,17 @@ function AppCtrl($scope, $routeParams, $http) {
 			$scope.user.currentRate = $scope.user.currentSellRate;
 		}
 		
+		/*
 		API.setRate($scope.user.currentRate, function(user) {
 			//$scope.user = user;
 		});
-				
+		*/
+		
 	};
 	
 	$scope.removeMoney = function() {
 		
-		API.changeFunds("usd", -10, function() {});
+		API.changeFunds("usd", -10, function(user) {});
 	
 	};
 	

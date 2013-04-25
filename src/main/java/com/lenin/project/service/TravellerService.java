@@ -56,18 +56,7 @@ public class TravellerService {
 		
 		List<User> users = userRepository.findAll();
 		
-		if(BtceApi.currentRateLtcUsd == 0.0) {
-			
-			System.out.println("Rate not set. Cancelling auto trading.");
-			
-			return;
-		
-		}
-		
 		for(User user : users) {
-			
-			//List<Transaction> buys = transactionRepository.findByUserAndType(user, "buy");
-			//List<Transaction> sells = transactionRepository.findByUserAndType(user, "sell");
 			
 			if(user.getLive() == true) {
 				
@@ -76,13 +65,22 @@ public class TravellerService {
 				user.setCurrentSellRate(BtceApi.currentSellRateLtcUsd);
 				user.setCurrentRate(BtceApi.currentRateLtcUsd);
 				
-				if(user.getOldRate() == 0.0) {
-					user.setOldRate(user.getCurrentRate());
-				}
-				
 			}
 			
-			if(user.getTradeAuto() == true) {
+			Boolean resetOldRate =
+					( (user.getCurrentRate() - user.getOldRate() > user.getProfitTarget()) && 
+					user.getCurrentRate() < user.getBuyCeiling() ) ||
+					( (user.getCurrentRate() - user.getOldRate() < -user.getProfitTarget()) &&
+					user.getCurrentRate() > user.getSellFloor() );
+			
+			if(user.getOldRate() == 0.0 || resetOldRate) {
+				user.setOldRate(user.getCurrentRate());
+			}
+			
+			userRepository.save(user);
+			
+			
+			if(user.getTradeAuto() == true && user.getCurrentRate() != 0.0) {
 				AutoTrader autoTrader = new AutoTrader(user, userRepository, transactionRepository);
 				autoTrader.autoTrade();
 			}
@@ -139,13 +137,24 @@ public class TravellerService {
     @Produces({ MediaType.APPLICATION_JSON })
     public RequestResponse getInfo(@HeaderParam("User-Id") String userId) {
 		
+		RequestResponse response = new RequestResponse();
 		User user = userRepository.findByUsername(userId);
 		
-		RequestResponse response = new RequestResponse();
+		if(user == null) {
+			response.setSuccess(0);
+			response.setMessage("Could not read user data.");
+			return response;
+		}
 		
 		if(user.getLive()) {
 			
 			JSONObject accountInfoResult = BtceApi.getAccountInfo();
+			
+			if(accountInfoResult == null) {
+				response.setSuccess(0);
+				response.setMessage("Could not get account info.");
+				return response;
+			}
 			
 			try {
 				
@@ -215,8 +224,6 @@ public class TravellerService {
     @Produces({ MediaType.APPLICATION_JSON })
 	public RequestResponse deleteTransaction(@HeaderParam("User-Id") String userId, Transaction transaction) {
 		
-		User user = userRepository.findByUsername(userId);
-		
 		transactionRepository.delete(transaction);
 		transaction = transactionRepository.findOne(transaction.getId());
 		
@@ -244,13 +251,21 @@ public class TravellerService {
 		
 		RequestResponse response = new RequestResponse();
 		
-		if(BtceApi.currentRateLtcUsd == 0.0) {
+		User user = userRepository.findByUsername(userId);
+		
+		if(user == null) {
+			response.setSuccess(0);
+			response.setMessage("Could not read user data.");
+			return response;
+		}
+		
+		if(user.getCurrentRate() == 0.0) {
 			response.setSuccess(0);
 			response.setMessage("Rate not set");
 			return response;
 		}
 		
-		User user = userRepository.findByUsername(userId);
+		
 		UserTrader userTrader = new UserTrader(user, userRepository, transactionRepository);
 		
 		response = userTrader.trade(transaction);
@@ -378,6 +393,9 @@ public class TravellerService {
 		dbUser.setTradeChunk(user.getTradeChunk());
 		dbUser.setTradeAuto(user.getTradeAuto());
 		dbUser.setAutoTradingModel(user.getAutoTradingModel());
+		dbUser.setCurrentRate(user.getCurrentRate());
+		dbUser.setCurrentBuyRate(user.getCurrentBuyRate());
+		dbUser.setCurrentSellRate(user.getCurrentSellRate());
 		
 		userRepository.save(dbUser);
 		
