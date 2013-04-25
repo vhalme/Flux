@@ -1,14 +1,8 @@
 package com.lenin.project.service;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -20,16 +14,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
-import org.apache.commons.codec.binary.Hex;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,6 +44,7 @@ public class TravellerService {
 	@Autowired
 	private TransactionRepository transactionRepository;
 	
+	
 	public TravellerService() {
 		
 	}
@@ -67,17 +52,40 @@ public class TravellerService {
 	@Scheduled(fixedDelay = 15000)
 	public void pollRates() {
 		
-		//BtceApi.updateRates();
+		BtceApi.updateRates();
 		
 		List<User> users = userRepository.findAll();
+		
+		if(BtceApi.currentRateLtcUsd == 0.0) {
+			
+			System.out.println("Rate not set. Cancelling auto trading.");
+			
+			return;
+		
+		}
 		
 		for(User user : users) {
 			
 			//List<Transaction> buys = transactionRepository.findByUserAndType(user, "buy");
 			//List<Transaction> sells = transactionRepository.findByUserAndType(user, "sell");
 			
-			AutoTrader autoTrader = new AutoTrader(user, transactionRepository, userRepository);
-			autoTrader.trade();
+			if(user.getLive() == true) {
+				
+				user.setCurrentRate(BtceApi.currentRateLtcUsd);
+				user.setCurrentBuyRate(BtceApi.currentBuyRateLtcUsd);
+				user.setCurrentSellRate(BtceApi.currentSellRateLtcUsd);
+				user.setCurrentRate(BtceApi.currentRateLtcUsd);
+				
+				if(user.getOldRate() == 0.0) {
+					user.setOldRate(user.getCurrentRate());
+				}
+				
+			}
+			
+			if(user.getTradeAuto() == true) {
+				AutoTrader autoTrader = new AutoTrader(user, userRepository, transactionRepository);
+				autoTrader.autoTrade();
+			}
 			
 		}
 		
@@ -234,42 +242,18 @@ public class TravellerService {
     @Produces({ MediaType.APPLICATION_JSON })
     public RequestResponse postTransaction(@HeaderParam("User-Id") String userId, Transaction transaction) {
 		
-		User user = userRepository.findByUsername(userId);
-		transaction.setUser(user);
-		
 		RequestResponse response = new RequestResponse();
 		
-		if(user.getLive()) {
-			
-			JSONObject tradeResult = BtceApi.trade(transaction);
-			
-			try {
-				
-				Integer success = tradeResult.getInt("success");
-				response.setSuccess(success);
-				
-				if(success == 1) {
-					
-					executeTransaction(user, transaction);
-					
-				}
-				
-			} catch(JSONException e) {
-				
-				e.printStackTrace();
-				
-				response.setSuccess(-1);
-				response.setMessage(e.getMessage());
-				
-			}
-			
-		} else {
-			
-			executeTransaction(user, transaction);
-			
-			response.setSuccess(1);
-			
+		if(BtceApi.currentRateLtcUsd == 0.0) {
+			response.setSuccess(0);
+			response.setMessage("Rate not set");
+			return response;
 		}
+		
+		User user = userRepository.findByUsername(userId);
+		UserTrader userTrader = new UserTrader(user, userRepository, transactionRepository);
+		
+		response = userTrader.trade(transaction);
 		
 		List<Transaction> transactions = getTransactions(userId, null);
 		response.setData(transactions);
@@ -277,59 +261,6 @@ public class TravellerService {
 		return response;
 		
 	}
-	
-	
-	private void executeTransaction(User user, Transaction transaction) {
-		
-		Double usdVal = transaction.getAmount() * transaction.getRate();
-		
-		if(transaction.getType().equals("buy")) {
-			
-			user.setUsd(user.getUsd() - usdVal);
-			user.setLtc(user.getLtc() + transaction.getAmount());
-			
-		} else if(transaction.getType().equals("sell")) {
-			
-			user.setUsd(user.getUsd() + usdVal);
-			user.setLtc(user.getLtc() - transaction.getAmount());
-			
-		}
-		
-		Transaction reverseTransaction = transaction.getReverseTransaction();
-		
-		if(reverseTransaction != null) {
-			
-			Double transactionRevenue = 0.0;
-			
-			if(transaction.getType().equals("sell")) {
-				
-				transactionRevenue = 
-					(transaction.getAmount()*transaction.getRate()) - 
-					(reverseTransaction.getAmount()*reverseTransaction.getRate());
-			
-			} else if(transaction.getType().equals("buy")) {
-				
-				transactionRevenue = 
-						(reverseTransaction.getAmount()*reverseTransaction.getRate()) -
-						(transaction.getAmount()*transaction.getRate());
-			
-			}
-				
-			user.setProfitUsd(user.getProfitUsd() + transactionRevenue);
-			
-			transactionRepository.delete(reverseTransaction);
-			
-		}
-		
-		userRepository.save(user);
-		
-		if(transaction.getSave()) {
-			transactionRepository.save(transaction);
-		}
-		
-	}
-	
-	
 	
 	
 	
@@ -361,18 +292,20 @@ public class TravellerService {
 	@POST
 	@Path("/rate")
 	@Consumes({ MediaType.TEXT_PLAIN })
-    @Produces({ MediaType.TEXT_PLAIN })
-	public String setRate(@QueryParam("rate") Double rate, String rateStr) {
+    @Produces({ MediaType.APPLICATION_JSON })
+	public User setRate(@HeaderParam("User-Id") String userId,
+			@QueryParam("rate") Double rate, String rateStr) {
 		
-		BtceApi.currentRateLtcUsd = rate;
-		BtceApi.currentBuyRateLtcUsd = rate;
-		BtceApi.currentSellRateLtcUsd = rate;
+		User user = userRepository.findByUsername(userId);
+		user.setCurrentRate(rate);
+		user.setCurrentBuyRate(rate);
+		user.setCurrentSellRate(rate);
 		
-		if(BtceApi.oldRateLtcUsd == 0.0) {
-			BtceApi.oldRateLtcUsd = BtceApi.currentRateLtcUsd;
+		if(user.getOldRate() == 0.0) {
+			user.setOldRate(rate);
 		}
 		
-		return "OK";
+		return user;
 		
 	}
 	
@@ -386,6 +319,8 @@ public class TravellerService {
 		//System.out.println(toId);
 		
 		String result = "test";
+		
+		deleteAll();
 		
 		User testUser1 = new User();
 		testUser1.setUsername("testUser123");
@@ -441,6 +376,8 @@ public class TravellerService {
 		dbUser.setBuyCeiling(user.getBuyCeiling());
 		dbUser.setSellFloor(user.getSellFloor());
 		dbUser.setTradeChunk(user.getTradeChunk());
+		dbUser.setTradeAuto(user.getTradeAuto());
+		dbUser.setAutoTradingModel(user.getAutoTradingModel());
 		
 		userRepository.save(dbUser);
 		
@@ -454,6 +391,7 @@ public class TravellerService {
     @Produces({ MediaType.TEXT_PLAIN })
     public String deleteAll() {
 		
+		transactionRepository.deleteAll();
 		userRepository.deleteAll();
 		commentRepository.deleteAll();
 		

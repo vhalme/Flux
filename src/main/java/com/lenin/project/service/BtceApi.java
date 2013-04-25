@@ -26,7 +26,7 @@ import org.codehaus.jettison.json.JSONObject;
 import com.lenin.project.domain.Transaction;
 
 public class BtceApi {
-
+	
 	private static long _nonce = System.currentTimeMillis() / 10000L;
 	
 	private static String _key = "XSR43QT2-B7PBL6EY-U6JCVFCM-7IMTI26B-7XEL3DGO";
@@ -37,6 +37,8 @@ public class BtceApi {
 	public static Double currentSellRateLtcUsd = 0.0;
 	
 	public static Double oldRateLtcUsd = 0.0;
+	
+	public static Double transactionFee = 0.002;
 	
 	
 	public static void updateRates() {
@@ -102,13 +104,13 @@ public class BtceApi {
 	}
 	
 	
-	public static JSONObject trade(Transaction transaction) {
+	public static JSONObject trade(Transaction transaction, Double feeFactor) {
 		
 		List<NameValuePair> methodParams = new ArrayList<NameValuePair>();
 		methodParams.add(new BasicNameValuePair("method", "Trade"));
 		methodParams.add(new BasicNameValuePair("type", transaction.getType()));
 		methodParams.add(new BasicNameValuePair("pair", transaction.getPair()));
-		methodParams.add(new BasicNameValuePair("amount", ""+transaction.getAmount()));
+		methodParams.add(new BasicNameValuePair("amount", ""+(transaction.getAmount()*feeFactor)));
 		methodParams.add(new BasicNameValuePair("rate", ""+transaction.getRate()));
 		
 		JSONObject tradeResult = authenticatedHTTPRequest(methodParams);
@@ -118,11 +120,12 @@ public class BtceApi {
 	}
 	
 	
-	public static Transaction createTransaction(Double amount, Double rate, String type) {
+	public static Transaction createTransaction(String pair, Double amount, Double rate, String type) {
 		
 		Transaction transaction = new Transaction();
 		
 		transaction.setTime((new Date()).getTime());
+		transaction.setPair(pair);
 		transaction.setAmount(amount);
 		transaction.setRate(rate);
 		transaction.setType(type);

@@ -33,7 +33,7 @@
 
 		<div class="container">
 			
-			<div class="row" style="margin-bottom: 2.0em;">
+			<div class="row" style="margin-bottom: 2.0em; background: black; color: white;">
 						
 				<div class="span4" style="text-align: center;">
 					<button ng-click="lowerPrice()">
@@ -44,6 +44,11 @@
 					</button>
 				</div>
 				<div class="span4" style="text-align: center;">
+					<select ng-model="selectedUser">
+        				<option ng-repeat="u in availableUsers" value="{{u}}" title="{{u}}" ng-selected="u == user.username">{{u}}</option>
+    				</select>
+    				Live user: {{user.live}}
+					<br/>
 					<b>RATE CHANGE:</b> {{rateChange}}
 				</div>
 				<div class="span4" style="text-align: center;">
@@ -53,6 +58,7 @@
 					<button ng-click="addMoney()">
 						money++
 					</button>
+					<br/>
 					<button style="margin-left: 1.0em;" ng-click="removeCoins()">
 						coins--
 					</button>
@@ -76,9 +82,9 @@
 					
 					<div class="row" ng-class="{ hidden: !showAutoTrading }">
 						<div class="span4" style="border-top: 6px solid #d0d0d0; padding-top: 0.3em; margin-bottom: 0.7em;">
-							<input type="checkbox" style="margin-top: -2px;" ng-model="tradeAuto" /> Trade automatically<br/>
-							<select ng-model="tradingModel" ng-disabled="tradeAuto" style="margin-top: 0.5em;">
-        						<option value="">Accumulate USD</option>
+							<input type="checkbox" style="margin-top: -2px;" ng-model="user.tradeAuto" /> Trade automatically<br/>
+    						<select ng-model="user.autoTradingModel" ng-disabled="!user.tradeAuto" style="margin-top: 0.5em;">
+        						<option ng-repeat="model in autoTradingOptions" value="{{model.value}}" title="{{model.name}}" ng-selected="model.value == user.autoTradingModel">{{model.name}}</option>
     						</select>
 						</div>
 						<div class="span4" style="border-top: 6px solid #d0d0d0; padding-top: 0.3em; margin-bottom: 0.7em;">
@@ -199,7 +205,7 @@
 						<div class="span3">
 							<b>USD REVENUE:</b> {{user.profitUsd|truncate:6:""}}
 							<br/>
-							<b>BUY RATE:</b> {{currentBuyPrice|truncate:6:""}}
+							<b>BUY RATE:</b> {{user.currentBuyRate|truncate:6:""}}
 						</div>
 						
 					</div>
@@ -219,7 +225,7 @@
 						<div class="span3">
 							<b>LTC REVENUE:</b> 0
 							<br/>
-							<b>SELL RATE:</b> {{currentSellPrice|truncate:6:""}}
+							<b>SELL RATE:</b> {{user.currentSellRate|truncate:6:""}}
 						</div>
 						
 					</div>

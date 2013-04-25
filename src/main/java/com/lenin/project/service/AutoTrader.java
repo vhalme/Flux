@@ -11,22 +11,16 @@ import com.lenin.project.domain.User;
 import com.lenin.project.repositories.TransactionRepository;
 import com.lenin.project.repositories.UserRepository;
 
-public class AutoTrader extends BtceTrader {
+public class AutoTrader extends UserTrader {
 	
-	private TransactionRepository transactionRepository;
-	private UserRepository userRepository;
-	
-	public AutoTrader(User user, TransactionRepository transactionRepository, UserRepository userRepository) {
+	public AutoTrader(User user, UserRepository userRepository, TransactionRepository transactionRepository) {
 		
-		super(user);
-		
-		this.transactionRepository = transactionRepository;
-		this.userRepository = userRepository;
+		super(user, userRepository, transactionRepository);
 		
 	}
 	
 	
-	public void trade() {
+	public void autoTrade() {
 		
 		List<Transaction> reversibleBuys = getReversibleBuys();
 		List<Transaction> reversibleSells = getReversibleSells();
@@ -59,7 +53,7 @@ public class AutoTrader extends BtceTrader {
 			if(BtceApi.currentSellRateLtcUsd - highestSell >= user.getProfitTarget() && 
 				user.getLtc() >= tradeChunk && BtceApi.currentSellRateLtcUsd > user.getSellFloor()) {
 				
-				Transaction sellTransaction = BtceApi.createTransaction(tradeChunk, actualTradeRate("sell"), "sell");
+				Transaction sellTransaction = BtceApi.createTransaction("ltc_usd", tradeChunk, actualTradeRate("sell"), "sell");
 				sellTransaction.setSave(true);
 				
 				trade(sellTransaction);
@@ -70,7 +64,7 @@ public class AutoTrader extends BtceTrader {
 				-(user.getProfitTarget()*1) && BtceApi.currentBuyRateLtcUsd < user.getBuyCeiling() &&
 				user.getUsd() >= (tradeChunk * actualTradeRate("buy"))) {
 			
-				Transaction buyTransaction = BtceApi.createTransaction(tradeChunk, actualTradeRate("buy"), "buy");
+				Transaction buyTransaction = BtceApi.createTransaction("ltc_usd", tradeChunk, actualTradeRate("buy"), "buy");
 				buyTransaction.setSave(true);
 				
 				trade(buyTransaction);
@@ -83,89 +77,7 @@ public class AutoTrader extends BtceTrader {
 	}
 	
 	
-	public void trade(Transaction transaction) {
-		
-		transaction.setUser(user);
-		
-		if(user.getLive()) {
-			
-			JSONObject tradeResult = BtceApi.trade(transaction);
-			
-			try {
-				
-				Integer success = tradeResult.getInt("success");
-				
-				if(success == 1) {
-					
-					executeTransaction(transaction);
-					
-				}
-				
-			} catch(JSONException e) {
-				
-				e.printStackTrace();
-				
-			}
-			
-		} else {
-			
-			executeTransaction(transaction);
-			
-		}
-		
-	}
 	
-	
-	private void executeTransaction(Transaction transaction) {
-		
-		System.out.println("exec tx");
-		
-		Double usdVal = transaction.getAmount() * transaction.getRate();
-		
-		if(transaction.getType().equals("buy")) {
-			
-			user.setUsd(user.getUsd() - usdVal);
-			user.setLtc(user.getLtc() + transaction.getAmount());
-			
-		} else if(transaction.getType().equals("sell")) {
-			
-			user.setUsd(user.getUsd() + usdVal);
-			user.setLtc(user.getLtc() - transaction.getAmount());
-			
-		}
-		
-		Transaction reverseTransaction = transaction.getReverseTransaction();
-		
-		if(reverseTransaction != null) {
-			
-			Double transactionRevenue = 0.0;
-			
-			if(transaction.getType().equals("sell")) {
-				
-				transactionRevenue = 
-					(transaction.getAmount()*transaction.getRate()) - 
-					(reverseTransaction.getAmount()*reverseTransaction.getRate());
-			
-			} else if(transaction.getType().equals("buy")) {
-				
-				transactionRevenue = 
-						(reverseTransaction.getAmount()*reverseTransaction.getRate()) -
-						(transaction.getAmount()*transaction.getRate());
-			
-			}
-				
-			user.setProfitUsd(user.getProfitUsd() + transactionRevenue);
-			
-			transactionRepository.delete(reverseTransaction);
-			
-		}
-		
-		if(transaction.getSave()) {
-			transactionRepository.save(transaction);
-		}
-		
-		
-	}
 
 
 	

@@ -15,24 +15,33 @@ public class User implements Serializable {
 	@Id
 	private String id;
 	
-	private Boolean live;
+	private Boolean live = false;
 	
 	private String email;
 	private String username;
 	private String password;
 	
-	private Double usd = 2.0;
-	private Double ltc = 3.0;
-	private Double btc = 4.0;
-	private Double profitUsd = 5.0;
-	private Double profitLtc = 6.0;
-	private Double profitBtc = 7.0;
+	private Double currentRate = 0.0;
+	private Double currentBuyRate = 0.0;
+	private Double currentSellRate = 0.0;
+	
+	private Double oldRate = 0.0;
+	
+	private Double usd = 0.0;
+	private Double ltc = 0.0;
+	private Double btc = 0.0;
+	private Double profitUsd = 0.0;
+	private Double profitLtc = 0.0;
+	private Double profitBtc = 0.0;
+	
+	private Boolean tradeAuto = false;
+	private String autoTradingModel = null;
 	
 	private Double profitTarget = 0.05;
 	private Double rateBuffer = 0.001;
 	private Double tradeChunk = 10.0;
-	private Double sellFloor = 2.5;
-	private Double buyCeiling = 2.5;
+	private Double sellFloor = 0.0;
+	private Double buyCeiling = 0.0;
 	
 	
 	public User() {
@@ -76,6 +85,39 @@ public class User implements Serializable {
 
 	public void setPassword(String password) {
 		this.password = password;
+	}
+
+	
+	public Double getCurrentRate() {
+		return currentRate;
+	}
+
+	public void setCurrentRate(Double currentRate) {
+		this.currentRate = currentRate;
+	}
+
+	public Double getCurrentBuyRate() {
+		return currentBuyRate;
+	}
+
+	public void setCurrentBuyRate(Double currentBuyRate) {
+		this.currentBuyRate = currentBuyRate;
+	}
+
+	public Double getCurrentSellRate() {
+		return currentSellRate;
+	}
+
+	public void setCurrentSellRate(Double currentSellRate) {
+		this.currentSellRate = currentSellRate;
+	}
+
+	public Double getOldRate() {
+		return oldRate;
+	}
+
+	public void setOldRate(Double oldRate) {
+		this.oldRate = oldRate;
 	}
 
 	public Double getUsd() {
@@ -126,6 +168,23 @@ public class User implements Serializable {
 		this.profitBtc = profitBtc;
 	}
 	
+	public Boolean getTradeAuto() {
+		return tradeAuto;
+	}
+
+	public void setTradeAuto(Boolean tradeAuto) {
+		this.tradeAuto = tradeAuto;
+	}
+
+	
+	public String getAutoTradingModel() {
+		return autoTradingModel;
+	}
+
+	public void setAutoTradingModel(String autoTradingModel) {
+		this.autoTradingModel = autoTradingModel;
+	}
+
 	public Double getProfitTarget() {
 		return profitTarget;
 	}
