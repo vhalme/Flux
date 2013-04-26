@@ -14,13 +14,15 @@ public class Trade implements Serializable {
 	@Id
 	private String id;
 	
+	private Boolean live = false;
+	
+	private String tradeId;
 	private String pair;
 	private String type;
 	private Double amount;
 	private Double rate;
 	private String orderId;
 	private Long time;
-	
 	
 	public Trade() {
 		
@@ -32,6 +34,27 @@ public class Trade implements Serializable {
 	}
 	public void setId(String id) {
 		this.id = id;
+	}
+
+	
+	public String getTradeId() {
+		return tradeId;
+	}
+
+
+	public void setTradeId(String tradeId) {
+		this.tradeId = tradeId;
+	}
+
+	
+	
+	public Boolean getLive() {
+		return live;
+	}
+
+
+	public void setLive(Boolean live) {
+		this.live = live;
 	}
 
 

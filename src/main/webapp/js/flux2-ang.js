@@ -542,7 +542,7 @@ function AppCtrl($scope, $routeParams, $http) {
     	
 	}, true);
 	
-	$scope.$watch('currentBuyRate', function(value) {
+	$scope.$watch('user.currentBuyRate', function(value) {
 		
 		if($scope.rateAuto) {
 	    	$scope.manualBuyRate = $scope.truncate($scope.user.currentBuyRate, 6);
@@ -550,7 +550,7 @@ function AppCtrl($scope, $routeParams, $http) {
 		
 	}, true);
 	
-	$scope.$watch('currentSellRate', function(value) {
+	$scope.$watch('user.currentSellRate', function(value) {
 		
 		if($scope.rateAuto) {
 	    	$scope.manualSellRate = $scope.truncate($scope.user.currentSellRate, 6);

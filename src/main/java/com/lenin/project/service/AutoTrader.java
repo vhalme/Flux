@@ -5,46 +5,52 @@ import java.util.List;
 
 import com.lenin.project.domain.Transaction;
 import com.lenin.project.domain.User;
+import com.lenin.project.repositories.TradeRepository;
 import com.lenin.project.repositories.TransactionRepository;
 import com.lenin.project.repositories.UserRepository;
 
 public class AutoTrader extends UserTrader {
 	
-	public AutoTrader(User user, UserRepository userRepository, TransactionRepository transactionRepository) {
+	public AutoTrader(User user, UserRepository userRepository, 
+			TransactionRepository transactionRepository, TradeRepository tradeRepository) {
 		
-		super(user, userRepository, transactionRepository);
+		super(user, userRepository, transactionRepository, tradeRepository);
 		
 	}
 	
 	
 	public void autoTrade() {
 		
-		//System.out.println("Autotrading for "+user.getUsername());
+		Double highestSell = highestSell();
+		if(highestSell == null) {
+			highestSell = user.getOldRate();
+		}
+		
+		Double lowestBuy = lowestBuy();
+		if(lowestBuy == null) {
+			lowestBuy = user.getOldRate();
+		}
 		
 		List<Transaction> reversibleBuys = getReversibleBuys();
 		List<Transaction> reversibleSells = getReversibleSells();
 		
 		for(Transaction reversibleBuy : reversibleBuys) {
-			reverseTrade(reversibleBuy, false);
+			Boolean isFilled = reversibleBuy.getFilledAmount() >= reversibleBuy.getBrokerAmount();
+			if(isFilled) {
+				reverseTrade(reversibleBuy, false);
+			}
 		}
 		
 		for(Transaction reversibleSell : reversibleSells) {
-			reverseTrade(reversibleSell, false);
+			Boolean isFilled = reversibleSell.getFilledAmount() >= reversibleSell.getBrokerAmount();
+			if(isFilled) {
+				reverseTrade(reversibleSell, false);
+			}
 		}
 		
 		if(reversibleBuys.size() == 0 && reversibleSells.size() == 0) {
 			
 			Double tradeChunk = user.getTradeChunk();
-			
-			Double highestSell = highestSell();
-			if(highestSell == null) {
-				highestSell = user.getOldRate();
-			}
-			
-			Double lowestBuy = lowestBuy();
-			if(lowestBuy == null) {
-				lowestBuy = user.getOldRate();
-			}
 			
 			//System.out.println(BtceApi.currentSellRateLtcUsd+" - "+highestSell);
 			//System.out.println(BtceApi.currentBuyRateLtcUsd+" - "+lowestBuy);

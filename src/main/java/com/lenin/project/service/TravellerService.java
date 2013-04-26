@@ -64,59 +64,10 @@ public class TravellerService {
 		
 		BtceApi.updateRates();
 		
-		List<Trade> savedTrades = tradeRepository.findAll();
-		for(Trade trade : savedTrades) {
-			if(trade.getTime() > lastTradeTime) {
-				lastTradeTime = trade.getTime();
-			}
-		}
+		updateTradeHistory();
 		
-		JSONObject tradeListResult = BtceApi.getTradeList(lastTradeTime);
-		
-		try {
-			
-			if(tradeListResult.getInt("success") == 1) {
-				
-				JSONObject tradeListResultData = tradeListResult.getJSONObject("return");
-				Iterator<String> tradeIds = tradeListResultData.keys();
-				
-				List<Trade> trades = new ArrayList<Trade>();
-				
-				while(tradeIds.hasNext()) {
-					
-					String tradeId = tradeIds.next();
-					JSONObject tradeData = tradeListResultData.getJSONObject(tradeId);
-					
-					String orderId = tradeData.getString("order_id");
-					String pair = tradeData.getString("pair");
-					Double amount = tradeData.getDouble("amount");
-					Double rate = tradeData.getDouble("rate");
-					String type = tradeData.getString("type");
-					Long time = tradeData.getLong("timestamp");
-					
-					Trade trade = new Trade();
-					trade.setOrderId(orderId);
-					trade.setPair(pair);
-					trade.setAmount(amount);
-					trade.setRate(rate);
-					trade.setType(type);
-					trade.setTime(time);
-					
-					if(time > lastTradeTime) {
-						lastTradeTime = time;
-					}
-					
-				}
-				
-				tradeRepository.save(trades);
-				
-			}
-			
-		} catch(Exception e) {
-			e.printStackTrace();
-		}
-
-		JSONObject orderListResult = BtceApi.getOrderList();
+		/*
+		JSONObject orderListResult = BtceApi.getActiveOrderList();
 		
 		try {
 			
@@ -149,11 +100,49 @@ public class TravellerService {
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
+		*/
 		
+		List<Transaction> transactions = transactionRepository.findAll();
+		List<Transaction> changedTransactions = new ArrayList<Transaction>();
 		
+		for(Transaction transaction : transactions) {
+			
+			if(transaction.getFilledAmount() < transaction.getBrokerAmount()) {
+				
+				List<Trade> trades = tradeRepository.findByOrderId(transaction.getOrderId());
+				
+				if(trades.size() > 0) {
+				
+					Double amount = 0.0;
+					for(Trade trade : trades) {
+						amount += trade.getAmount();
+					}
+				
+					transaction.setFilledAmount(amount);
+					changedTransactions.add(transaction);
+				
+				}
+				
+			}
+			
+			if(transaction.getLive() == false && transaction.getFilledAmount() < transaction.getBrokerAmount()) {
+				
+				Long unixTime = System.currentTimeMillis() / 1000L;
+				
+				Trade trade = new Trade();
+				trade.setLive(false);
+				trade.setOrderId(transaction.getOrderId());
+				trade.setAmount(transaction.getBrokerAmount()-transaction.getFilledAmount());
+				trade.setTime(unixTime);
+				
+				tradeRepository.save(trade);
+				
+			}
+			
+		}
 		
+		transactionRepository.save(transactions);
 		
-
 		List<User> users = userRepository.findAll();
 		
 		for(User user : users) {
@@ -179,14 +168,8 @@ public class TravellerService {
 			
 			userRepository.save(user);
 			
-			List<Transaction> transactions = transactionRepository.findByUser(user);
-			for(Transaction transaction : transactions) {
-				if(transaction.getRemains() > 0) {
-				}
-			}
-			
 			if(user.getTradeAuto() == true && user.getCurrentRate() != 0.0) {
-				AutoTrader autoTrader = new AutoTrader(user, userRepository, transactionRepository);
+				AutoTrader autoTrader = new AutoTrader(user, userRepository, transactionRepository, tradeRepository);
 				autoTrader.autoTrade();
 			}
 			
@@ -195,6 +178,76 @@ public class TravellerService {
 		
 	}
 	
+	
+	private void updateTradeHistory() {
+		
+		List<Trade> savedTrades = tradeRepository.findAll();
+		for(Trade trade : savedTrades) {
+			if(trade.getLive() == true && trade.getTime() > lastTradeTime) {
+				lastTradeTime = trade.getTime();
+			}
+		}
+		
+		JSONObject tradeListResult = BtceApi.getTradeList(lastTradeTime+1);
+		
+		try {
+			
+			if(tradeListResult.getInt("success") == 1) {
+				
+				JSONObject tradeListResultData = tradeListResult.getJSONObject("return");
+				Iterator<String> tradeIds = tradeListResultData.keys();
+				
+				List<Trade> trades = new ArrayList<Trade>();
+				
+				while(tradeIds.hasNext()) {
+					
+					String tradeId = tradeIds.next();
+					JSONObject tradeData = tradeListResultData.getJSONObject(tradeId);
+					
+					String orderId = tradeData.getString("order_id");
+					String pair = tradeData.getString("pair");
+					Double amount = tradeData.getDouble("amount");
+					Double rate = tradeData.getDouble("rate");
+					String type = tradeData.getString("type");
+					Long time = tradeData.getLong("timestamp");
+					
+					Trade trade = new Trade();
+					trade.setLive(true);
+					trade.setOrderId(orderId);
+					trade.setPair(pair);
+					trade.setAmount(amount);
+					trade.setRate(rate);
+					trade.setType(type);
+					trade.setTime(time);
+					
+					trades.add(trade);
+					
+					if(time > lastTradeTime) {
+						lastTradeTime = time;
+					}
+					
+				}
+				
+				if(trades.size() > 0) {
+					System.out.println("New trades: "+trades.size()+"; Last trade time: "+lastTradeTime);
+					tradeRepository.save(trades);
+				}
+				
+			} else {
+				
+				String error = tradeListResult.getString("error");
+				if(!error.equals("no trades")) {
+					System.out.println("Trades update unsuccessful: "+error);
+				}
+				
+			}
+			
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		
+		
+	}
 	
 	@GET
 	@Path("/rates")
@@ -304,6 +357,29 @@ public class TravellerService {
 		
 	}
 	
+	@GET
+    @Path("/trade")
+	@Produces({ MediaType.APPLICATION_JSON })
+    public List<Trade> getTrades(@HeaderParam("User-Id") String userId, @QueryParam("orderId") String orderId) {
+        
+		if(orderId != null) {
+			return tradeRepository.findByOrderId(orderId);
+		} else {
+			return tradeRepository.findAll();
+		}
+		
+	}
+	
+	@GET
+    @Path("/deltrades")
+	@Produces({ MediaType.TEXT_PLAIN })
+    public String delTrades(@HeaderParam("User-Id") String userId, @QueryParam("orderId") String orderId) {
+        
+		tradeRepository.deleteAll();
+		
+		return "OK";
+		
+	}
 	
 	@GET
     @Path("/transaction")
@@ -371,7 +447,7 @@ public class TravellerService {
 		}
 		
 		
-		UserTrader userTrader = new UserTrader(user, userRepository, transactionRepository);
+		UserTrader userTrader = new UserTrader(user, userRepository, transactionRepository, tradeRepository);
 		
 		response = userTrader.trade(transaction);
 		
@@ -514,6 +590,7 @@ public class TravellerService {
     @Produces({ MediaType.TEXT_PLAIN })
     public String deleteAll() {
 		
+		tradeRepository.deleteAll();
 		transactionRepository.deleteAll();
 		userRepository.deleteAll();
 		commentRepository.deleteAll();

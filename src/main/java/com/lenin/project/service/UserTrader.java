@@ -1,6 +1,7 @@
 package com.lenin.project.service;
 
 import java.util.Date;
+import java.util.Iterator;
 
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
@@ -20,16 +21,17 @@ public class UserTrader {
 	protected User user;
 	protected TransactionRepository transactionRepository;
 	protected UserRepository userRepository;
-	
-	@Autowired
 	private TradeRepository tradeRepository;
 	
 	
-	public UserTrader(User user, UserRepository userRepository, TransactionRepository transactionRepository) {
+	public UserTrader(User user, UserRepository userRepository, 
+			TransactionRepository transactionRepository,
+			TradeRepository tradeRepository) {
 		
 		this.user = user;
 		this.transactionRepository = transactionRepository;
 		this.userRepository = userRepository;
+		this.tradeRepository = tradeRepository;
 		
 	}
 	
@@ -39,8 +41,10 @@ public class UserTrader {
 		RequestResponse response = new RequestResponse();
 		
 		transaction.setUser(user);
+		transaction.setLive(user.getLive());
 		
 		Double feeFactor = 1-UserTrader.transactionFee;
+		transaction.setBrokerAmount(transaction.getAmount()*feeFactor);
 		
 		if(user.getLive()) {
 			
@@ -68,12 +72,22 @@ public class UserTrader {
 					transaction.setReceived(received);
 					transaction.setRemains(remains);
 					
+					if(transaction.getRemains() == 0) {
+						transaction.setFilledAmount(transaction.getBrokerAmount());
+					}
+					
 					System.out.println("Trade request posted successfully.");
 					executeTransaction(transaction);
 					
 				} else {
 					
 					System.out.println("Trade request failed: "+success);
+					Iterator<String> keys = tradeResult.keys();
+					
+					while(keys.hasNext()) {
+						String key = keys.next();
+						System.out.println(key+" : "+tradeResult.get(key));
+					}
 					
 				}
 				
@@ -87,13 +101,19 @@ public class UserTrader {
 			
 		} else {
 			
-			transaction.setOrderId(""+(new Date()).getTime());
-			transaction.setReceived(transaction.getAmount()*Math.random());
-			transaction.setRemains(transaction.getAmount()-transaction.getReceived());
+			Long unixTime = System.currentTimeMillis() / 1000L;
+			String orderId = ""+unixTime;
+			
+			transaction.setOrderId(orderId);
+			transaction.setReceived(transaction.getBrokerAmount()*Math.random());
+			transaction.setRemains(transaction.getBrokerAmount()-transaction.getReceived());
 			
 			Trade trade = new Trade();
+			trade.setLive(false);
+			trade.setOrderId(transaction.getOrderId());
 			trade.setAmount(transaction.getReceived());
-			trade.setTime(Long.parseLong(transaction.getOrderId()));
+			trade.setTime(unixTime);
+			
 			tradeRepository.save(trade);
 			
 			executeTransaction(transaction);
@@ -111,18 +131,20 @@ public class UserTrader {
 		
 		System.out.println("exec tx");
 		
-		Double totalFeeFactor = (1-UserTrader.transactionFee)*(1-BtceApi.transactionFee);
+		Double brokerFeeFactor = 1-BtceApi.transactionFee;
+		
+		transaction.setFinalAmount(transaction.getBrokerAmount()*brokerFeeFactor);
 		
 		if(transaction.getType().equals("buy")) {
 			
 			Double usdVal = transaction.getAmount() * transaction.getRate();
 			
 			user.setUsd(user.getUsd() - usdVal);
-			user.setLtc(user.getLtc() + (transaction.getAmount()*totalFeeFactor));
+			user.setLtc(user.getLtc() + transaction.getFinalAmount());
 			
 		} else if(transaction.getType().equals("sell")) {
 			
-			Double usdVal = (transaction.getAmount()*totalFeeFactor) * transaction.getRate();
+			Double usdVal = transaction.getFinalAmount() * transaction.getRate();
 			
 			user.setUsd(user.getUsd() + usdVal);
 			user.setLtc(user.getLtc() - transaction.getAmount());
@@ -134,8 +156,8 @@ public class UserTrader {
 		if(reverseTransaction != null) {
 			
 			Double transactionRevenue = 0.0;
-			Double transactionAmount = transaction.getAmount()*totalFeeFactor;
-			Double reverseTransactionAmount = reverseTransaction.getAmount()*totalFeeFactor;
+			Double transactionAmount = transaction.getFinalAmount();
+			Double reverseTransactionAmount = reverseTransaction.getFinalAmount();
 			
 			if(transaction.getType().equals("sell")) {
 				

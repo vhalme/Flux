@@ -18,6 +18,7 @@ public class Transaction extends BtceApiCall implements Serializable {
 	@DBRef
 	private Transaction reverseTransaction;
 	
+	private Boolean live;
 	
 	private Boolean save;
 	
@@ -25,6 +26,8 @@ public class Transaction extends BtceApiCall implements Serializable {
 	
 	private Double rate;
 	private Double amount;
+	private Double brokerAmount;
+	private Double finalAmount;
 	private String pair;
 	private String type;
 	
@@ -57,6 +60,16 @@ public class Transaction extends BtceApiCall implements Serializable {
 
 	public void setReverseTransaction(Transaction reverseTransaction) {
 		this.reverseTransaction = reverseTransaction;
+	}
+
+	
+	public Boolean getLive() {
+		return live;
+	}
+
+
+	public void setLive(Boolean live) {
+		this.live = live;
 	}
 
 
@@ -98,6 +111,26 @@ public class Transaction extends BtceApiCall implements Serializable {
 
 	public void setAmount(Double amount) {
 		this.amount = amount;
+	}
+
+	
+	public Double getBrokerAmount() {
+		return brokerAmount;
+	}
+
+
+	public void setBrokerAmount(Double brokerAmount) {
+		this.brokerAmount = brokerAmount;
+	}
+
+
+	public Double getFinalAmount() {
+		return finalAmount;
+	}
+
+
+	public void setFinalAmount(Double finalAmount) {
+		this.finalAmount = finalAmount;
 	}
 
 

@@ -93,7 +93,7 @@ public class BtceApi {
 	}
 	
 	
-	public static JSONObject getOrderList() {
+	public static JSONObject getActiveOrderList() {
 		
 		List<NameValuePair> methodParams = new ArrayList<NameValuePair>();
 		methodParams.add(new BasicNameValuePair("method", "OrderList"));

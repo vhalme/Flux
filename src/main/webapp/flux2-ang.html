@@ -234,7 +234,7 @@
 								<div style="width: 100%; padding-top: 0.4em; text-align: center;">
 									<input type="checkbox" style="margin-top: -2px;" ng-model="rateAuto" /> Auto
 									<input type="checkbox" style="margin-top: -2px; margin-left: 1.0em;" ng-model="rateBuffered" ng-disabled="!rateAuto" /> Buf.
-									<input style="width: 4.0em; margin-bottom: 0px;" type="text" ng-model="rateBuffer" ng-disabled="!rateBuffered || !rateAuto" />
+									<input style="width: 4.0em; margin-bottom: 0px;" type="text" ng-model="user.rateBuffer" ng-disabled="!rateBuffered || !rateAuto" />
 								</div>
 							</div>
 						</div>
@@ -348,26 +348,40 @@
     					</div>
 					</div>
 					
-					<div class="row"  ng-class="{ profit: sellProfit(sell) > 0, loss: sellProfit(sell) < 0 }" ng-repeat="sell in transactions['sell'] | orderBy:sellSort:!sellSortReverse">
+					<div class="row" style="margin-bottom: 0.1em;" ng-repeat="sell in transactions['sell'] | orderBy:sellSort:!sellSortReverse">
 						
-						<div class="span1">
-    						{{sell.amount|truncate:6:""}}
+						<div class="span4" ng-class="{ profitBorder: sellProfit(sell) > 0, lossBorder: sellProfit(sell) < 0 }" style="position: relative; padding-right: 2.0em;">
+							
+							<div class="orderFill customstyle" ng-class="{ profitFill: sellProfit(sell) > 0, lossFill: sellProfit(sell) < 0 }" my-width="sell.filledAmount / sell.brokerAmount">
+							</div>
+						
+							<div class="row">
+								<div class="span1">
+    								{{sell.amount|truncate:6:""}}
+    							</div>
+    							<div class="span1">
+    								{{(sell.rate*sell.amount)|truncate:6:""}}
+    							</div>
+    							<div class="span1">
+    								{{sell.rate|truncate:6:""}}
+    							</div>
+    							<div class="span1">
+    								{{sellProfit(sell)|truncate:6:""}}{{sellProfitFormat}}
+    							</div>
+    						</div>
+    						
     					</div>
-    					<div class="span1">
-    						{{(sell.rate*sell.amount)|truncate:6:""}}
-    					</div>
-    					<div class="span1">
-    						{{sell.rate|truncate:6:""}}
-    					</div>
-    					<div class="span1">
-    						{{sellProfit(sell)|truncate:6:""}}{{sellProfitFormat}}
-    					</div>
-    					<div class="span2" style="background: white;">
-    						<a style="margin-left: 1.0em;" href="" ng-click="reverseTrade(sell, true)">B</a>
-    						<a href="" ng-click="reverseTrade(sell, false)">BR</a>
+    					
+    					<div class="span2" style="margin-left: 0px; width: 6em; padding-left: 0.5em;" ng-hide="sell.filledAmount < sell.brokerAmount">
+    						<a style="margin-left: 1.0em;" href="" ng-click="reverseTrade(sell, true)">S</a>
+    						<a href="" ng-click="reverseTrade(sell, false)">SR</a>
     						<a href="" ng-click="removeTransaction(sell)">R</a>
     					</div>
     					
+    					<div class="span2" style="margin-left: 0px; width: 6em; padding-left: 0.5em;" ng-hide="sell.filledAmount >= sell.brokerAmount">
+    						<a style="margin-left: 1.0em;" href="" ng-click="cancelOrder(sell)">Cancel</a>
+    					</div>
+					
 					</div>
 					
 				</div>
@@ -400,7 +414,7 @@
 						
 						<div class="span4" ng-class="{ profitBorder: buyProfit(buy) > 0, lossBorder: buyProfit(buy) < 0 }" style="position: relative; padding-right: 2.0em;">
 							
-							<div class="orderFill customstyle" ng-class="{ profitFill: buyProfit(buy) > 0, lossFill: buyProfit(buy) < 0 }" my-width="buy.filledAmount / buy.amount">
+							<div class="orderFill customstyle" ng-class="{ profitFill: buyProfit(buy) > 0, lossFill: buyProfit(buy) < 0 }" my-width="buy.filledAmount / buy.brokerAmount">
 							</div>
 						
 							<div class="row">
@@ -420,13 +434,13 @@
     						
     					</div>
     					
-    					<div class="span2" style="margin-left: 0px; width: 6em; padding-left: 0.5em;" ng-hide="buy.received < buy.amount">
+    					<div class="span2" style="margin-left: 0px; width: 6em; padding-left: 0.5em;" ng-hide="buy.filledAmount < buy.brokerAmount">
     						<a style="margin-left: 1.0em;" href="" ng-click="reverseTrade(buy, true)">S</a>
     						<a href="" ng-click="reverseTrade(buy, false)">SR</a>
     						<a href="" ng-click="removeTransaction(buy)">R</a>
     					</div>
     					
-    					<div class="span2" style="margin-left: 0px; width: 6em; padding-left: 0.5em;" ng-hide="buy.received >= buy.amount">
+    					<div class="span2" style="margin-left: 0px; width: 6em; padding-left: 0.5em;" ng-hide="buy.filledAmount >= buy.brokerAmount">
     						<a style="margin-left: 1.0em;" href="" ng-click="cancelOrder(buy)">Cancel</a>
     					</div>
 					
