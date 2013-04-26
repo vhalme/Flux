@@ -1,17 +1,5 @@
 @CHARSET "ISO-8859-1";
 
-.profit {
-	
-	background: #80FF80;
-	
-}
-
-.loss {
-	
-	background: #FF8080;
-	
-}
-
 .hidden {
 	display: none;
 	visibility: hidden;
@@ -28,4 +16,26 @@
 
 .enabled {
 	disabled: false;
+}
+
+.orderFill {
+	position: absolute;
+	height: 100%;
+	z-index: -1;
+}
+
+.profitBorder {
+	border: 1px solid #80FF80;
+}
+
+.profitFill {
+	background: #80FF80;
+}
+
+.lossBorder {
+	border: 1px solid #FF8080;
+}
+
+.lossFill {
+	background: #FF8080;
 }

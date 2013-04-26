@@ -1,10 +1,15 @@
 package com.lenin.project.service;
 
+import java.util.Date;
+
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 
+import com.lenin.project.domain.Trade;
 import com.lenin.project.domain.Transaction;
 import com.lenin.project.domain.User;
+import com.lenin.project.repositories.TradeRepository;
 import com.lenin.project.repositories.TransactionRepository;
 import com.lenin.project.repositories.UserRepository;
 
@@ -15,6 +20,10 @@ public class UserTrader {
 	protected User user;
 	protected TransactionRepository transactionRepository;
 	protected UserRepository userRepository;
+	
+	@Autowired
+	private TradeRepository tradeRepository;
+	
 	
 	public UserTrader(User user, UserRepository userRepository, TransactionRepository transactionRepository) {
 		
@@ -50,6 +59,15 @@ public class UserTrader {
 				
 				if(success == 1) {
 					
+					JSONObject resultData = tradeResult.getJSONObject("return");
+					String orderId = resultData.getString("order_id");
+					Double received = resultData.getDouble("received");
+					Double remains = resultData.getDouble("remains");
+					
+					transaction.setOrderId(orderId);
+					transaction.setReceived(received);
+					transaction.setRemains(remains);
+					
 					System.out.println("Trade request posted successfully.");
 					executeTransaction(transaction);
 					
@@ -68,6 +86,15 @@ public class UserTrader {
 			}
 			
 		} else {
+			
+			transaction.setOrderId(""+(new Date()).getTime());
+			transaction.setReceived(transaction.getAmount()*Math.random());
+			transaction.setRemains(transaction.getAmount()-transaction.getReceived());
+			
+			Trade trade = new Trade();
+			trade.setAmount(transaction.getReceived());
+			trade.setTime(Long.parseLong(transaction.getOrderId()));
+			tradeRepository.save(trade);
 			
 			executeTransaction(transaction);
 			

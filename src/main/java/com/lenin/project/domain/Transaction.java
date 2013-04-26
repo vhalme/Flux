@@ -28,6 +28,11 @@ public class Transaction extends BtceApiCall implements Serializable {
 	private String pair;
 	private String type;
 	
+	private String orderId;
+	private Double received = 0.0;
+	private Double remains = 0.0;
+	private Double filledAmount = 0.0;
+	
 	
 	public Transaction() {
 		
@@ -115,6 +120,47 @@ public class Transaction extends BtceApiCall implements Serializable {
 		this.type = type;
 	}
 
+
+	public String getOrderId() {
+		return orderId;
+	}
+
+
+	public void setOrderId(String orderId) {
+		this.orderId = orderId;
+	}
+
+
+	public Double getReceived() {
+		return received;
+	}
+
+
+	public void setReceived(Double received) {
+		this.received = received;
+	}
+
+
+	public Double getRemains() {
+		return remains;
+	}
+
+
+	public void setRemains(Double remains) {
+		this.remains = remains;
+	}
+
+
+	public Double getFilledAmount() {
+		return filledAmount;
+	}
+
+
+	public void setFilledAmount(Double filledAmount) {
+		this.filledAmount = filledAmount;
+	}
 	
+	
+
 	
 }

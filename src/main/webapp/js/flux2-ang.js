@@ -460,6 +460,7 @@ function AppCtrl($scope, $routeParams, $http) {
 	
 	$scope.showAutoTrading = true;
 	$scope.showManualTrading = true;
+	$scope.showGraphs = false;
 	
 	$scope.buySort = $scope.buyProfit;
 	$scope.buySortReverse = true;
@@ -594,7 +595,7 @@ function AppCtrl($scope, $routeParams, $http) {
 	
 };
 
-angular.module('myApp', ['filters']);
+var myApp = angular.module('myApp', ['filters']);
 
 angular.module('filters', []).filter('truncate', function () {
     
@@ -615,4 +616,26 @@ angular.module('filters', []).filter('truncate', function () {
         }
 
     };
+});
+
+myApp.directive('customstyle', function () {
+	
+	return {
+		
+		restrict: 'AC',
+		link: function (scope, element, attrs) {          
+			
+			console.log(attrs);
+			console.log(attrs.myWidth);
+			element.css('width', attrs.myWidth);
+			
+			scope.$watch(attrs.myWidth, function(value) {     
+				console.log("myWidth: "+value);
+				element.css('width', (value*100)+'%');            
+			});
+			
+		}
+		
+   }
+	
 });

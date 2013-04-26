@@ -93,6 +93,30 @@ public class BtceApi {
 	}
 	
 	
+	public static JSONObject getOrderList() {
+		
+		List<NameValuePair> methodParams = new ArrayList<NameValuePair>();
+		methodParams.add(new BasicNameValuePair("method", "OrderList"));
+		methodParams.add(new BasicNameValuePair("active", "1"));
+		JSONObject orderListResult = authenticatedHTTPRequest(methodParams);
+		
+		return orderListResult;
+		
+	}
+	
+	
+	public static JSONObject getTradeList(Long since) {
+		
+		List<NameValuePair> methodParams = new ArrayList<NameValuePair>();
+		methodParams.add(new BasicNameValuePair("method", "TradeHistory"));
+		methodParams.add(new BasicNameValuePair("since", ""+since));
+		JSONObject tradeListResult = authenticatedHTTPRequest(methodParams);
+		
+		return tradeListResult;
+		
+	}
+
+	
 	public static JSONObject getAccountInfo() {
 		
 		List<NameValuePair> methodParams = new ArrayList<NameValuePair>();

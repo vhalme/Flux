@@ -71,35 +71,83 @@
 			
 			<div class="row">
 				
-				<div class="span12" style="padding-bottom: 0.3em; margin-bottom: 2.0em;">
+				<div class="span12" style="padding-bottom: 0.3em;">
 					
 					<div class="row">
-						<div class="span12" style="border-top: 1px solid black; border-bottom: 1px solid black;">
-							<a href="" ng-click="showAutoTrading = !showAutoTrading"><i ng-class="{ 'icon-chevron-down': showAutoTrading, 'icon-chevron-right': !showAutoTrading }"></i></a>
-							Automatic trading
+						<div class="span12" style="border-top: 1px solid black; border-bottom: 1px solid black; height: 1.85em;">
+							<div class="row">
+								<div class="span6">
+									<div style="padding-top: 0.2em;">
+										<a href="" ng-click="showAutoTrading = !showAutoTrading"><i ng-class="{ 'icon-chevron-down': showAutoTrading, 'icon-chevron-right': !showAutoTrading }"></i></a>
+										Automatic trading
+									</div>
+								</div>
+								<div class="span6">
+									<div ng-hide="!user.tradeAuto" style="display: inline-block; float: right;">
+										Working <img src="img/chasingarrows.gif" style="width: 1.4em; height: 1.4em;"/>
+										<button ng-click="user.tradeAuto = false">
+											STOP!
+										</button>
+									</div>
+									<div ng-hide="user.tradeAuto" style="display: inline-block; float: right;">
+										Stopped
+										<button ng-click="user.tradeAuto = true">
+											Start
+										</button>
+									</div>
+								</div>
+							</div>
 						</div>
 					</div>
 					
 					<div class="row" ng-class="{ hidden: !showAutoTrading }">
-						<div class="span4" style="border-top: 6px solid #d0d0d0; padding-top: 0.3em; margin-bottom: 0.7em;">
-							<input type="checkbox" style="margin-top: -2px;" ng-model="user.tradeAuto" /> Trade automatically<br/>
-    						<select ng-model="user.autoTradingModel" ng-disabled="!user.tradeAuto" style="margin-top: 0.5em;">
-        						<option ng-repeat="model in autoTradingOptions" value="{{model.value}}" title="{{model.name}}" ng-selected="model.value == user.autoTradingModel">{{model.name}}</option>
-    						</select>
+						<div class="span4" style="background: #ededed; margin-bottom: 0.7em;">
+							<div style="margin: 0.3em;">
+								<input type="checkbox" style="margin-top: -2px;" ng-model="user.tradeAuto" /> Trade automatically<br/>
+    							<select ng-model="user.autoTradingModel" ng-disabled="!user.tradeAuto" style="margin-top: 0.5em;">
+        							<option ng-repeat="model in autoTradingOptions" value="{{model.value}}" title="{{model.name}}" ng-selected="model.value == user.autoTradingModel">{{model.name}}</option>
+    							</select>
+    						</div>
 						</div>
-						<div class="span4" style="border-top: 6px solid #d0d0d0; padding-top: 0.3em; margin-bottom: 0.7em;">
-							<span>Profit target</span>
-							<input style="margin-bottom: 0px; width: 4.0em;" type="text" ng-model="user.profitTarget"/> USD
-							<div style="height: 1.0em;"></div>
-							<span>Buy ceiling</span>
-							<input style="margin-bottom: 0px; width: 4.0em;" type="text" ng-model="user.buyCeiling"/> USD
+						<div class="span4" style="background: #ededed; margin-bottom: 0.7em;">
+							<div style="margin-top: 0.3em; margin-bottom: 0.3em;">
+								<div class="row" style="margin-bottom: 0.8em;">
+									<div class="span2" style="text-align: right;">
+										Profit target
+									</div>
+									<div class="span2">
+										<input style="margin-bottom: 0px; width: 4.0em;" type="text" ng-model="user.profitTarget"/> USD
+									</div>
+								</div>
+								<div class="row">
+									<div class="span2" style="text-align: right;">
+										Buy ceiling
+									</div>
+									<div class="span2">
+										<input style="margin-bottom: 0px; width: 4.0em;" type="text" ng-model="user.buyCeiling"/> USD
+									</div>
+								</div>
+							</div>
 						</div>
-						<div class="span4" style="border-top: 6px solid #d0d0d0; padding-top: 0.3em; margin-bottom: 0.7em;">
-							<span>Trade chunk size</span>
-							<input style="margin-bottom: 0px; width: 4.0em;" type="text" ng-model="user.tradeChunk"/> LTC
-							<div style="height: 1.0em;"></div>
-							<span>Sell floor</span>
-							<input style="margin-bottom: 0px; width: 4.0em;" type="text" ng-model="user.sellFloor"/> USD
+						<div class="span4" style="background: #ededed; margin-bottom: 0.7em;">
+							<div style="margin-top: 0.3em; margin-bottom: 0.3em;">
+								<div class="row" style="margin-bottom: 0.8em;">
+									<div class="span2" style="text-align: right;">
+										Trade chunk
+									</div>
+									<div class="span2">
+										<input style="margin-bottom: 0px; width: 4.0em;" type="text" ng-model="user.tradeChunk"/> LTC
+									</div>
+								</div>
+								<div class="row">
+									<div class="span2" style="text-align: right;">
+										Sell floor
+									</div>
+									<div class="span2">
+										<input style="margin-bottom: 0px; width: 4.0em;" type="text" ng-model="user.sellFloor"/> USD
+									</div>
+								</div>
+							</div>
 						</div>
 					</div>
 						
@@ -110,12 +158,34 @@
 			
 			<div class="row">
 				
+				<div class="span12" style="padding-bottom: 0.3em;">
+					
+					<div class="row">
+						<div class="span12" style="border-top: 1px solid black; border-bottom: 1px solid black; height: 1.85em;">
+							<div style="padding-top: 0.2em;">
+								<a href="" ng-click="showGraphs = !showGraphs"><i ng-class="{ 'icon-chevron-down': showGraphs, 'icon-chevron-right': !showGraphs }"></i></a>
+								Charts & Visuals
+							</div>
+						</div>
+					</div>
+					
+					<div class="row" ng-class="{ hidden: !showGraphs }" style="height: 320px;">
+					</div>
+					
+				</div>
+				
+			</div>
+			
+			<div class="row">
+				
 				<div class="span12" style="padding-bottom: 0.3em; margin-bottom: 2.0em;">
 					
 					<div class="row">
-						<div class="span12" style="border-top: 1px solid black; border-bottom: 1px solid black;">
-							<a href="" ng-click="showManualTrading = !showManualTrading"><i ng-class="{ 'icon-chevron-down': showManualTrading, 'icon-chevron-right': !showManualTrading }"></i></a>
-							Manual trading
+						<div class="span12" style="border-top: 1px solid black; border-bottom: 1px solid black; height: 1.85em;">
+							<div style="padding-top: 0.2em;">
+								<a href="" ng-click="showManualTrading = !showManualTrading"><i ng-class="{ 'icon-chevron-down': showManualTrading, 'icon-chevron-right': !showManualTrading }"></i></a>
+								Manual trading
+							</div>
 						</div>
 					</div>
 					
@@ -123,13 +193,17 @@
 						
 						<div class="span4">
 							<div class="row">
-								<div class="span2" style="border-top: 6px solid #d0d0d0; padding-top: 0.3em; margin-bottom: 0.2em;">
-									USD [<a href="#">All</a>] [<a href="#">1/2</a>]<br/>
-									<input style="width: 100%; margin-bottom: 0px; margin-top: 0.15em;" type="text" ng-model="buyUsd"/>
+								<div class="span2" style="background: #ededed; margin-bottom: 0.2em;">
+									<div style="margin: 0.3em;">
+										USD [<a href="#">All</a>] [<a href="#">1/2</a>]<br/>
+										<input style="width: 100%; margin-bottom: 0px; margin-top: 0.15em;" type="text" ng-model="buyUsd"/>
+									</div>
 								</div>
-								<div class="span2" style="border-top: 6px solid #d0d0d0; padding-top: 0.3em; margin-bottom: 0.2em;">
-									LTC [<a href="#">All</a>] [<a href="#">1/2</a>]<br/>
-									<input style="width: 100%; margin-bottom: 0px; margin-top: 0.15em;" type="text" ng-model="buyLtc"/>
+								<div class="span2" style="background: #ededed; margin-bottom: 0.2em;">
+									<div style="margin: 0.3em;">
+										LTC [<a href="#">All</a>] [<a href="#">1/2</a>]<br/>
+										<input style="width: 100%; margin-bottom: 0px; margin-top: 0.15em;" type="text" ng-model="buyLtc"/>
+									</div>
 								</div>
 							</div>
 							<div class="row">
@@ -141,37 +215,43 @@
 							</div>
 						</div>
 						
-						<div class="span4" style="border-top: 6px solid #d0d0d0; padding-top: 0.3em; margin-bottom: 0.7em;">
-							<div style="width: 100%">
-								<div style="display: inline-block; width: 38%;">
-									Buy rate<br/>
-									<input style="width: 5.0em; margin-bottom: 0px; margin-top: 0.15em;" type="text" ng-model="manualBuyRate"/>
+						<div class="span4" style="background: #ededed; margin-bottom: 0.7em;">
+							<div style="margin: 0.3em;">
+								<div style="width: 100%">
+									<div style="display: inline-block; width: 38%;">
+										Buy rate<br/>
+										<input style="width: 5.0em; margin-bottom: 0px; margin-top: 0.15em;" type="text" ng-model="manualBuyRate"/>
+									</div>
+									<div style="display: inline-block; width: 20%; text-align: center;">
+										<span>Track</span><br/>
+										<input type="checkbox" style="margin-top: 0.25em; margin-bottom: 0.35em;" ng-model="trackManualTransactions" />
+									</div>
+									<div style="display: inline-block; width: 38%; text-align: right;">
+										Sell rate<br/>
+										<input style="width: 5.0em; margin-bottom: 0px; margin-top: 0.15em;" type="text" ng-model="manualSellRate"/>
+									</div>
 								</div>
-								<div style="display: inline-block; width: 20%; text-align: center;">
-									<span>Track</span><br/>
-									<input type="checkbox" style="margin-top: 0.25em; margin-bottom: 0.35em;" ng-model="trackManualTransactions" />
+								<div style="width: 100%; padding-top: 0.4em; text-align: center;">
+									<input type="checkbox" style="margin-top: -2px;" ng-model="rateAuto" /> Auto
+									<input type="checkbox" style="margin-top: -2px; margin-left: 1.0em;" ng-model="rateBuffered" ng-disabled="!rateAuto" /> Buf.
+									<input style="width: 4.0em; margin-bottom: 0px;" type="text" ng-model="rateBuffer" ng-disabled="!rateBuffered || !rateAuto" />
 								</div>
-								<div style="display: inline-block; width: 38%; text-align: right;">
-									Sell rate<br/>
-									<input style="width: 5.0em; margin-bottom: 0px; margin-top: 0.15em;" type="text" ng-model="manualSellRate"/>
-								</div>
-							</div>
-							<div style="width: 100%; padding-top: 0.4em; text-align: center;">
-								<input type="checkbox" style="margin-top: -2px;" ng-model="rateAuto" /> Auto
-								<input type="checkbox" style="margin-top: -2px; margin-left: 1.0em;" ng-model="rateBuffered" ng-disabled="!rateAuto" /> Buf.
-								<input style="width: 4.0em; margin-bottom: 0px;" type="text" ng-model="rateBuffer" ng-disabled="!rateBuffered || !rateAuto" />
 							</div>
 						</div>
 						
 						<div class="span4">
 							<div class="row">
-								<div class="span2" style="border-top: 6px solid #d0d0d0; padding-top: 0.3em; margin-bottom: 0.2em;">
-									LTC [<a href="#">All</a>] [<a href="#">1/2</a>]<br/>
-									<input style="width: 100%; margin-bottom: 0px; margin-top: 0.15em;" type="text" ng-model="sellLtc"/>
+								<div class="span2" style="background: #ededed; margin-bottom: 0.2em;">
+									<div style="margin: 0.3em;">
+										LTC [<a href="#">All</a>] [<a href="#">1/2</a>]<br/>
+										<input style="width: 100%; margin-bottom: 0px; margin-top: 0.15em;" type="text" ng-model="sellLtc"/>
+									</div>
 								</div>
-								<div class="span2" style="border-top: 6px solid #d0d0d0; padding-top: 0.3em; margin-bottom: 0.2em;">
-									USD [<a href="#">All</a>] [<a href="#">1/2</a>]<br/>
-									<input style="width: 100%; margin-bottom: 0px; margin-top: 0.15em;" type="text" ng-model="sellUsd"/>
+								<div class="span2" style="background: #ededed; margin-bottom: 0.2em;">
+									<div style="margin: 0.3em;">
+										USD [<a href="#">All</a>] [<a href="#">1/2</a>]<br/>
+										<input style="width: 100%; margin-bottom: 0px; margin-top: 0.15em;" type="text" ng-model="sellUsd"/>
+									</div>
 								</div>
 							</div>
 							<div class="row">
@@ -189,7 +269,23 @@
 				</div>
 				
 			</div>
-				
+			
+			<div class="row">
+				<div class="span4" style="font-size: 2.0em;">
+					<b>USD</b>
+					{{user.usd|truncate:6:""}}
+				</div>
+				<div class="span4" style="text-align: center;">
+					<b>HI</b> {{user.currentBuyRate|truncate:6:""}}
+					<div style="display: inline; font-size: 2.0em;">{{user.currentRate|truncate:6:""}}</div>
+					{{user.currentSellRate|truncate:6:""}} <b>LO</b>
+				</div>
+				<div class="span4" style="font-size: 2.0em; text-align: right;">
+					<b>LTC</b>
+					{{user.ltc|truncate:6:""}}
+				</div>
+			</div>
+			
 			<div class="row">
 
 				<div class="span6">					
@@ -198,14 +294,10 @@
 						
 						<div class="span3">
 							<b>USD CASHOUT:</b> {{usdCashout()|truncate:6:""}}
-							<br/>
-							<b>AVAILABLE USD:</b> {{user.usd|truncate:6:""}}
 						</div>
 						
 						<div class="span3">
 							<b>USD REVENUE:</b> {{user.profitUsd|truncate:6:""}}
-							<br/>
-							<b>BUY RATE:</b> {{user.currentBuyRate|truncate:6:""}}
 						</div>
 						
 					</div>
@@ -216,16 +308,12 @@
 					
 					<div class="row" style="margin-top: 1.0em;">
 						
-						<div class="span3">
+						<div class="span3" style="text-align: right;">
 							<b>LTC CASHOUT:</b> {{ltcCashout()|truncate:6:""}}
-							<br/>
-							<b>AVAILABLE LTC:</b> {{user.ltc|truncate:6:""}}
 						</div>
 						
-						<div class="span3">
+						<div class="span3" style="text-align: right;">
 							<b>LTC REVENUE:</b> 0
-							<br/>
-							<b>SELL RATE:</b> {{user.currentSellRate|truncate:6:""}}
 						</div>
 						
 					</div>
@@ -308,26 +396,40 @@
     					</div>
 					</div>
 					
-					<div class="row" ng-class="{ profit: buyProfit(buy) > 0, loss: buyProfit(buy) < 0 }" ng-repeat="buy in transactions['buy'] | orderBy:buySort:!buySortReverse">
+					<div class="row" style="margin-bottom: 0.1em;" ng-repeat="buy in transactions['buy'] | orderBy:buySort:!buySortReverse">
 						
-						<div class="span1">
-    						{{buy.amount|truncate:6:""}}
+						<div class="span4" ng-class="{ profitBorder: buyProfit(buy) > 0, lossBorder: buyProfit(buy) < 0 }" style="position: relative; padding-right: 2.0em;">
+							
+							<div class="orderFill customstyle" ng-class="{ profitFill: buyProfit(buy) > 0, lossFill: buyProfit(buy) < 0 }" my-width="buy.filledAmount / buy.amount">
+							</div>
+						
+							<div class="row">
+								<div class="span1">
+    								{{buy.amount|truncate:6:""}}
+    							</div>
+    							<div class="span1">
+    								{{(buy.rate*buy.amount)|truncate:6:""}}
+    							</div>
+    							<div class="span1">
+    								{{buy.rate|truncate:6:""}}
+    							</div>
+    							<div class="span1">
+    								{{buyProfit(buy)|truncate:6:""}}{{buyProfitFormat}}
+    							</div>
+    						</div>
+    						
     					</div>
-    					<div class="span1">
-    						{{(buy.rate*buy.amount)|truncate:6:""}}
-    					</div>
-    					<div class="span1">
-    						{{buy.rate|truncate:6:""}}
-    					</div>
-    					<div class="span1">
-    						{{buyProfit(buy)|truncate:6:""}}{{buyProfitFormat}}
-    					</div>
-    					<div class="span2" style="background: white;">
+    					
+    					<div class="span2" style="margin-left: 0px; width: 6em; padding-left: 0.5em;" ng-hide="buy.received < buy.amount">
     						<a style="margin-left: 1.0em;" href="" ng-click="reverseTrade(buy, true)">S</a>
     						<a href="" ng-click="reverseTrade(buy, false)">SR</a>
     						<a href="" ng-click="removeTransaction(buy)">R</a>
     					</div>
-    				
+    					
+    					<div class="span2" style="margin-left: 0px; width: 6em; padding-left: 0.5em;" ng-hide="buy.received >= buy.amount">
+    						<a style="margin-left: 1.0em;" href="" ng-click="cancelOrder(buy)">Cancel</a>
+    					</div>
+					
 					</div>
 					
 				</div>

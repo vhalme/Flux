@@ -26,6 +26,7 @@
 		<mongo:repository id="transactionRepository" mongo-template-ref="mongoTemplate" />
 		<mongo:repository id="commentRepository" mongo-template-ref="mongoTemplate" />
 		<mongo:repository id="userRepository" mongo-template-ref="mongoTemplate" />
+		<mongo:repository id="tradeRepository" mongo-template-ref="mongoTemplate" />
 	</mongo:repositories>
 	
 	<bean id="mongoTemplate" class="org.springframework.data.mongodb.core.MongoTemplate">

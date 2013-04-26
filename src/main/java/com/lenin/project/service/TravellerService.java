@@ -1,6 +1,8 @@
 package com.lenin.project.service;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
@@ -14,6 +16,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
+import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,9 +25,11 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import com.lenin.project.domain.RateQuote;
+import com.lenin.project.domain.Trade;
 import com.lenin.project.domain.Transaction;
 import com.lenin.project.domain.User;
 import com.lenin.project.repositories.CommentRepository;
+import com.lenin.project.repositories.TradeRepository;
 import com.lenin.project.repositories.TransactionRepository;
 import com.lenin.project.repositories.UserRepository;
 
@@ -44,16 +49,111 @@ public class TravellerService {
 	@Autowired
 	private TransactionRepository transactionRepository;
 	
+	@Autowired
+	private TradeRepository tradeRepository;
+	
+	private Long lastTradeTime = 0L;
+	
 	
 	public TravellerService() {
 		
 	}
 	
 	@Scheduled(fixedDelay = 15000)
-	public void pollRates() {
+	public void update() {
 		
 		BtceApi.updateRates();
 		
+		List<Trade> savedTrades = tradeRepository.findAll();
+		for(Trade trade : savedTrades) {
+			if(trade.getTime() > lastTradeTime) {
+				lastTradeTime = trade.getTime();
+			}
+		}
+		
+		JSONObject tradeListResult = BtceApi.getTradeList(lastTradeTime);
+		
+		try {
+			
+			if(tradeListResult.getInt("success") == 1) {
+				
+				JSONObject tradeListResultData = tradeListResult.getJSONObject("return");
+				Iterator<String> tradeIds = tradeListResultData.keys();
+				
+				List<Trade> trades = new ArrayList<Trade>();
+				
+				while(tradeIds.hasNext()) {
+					
+					String tradeId = tradeIds.next();
+					JSONObject tradeData = tradeListResultData.getJSONObject(tradeId);
+					
+					String orderId = tradeData.getString("order_id");
+					String pair = tradeData.getString("pair");
+					Double amount = tradeData.getDouble("amount");
+					Double rate = tradeData.getDouble("rate");
+					String type = tradeData.getString("type");
+					Long time = tradeData.getLong("timestamp");
+					
+					Trade trade = new Trade();
+					trade.setOrderId(orderId);
+					trade.setPair(pair);
+					trade.setAmount(amount);
+					trade.setRate(rate);
+					trade.setType(type);
+					trade.setTime(time);
+					
+					if(time > lastTradeTime) {
+						lastTradeTime = time;
+					}
+					
+				}
+				
+				tradeRepository.save(trades);
+				
+			}
+			
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+
+		JSONObject orderListResult = BtceApi.getOrderList();
+		
+		try {
+			
+			if(orderListResult.getInt("success") == 1) {
+				
+				JSONObject orderListResultData = orderListResult.getJSONObject("return");
+				Iterator<String> orderIds = orderListResultData.keys();
+				
+				while(orderIds.hasNext()) {
+					
+					String orderId = orderIds.next();
+					JSONObject order = orderListResultData.getJSONObject(orderId);
+					
+					Transaction transaction = transactionRepository.findByOrderId(orderId);
+					List<Trade> trades = tradeRepository.findByOrderId(orderId);
+					
+					Double amount = 0.0;
+					for(Trade trade : trades) {
+						amount += trade.getAmount();
+					}
+					
+					transaction.setFilledAmount(amount);
+					
+					System.out.println(orderId);
+				}
+				
+				
+			}
+			
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		
+		
+		
+		
+
 		List<User> users = userRepository.findAll();
 		
 		for(User user : users) {
@@ -79,6 +179,11 @@ public class TravellerService {
 			
 			userRepository.save(user);
 			
+			List<Transaction> transactions = transactionRepository.findByUser(user);
+			for(Transaction transaction : transactions) {
+				if(transaction.getRemains() > 0) {
+				}
+			}
 			
 			if(user.getTradeAuto() == true && user.getCurrentRate() != 0.0) {
 				AutoTrader autoTrader = new AutoTrader(user, userRepository, transactionRepository);
