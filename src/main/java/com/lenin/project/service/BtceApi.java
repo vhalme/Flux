@@ -137,6 +137,8 @@ public class BtceApi {
 	
 	public static JSONObject authenticatedHTTPRequest(List<NameValuePair> methodParams) {
         
+		Date now = new Date();
+		
 		// Request parameters and other properties.
         List<NameValuePair> params = new ArrayList<NameValuePair>(2);
         params.add(new BasicNameValuePair("nonce", "" + ++_nonce));
@@ -196,8 +198,9 @@ public class BtceApi {
             
         } catch(Exception e) {
     		
-        	System.out.println("Failed to make trade request: "+e.getMessage());
-        	//e.printStackTrace();
+        	System.out.println("["+now+"] Failed to make a request. "+e+": "+e.getMessage());
+        	System.out.println("     -> request params: "+paramsString);
+        	
         	return null;
         			
         }
@@ -212,8 +215,9 @@ public class BtceApi {
         	
         } catch(JSONException e) {
         	
-        	System.out.println("API server did not return a proper response. Error message: "+e.getMessage());
-        	//e.printStackTrace();
+        	System.out.println("["+now+"] API server did not return a proper response. "+e+": "+e.getMessage());
+        	System.out.println("     -> request params: "+paramsString);
+        	
         	return null;
         	
         }
