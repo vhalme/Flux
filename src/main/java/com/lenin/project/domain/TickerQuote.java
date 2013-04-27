@@ -8,21 +8,21 @@ import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 
-public class RateQuote implements Serializable {
+public class TickerQuote implements Serializable {
 	
 	private static final long serialVersionUID = 2564403728524688276L;
 
 	@Id
 	private String id;
 
-	private Date date;
+	private Long time;
 	
 	private String pair;
 	private Double last;
 	private Double buy;
 	private Double sell;
 	
-	public RateQuote() {
+	public TickerQuote() {
 		
 	}
 	
@@ -34,14 +34,14 @@ public class RateQuote implements Serializable {
 		this.id = id;
 	}
 
-
-	public Date getDate() {
-		return date;
+	
+	public Long getTime() {
+		return time;
 	}
 
 
-	public void setDate(Date date) {
-		this.date = date;
+	public void setTime(Long time) {
+		this.time = time;
 	}
 
 

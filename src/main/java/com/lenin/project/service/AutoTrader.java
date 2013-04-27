@@ -3,18 +3,20 @@ package com.lenin.project.service;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.lenin.project.domain.TradeStats;
 import com.lenin.project.domain.Transaction;
 import com.lenin.project.domain.User;
 import com.lenin.project.repositories.TradeRepository;
+import com.lenin.project.repositories.TradeStatsRepository;
 import com.lenin.project.repositories.TransactionRepository;
 import com.lenin.project.repositories.UserRepository;
 
 public class AutoTrader extends UserTrader {
 	
-	public AutoTrader(User user, UserRepository userRepository, 
+	public AutoTrader(TradeStats tradeStats, TradeStatsRepository tradeStatsRepository, 
 			TransactionRepository transactionRepository, TradeRepository tradeRepository) {
 		
-		super(user, userRepository, transactionRepository, tradeRepository);
+		super(tradeStats, tradeStatsRepository, transactionRepository, tradeRepository);
 		
 	}
 	
@@ -23,12 +25,12 @@ public class AutoTrader extends UserTrader {
 		
 		Double highestSell = highestSell();
 		if(highestSell == null) {
-			highestSell = user.getOldRate();
+			highestSell = tradeStats.getOldRate();
 		}
 		
 		Double lowestBuy = lowestBuy();
 		if(lowestBuy == null) {
-			lowestBuy = user.getOldRate();
+			lowestBuy = tradeStats.getOldRate();
 		}
 		
 		List<Transaction> reversibleBuys = getReversibleBuys();
@@ -50,32 +52,35 @@ public class AutoTrader extends UserTrader {
 		
 		if(reversibleBuys.size() == 0 && reversibleSells.size() == 0) {
 			
-			Double tradeChunk = user.getTradeChunk();
+			Double tradeChunk = tradeStats.getTradeChunk();
 			
-			//System.out.println(BtceApi.currentSellRateLtcUsd+" - "+highestSell);
-			//System.out.println(BtceApi.currentBuyRateLtcUsd+" - "+lowestBuy);
-			
-			if(user.getCurrentSellRate() - highestSell >= user.getProfitTarget() && 
-				user.getLtc() >= tradeChunk && user.getCurrentSellRate() > user.getSellFloor()) {
+			if(tradeStats.getCurrentSellRate() - highestSell >= tradeStats.getProfitTarget() && 
+				tradeStats.getFundsRight() >= tradeChunk && tradeStats.getCurrentSellRate() > tradeStats.getSellFloor()) {
 				
-				Transaction sellTransaction = BtceApi.createTransaction("ltc_usd", tradeChunk, actualTradeRate("sell"), "sell");
+				Transaction sellTransaction = 
+						BtceApi.createTransaction(tradeStats.getCurrencyRight()+"_"+tradeStats.getCurrencyLeft(), 
+								tradeChunk, actualTradeRate("sell"), "sell");
+				
 				sellTransaction.setSave(true);
 				
 				trade(sellTransaction);
-				user.setOldRate(user.getCurrentRate());
-				userRepository.save(user);
+				tradeStats.setOldRate(tradeStats.getCurrentRate());
+				tradeStatsRepository.save(tradeStats);
 				
 			
-			} else if(user.getCurrentBuyRate() - lowestBuy <= 
-				-(user.getProfitTarget()*1) && user.getCurrentBuyRate() < user.getBuyCeiling() &&
-				user.getUsd() >= (tradeChunk * actualTradeRate("buy"))) {
+			} else if(tradeStats.getCurrentBuyRate() - lowestBuy <= 
+				-(tradeStats.getProfitTarget()*1) && tradeStats.getCurrentBuyRate() < tradeStats.getBuyCeiling() &&
+				tradeStats.getFundsLeft() >= (tradeChunk * actualTradeRate("buy"))) {
 			
-				Transaction buyTransaction = BtceApi.createTransaction("ltc_usd", tradeChunk, actualTradeRate("buy"), "buy");
+				Transaction buyTransaction = 
+						BtceApi.createTransaction(tradeStats.getCurrencyRight()+"_"+tradeStats.getCurrencyLeft(), 
+								tradeChunk, actualTradeRate("buy"), "buy");
+				
 				buyTransaction.setSave(true);
 				
 				trade(buyTransaction);
-				user.setOldRate(user.getCurrentRate());
-				userRepository.save(user);
+				tradeStats.setOldRate(tradeStats.getCurrentRate());
+				tradeStatsRepository.save(tradeStats);
 				
 			}
 			
@@ -90,7 +95,7 @@ public class AutoTrader extends UserTrader {
 	
 	public Double lowestBuy() {
 		
-		List<Transaction> transactions = transactionRepository.findByUserAndType(user, "sell");
+		List<Transaction> transactions = transactionRepository.findByTradeStatsAndType(tradeStats, "sell");
 		
 		Double lowest = null;
 		
@@ -111,7 +116,7 @@ public class AutoTrader extends UserTrader {
 	
 	public Double highestSell() {
 		
-		List<Transaction> transactions = transactionRepository.findByUserAndType(user, "buy");
+		List<Transaction> transactions = transactionRepository.findByTradeStatsAndType(tradeStats, "buy");
 		
 		Double highest = null;
 		
@@ -132,11 +137,9 @@ public class AutoTrader extends UserTrader {
 	
 	private List<Transaction> getReversibleSells() {
    		
-		List<Transaction> transactions = transactionRepository.findByUserAndType(user, "sell");
+		List<Transaction> transactions = transactionRepository.findByTradeStatsAndType(tradeStats, "sell");
 		
 		Double calculatedBuyAmount = 0.0;
-		
-		Double usedUsd = 0.0;
 		
 		List<Transaction> reversibleTransactions = new ArrayList<Transaction>();
 		
@@ -144,16 +147,15 @@ public class AutoTrader extends UserTrader {
 			
 			Double rateVal = transaction.getRate();
 			Double amountVal = transaction.getAmount();
-			Double usdAmount = amountVal * rateVal;
 			
-			if(user.getCurrentBuyRate() <= (rateVal - user.getProfitTarget())) {
+			if(tradeStats.getCurrentBuyRate() <= (rateVal - tradeStats.getProfitTarget())) {
 					
 				Double actualBuyRate = actualTradeRate("buy");
 				
 				Double newBuyAmount = 
-					calculatedBuyAmount + amountVal; // (usdAmount / actualBuyRate); //
+					calculatedBuyAmount + amountVal;
 					
-				if(user.getUsd() > (newBuyAmount * actualBuyRate)) {
+				if(tradeStats.getFundsLeft() > (newBuyAmount * actualBuyRate)) {
 					calculatedBuyAmount = newBuyAmount;
 					reversibleTransactions.add(transaction);
 					System.out.println("buy "+amountVal+" for "+(amountVal * actualBuyRate));
@@ -161,10 +163,6 @@ public class AutoTrader extends UserTrader {
 					//System.out.println("OUT OF USD!");
 					break;
 				}
-				
-			} else {
-				
-				usedUsd += usdAmount;
 				
 			}
 				
@@ -177,11 +175,9 @@ public class AutoTrader extends UserTrader {
 	
 	private List<Transaction> getReversibleBuys() {
    		
-		List<Transaction> transactions = transactionRepository.findByUserAndType(user, "buy");
+		List<Transaction> transactions = transactionRepository.findByTradeStatsAndType(tradeStats, "buy");
 		
 		Double calculatedSellAmount = 0.0;
-		
-		Double usedLtc = 0.0;
 		
 		List<Transaction> reversibleTransactions = new ArrayList<Transaction>();
 		
@@ -189,14 +185,13 @@ public class AutoTrader extends UserTrader {
 			
 			Double rateVal = transaction.getRate();
 			Double amountVal = transaction.getAmount();
-			Double usdAmount = amountVal * rateVal;
 			
-			if(user.getCurrentSellRate() >= (rateVal + user.getProfitTarget())) {
+			if(tradeStats.getCurrentSellRate() >= (rateVal + tradeStats.getProfitTarget())) {
 				
 				Double actualSellRate = actualTradeRate("sell");
 				Double newSellAmount = calculatedSellAmount + amountVal;
 				
-				if(user.getLtc() > newSellAmount) {
+				if(tradeStats.getFundsRight() > newSellAmount) {
 					calculatedSellAmount = newSellAmount;
 					reversibleTransactions.add(transaction);
 					System.out.println("sell "+amountVal+" for "+(amountVal * actualSellRate));
@@ -205,10 +200,6 @@ public class AutoTrader extends UserTrader {
 					break;
 				}
 					
-			} else {
-				
-				usedLtc += amountVal;
-				
 			}
 				
 			

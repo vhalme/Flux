@@ -6,6 +6,9 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import com.lenin.project.service.BtceApi;
+import com.lenin.project.service.UserTrader;
+
 
 public class Transaction extends BtceApiCall implements Serializable {
 	
@@ -14,6 +17,9 @@ public class Transaction extends BtceApiCall implements Serializable {
 	
 	@DBRef
 	private User user;
+	
+	@DBRef
+	private TradeStats tradeStats;
 	
 	@DBRef
 	private Transaction reversedTransaction;
@@ -52,7 +58,15 @@ public class Transaction extends BtceApiCall implements Serializable {
 		this.user = user;
 	}
 
-	
+	public TradeStats getTradeStats() {
+		return tradeStats;
+	}
+
+
+	public void setTradeStats(TradeStats tradeStats) {
+		this.tradeStats = tradeStats;
+	}
+
 
 	public Transaction getReversedTransaction() {
 		return reversedTransaction;
@@ -205,6 +219,61 @@ public class Transaction extends BtceApiCall implements Serializable {
 	}
 	
 	
+	public Double calcTradeRevenue(Trade trade) {
+		
+		Double tradeRevenue = 0.0;
+		
+		if(reversedTransaction != null) {
+			
+			Double totalFeeFactor = (1 - UserTrader.transactionFee);
+			Double tradeAmount = trade.getAmount()*totalFeeFactor;
+		
+			if(type.equals("sell")) {
+			
+				tradeRevenue = 
+						(tradeAmount*rate) - 
+						(tradeAmount*reversedTransaction.getRate());
+		
+			} else if(type.equals("buy")) {
+			
+				tradeRevenue = 
+					(tradeAmount*reversedTransaction.getRate()) -
+					(tradeAmount*rate);
+		
+			}
+			
+		}
+		
+		return tradeRevenue;
+		
+	}
+	
+	
+	public Double calcFinalRevenue() {
+		
+		Double finalRevenue = 0.0;
+		
+		if(reversedTransaction != null) {
+					
+			if(type.equals("sell")) {
+			
+				finalRevenue = 
+						(finalAmount*rate) - 
+						(reversedTransaction.getFinalAmount()*reversedTransaction.getRate());
+		
+			} else if(type.equals("buy")) {
+			
+				finalRevenue = 
+					(reversedTransaction.getFinalAmount()*reversedTransaction.getRate()) -
+					(finalAmount*rate);
+		
+			}
+			
+		}
+		
+		return finalRevenue;
+		
+	}
 
 	
 }

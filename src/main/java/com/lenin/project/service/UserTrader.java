@@ -1,36 +1,34 @@
 package com.lenin.project.service;
 
-import java.util.Date;
 import java.util.Iterator;
 
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import com.lenin.project.domain.Trade;
+import com.lenin.project.domain.TradeStats;
 import com.lenin.project.domain.Transaction;
-import com.lenin.project.domain.User;
 import com.lenin.project.repositories.TradeRepository;
+import com.lenin.project.repositories.TradeStatsRepository;
 import com.lenin.project.repositories.TransactionRepository;
-import com.lenin.project.repositories.UserRepository;
 
 public class UserTrader {
 	
-	private static Double transactionFee = 0.002;
+	public static Double transactionFee = 0.002;
 	
-	protected User user;
+	protected TradeStats tradeStats;
 	protected TransactionRepository transactionRepository;
-	protected UserRepository userRepository;
+	protected TradeStatsRepository tradeStatsRepository;
 	private TradeRepository tradeRepository;
 	
 	
-	public UserTrader(User user, UserRepository userRepository, 
+	public UserTrader(TradeStats tradeStats, TradeStatsRepository tradeStatsRepository, 
 			TransactionRepository transactionRepository,
 			TradeRepository tradeRepository) {
 		
-		this.user = user;
+		this.tradeStats = tradeStats;
 		this.transactionRepository = transactionRepository;
-		this.userRepository = userRepository;
+		this.tradeStatsRepository = tradeStatsRepository;
 		this.tradeRepository = tradeRepository;
 		
 	}
@@ -40,7 +38,7 @@ public class UserTrader {
 		
 		RequestResponse response = new RequestResponse();
 		
-		if(user.getLive()) {
+		if(tradeStats.getLive()) {
 			
 			JSONObject cancelOrderResult = BtceApi.cancelOrder(transaction);
 		
@@ -109,13 +107,13 @@ public class UserTrader {
 		
 		RequestResponse response = new RequestResponse();
 		
-		transaction.setUser(user);
-		transaction.setLive(user.getLive());
+		transaction.setTradeStats(tradeStats);
+		transaction.setLive(tradeStats.getLive());
 		
 		Double feeFactor = 1-UserTrader.transactionFee;
 		transaction.setBrokerAmount(transaction.getAmount()*feeFactor);
 		
-		if(user.getLive()) {
+		if(tradeStats.getLive()) {
 			
 			JSONObject tradeResult = BtceApi.trade(transaction, feeFactor);
 			
@@ -208,15 +206,15 @@ public class UserTrader {
 			
 			Double usdVal = transaction.getAmount() * transaction.getRate();
 			
-			user.setUsd(user.getUsd() - usdVal);
-			user.setLtc(user.getLtc() + transaction.getFinalAmount());
+			tradeStats.setFundsLeft(tradeStats.getFundsLeft() - usdVal);
+			tradeStats.setFundsRight(tradeStats.getFundsRight() + transaction.getFinalAmount());
 			
 		} else if(transaction.getType().equals("sell")) {
 			
 			Double usdVal = transaction.getFinalAmount() * transaction.getRate();
 			
-			user.setUsd(user.getUsd() + usdVal);
-			user.setLtc(user.getLtc() - transaction.getAmount());
+			tradeStats.setFundsLeft(tradeStats.getFundsLeft() + usdVal);
+			tradeStats.setFundsRight(tradeStats.getFundsRight() - transaction.getAmount());
 			
 		}
 		
@@ -224,25 +222,11 @@ public class UserTrader {
 		
 		if(reversedTransaction != null) {
 			
-			Double transactionRevenue = 0.0;
-			Double transactionAmount = transaction.getFilledAmount()*(1-UserTrader.transactionFee);
-			Double reversedTransactionAmount = reversedTransaction.getFinalAmount();
+			Trade trade = new Trade();
+			trade.setAmount(transaction.getFilledAmount());
+			Double tradeRevenue = transaction.calcTradeRevenue(trade);
 			
-			if(transaction.getType().equals("sell")) {
-				
-				transactionRevenue = 
-					(transactionAmount*transaction.getRate()) - 
-					(reversedTransactionAmount*reversedTransaction.getRate());
-			
-			} else if(transaction.getType().equals("buy")) {
-				
-				transactionRevenue = 
-						(reversedTransactionAmount*reversedTransaction.getRate()) -
-						(transactionAmount*transaction.getRate());
-			
-			}
-				
-			user.setProfitUsd(user.getProfitUsd() + transactionRevenue);
+			tradeStats.setProfitLeft(tradeStats.getProfitLeft() + tradeRevenue);
 			reversedTransaction.setIsReversed(true);
 			reversedTransaction.setFilledAmount(transaction.getFilledAmount());
 			
@@ -251,7 +235,7 @@ public class UserTrader {
 			
 		}
 		
-		userRepository.save(user);
+		tradeStatsRepository.save(tradeStats);
 		
 		if(transaction.getSave()) {
 			transactionRepository.save(transaction);
@@ -264,9 +248,9 @@ public class UserTrader {
 	protected Double actualTradeRate(String type) {
 		
 		if(type == "buy") {
-			return user.getCurrentBuyRate()- user.getRateBuffer();
+			return tradeStats.getCurrentBuyRate() - tradeStats.getRateBuffer();
 		} else if(type == "sell") {
-			return user.getCurrentSellRate() + user.getRateBuffer();
+			return tradeStats.getCurrentSellRate() + tradeStats.getRateBuffer();
 		} else {
 			return null;
 		}
@@ -301,7 +285,7 @@ public class UserTrader {
 		//System.out.println("REVERSED TYPE TO "+reverseType);
 		
 		Transaction reverseTransaction = 
-			BtceApi.createTransaction("ltc_usd", transaction.getAmount(), actualTradeRate(reverseType), reverseType);
+			BtceApi.createTransaction(tradeStats.getCurrencyRight()+"_"+tradeStats.getCurrencyLeft(), transaction.getAmount(), actualTradeRate(reverseType), reverseType);
 		
 		reverseTransaction.setReversedTransaction(transaction);
 		

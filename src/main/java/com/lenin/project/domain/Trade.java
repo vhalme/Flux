@@ -119,4 +119,6 @@ public class Trade implements Serializable {
 
 	
 	
+	
+	
 }

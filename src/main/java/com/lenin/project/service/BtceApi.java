@@ -41,16 +41,18 @@ public class BtceApi {
 	public static Double transactionFee = 0.002;
 	
 	
-	public static void updateRates() {
+	public static JSONObject getRates(String pair) {
 		
 		try {
 	    	
 			//Create connection
 			HttpClient client = new DefaultHttpClient();
-			HttpGet get = new HttpGet("https://btc-e.com/api/2/ltc_usd/ticker");
+			HttpGet get = new HttpGet("https://btc-e.com/api/2/"+pair+"/ticker");
     	
 			HttpResponse httpResponse = client.execute(get);
 			HttpEntity entity = httpResponse.getEntity();
+			
+			JSONObject jsonResult = null;
 			
 			if(entity != null) {
     	    
@@ -70,22 +72,16 @@ public class BtceApi {
 				in.close();
     	    	instream.close();
     	    	
-    	    	JSONObject jsonResult = new JSONObject(resultStr);
-    	    	JSONObject ticker = jsonResult.getJSONObject("ticker");
-    	    	
-    	    	currentRateLtcUsd = ticker.getDouble("last");
-    	    	currentBuyRateLtcUsd = ticker.getDouble("buy");
-    	    	currentSellRateLtcUsd = ticker.getDouble("sell");
-    	    	
-    	    	if(oldRateLtcUsd == 0.0) {
-    	    		oldRateLtcUsd = currentRateLtcUsd;
-    	    	}
+    	    	jsonResult = new JSONObject(resultStr);
     	    	
 			}
+			
+			return jsonResult;
     	
     	} catch(Exception e) {
     		
     		//e.printStackTrace();
+    		return null;
 
   	    }
 		
