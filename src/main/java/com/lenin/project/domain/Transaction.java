@@ -16,11 +16,12 @@ public class Transaction extends BtceApiCall implements Serializable {
 	private User user;
 	
 	@DBRef
-	private Transaction reverseTransaction;
+	private Transaction reversedTransaction;
 	
 	private Boolean live;
 	
 	private Boolean save;
+	private Boolean isReversed = false;
 	
 	private Long time;
 	
@@ -53,13 +54,13 @@ public class Transaction extends BtceApiCall implements Serializable {
 
 	
 
-	public Transaction getReverseTransaction() {
-		return reverseTransaction;
+	public Transaction getReversedTransaction() {
+		return reversedTransaction;
 	}
 
 
-	public void setReverseTransaction(Transaction reverseTransaction) {
-		this.reverseTransaction = reverseTransaction;
+	public void setReversedTransaction(Transaction reversedTransaction) {
+		this.reversedTransaction = reversedTransaction;
 	}
 
 	
@@ -83,6 +84,16 @@ public class Transaction extends BtceApiCall implements Serializable {
 	}
 
 	
+
+	public Boolean getIsReversed() {
+		return isReversed;
+	}
+
+
+	public void setIsReversed(Boolean isReversed) {
+		this.isReversed = isReversed;
+	}
+
 
 	public Long getTime() {
 		return time;

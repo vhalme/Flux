@@ -36,6 +36,75 @@ public class UserTrader {
 	}
 	
 	
+	public RequestResponse cancelOrder(Transaction transaction) {
+		
+		RequestResponse response = new RequestResponse();
+		
+		if(user.getLive()) {
+			
+			JSONObject cancelOrderResult = BtceApi.cancelOrder(transaction);
+		
+			if(cancelOrderResult == null) {
+				response.setSuccess(0);
+				response.setMessage("Could not get order cancellation result.");
+				return response;
+			}
+			
+			try {
+				
+				Integer success = cancelOrderResult.getInt("success");
+				response.setSuccess(success);
+				
+				if(success == 1) {
+					
+					if(transaction.getIsReversed()) {
+						transactionRepository.delete(transaction);
+					} else {
+						transaction.setBrokerAmount(transaction.getFilledAmount());
+						transaction.setAmount(transaction.getFilledAmount());
+						transactionRepository.save(transaction);
+					}
+					
+					System.out.println("Order cancelled successfully.");
+					
+				} else {
+					
+					System.out.println("Order cancellation request failed: "+success);
+					Iterator<String> keys = cancelOrderResult.keys();
+					
+					while(keys.hasNext()) {
+						String key = keys.next();
+						System.out.println(key+" : "+cancelOrderResult.get(key));
+					}
+					
+				}
+				
+			} catch(JSONException e) {
+				
+				e.printStackTrace();
+				response.setSuccess(0);
+				response.setMessage(e.getMessage());
+				
+			}
+			
+		} else {
+			
+			if(transaction.getIsReversed()) {
+				transactionRepository.delete(transaction);
+			} else {
+				transaction.setBrokerAmount(transaction.getFilledAmount());
+				transaction.setAmount(transaction.getFilledAmount());
+				transactionRepository.save(transaction);
+			}
+			
+			response.setSuccess(1);
+			
+		}
+		
+		return response;
+		
+	}
+	
 	public RequestResponse trade(Transaction transaction) {
 		
 		RequestResponse response = new RequestResponse();
@@ -151,31 +220,34 @@ public class UserTrader {
 			
 		}
 		
-		Transaction reverseTransaction = transaction.getReverseTransaction();
+		Transaction reversedTransaction = transaction.getReversedTransaction();
 		
-		if(reverseTransaction != null) {
+		if(reversedTransaction != null) {
 			
 			Double transactionRevenue = 0.0;
-			Double transactionAmount = transaction.getFinalAmount();
-			Double reverseTransactionAmount = reverseTransaction.getFinalAmount();
+			Double transactionAmount = transaction.getFilledAmount()*(1-UserTrader.transactionFee);
+			Double reversedTransactionAmount = reversedTransaction.getFinalAmount();
 			
 			if(transaction.getType().equals("sell")) {
 				
 				transactionRevenue = 
 					(transactionAmount*transaction.getRate()) - 
-					(reverseTransactionAmount*reverseTransaction.getRate());
+					(reversedTransactionAmount*reversedTransaction.getRate());
 			
 			} else if(transaction.getType().equals("buy")) {
 				
 				transactionRevenue = 
-						(reverseTransactionAmount*reverseTransaction.getRate()) -
+						(reversedTransactionAmount*reversedTransaction.getRate()) -
 						(transactionAmount*transaction.getRate());
 			
 			}
 				
 			user.setProfitUsd(user.getProfitUsd() + transactionRevenue);
+			reversedTransaction.setIsReversed(true);
+			reversedTransaction.setFilledAmount(transaction.getFilledAmount());
 			
-			transactionRepository.delete(reverseTransaction);
+			transactionRepository.save(reversedTransaction);
+			transactionRepository.save(transaction);
 			
 		}
 		
@@ -231,7 +303,7 @@ public class UserTrader {
 		Transaction reverseTransaction = 
 			BtceApi.createTransaction("ltc_usd", transaction.getAmount(), actualTradeRate(reverseType), reverseType);
 		
-		reverseTransaction.setReverseTransaction(transaction);
+		reverseTransaction.setReversedTransaction(transaction);
 		
 		return reverseTransaction;
 		

@@ -66,48 +66,12 @@ public class TravellerService {
 		
 		updateTradeHistory();
 		
-		/*
-		JSONObject orderListResult = BtceApi.getActiveOrderList();
-		
-		try {
-			
-			if(orderListResult.getInt("success") == 1) {
-				
-				JSONObject orderListResultData = orderListResult.getJSONObject("return");
-				Iterator<String> orderIds = orderListResultData.keys();
-				
-				while(orderIds.hasNext()) {
-					
-					String orderId = orderIds.next();
-					JSONObject order = orderListResultData.getJSONObject(orderId);
-					
-					Transaction transaction = transactionRepository.findByOrderId(orderId);
-					List<Trade> trades = tradeRepository.findByOrderId(orderId);
-					
-					Double amount = 0.0;
-					for(Trade trade : trades) {
-						amount += trade.getAmount();
-					}
-					
-					transaction.setFilledAmount(amount);
-					
-					System.out.println(orderId);
-				}
-				
-				
-			}
-			
-		} catch(Exception e) {
-			e.printStackTrace();
-		}
-		*/
-		
 		List<Transaction> transactions = transactionRepository.findAll();
 		List<Transaction> changedTransactions = new ArrayList<Transaction>();
 		
 		for(Transaction transaction : transactions) {
 			
-			if(transaction.getFilledAmount() < transaction.getBrokerAmount()) {
+			if(transaction.getFilledAmount() < transaction.getBrokerAmount() && transaction.getIsReversed() != true) {
 				
 				List<Trade> trades = tradeRepository.findByOrderId(transaction.getOrderId());
 				
@@ -120,8 +84,25 @@ public class TravellerService {
 				
 					transaction.setFilledAmount(amount);
 					changedTransactions.add(transaction);
-				
+					
 				}
+					
+				
+				Transaction reversedTransaction = transaction.getReversedTransaction();
+				if(reversedTransaction != null) {
+					
+					reversedTransaction.setFilledAmount(transaction.getFilledAmount());
+					changedTransactions.add(reversedTransaction);
+					
+					if(transaction.getFilledAmount() >= transaction.getBrokerAmount()) {
+						changedTransactions.remove(transaction);
+						changedTransactions.remove(reversedTransaction);
+						transactionRepository.delete(transaction);
+						transactionRepository.delete(reversedTransaction);
+					}
+					
+				}
+				
 				
 			}
 			
@@ -141,7 +122,7 @@ public class TravellerService {
 			
 		}
 		
-		transactionRepository.save(transactions);
+		transactionRepository.save(changedTransactions);
 		
 		List<User> users = userRepository.findAll();
 		
@@ -428,7 +409,8 @@ public class TravellerService {
 	@Path("/transaction")
 	@Consumes({ MediaType.APPLICATION_JSON })
     @Produces({ MediaType.APPLICATION_JSON })
-    public RequestResponse postTransaction(@HeaderParam("User-Id") String userId, Transaction transaction) {
+    public RequestResponse postTransaction(@HeaderParam("User-Id") String userId, 
+    		Transaction transaction, @QueryParam("cancel") String cancel) {
 		
 		RequestResponse response = new RequestResponse();
 		
@@ -449,7 +431,11 @@ public class TravellerService {
 		
 		UserTrader userTrader = new UserTrader(user, userRepository, transactionRepository, tradeRepository);
 		
-		response = userTrader.trade(transaction);
+		if(cancel == null) {
+			response = userTrader.trade(transaction);
+		} else {
+			response = userTrader.cancelOrder(transaction);
+		}
 		
 		List<Transaction> transactions = getTransactions(userId, null);
 		response.setData(transactions);

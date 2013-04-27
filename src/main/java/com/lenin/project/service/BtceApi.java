@@ -143,6 +143,19 @@ public class BtceApi {
 		
 	}
 	
+
+	public static JSONObject cancelOrder(Transaction transaction) {
+		
+		List<NameValuePair> methodParams = new ArrayList<NameValuePair>();
+		methodParams.add(new BasicNameValuePair("method", "CancelOrder"));
+		methodParams.add(new BasicNameValuePair("order_id", transaction.getOrderId()));
+		
+		JSONObject cancelOrderResult = authenticatedHTTPRequest(methodParams);
+		
+		return cancelOrderResult;
+		
+	}
+
 	
 	public static Transaction createTransaction(String pair, Double amount, Double rate, String type) {
 		

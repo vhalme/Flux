@@ -25,17 +25,26 @@
 }
 
 .profitBorder {
-	border: 1px solid #80FF80;
+	border: 1px solid #80D080;
 }
 
 .profitFill {
-	background: #80FF80;
+	background: #80D080;
 }
 
 .lossBorder {
-	border: 1px solid #FF8080;
+	border: 1px solid #D08080;
 }
 
 .lossFill {
-	background: #FF8080;
+	background: #D08080;
+}
+
+.transparentCover {
+	opacity: 0.5;
+	background: #FFFFFF;
+	position: absolute;
+	height: 100%;
+	width: 100%;
+	z-index: 2;
 }

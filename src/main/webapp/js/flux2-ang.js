@@ -189,6 +189,22 @@ function AppCtrl($scope, $routeParams, $http) {
 	};
 	
 	
+	$scope.cancelTrade = function(transaction) {
+		
+		API.cancelTransaction(transaction, function(response) {
+			
+			console.log(response);
+			
+			if(response.success == 1) {
+				
+				$scope.setTransactions(response.data);
+			
+			}
+		
+		});
+		
+	};
+	
 	$scope.manualTransaction = function(type) {
 		
 		var amount;
@@ -209,7 +225,7 @@ function AppCtrl($scope, $routeParams, $http) {
 			
 		});
 		
-	}
+	};
 	
 	$scope.reverseTrade = function(transaction, save) {
 		
@@ -241,7 +257,7 @@ function AppCtrl($scope, $routeParams, $http) {
 		var reverseTransaction = 
 			$scope.createTransaction("ltc_usd", transaction.amount, $scope.actualTradeRate(reverseType), reverseType);
 		
-		reverseTransaction.reverseTransaction = transaction;
+		reverseTransaction.reversedTransaction = transaction;
 		
 		return reverseTransaction;
 		

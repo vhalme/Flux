@@ -65,6 +65,26 @@ var API = {
 		},
 		
 		
+		cancelTransaction: function(transaction, callback) {
+			
+			$.ajax({
+		    	
+				async: false,
+		    	type: "POST",
+		    	url: "service/transaction?cancel=true",
+		    	dataType: "json",
+	  			contentType: "application/json",
+	  			headers: {
+					"User-Id": this.userId
+		    	},
+		    	data: angular.toJson(transaction),
+		    	success: callback
+		    	
+		    });
+			
+		},
+		
+		
 		postTransaction: function(transaction, callback) {
 			
 			$.ajax({
