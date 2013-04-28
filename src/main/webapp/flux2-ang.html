@@ -32,7 +32,7 @@
 	<body ng-controller="AppCtrl">
 
 		<div class="container">
-			
+
 			<div class="row" style="margin-bottom: 2.0em; background: black; color: white;">
 						
 				<div class="span4" style="text-align: center;">
@@ -69,6 +69,26 @@
 					
 			</div>
 			
+			<div class="tabbable"> <!-- Only required for left/right tabs -->
+  			
+  				<ul class="nav nav-tabs">
+    				<li class="active"><a href="#tab1" data-toggle="tab">LTC - USD</a></li>
+    				<li><a href="#tab2" data-toggle="tab">LTC - BTC</a></li>
+    				<li><a href="#tab3" data-toggle="tab">BTC - USD</a></li>
+    				<li style="padding-top: 4px;">
+    					<button class="btn" href="" style="display: inline-block;">Add tab</button>
+    					<select style="width: 8em; margin-bottom: 0px;">
+        					<option value="ltc_usd" title="LTC-USD">LTC-USD</option>
+        					<option value="ltc_btc" title="LTC-BTC">LTC-BTC</option>
+        					<option value="btc_usd" title="BTC-USD">BTC-USD</option>
+    					</select>
+    				</li>
+  				</ul>
+  
+  				<div class="tab-content">
+    			
+    				<div class="tab-pane active" id="tab1">
+      				
 			<div class="row">
 				
 				<div class="span12" style="padding-bottom: 0.3em;">
@@ -452,6 +472,16 @@
 					
 				</div>
 			
+			</div>
+			
+					</div>
+    				<div class="tab-pane" id="tab2">
+      					<p>Howdy, I'm in Section 2.</p>
+    				</div>
+    				<div class="tab-pane" id="tab3">
+      					<p>Howdy, I'm in Section 3.</p>
+    				</div>
+  				</div>
 			</div>
 			
 			<div class="row" style="margin-top: 4.0em;">
