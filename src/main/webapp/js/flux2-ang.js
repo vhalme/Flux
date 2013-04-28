@@ -1,5 +1,6 @@
-
-function AppCtrl($scope, $routeParams, $http) {
+function TradeStatsCtrl($scope, $routeParams, $http) {
+	
+	$scope.tradeStatsId = $routeParams.tradeStatsId;
 	
 	$scope.intervalIds = { main: 0, loop: 0 };
 	
@@ -624,3 +625,12 @@ myApp.directive('customstyle', function () {
    }
 	
 });
+
+myApp.config(['$routeProvider', function($routeProvider) {
+	
+	$routeProvider.
+    	when('/tradeStats/:tradeStatsId', { templateUrl: 'trading-view.html', controller: TradeStatsCtrl }).
+    	otherwise( { redirectTo: '/tradeStats/0' } );
+	}]
+
+);
