@@ -19,37 +19,39 @@
 			<b>RATE CHANGE:</b> {{rateChange}}
 		</div>
 		<div class="span4" style="text-align: center;">
-			<button ng-click="removeMoney()">
+			<button ng-click="removeFundsLeft()">
 				money--
 			</button>
-			<button ng-click="addMoney()">
+			<button ng-click="addFundsLeft()">
 				money++
 			</button>
 			<br/>
-			<button style="margin-left: 1.0em;" ng-click="removeCoins()">
+			<button style="margin-left: 1.0em;" ng-click="removeFundsRight()">
 				coins--
 			</button>
-			<button ng-click="addCoins()">
+			<button ng-click="addFundsRight()">
 				coins++
 			</button>
 		</div>
 
 	</div>
-
-	<div class="tabbable">
+	
+	<div class="row" ng-hide="!user.currentTradeStats.uninitialized">
+		<div class="span12" style="text-align: center;">
+			Loading
+		</div>
+	</div>
+	
+	<div class="tabbable" ng-hide="user.currentTradeStats.uninitialized">
 		<!-- Only required for left/right tabs -->
-
+		
 		<ul class="nav nav-tabs">
-			<li class="active">
-				<a href="#tab1" data-toggle="tab">LTC - USD</a>
+			
+			<li ng-repeat="stats in user.tradeStats" ng-class="{ active: user.currentTradeStats.id == stats.id }">
+				<a href="" ng-click="go('/tradeStats/{{stats.id}}')" data-toggle="tab">{{stats.currencyLeft|uppercase}}-{{stats.currencyRight|uppercase}}</a>
 			</li>
-			<li>
-				<a href="#tab2" data-toggle="tab">LTC - BTC</a>
-			</li>
-			<li>
-				<a href="#tab3" data-toggle="tab">BTC - USD</a>
-			</li>
-			<li style="padding-top: 4px;">
+			
+			<li style="padding-top: 4px; padding-left: 1.0em;">
 				<button class="btn" href="" style="display: inline-block;">
 					Add tab
 				</button>
@@ -115,7 +117,7 @@
 										</div>
 										<div class="span2">
 											<input style="margin-bottom: 0px; width: 4.0em;" type="text" ng-model="user.currentTradeStats.profitTarget"/>
-											USD
+											{{stats.currencyLeft|uppercase}}
 										</div>
 									</div>
 									<div class="row">
@@ -124,7 +126,7 @@
 										</div>
 										<div class="span2">
 											<input style="margin-bottom: 0px; width: 4.0em;" type="text" ng-model="user.currentTradeStats.buyCeiling"/>
-											USD
+											{{stats.currencyLeft|uppercase}}
 										</div>
 									</div>
 								</div>
@@ -137,7 +139,7 @@
 										</div>
 										<div class="span2">
 											<input style="margin-bottom: 0px; width: 4.0em;" type="text" ng-model="user.currentTradeStats.tradeChunk"/>
-											LTC
+											{{user.currentTradeStats.currencyRight|uppercase}}
 										</div>
 									</div>
 									<div class="row">
@@ -146,7 +148,7 @@
 										</div>
 										<div class="span2">
 											<input style="margin-bottom: 0px; width: 4.0em;" type="text" ng-model="user.currentTradeStats.sellFloor"/>
-											USD
+											{{user.currentTradeStats.currencyLeft|uppercase}}
 										</div>
 									</div>
 								</div>
@@ -195,14 +197,14 @@
 								<div class="row">
 									<div class="span2" style="background: #ededed; margin-bottom: 0.2em;">
 										<div style="margin: 0.3em;">
-											USD [<a href="" ng-click="manualBuyCurrencyLeft = user.currentTradeStats.fundsLeft">All</a>] [<a href="" ng-click="manualBuyCurrencyLeft = user.currentTradeStats.fundsLeft/2">1/2</a>]
+											{{user.currentTradeStats.currencyLeft|uppercase}} [<a href="" ng-click="manualBuyCurrencyLeft = user.currentTradeStats.fundsLeft">All</a>] [<a href="" ng-click="manualBuyCurrencyLeft = user.currentTradeStats.fundsLeft/2">1/2</a>]
 											<br/>
 											<input style="width: 100%; margin-bottom: 0px; margin-top: 0.15em;" type="text" ng-model="manualBuyCurrencyLeft"/>
 										</div>
 									</div>
 									<div class="span2" style="background: #ededed; margin-bottom: 0.2em;">
 										<div style="margin: 0.3em;">
-											LTC [<a href="" ng-click="manualBuyCurrencyRight = user.currentTradeStats.fundsRight">All</a>] [<a href="" ng-click="manualBuyCurrencyRight = user.currentTradeStats.fundsRight/2">1/2</a>]
+											{{user.currentTradeStats.currencyRight|uppercase}} [<a href="" ng-click="manualBuyCurrencyRight = user.currentTradeStats.fundsRight">All</a>] [<a href="" ng-click="manualBuyCurrencyRight = user.currentTradeStats.fundsRight/2">1/2</a>]
 											<br/>
 											<input style="width: 100%; margin-bottom: 0px; margin-top: 0.15em;" type="text" ng-model="manualBuyCurrencyRight"/>
 										</div>
@@ -250,14 +252,14 @@
 								<div class="row">
 									<div class="span2" style="background: #ededed; margin-bottom: 0.2em;">
 										<div style="margin: 0.3em;">
-											LTC [<a href="" ng-click="manualSellCurrencyRight = user.currentTradeStats.fundsRight">All</a>] [<a href="" ng-click="manualSellCurrencyRight = user.currentTradeStats.fundsRight/2">1/2</a>]
+											{{user.currentTradeStats.currencyRight|uppercase}} [<a href="" ng-click="manualSellCurrencyRight = user.currentTradeStats.fundsRight">All</a>] [<a href="" ng-click="manualSellCurrencyRight = user.currentTradeStats.fundsRight/2">1/2</a>]
 											<br/>
 											<input style="width: 100%; margin-bottom: 0px; margin-top: 0.15em;" type="text" ng-model="manualSellCurrencyRight"/>
 										</div>
 									</div>
 									<div class="span2" style="background: #ededed; margin-bottom: 0.2em;">
 										<div style="margin: 0.3em;">
-											USD [<a href="" ng-click="manualSellCurrencyLeft = user.currentTradeStats.fundsLeft">All</a>] [<a href="" ng-click="manualSellCurrencyLeft = user.currentTradeStats.fundsLeft/2">1/2</a>]
+											{{user.currentTradeStats.currencyLeft|uppercase}} [<a href="" ng-click="manualSellCurrencyLeft = user.currentTradeStats.fundsLeft">All</a>] [<a href="" ng-click="manualSellCurrencyLeft = user.currentTradeStats.fundsLeft/2">1/2</a>]
 											<br/>
 											<input style="width: 100%; margin-bottom: 0px; margin-top: 0.15em;" type="text" ng-model="manualSellCurrencyLeft"/>
 										</div>
@@ -280,7 +282,7 @@
 
 				<div class="row">
 					<div class="span4" style="font-size: 2.0em;">
-						<b>USD</b>
+						<b>{{user.currentTradeStats.currencyLeft|uppercase}}</b>
 						{{user.currentTradeStats.fundsLeft|truncate:6:""}}
 					</div>
 					<div class="span4" style="text-align: center;">
@@ -291,7 +293,7 @@
 						{{user.currentTradeStats.currentSellRate|truncate:6:""}} <b>LO</b>
 					</div>
 					<div class="span4" style="font-size: 2.0em; text-align: right;">
-						<b>LTC</b>
+						<b>{{user.currentTradeStats.currencyRight|uppercase}}</b>
 						{{user.currentTradeStats.fundsRight|truncate:6:""}}
 					</div>
 				</div>
@@ -303,11 +305,11 @@
 						<div class="row" style="margin-top: 1.0em;">
 
 							<div class="span3">
-								<b>USD CASHOUT:</b> {{currencyLeftCashout()|truncate:6:""}}
+								<b>{{user.currentTradeStats.currencyLeft|uppercase}} CASHOUT:</b> {{currencyLeftCashout()|truncate:6:""}}
 							</div>
 
 							<div class="span3">
-								<b>USD REVENUE:</b> {{user.currentTradeStats.profitLeft|truncate:6:""}}
+								<b>{{user.currentTradeStats.currencyLeft|uppercase}} REVENUE:</b> {{user.currentTradeStats.profitLeft|truncate:6:""}}
 							</div>
 
 						</div>
@@ -319,11 +321,11 @@
 						<div class="row" style="margin-top: 1.0em;">
 
 							<div class="span3" style="text-align: right;">
-								<b>LTC CASHOUT:</b> {{currencyRightCashout()|truncate:6:""}}
+								<b>{{user.currentTradeStats.currencyRight|uppercase}} CASHOUT:</b> {{currencyRightCashout()|truncate:6:""}}
 							</div>
 
 							<div class="span3" style="text-align: right;">
-								<b>LTC REVENUE:</b> 0
+								<b>{{user.currentTradeStats.currencyRight|uppercase}} REVENUE:</b> 0
 							</div>
 
 						</div>
@@ -344,10 +346,10 @@
 
 						<div class="row" style="margin-top: 0.7em;">
 							<div class="span1">
-								<a href="" ng-click="sellSort='amount'; sellSortReverse=!sellSortReverse">LTC</a>
+								<a href="" ng-click="sellSort='amount'; sellSortReverse=!sellSortReverse">{{user.currentTradeStats.currencyRight|uppercase}}</a>
 							</div>
 							<div class="span1">
-								<a href="" ng-click="buySort='amount'; buySortReverse=!buySortReverse">USD</a>
+								<a href="" ng-click="buySort='amount'; buySortReverse=!buySortReverse">{{user.currentTradeStats.currencyLeft|uppercase}}</a>
 							</div>
 							<div class="span1">
 								<a href="" ng-click="sellSort='rate'; sellSortReverse=!sellSortReverse">RATE</a>
@@ -406,10 +408,10 @@
 
 						<div class="row" style="margin-top: 0.7em;">
 							<div class="span1">
-								<a href="" ng-click="buySort='amount'; buySortReverse=!buySortReverse">LTC</a>
+								<a href="" ng-click="buySort='amount'; buySortReverse=!buySortReverse">{{user.currentTradeStats.currencyRight|uppercase}}</a>
 							</div>
 							<div class="span1">
-								<a href="" ng-click="buySort='amount'; buySortReverse=!buySortReverse">USD</a>
+								<a href="" ng-click="buySort='amount'; buySortReverse=!buySortReverse">{{user.currentTradeStats.currencyLeft|uppercase}}</a>
 							</div>
 							<div class="span1">
 								<a href="" ng-click="buySort='rate'; buySortReverse=!buySortReverse">RATE</a>

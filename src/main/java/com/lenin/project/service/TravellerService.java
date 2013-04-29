@@ -1,7 +1,6 @@
 package com.lenin.project.service;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -18,7 +17,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
-import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -188,6 +186,8 @@ public class TravellerService {
 			
 			tradeStatsRepository.save(tradeStats);
 			
+			System.out.println(tradeStats.getPair()+"("+tradeStats.getId()+"): "+tradeStats.getTradeAuto());
+			
 			if(tradeStats.getTradeAuto() == true && tradeStats.getCurrentRate() != 0.0) {
 				AutoTrader autoTrader = new AutoTrader(tradeStats, tradeStatsRepository, transactionRepository, tradeRepository);
 				autoTrader.autoTrade();
@@ -295,40 +295,34 @@ public class TravellerService {
 	}
 	
 	@GET
-	@Path("/rates")
+	@Path("/tradeStats")
+	@Consumes({ MediaType.APPLICATION_JSON })
     @Produces({ MediaType.APPLICATION_JSON })
-    public RequestResponse getRates(@HeaderParam("User-Id") String userId) {
-		
-		User user = userRepository.findByUsername(userId);
+    public RequestResponse getTradeStats(@HeaderParam("User-Id") String userId,
+    		@HeaderParam("TradeStats-Id") String tradeStatsId) {
 		
 		RequestResponse response = new RequestResponse();
+		User user = userRepository.findByUsername(userId);
+		TradeStats tradeStats = tradeStatsRepository.findOne(tradeStatsId); //user.getCurrentTradeStats();
+		//user.setCurrentTradeStats(tradeStats);
 		
-		TickerQuote rateQuote = new TickerQuote();
-    	
-		if(user.getLive()) {
+		response.setSuccess(1);
+		response.setData(tradeStats);
 		
-	    	rateQuote.setPair("ltc_usd");
-	    	rateQuote.setLast(BtceApi.currentRateLtcUsd);
-	    	rateQuote.setBuy(BtceApi.currentBuyRateLtcUsd);
-	    	rateQuote.setSell(BtceApi.currentSellRateLtcUsd);
-
-	    	response.setSuccess(1);
-			response.setData(rateQuote);
-			
-		} else {
-			
-			rateQuote.setPair("ltc_usd");
-	    	rateQuote.setLast(BtceApi.currentRateLtcUsd);
-	    	rateQuote.setBuy(BtceApi.currentBuyRateLtcUsd);
-	    	rateQuote.setSell(BtceApi.currentSellRateLtcUsd);
-	    	
-			response.setSuccess(1);
-			response.setData(rateQuote);
-			
-		}
-
-	    	    
 		return response;
+		
+	}
+	
+	@PUT
+    @Path("/tradeStats")
+	@Consumes({ MediaType.APPLICATION_JSON })
+	@Produces({ MediaType.APPLICATION_JSON })
+    public TradeStats saveUserDetails(@HeaderParam("User-Id") String userId, 
+    		@HeaderParam("TradeStats-Id") String tradeStatsId, TradeStats tradeStats) {
+        
+		tradeStatsRepository.save(tradeStats);
+		
+		return tradeStats;
 		
 	}
 	
@@ -337,59 +331,52 @@ public class TravellerService {
 	@Path("/info")
 	@Consumes({ MediaType.APPLICATION_JSON })
     @Produces({ MediaType.APPLICATION_JSON })
-    public RequestResponse getInfo(@HeaderParam("User-Id") String userId) {
+    public RequestResponse getAccountInfo(@HeaderParam("User-Id") String userId) {
 		
 		RequestResponse response = new RequestResponse();
 		User user = userRepository.findByUsername(userId);
-		TradeStats tradeStats = user.getCurrentTradeStats();
 		
-		if(user.getLive()) {
 			
-			JSONObject accountInfoResult = BtceApi.getAccountInfo();
+		JSONObject accountInfoResult = BtceApi.getAccountInfo();
 			
-			if(accountInfoResult == null) {
-				response.setSuccess(0);
-				response.setMessage("Could not get account info.");
-				return response;
-			}
-			
-			try {
-				
-				Integer success = accountInfoResult.getInt("success");
-				response.setSuccess(success);
-				
-				if(success == 1) {
-					
-					JSONObject funds = 
-							accountInfoResult
-								.getJSONObject("return")
-								.getJSONObject("funds");
-					
-					tradeStats.setFundsRight(funds.getDouble(tradeStats.getCurrencyRight()));
-					tradeStats.setFundsLeft(funds.getDouble(tradeStats.getCurrencyLeft()));
-					
-					tradeStatsRepository.save(tradeStats);
-					
-					response.setData(user);
-					
-				}
-				
-			} catch(JSONException e) {
-				
-				e.printStackTrace();
-				
-				response.setSuccess(-1);
-				response.setMessage(e.getMessage());
-				
-			}
-			
-			
-		} else {
-			
-			response.setSuccess(1);
-			response.setData(user);
-			
+		if(accountInfoResult == null) {
+			response.setSuccess(0);
+			response.setMessage("Could not get account info.");
+			return response;
 		}
+			
+		try {
+				
+			Integer success = accountInfoResult.getInt("success");
+			response.setSuccess(success);
+				
+			if(success == 1) {
+					
+				JSONObject funds = 
+						accountInfoResult
+							.getJSONObject("return")
+							.getJSONObject("funds");
+					
+				//tradeStats.setFundsRight(funds.getDouble(tradeStats.getCurrencyRight()));
+				//tradeStats.setFundsLeft(funds.getDouble(tradeStats.getCurrencyLeft()));
+					
+				//tradeStatsRepository.save(tradeStats);
+					
+				//response.setData(user);
+					
+			}
+				
+		} catch(JSONException e) {
+				
+			e.printStackTrace();
+				
+			response.setSuccess(-1);
+			response.setMessage(e.getMessage());
+				
+		}
+			
+		//response.setSuccess(1);
+		response.setData(user);
 		
 		return response;
 		
@@ -409,24 +396,16 @@ public class TravellerService {
 		
 	}
 	
-	@GET
-    @Path("/deltrades")
-	@Produces({ MediaType.TEXT_PLAIN })
-    public String delTrades(@HeaderParam("User-Id") String userId, @QueryParam("orderId") String orderId) {
-        
-		tradeRepository.deleteAll();
-		
-		return "OK";
-		
-	}
 	
 	@GET
     @Path("/transaction")
 	@Produces({ MediaType.APPLICATION_JSON })
-    public List<Transaction> getTransactions(@HeaderParam("User-Id") String userId, @QueryParam("type") String type) {
+    public List<Transaction> getTransactions(@HeaderParam("User-Id") String userId, 
+    		@HeaderParam("TradeStats-Id") String tradeStatsId, @QueryParam("type") String type) {
         
 		User user = userRepository.findByUsername(userId);
-		TradeStats tradeStats = user.getCurrentTradeStats();
+		TradeStats tradeStats = tradeStatsRepository.findOne(tradeStatsId); //user.getCurrentTradeStats();
+		user.setCurrentTradeStats(tradeStats);
 		
 		if(type != null) {
 			return transactionRepository.findByTradeStatsAndType(tradeStats, type);
@@ -443,7 +422,8 @@ public class TravellerService {
 	@Path("/transaction")
 	@Consumes({ MediaType.APPLICATION_JSON })
     @Produces({ MediaType.APPLICATION_JSON })
-	public RequestResponse deleteTransaction(@HeaderParam("User-Id") String userId, Transaction transaction) {
+	public RequestResponse deleteTransaction(@HeaderParam("User-Id") String userId, 
+			@HeaderParam("TradeStats-Id") String tradeStatsId, Transaction transaction) {
 		
 		transactionRepository.delete(transaction);
 		transaction = transactionRepository.findOne(transaction.getId());
@@ -456,7 +436,7 @@ public class TravellerService {
 			response.setSuccess(0);
 		}
 		
-		List<Transaction> transactions = getTransactions(userId, null);
+		List<Transaction> transactions = getTransactions(userId, tradeStatsId, null);
 		response.setData(transactions);
 		
 		return response;
@@ -469,6 +449,7 @@ public class TravellerService {
 	@Consumes({ MediaType.APPLICATION_JSON })
     @Produces({ MediaType.APPLICATION_JSON })
     public RequestResponse postTransaction(@HeaderParam("User-Id") String userId, 
+    		@HeaderParam("TradeStats-Id") String tradeStatsId, 
     		Transaction transaction, @QueryParam("cancel") String cancel) {
 		
 		RequestResponse response = new RequestResponse();
@@ -480,7 +461,8 @@ public class TravellerService {
 			return response;
 		}
 		
-		TradeStats tradeStats = user.getCurrentTradeStats();
+		TradeStats tradeStats = tradeStatsRepository.findOne(tradeStatsId); //user.getCurrentTradeStats();
+		user.setCurrentTradeStats(tradeStats);
 		
 		if(tradeStats.getCurrentRate() == 0.0) {
 			response.setSuccess(0);
@@ -497,7 +479,7 @@ public class TravellerService {
 			response = userTrader.cancelOrder(transaction);
 		}
 		
-		List<Transaction> transactions = getTransactions(userId, null);
+		List<Transaction> transactions = getTransactions(userId, tradeStatsId, null);
 		response.setData(transactions);
 		
 		return response;
@@ -508,11 +490,13 @@ public class TravellerService {
 	
 	@GET
     @Path("/test")
-    @Produces({ MediaType.TEXT_PLAIN })
-    public String test(@QueryParam("fromId") String fromId, @QueryParam("toId") String toId) {
+    @Produces({ MediaType.APPLICATION_JSON })
+    public List<Transaction> test(@QueryParam("fromId") String tradeStatsId) {
 		
-		
-        return "";
+		TradeStats tradeStats = tradeStatsRepository.findOne(tradeStatsId);
+		List<Transaction> transactions = transactionRepository.findByTradeStatsAndType(tradeStats, "sell");
+        
+		return transactions;
     
 	}
 	
@@ -520,38 +504,18 @@ public class TravellerService {
 	@Path("/funds")
     @Produces({ MediaType.TEXT_PLAIN })
 	public String changeFunds(@HeaderParam("User-Id") String userId,
+			@HeaderParam("TradeStats-Id") String tradeStatsId,
 			@QueryParam("fund") String fund, @QueryParam("change") Double change) {
 		
 		User user = userRepository.findByUsername(userId);
+		TradeStats tradeStats = tradeStatsRepository.findOne(tradeStatsId); //user.getCurrentTradeStats();
+		user.setCurrentTradeStats(tradeStats);
+		
 		user.setFunds(fund, user.getFunds(fund) + change);
 		
 		tradeStatsRepository.save(user.getCurrentTradeStats());
 		
 		return "OK";
-		
-	}
-	
-	@POST
-	@Path("/rate")
-	@Consumes({ MediaType.TEXT_PLAIN })
-    @Produces({ MediaType.APPLICATION_JSON })
-	public User setRate(@HeaderParam("User-Id") String userId,
-			@QueryParam("rate") Double rate, String rateStr) {
-		
-		User user = userRepository.findByUsername(userId);
-		
-		TradeStats tradeStats = user.getCurrentTradeStats();
-		tradeStats.setCurrentRate(rate);
-		tradeStats.setCurrentBuyRate(rate);
-		tradeStats.setCurrentSellRate(rate);
-		
-		if(tradeStats.getOldRate() == 0.0) {
-			tradeStats.setOldRate(rate);
-		}
-		
-		tradeStatsRepository.save(tradeStats);
-		
-		return user;
 		
 	}
 	
@@ -572,14 +536,21 @@ public class TravellerService {
 		testUser1.setUsername("testUser123");
 		testUser1.setLive(false);
 		
-		TradeStats tradeStats1 = new TradeStats();
-		tradeStats1.setCurrencyLeft("usd");
-		tradeStats1.setCurrencyRight("ltc");
-		tradeStats1.setLive(false);
-		tradeStats1 = tradeStatsRepository.save(tradeStats1);
+		TradeStats tradeStats1_1 = new TradeStats();
+		tradeStats1_1.setCurrencyLeft("usd");
+		tradeStats1_1.setCurrencyRight("ltc");
+		tradeStats1_1.setLive(false);
+		tradeStats1_1 = tradeStatsRepository.save(tradeStats1_1);
 		
-		testUser1.addTradeStats(tradeStats1);
-		testUser1.setCurrentTradeStats(tradeStats1);
+		TradeStats tradeStats1_2 = new TradeStats();
+		tradeStats1_2.setCurrencyLeft("btc");
+		tradeStats1_2.setCurrencyRight("ltc");
+		tradeStats1_2.setLive(false);
+		tradeStats1_2 = tradeStatsRepository.save(tradeStats1_2);
+		
+		testUser1.addTradeStats(tradeStats1_1);
+		testUser1.addTradeStats(tradeStats1_2);
+		testUser1.setCurrentTradeStats(tradeStats1_1);
 		userRepository.save(testUser1);
 		
 		User testUser2 = new User();
@@ -596,9 +567,39 @@ public class TravellerService {
 		testUser2.setCurrentTradeStats(tradeStats2);
 		userRepository.save(testUser2);
 		
+		
         return result;
     
 	}
+	
+	
+	@GET
+    @Path("/deltrades")
+	@Produces({ MediaType.TEXT_PLAIN })
+    public String delTrades(@HeaderParam("User-Id") String userId, @QueryParam("orderId") String orderId) {
+        
+		tradeRepository.deleteAll();
+		
+		return "OK";
+		
+	}
+	
+	
+	@GET
+    @Path("/deleteall")
+    @Produces({ MediaType.TEXT_PLAIN })
+    public String deleteAll() {
+		
+		tradeStatsRepository.deleteAll();
+		tradeRepository.deleteAll();
+		transactionRepository.deleteAll();
+		userRepository.deleteAll();
+		commentRepository.deleteAll();
+		
+		return "OK";
+    
+	}
+	
 	
 	
 	@POST
@@ -619,42 +620,29 @@ public class TravellerService {
 	@GET
     @Path("/user")
 	@Produces({ MediaType.APPLICATION_JSON })
-    public List<User> listUsers() {
+    public List<User> listUsers(@HeaderParam("User-Id") String userId, @HeaderParam("TradeStats-Id") String tradeStatsId) {
         
-		return userRepository.findAll();
-	
+		if(userId != null) {
+			
+			User user = userRepository.findByUsername(userId);
+			
+			if(tradeStatsId != null) {
+				user.setCurrentTradeStats(tradeStatsRepository.findOne(tradeStatsId));
+			}
+			
+			List<User> users = new ArrayList<User>();
+			users.add(user);
+			
+			return users;
+		
+		} else {
+			
+			return userRepository.findAll();
+		
+		}
+		
 	}
 	
-	@PUT
-    @Path("/user")
-	@Consumes({ MediaType.APPLICATION_JSON })
-	@Produces({ MediaType.APPLICATION_JSON })
-    public User saveUserDetails(@HeaderParam("User-Id") String userId, User user) {
-        
-		User dbUser = userRepository.findByUsername(userId);
-		dbUser.setCurrentTradeStats(user.getCurrentTradeStats());
-		
-		tradeStatsRepository.save(dbUser.getCurrentTradeStats());
-		
-		return dbUser;
-		
-	}
-	
-	
-	@GET
-    @Path("/deleteall")
-    @Produces({ MediaType.TEXT_PLAIN })
-    public String deleteAll() {
-		
-		tradeStatsRepository.deleteAll();
-		tradeRepository.deleteAll();
-		transactionRepository.deleteAll();
-		userRepository.deleteAll();
-		commentRepository.deleteAll();
-		
-		return "OK";
-    
-	}
 	
 	
 }

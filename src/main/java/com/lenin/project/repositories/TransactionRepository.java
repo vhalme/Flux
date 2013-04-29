@@ -16,6 +16,8 @@ public interface TransactionRepository extends MongoRepository<Transaction, Stri
 	
 	List<Transaction> findByTradeStatsAndType(TradeStats tradeStats, String type);
 	
+	List<Transaction> findByTradeStatsIdAndType(String id, String type);
+	
 	List<Transaction> findAll();
 	
 	Transaction save(Transaction transaction);

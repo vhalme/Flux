@@ -11,7 +11,7 @@
 
   <properties>
   		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<spring.version>3.1.0.RELEASE</spring.version>
+		<spring.version>3.2.2.RELEASE</spring.version>
 		<cxf.version>2.5.2</cxf.version>
 		<commons-logging.version>1.1.1</commons-logging.version>
 	</properties>
@@ -54,7 +54,7 @@
 		<dependency>
     		<groupId>org.springframework.data</groupId>
     		<artifactId>spring-data-mongodb</artifactId>
-    		<version>1.1.0.M1</version>
+    		<version>1.2.0.RELEASE</version>
   		</dependency>
 
 		<!-- Servlet API dependencies -->
@@ -116,6 +116,11 @@
    			<version>2.7.0</version>
 		</dependency>
 		
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.11</version>
+		</dependency>
 
 	</dependencies>
 	

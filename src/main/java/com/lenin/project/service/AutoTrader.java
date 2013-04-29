@@ -100,6 +100,7 @@ public class AutoTrader extends UserTrader {
 		Double lowest = null;
 		
 		for(Transaction transaction : transactions) {
+			
 			if(lowest == null) {
 				lowest = transaction.getRate();
 			} else {
