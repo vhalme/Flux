@@ -186,7 +186,7 @@ public class TravellerService {
 			
 			tradeStatsRepository.save(tradeStats);
 			
-			System.out.println(tradeStats.getPair()+"("+tradeStats.getId()+"): "+tradeStats.getTradeAuto());
+			//System.out.println(tradeStats.getPair()+"("+tradeStats.getId()+"): "+tradeStats.getTradeAuto());
 			
 			if(tradeStats.getTradeAuto() == true && tradeStats.getCurrentRate() != 0.0) {
 				AutoTrader autoTrader = new AutoTrader(tradeStats, tradeStatsRepository, transactionRepository, tradeRepository);
@@ -321,6 +321,31 @@ public class TravellerService {
     		@HeaderParam("TradeStats-Id") String tradeStatsId, TradeStats tradeStats) {
         
 		tradeStatsRepository.save(tradeStats);
+		
+		return tradeStats;
+		
+	}
+	
+	@POST
+    @Path("/tradeStats")
+	@Consumes({ MediaType.TEXT_PLAIN })
+	@Produces({ MediaType.APPLICATION_JSON })
+    public TradeStats addUserDetails(@HeaderParam("User-Id") String userId, String currencyPair) {
+        
+		System.out.println("new pair: ]"+currencyPair+"[");
+		
+		User user = userRepository.findByUsername(userId);
+		
+		String[] currencies = currencyPair.split("_");
+		TradeStats tradeStats = new TradeStats();
+		tradeStats.setCurrencyRight(currencies[0]);
+		tradeStats.setCurrencyLeft(currencies[1]);
+		System.out.println(tradeStats.getCurrencyRight()+"/"+tradeStats.getCurrencyLeft());
+		
+		tradeStats = tradeStatsRepository.save(tradeStats);
+		
+		user.addTradeStats(tradeStats);
+		userRepository.save(user);
 		
 		return tradeStats;
 		

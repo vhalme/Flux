@@ -44,6 +44,8 @@ function TradeStatsCtrl($scope, $routeParams, $http) {
 	    ];
 	
 	
+	$scope.newCurrencyPair = "ltc_usd";
+	
 	$scope.rateChange = 0;
 	
 	$scope.trackManualTransactions = true;
@@ -280,6 +282,14 @@ function TradeStatsCtrl($scope, $routeParams, $http) {
 		
 	}
 	
+	$scope.addTab = function() {
+		
+		API.addTradeStats($scope.newCurrencyPair, function(newTradeStats) {
+			console.log(angular.fromJson(newTradeStats));
+			$scope.user.tradeStats.push(angular.fromJson(newTradeStats));
+		});
+		
+	};
 	
 	$scope.changeProfitFormat = function(type) {
 		if(type == "buy") {

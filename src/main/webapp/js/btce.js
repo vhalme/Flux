@@ -34,6 +34,24 @@ var API = {
 			
 		},
 		
+		addTradeStats: function(pair, callback) {
+		    
+			$.ajax({
+		    	async: false,
+		    	type: "POST",
+		    	url: "service/tradeStats",
+		    	dataType: "text",
+	  			contentType: "text/plain",
+		    	headers: {
+					"User-Id": this.userId
+		    	},
+		    	data: pair,
+		    	success: callback
+		    });
+			
+			
+		},
+		
 		
 		getTransactions: function(callback) {
 			

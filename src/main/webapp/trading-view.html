@@ -52,10 +52,10 @@
 			</li>
 			
 			<li style="padding-top: 4px; padding-left: 1.0em;">
-				<button class="btn" href="" style="display: inline-block;">
+				<button ng-click="addTab()" class="btn" href="" style="display: inline-block;">
 					Add tab
 				</button>
-				<select style="width: 8em; margin-bottom: 0px;">
+				<select ng-model="newCurrencyPair" style="width: 8em; margin-bottom: 0px;">
 					<option value="ltc_usd" title="LTC-USD">LTC-USD</option>
 					<option value="ltc_btc" title="LTC-BTC">LTC-BTC</option>
 					<option value="btc_usd" title="BTC-USD">BTC-USD</option>
