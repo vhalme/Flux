@@ -11,10 +11,12 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class TickerQuote implements Serializable {
 	
 	private static final long serialVersionUID = 2564403728524688276L;
-
+	
 	@Id
 	private String id;
-
+	
+	private String setType;
+	
 	private Long time;
 	
 	private String pair;
@@ -33,8 +35,19 @@ public class TickerQuote implements Serializable {
 	public void setId(String id) {
 		this.id = id;
 	}
-
 	
+	
+	
+	public String getSetType() {
+		return setType;
+	}
+
+
+	public void setSetType(String setType) {
+		this.setType = setType;
+	}
+
+
 	public Long getTime() {
 		return time;
 	}

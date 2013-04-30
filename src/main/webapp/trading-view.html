@@ -167,12 +167,35 @@
 							<div class="span12" style="border-top: 1px solid black; border-bottom: 1px solid black; height: 1.85em;">
 								<div style="padding-top: 0.2em;">
 									<a href="" ng-click="showGraphs = !showGraphs"><i ng-class="{ 'icon-chevron-down': showGraphs, 'icon-chevron-right': !showGraphs }"></i></a>
-									Charts & Visuals
+									Chart
 								</div>
 							</div>
 						</div>
-
-						<div class="row" ng-class="{ hidden: !showGraphs }" style="height: 320px;"></div>
+						<div class="row" ng-class="{ hidden: !showGraphs }">
+							<div class="span12">
+								<div class="row">
+									<div class="span12">
+										<div style="margin-left: 4.6em; margin-top: 0.6em;">
+											<div class="btn-group">
+  												<button class="btn">6 h</button>
+  												<button class="btn">24 h</button>
+  												<button class="btn">1 wk</button>
+  												<button class="btn">2 wk</button>
+  												<button class="btn">1 month</button>
+  												<button class="btn">6 month</button>
+  												<button class="btn">12 month</button>
+  												<button class="btn">All</button>
+											</div>
+											<span style="margin-left: 1.0em;">Max. precision: 15 sec</span>
+										</div>
+									</div>
+								</div>
+								<div class="row">
+									<div id="chartContainer" class="span12" style="height: 320px;">
+									</div>
+								</div>
+							</div>
+						</div>
 
 					</div>
 

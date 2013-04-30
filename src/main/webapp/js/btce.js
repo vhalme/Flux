@@ -163,6 +163,18 @@ var API = {
 		    	success: callback
 		    });
 			
+		},
+		
+		
+		getRates: function(pair, setType, from, until, callback) {
+			
+			$.ajax({
+		    	async: false,
+		    	type: "GET",
+		    	url: "service/rates?pair="+pair+"&setType="+setType+"&from="+from+"&until="+until,
+		    	success: callback
+		    });
+			
 		}
 		
 		

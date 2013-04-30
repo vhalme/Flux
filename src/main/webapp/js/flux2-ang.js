@@ -12,6 +12,8 @@ function TradeStatsCtrl($scope, $routeParams, $http) {
 	
 	console.log("tradeStatsId="+$scope.tradeStatsId);
 	
+	$scope.chart = null;
+	
 	$scope.user = {
 		
 		uninitialized: true,
@@ -64,10 +66,18 @@ function TradeStatsCtrl($scope, $routeParams, $http) {
 		console.log("starting...");
 		
 		API.getUser(function(users) {
+			
 			$scope.user = users[0];
+			
 			API.getTransactions(function(transactions) {
+				
 				$scope.setTransactions(transactions);
+				
+				$scope.initChart();
+				$scope.updateChart();
+				
 			});
+		
 		});
 		
 		$scope.refreshInterval = 15;
@@ -150,7 +160,97 @@ function TradeStatsCtrl($scope, $routeParams, $http) {
 		
 		$scope.rateChange = $scope.user.currentTradeStats.currentRate - $scope.user.currentTradeStats.oldRate;
 		//console.log($scope.user.currentTradeStats.currentTradeStats.currentRate+" - "+$scope.user.currentTradeStats.currentTradeStats.oldRate+" = "+$scope.rateChange);
+		$scope.updateChart();
+		
+	};
+	
+	$scope.initChart = function() {	
+		
+		$scope.chart = new CanvasJS.Chart("chartContainer", {
 			
+			zoomEnabled: true,
+			
+			title: {
+				text: $scope.user.currentTradeStats.currencyLeft.toUpperCase()+" - "+
+				$scope.user.currentTradeStats.currencyRight.toUpperCase()
+			},
+			
+			toolTip: {
+				shared: true,
+				
+			},
+			
+			legend: {
+				verticalAlign: "top",
+				horizontalAlign: "center",
+                                fontSize: 14,
+				fontWeight: "bold",
+				fontFamily: "calibri",
+				fontColor: "dimGrey"
+			},
+			
+			axisX: {
+				title: "",
+			},
+			
+			axisY:{
+				prefix: $scope.user.currentTradeStats.currencyLeft.toUpperCase(),
+				includeZero: false
+			},
+			
+			data: [{ 
+				// dataSeries1
+				type: "line",
+				xValueType: "dateTime",
+				showInLegend: true,
+				name: $scope.user.currentTradeStats.currencyLeft.toUpperCase()+" for 1 "+$scope.user.currentTradeStats.currencyRight.toUpperCase(),
+				dataPoints: []
+			}]
+			
+		});
+		
+		
+	};
+	
+	
+	$scope.updateChart = function() {
+		
+		if($scope.chart == null) {
+			$scope.initChart();
+			console.log($scope.chart);
+		}
+		
+		// dataPoints
+		var dataPoints1 = [];
+		
+		var from = 0;
+		var until = (new Date()).getTime()/1000;
+		
+		API.getRates($scope.user.currentTradeStats.pair, "15s", from, until, function(response) {
+			
+			var rates = response.data;
+			
+			for(var i=0; i<rates.length; i++) {
+				
+				var rate = rates[i];
+				
+				var time = new Date(rate.time*1000);
+				var yValue = rate.last;
+				
+				dataPoints1.push({
+					x: time.getTime(),
+					y: yValue
+				});
+			
+			}
+			
+			console.log(dataPoints1);
+			$scope.chart.options.data[0].dataPoints = dataPoints1;
+			$scope.chart.render();
+			
+		});
+
+		
 	};
 	
 	
@@ -434,7 +534,7 @@ function TradeStatsCtrl($scope, $routeParams, $http) {
 	
 	$scope.showAutoTrading = true;
 	$scope.showManualTrading = true;
-	$scope.showGraphs = false;
+	$scope.showGraphs = true;
 	
 	$scope.buySort = $scope.buyProfit;
 	$scope.buySortReverse = true;

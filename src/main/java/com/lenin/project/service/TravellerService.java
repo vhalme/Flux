@@ -30,6 +30,7 @@ import com.lenin.project.domain.TradeStats;
 import com.lenin.project.domain.Transaction;
 import com.lenin.project.domain.User;
 import com.lenin.project.repositories.CommentRepository;
+import com.lenin.project.repositories.TickerRepository;
 import com.lenin.project.repositories.TradeRepository;
 import com.lenin.project.repositories.TradeStatsRepository;
 import com.lenin.project.repositories.TransactionRepository;
@@ -57,26 +58,75 @@ public class TravellerService {
 	@Autowired
 	private TradeStatsRepository tradeStatsRepository;
 	
+	@Autowired
+	private TickerRepository tickerRepository;
+	
+	private Long tickerCounter = 0L;
+	private Long lastTickerTime = 0L;
 	
 	private Long lastTradeTime = 0L;
 	
+	private Map<String, List<TickerQuote>> recentRates = new HashMap<String, List<TickerQuote>>();
+	
 	
 	public TravellerService() {
+		
+		recentRates.put("ltc_usd", new ArrayList<TickerQuote>());
+		recentRates.put("btc_usd", new ArrayList<TickerQuote>());
+		recentRates.put("ltc_btc", new ArrayList<TickerQuote>());
 		
 	}
 	
 	@Scheduled(fixedDelay = 15000)
 	public void update() {
 		
+		List<TickerQuote> recentLtcUsd = recentRates.get("ltc_usd");
+		List<TickerQuote> recentBtcUsd = recentRates.get("btc_usd");
+		List<TickerQuote> recentLtcBtc = recentRates.get("ltc_btc");
 		
 		TickerQuote tickerLtcUsd = getTickerQuote("ltc_usd");
 		TickerQuote tickerBtcUsd = getTickerQuote("btc_usd");
 		TickerQuote tickerLtcBtc = getTickerQuote("ltc_btc");
 		
+		List<TickerQuote> tickerQuotes = new ArrayList<TickerQuote>();
+		tickerQuotes.add(tickerLtcUsd);
+		tickerQuotes.add(tickerBtcUsd);
+		tickerQuotes.add(tickerLtcBtc);
+		tickerRepository.save(tickerQuotes);
+		
+		lastTickerTime = tickerLtcUsd.getTime();
+		
+		recentLtcUsd.add(tickerLtcUsd);
+		recentBtcUsd.add(tickerBtcUsd);
+		recentLtcBtc.add(tickerLtcBtc);
+		
 		Map<String, TickerQuote> tickerMap = new HashMap<String, TickerQuote>();
 		tickerMap.put("ltc_usd", tickerLtcUsd);
 		tickerMap.put("btc_usd", tickerBtcUsd);
 		tickerMap.put("ltc_btc", tickerLtcBtc);
+		
+		if(tickerCounter % 4 == 0) {
+			createAverageQuotes("1min");
+		}
+		
+		if(tickerCounter % 40 == 0) {
+			createAverageQuotes("10min");
+		}
+		
+		if(tickerCounter % 120 == 0) {
+			createAverageQuotes("30min");
+		}
+		
+		if(tickerCounter % 960 == 0) {
+			createAverageQuotes("4h");
+		}
+		
+		if(tickerCounter % 1440 == 0) {
+			createAverageQuotes("6h");
+			tickerCounter = 0L;
+		}
+		
+		tickerCounter++;
 		
 		//System.out.println(tickerMap);
 		
@@ -199,6 +249,79 @@ public class TravellerService {
 	}
 	
 	
+	private void createAverageQuotes(String setType) {
+		
+		TickerQuote avgLtcUsd = getAverageQuote("ltc_usd", setType);
+		TickerQuote avgBtcUsd = getAverageQuote("btc_usd", setType);
+		TickerQuote avgLtcBtc = getAverageQuote("ltc_btc", setType);
+		
+		List<TickerQuote> avgQuotes = new ArrayList<TickerQuote>();
+		avgQuotes.add(avgLtcUsd);
+		avgQuotes.add(avgBtcUsd);
+		avgQuotes.add(avgLtcBtc);
+		
+		tickerRepository.save(avgQuotes);
+		
+	}
+	
+	
+	private TickerQuote getAverageQuote(String pair, String setType) {
+		
+		Long period = 0L;
+		
+		if(setType.equals("1min")) {
+			period = 60L;
+		} else if(setType.equals("10min")) {
+			period = 600L;
+		} else if(setType.equals("30min")) {
+			period = 1800L;
+		} else if(setType.equals("4h")) {
+			period = 14400L;
+		} else if(setType.equals("6h")) {
+			period = 21600L;
+		}
+		
+		List<TickerQuote> tickerQuotes = tickerRepository.findByPairAndTimeGreaterThan(pair, lastTickerTime - period);
+		
+		Integer count = 0;
+		Double totalLast = 0.0;
+		Double totalBuy = 0.0;
+		Double totalSell = 0.0;
+		
+		for(TickerQuote quote : tickerQuotes) {
+			
+			totalLast += quote.getLast();
+			totalBuy += quote.getBuy();
+			totalSell += quote.getSell();
+			
+			count++;
+		
+		}
+		
+		Double avgLast = 0.0;
+		Double avgBuy = 0.0;
+		Double avgSell = 0.0;
+		
+		if(count > 0) {
+			avgLast = totalLast/count;
+			avgBuy = totalBuy/count;
+			avgSell = totalSell/count;
+		}
+		
+		TickerQuote avgQuote = new TickerQuote();
+		avgQuote.setSetType(setType);
+		avgQuote.setPair(pair);
+		avgQuote.setTime(lastTickerTime);
+		
+		avgQuote.setLast(avgLast);
+		avgQuote.setBuy(avgBuy);
+		avgQuote.setSell(avgSell);
+		
+		return avgQuote;
+		
+	}
+	
+	
 	private TickerQuote getTickerQuote(String pair) {
 		
 		try {
@@ -207,6 +330,9 @@ public class TravellerService {
 		
 			JSONObject rates = BtceApi.getRates(pair);
 			JSONObject ticker = rates.getJSONObject("ticker");
+			
+			tickerQuote.setSetType("15s");
+			tickerQuote.setPair(pair);
 			tickerQuote.setLast(ticker.getDouble("last"));
 			tickerQuote.setBuy(ticker.getDouble("buy"));
 			tickerQuote.setSell(ticker.getDouble("sell"));
@@ -291,6 +417,32 @@ public class TravellerService {
 			e.printStackTrace();
 		}
 		
+		
+	}
+	
+	@GET
+	@Path("/rates")
+    @Produces({ MediaType.APPLICATION_JSON })
+	public RequestResponse getRates(@QueryParam("pair") String pair, @QueryParam("pair") String setType, 
+			@QueryParam("from") Long from, @QueryParam("until") Long until,
+    		@QueryParam("frequency") String frequency) {
+		
+		RequestResponse response = new RequestResponse();
+		
+		List<TickerQuote> rates = new ArrayList<TickerQuote>();
+		
+		if(pair != null && setType != null && from != null && until != null) {
+			rates = tickerRepository.findByPairAndSetTypeAndTimeBetween(pair, setType, from, until);
+		} else if(pair != null && from != null) {
+			rates = tickerRepository.findByPairAndTimeGreaterThan(pair, from);
+		} else {
+			rates = tickerRepository.findAll();
+		}
+		
+		response.setSuccess(1);
+		response.setData(rates);
+		
+		return response;
 		
 	}
 	
@@ -615,6 +767,7 @@ public class TravellerService {
     @Produces({ MediaType.TEXT_PLAIN })
     public String deleteAll() {
 		
+		//tickerRepository.deleteAll();
 		tradeStatsRepository.deleteAll();
 		tradeRepository.deleteAll();
 		transactionRepository.deleteAll();
