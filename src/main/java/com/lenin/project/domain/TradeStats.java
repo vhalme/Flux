@@ -24,9 +24,7 @@ public class TradeStats implements Serializable {
 	private String currencyLeft;
 	private String currencyRight;
 	
-	private Double currentRate = 0.0;
-	private Double currentBuyRate = 0.0;
-	private Double currentSellRate = 0.0;
+	private TickerQuote rate;
 	
 	private Double oldRate = 0.0;
 	
@@ -80,28 +78,12 @@ public class TradeStats implements Serializable {
 		this.currencyRight = currencyRight;
 	}
 
-	public Double getCurrentRate() {
-		return currentRate;
+	public TickerQuote getRate() {
+		return rate;
 	}
 
-	public void setCurrentRate(Double currentRate) {
-		this.currentRate = currentRate;
-	}
-
-	public Double getCurrentBuyRate() {
-		return currentBuyRate;
-	}
-
-	public void setCurrentBuyRate(Double currentBuyRate) {
-		this.currentBuyRate = currentBuyRate;
-	}
-
-	public Double getCurrentSellRate() {
-		return currentSellRate;
-	}
-
-	public void setCurrentSellRate(Double currentSellRate) {
-		this.currentSellRate = currentSellRate;
+	public void setRate(TickerQuote rate) {
+		this.rate = rate;
 	}
 
 	public Double getOldRate() {

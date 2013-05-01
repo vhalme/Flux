@@ -17,12 +17,12 @@ public class TickerQuote implements Serializable {
 	
 	private String setType;
 	
-	private Long time;
+	private Long time = System.currentTimeMillis()/1000L;
 	
 	private String pair;
-	private Double last;
-	private Double buy;
-	private Double sell;
+	private Double last = 0.0;
+	private Double buy = 0.0;
+	private Double sell = 0.0;
 	
 	public TickerQuote() {
 		

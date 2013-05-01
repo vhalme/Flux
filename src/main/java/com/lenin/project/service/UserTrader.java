@@ -248,9 +248,9 @@ public class UserTrader {
 	protected Double actualTradeRate(String type) {
 		
 		if(type == "buy") {
-			return tradeStats.getCurrentBuyRate() - tradeStats.getRateBuffer();
+			return tradeStats.getRate().getBuy() - tradeStats.getRateBuffer();
 		} else if(type == "sell") {
-			return tradeStats.getCurrentSellRate() + tradeStats.getRateBuffer();
+			return tradeStats.getRate().getSell() + tradeStats.getRateBuffer();
 		} else {
 			return null;
 		}

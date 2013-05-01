@@ -54,8 +54,8 @@ public class AutoTrader extends UserTrader {
 			
 			Double tradeChunk = tradeStats.getTradeChunk();
 			
-			if(tradeStats.getCurrentSellRate() - highestSell >= tradeStats.getProfitTarget() && 
-				tradeStats.getFundsRight() >= tradeChunk && tradeStats.getCurrentSellRate() > tradeStats.getSellFloor()) {
+			if(tradeStats.getRate().getSell() - highestSell >= tradeStats.getProfitTarget() && 
+				tradeStats.getFundsRight() >= tradeChunk && tradeStats.getRate().getSell() > tradeStats.getSellFloor()) {
 				
 				Transaction sellTransaction = 
 						BtceApi.createTransaction(tradeStats.getCurrencyRight()+"_"+tradeStats.getCurrencyLeft(), 
@@ -64,12 +64,12 @@ public class AutoTrader extends UserTrader {
 				sellTransaction.setSave(true);
 				
 				trade(sellTransaction);
-				tradeStats.setOldRate(tradeStats.getCurrentRate());
+				tradeStats.setOldRate(tradeStats.getRate().getLast());
 				tradeStatsRepository.save(tradeStats);
 				
 			
-			} else if(tradeStats.getCurrentBuyRate() - lowestBuy <= 
-				-(tradeStats.getProfitTarget()*1) && tradeStats.getCurrentBuyRate() < tradeStats.getBuyCeiling() &&
+			} else if(tradeStats.getRate().getBuy() - lowestBuy <= 
+				-(tradeStats.getProfitTarget()*1) && tradeStats.getRate().getBuy() < tradeStats.getBuyCeiling() &&
 				tradeStats.getFundsLeft() >= (tradeChunk * actualTradeRate("buy"))) {
 			
 				Transaction buyTransaction = 
@@ -79,7 +79,7 @@ public class AutoTrader extends UserTrader {
 				buyTransaction.setSave(true);
 				
 				trade(buyTransaction);
-				tradeStats.setOldRate(tradeStats.getCurrentRate());
+				tradeStats.setOldRate(tradeStats.getRate().getLast());
 				tradeStatsRepository.save(tradeStats);
 				
 			}
@@ -149,7 +149,7 @@ public class AutoTrader extends UserTrader {
 			Double rateVal = transaction.getRate();
 			Double amountVal = transaction.getAmount();
 			
-			if(tradeStats.getCurrentBuyRate() <= (rateVal - tradeStats.getProfitTarget())) {
+			if(tradeStats.getRate().getBuy() <= (rateVal - tradeStats.getProfitTarget())) {
 					
 				Double actualBuyRate = actualTradeRate("buy");
 				
@@ -187,7 +187,7 @@ public class AutoTrader extends UserTrader {
 			Double rateVal = transaction.getRate();
 			Double amountVal = transaction.getAmount();
 			
-			if(tradeStats.getCurrentSellRate() >= (rateVal + tradeStats.getProfitTarget())) {
+			if(tradeStats.getRate().getSell() >= (rateVal + tradeStats.getProfitTarget())) {
 				
 				Double actualSellRate = actualTradeRate("sell");
 				Double newSellAmount = calculatedSellAmount + amountVal;

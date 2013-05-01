@@ -1,37 +1,70 @@
 <div class="container">
 
-	<div class="row" style="margin-bottom: 2.0em; background: black; color: white;">
-
-		<div class="span4" style="text-align: center;">
-			<button ng-click="lowerPrice()">
-				price--
+	<div class="row" style="margin-bottom: 2.0em;">
+		
+		<div class="span3">
+			<b>FLUXOMAT 3000</b>
+		</div>
+		
+		<div class="span6" style="text-align: center;">
+			Signed in as: {{user.username}}
+		</div>
+		
+		<div class="span3" style="text-align: right;">
+			<button ng-click="changeToTestUser()" class="btn" ng-hide="!user.live">
+				Engage Test Mode
 			</button>
-			<button ng-click="raisePrice()">
-				price++
+			<button ng-click="changeToLiveUser()" class="btn" ng-hide="user.live">
+				Disengage Test Mode
 			</button>
 		</div>
-		<div class="span4" style="text-align: center;">
-			<select ng-model="selectedUser">
-				<option ng-repeat="u in availableUsers" value="{{u}}" title="{{u}}" ng-selected="u == user.username">{{u}}</option>
-			</select>
-			Live user: {{user.currentTradeStats.live}}
-			<br/>
-			<b>RATE CHANGE:</b> {{rateChange}}
+		
+	</div>
+	
+	<div class="row" style="margin-bottom: 2.0em; background: black; color: white;" ng-hide="user.live">
+	
+		<div class="span4" style="text-align: left;">
+			<div class="row" style="margin-top: 0.3em; margin-bottom: 0.3em;">
+				<div class="span2" style="text-align: right;">
+					<button ng-click="lowerPrice()" class="btn" style="width: 100%">
+						- RATE
+					</button>
+				</div>
+				<div class="span2">
+					<button ng-click="raisePrice()" class="btn" style="width: 100%">
+						+ RATE
+					</button>
+				</div>
+			</div>
 		</div>
-		<div class="span4" style="text-align: center;">
-			<button ng-click="removeFundsLeft()">
-				money--
-			</button>
-			<button ng-click="addFundsLeft()">
-				money++
-			</button>
-			<br/>
-			<button style="margin-left: 1.0em;" ng-click="removeFundsRight()">
-				coins--
-			</button>
-			<button ng-click="addFundsRight()">
-				coins++
-			</button>
+		<div class="span4" style="text-align: center; color: #d00000;">
+			RUNNING IN TEST MODE
+		</div>
+		<div class="span4" style="text-align: right;">
+			<div class="row" style="margin-top: 0.3em; margin-bottom: 0.3em;">
+				<div class="span2" style="text-align: right;">
+					<button ng-click="removeFundsLeft()" class="btn" style="width: 6em;">
+						- {{user.currentTradeStats.currencyLeft|uppercase}}
+					</button>
+				</div>
+				<div class="span2">
+					<button ng-click="addFundsLeft()" class="btn" style="width: 6em; margin-right: 1.4em;">
+						+ {{user.currentTradeStats.currencyLeft|uppercase}}
+					</button>
+				</div>
+			</div>
+			<div class="row" style="margin-top: 0.3em; margin-bottom: 0.3em;">
+				<div class="span2" style="text-align: right;">
+					<button ng-click="removeFundsRight()" class="btn" style="width: 6em;">
+						- {{user.currentTradeStats.currencyRight|uppercase}}
+					</button>
+				</div>
+				<div class="span2">
+					<button ng-click="addFundsRight()" class="btn" style="width: 6em; margin-right: 1.4em;">
+						+ {{user.currentTradeStats.currencyRight|uppercase}}
+					</button>
+				</div>
+			</div>
 		</div>
 
 	</div>
@@ -56,9 +89,9 @@
 					Add tab
 				</button>
 				<select ng-model="newCurrencyPair" style="width: 8em; margin-bottom: 0px;">
-					<option value="ltc_usd" title="LTC-USD">LTC-USD</option>
-					<option value="ltc_btc" title="LTC-BTC">LTC-BTC</option>
-					<option value="btc_usd" title="BTC-USD">BTC-USD</option>
+					<option value="ltc_usd" title="LTC-USD">USD-LTC</option>
+					<option value="ltc_btc" title="LTC-BTC">BTC-LTC</option>
+					<option value="btc_usd" title="BTC-USD">USD-BTC</option>
 				</select>
 			</li>
 		</ul>
@@ -177,14 +210,13 @@
 									<div class="span12">
 										<div style="margin-left: 4.6em; margin-top: 0.6em;">
 											<div class="btn-group">
-  												<button class="btn">6 h</button>
-  												<button class="btn">24 h</button>
-  												<button class="btn">1 wk</button>
-  												<button class="btn">2 wk</button>
-  												<button class="btn">1 month</button>
-  												<button class="btn">6 month</button>
-  												<button class="btn">12 month</button>
-  												<button class="btn">All</button>
+  												<button class="btn">6h</button>
+  												<button class="btn">24h</button>
+  												<button class="btn">1wk</button>
+  												<button class="btn">2wk</button>
+  												<button class="btn">1m</button>
+  												<button class="btn">6m</button>
+  												<button class="btn">12m</button>
 											</div>
 											<span style="margin-left: 1.0em;">Max. precision: 15 sec</span>
 										</div>
@@ -309,11 +341,11 @@
 						{{user.currentTradeStats.fundsLeft|truncate:6:""}}
 					</div>
 					<div class="span4" style="text-align: center;">
-						<b>HI</b> {{user.currentTradeStats.currentBuyRate|truncate:6:""}}
+						<b>HI</b> {{user.currentTradeStats.rate.buy|truncate:6:""}}
 						<div style="display: inline; font-size: 2.0em;">
-							{{user.currentTradeStats.currentRate|truncate:6:""}}
+							{{user.currentTradeStats.rate.last|truncate:6:""}}
 						</div>
-						{{user.currentTradeStats.currentSellRate|truncate:6:""}} <b>LO</b>
+						{{user.currentTradeStats.rate.sell|truncate:6:""}} <b>LO</b>
 					</div>
 					<div class="span4" style="font-size: 2.0em; text-align: right;">
 						<b>{{user.currentTradeStats.currencyRight|uppercase}}</b>

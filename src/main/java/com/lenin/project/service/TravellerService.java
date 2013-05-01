@@ -105,25 +105,29 @@ public class TravellerService {
 		tickerMap.put("btc_usd", tickerBtcUsd);
 		tickerMap.put("ltc_btc", tickerLtcBtc);
 		
-		if(tickerCounter % 4 == 0) {
-			createAverageQuotes("1min");
-		}
+		if(tickerCounter > 0) {
 		
-		if(tickerCounter % 40 == 0) {
-			createAverageQuotes("10min");
-		}
+			if(tickerCounter % 4 == 0) {
+				createAverageQuotes("1min");
+			}
 		
-		if(tickerCounter % 120 == 0) {
-			createAverageQuotes("30min");
-		}
+			if(tickerCounter % 40 == 0) {
+				createAverageQuotes("10min");
+			}
 		
-		if(tickerCounter % 960 == 0) {
-			createAverageQuotes("4h");
-		}
+			if(tickerCounter % 120 == 0) {
+				createAverageQuotes("30min");
+			}
 		
-		if(tickerCounter % 1440 == 0) {
-			createAverageQuotes("6h");
-			tickerCounter = 0L;
+			if(tickerCounter % 960 == 0) {
+				createAverageQuotes("4h");
+			}
+		
+			if(tickerCounter % 1440 == 0) {
+				createAverageQuotes("6h");
+				tickerCounter = 0L;
+			}
+			
 		}
 		
 		tickerCounter++;
@@ -217,28 +221,33 @@ public class TravellerService {
 				//System.out.println("ticker for "+tradeStats.getPair()+": "+tickerQuote);
 				
 				if(tickerQuote != null) {
-					tradeStats.setCurrentRate(tickerQuote.getLast());
-					tradeStats.setCurrentBuyRate(tickerQuote.getBuy());
-					tradeStats.setCurrentSellRate(tickerQuote.getSell());
+					tradeStats.setRate(tickerQuote);
 				}
+				
+			} else {
+				
+				TickerQuote tickerQuote = tradeStats.getRate();
+				tickerQuote.setTime(System.currentTimeMillis()/1000L);
+				
+				tradeStats.setRate(tickerQuote);
 				
 			}
 			
 			Boolean resetOldRate =
-					( (tradeStats.getCurrentRate() - tradeStats.getOldRate() > tradeStats.getProfitTarget()) && 
-							tradeStats.getCurrentRate() < tradeStats.getBuyCeiling() ) ||
-					( (tradeStats.getCurrentRate() - tradeStats.getOldRate() < - tradeStats.getProfitTarget()) &&
-							tradeStats.getCurrentRate() > tradeStats.getSellFloor() );
+					( (tradeStats.getRate().getLast() - tradeStats.getOldRate() > tradeStats.getProfitTarget()) && 
+							tradeStats.getRate().getLast() < tradeStats.getBuyCeiling() ) ||
+					( (tradeStats.getRate().getLast() - tradeStats.getOldRate() < - tradeStats.getProfitTarget()) &&
+							tradeStats.getRate().getLast() > tradeStats.getSellFloor() );
 			
 			if(tradeStats.getOldRate() == 0.0 || resetOldRate) {
-				tradeStats.setOldRate(tradeStats.getCurrentRate());
+				tradeStats.setOldRate(tradeStats.getRate().getLast());
 			}
 			
 			tradeStatsRepository.save(tradeStats);
 			
-			//System.out.println(tradeStats.getPair()+"("+tradeStats.getId()+"): "+tradeStats.getTradeAuto());
+			//System.out.println(tradeStats.getPair()+"("+tradeStats.getId()+"): "+tradeStats.getRate());
 			
-			if(tradeStats.getTradeAuto() == true && tradeStats.getCurrentRate() != 0.0) {
+			if(tradeStats.getTradeAuto() == true && tradeStats.getRate().getLast() != 0.0) {
 				AutoTrader autoTrader = new AutoTrader(tradeStats, tradeStatsRepository, transactionRepository, tradeRepository);
 				autoTrader.autoTrade();
 			}
@@ -423,9 +432,10 @@ public class TravellerService {
 	@GET
 	@Path("/rates")
     @Produces({ MediaType.APPLICATION_JSON })
-	public RequestResponse getRates(@QueryParam("pair") String pair, @QueryParam("pair") String setType, 
-			@QueryParam("from") Long from, @QueryParam("until") Long until,
-    		@QueryParam("frequency") String frequency) {
+	public RequestResponse getRates(@QueryParam("pair") String pair, @QueryParam("setType") String setType, 
+			@QueryParam("from") Long from, @QueryParam("until") Long until) {
+		
+		//System.out.println(pair+"/"+setType+"/"+from+"/"+until);
 		
 		RequestResponse response = new RequestResponse();
 		
@@ -433,8 +443,12 @@ public class TravellerService {
 		
 		if(pair != null && setType != null && from != null && until != null) {
 			rates = tickerRepository.findByPairAndSetTypeAndTimeBetween(pair, setType, from, until);
+		} else if(pair != null && from != null && until != null) {
+			rates = tickerRepository.findByPairAndTimeBetween(pair, from, until);
 		} else if(pair != null && from != null) {
 			rates = tickerRepository.findByPairAndTimeGreaterThan(pair, from);
+		} else if(pair != null && until != null) {
+			rates = tickerRepository.findByPairAndTimeLessThan(pair, until);
 		} else {
 			rates = tickerRepository.findAll();
 		}
@@ -641,7 +655,7 @@ public class TravellerService {
 		TradeStats tradeStats = tradeStatsRepository.findOne(tradeStatsId); //user.getCurrentTradeStats();
 		user.setCurrentTradeStats(tradeStats);
 		
-		if(tradeStats.getCurrentRate() == 0.0) {
+		if(tradeStats.getRate().getLast() == 0.0) {
 			response.setSuccess(0);
 			response.setMessage("Rate not set");
 			return response;
@@ -717,12 +731,20 @@ public class TravellerService {
 		tradeStats1_1.setCurrencyLeft("usd");
 		tradeStats1_1.setCurrencyRight("ltc");
 		tradeStats1_1.setLive(false);
+		TickerQuote rate1_1 = new TickerQuote();
+		rate1_1.setTime(System.currentTimeMillis()/1000L);
+		rate1_1.setPair("ltc_usd");
+		tradeStats1_1.setRate(rate1_1);
 		tradeStats1_1 = tradeStatsRepository.save(tradeStats1_1);
 		
 		TradeStats tradeStats1_2 = new TradeStats();
 		tradeStats1_2.setCurrencyLeft("btc");
 		tradeStats1_2.setCurrencyRight("ltc");
 		tradeStats1_2.setLive(false);
+		TickerQuote rate1_2 = new TickerQuote();
+		rate1_2.setTime(System.currentTimeMillis()/1000L);
+		rate1_2.setPair("ltc_btc");
+		tradeStats1_2.setRate(rate1_2);
 		tradeStats1_2 = tradeStatsRepository.save(tradeStats1_2);
 		
 		testUser1.addTradeStats(tradeStats1_1);
@@ -767,7 +789,7 @@ public class TravellerService {
     @Produces({ MediaType.TEXT_PLAIN })
     public String deleteAll() {
 		
-		//tickerRepository.deleteAll();
+		tickerRepository.deleteAll();
 		tradeStatsRepository.deleteAll();
 		tradeRepository.deleteAll();
 		transactionRepository.deleteAll();

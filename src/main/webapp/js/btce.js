@@ -1,7 +1,7 @@
 var API = {
 		
-		userId: "testUser123",
-		tradeStatsId: "1",
+		userId: "testUser456",
+		tradeStatsId: null,
 		
 		changeFunds: function(fund, change, callback) {
 			
