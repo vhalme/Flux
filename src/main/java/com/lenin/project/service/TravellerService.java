@@ -503,6 +503,10 @@ public class TravellerService {
     public TradeStats saveUserDetails(@HeaderParam("User-Id") String userId, 
     		@HeaderParam("TradeStats-Id") String tradeStatsId, TradeStats tradeStats) {
         
+		TradeStats dbTradeStats = tradeStatsRepository.findOne(tradeStats.getId());
+		Long rateTime = dbTradeStats.getRate().getTime();
+		tradeStats.getRate().setTime(rateTime);
+		
 		tradeStatsRepository.save(tradeStats);
 		
 		return tradeStats;
@@ -523,7 +527,18 @@ public class TravellerService {
 		TradeStats tradeStats = new TradeStats();
 		tradeStats.setCurrencyRight(currencies[0]);
 		tradeStats.setCurrencyLeft(currencies[1]);
-		System.out.println(tradeStats.getCurrencyRight()+"/"+tradeStats.getCurrencyLeft());
+		tradeStats.setLive(user.getLive());
+		
+		TickerQuote rate = new TickerQuote();
+		if(user.getLive() == false) {
+			rate.setBuy(1.0);
+			rate.setSell(1.0);
+			rate.setLast(1.0);
+		}
+		
+		tradeStats.setRate(rate);
+		
+		System.out.println("Added new tradestats: "+tradeStats.getCurrencyRight()+"/"+tradeStats.getCurrencyLeft());
 		
 		tradeStats = tradeStatsRepository.save(tradeStats);
 		

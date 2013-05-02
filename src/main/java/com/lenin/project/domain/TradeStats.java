@@ -39,8 +39,8 @@ public class TradeStats implements Serializable {
 	private Double profitTarget = 0.05;
 	private Double rateBuffer = 0.001;
 	private Double tradeChunk = 10.0;
-	private Double sellFloor = 0.0;
-	private Double buyCeiling = 0.0;
+	private Double sellFloor = 1.0;
+	private Double buyCeiling = 1.0;
 	
 	
 	public TradeStats() {

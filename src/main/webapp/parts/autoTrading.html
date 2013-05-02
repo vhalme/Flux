@@ -1,0 +1,95 @@
+<div class="row">
+
+	<div class="span12" style="padding-bottom: 0.3em;">
+
+		<div class="row">
+			<div class="span12" style="border-top: 1px solid black; border-bottom: 1px solid black; height: 1.85em;">
+				<div class="row">
+					<div class="span6">
+						<div style="padding-top: 0.2em;">
+							<a href="" ng-click="showAutoTrading = !showAutoTrading"><i ng-class="{ 'icon-chevron-down': showAutoTrading, 'icon-chevron-right': !showAutoTrading }"></i></a>
+							Automatic trading
+						</div>
+					</div>
+					<div class="span6">
+						<div ng-hide="!user.currentTradeStats.tradeAuto" style="display: inline-block; float: right;">
+							Working <img src="img/chasingarrows.gif" style="width: 1.4em; height: 1.4em;"/>
+							<button ng-click="user.currentTradeStats.tradeAuto = false">
+								STOP!
+							</button>
+						</div>
+						<div ng-hide="user.currentTradeStats.tradeAuto" style="display: inline-block; float: right;">
+							Stopped
+							<button ng-click="user.currentTradeStats.tradeAuto = true">
+								Start
+							</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="row" ng-class="{ hidden: !showAutoTrading }">
+			<form name="form" class="css-form" novalidate>
+				<div class="span4" style="background: #ededed; margin-bottom: 0.7em;">
+					<div style="margin: 0.3em;">
+						<input type="checkbox" style="margin-top: -2px;" ng-model="user.currentTradeStats.tradeAuto" />
+						Trade automatically
+						<br/>
+						<select ng-model="user.currentTradeStats.autoTradingModel" ng-disabled="!user.currentTradeStats.tradeAuto" style="margin-top: 0.5em;">
+							<option ng-repeat="model in autoTradingOptions" value="{{model.value}}" title="{{model.name}}" ng-selected="model.value == user.currentTradeStats.autoTradingModel">{{model.name}}</option>
+						</select>
+					</div>
+				</div>
+				<div class="span4" style="background: #ededed; margin-bottom: 0.7em;">
+					<div style="margin-top: 0.3em; margin-bottom: 0.3em;">
+						<div class="row" style="margin-bottom: 0.8em;">
+							<div class="span2" style="text-align: right;">
+								Profit target
+							</div>
+							<div class="span2 control-group">
+								<input smart-float style="margin-bottom: 0px; width: 4.0em;" type="text" ng-model="user.currentTradeStats.profitTarget"/>
+								{{stats.currencyLeft|uppercase}}
+								<span ng-show="form.length.$error.float"> This is not a valid float number!</span>
+							</div>
+						</div>
+						<div class="row">
+							<div class="span2" style="text-align: right;">
+								Buy ceiling
+							</div>
+							<div class="span2 control-group">
+								<input style="margin-bottom: 0px; width: 4.0em;" type="text" ng-model="user.currentTradeStats.buyCeiling"/>
+								{{stats.currencyLeft|uppercase}}
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="span4" style="background: #ededed; margin-bottom: 0.7em;">
+					<div style="margin-top: 0.3em; margin-bottom: 0.3em;">
+						<div class="row" style="margin-bottom: 0.8em;">
+							<div class="span2" style="text-align: right;">
+								Trade chunk
+							</div>
+							<div class="span2">
+								<input style="margin-bottom: 0px; width: 4.0em;" type="text" ng-model="user.currentTradeStats.tradeChunk"/>
+								{{user.currentTradeStats.currencyRight|uppercase}}
+							</div>
+						</div>
+						<div class="row">
+							<div class="span2" style="text-align: right;">
+								Sell floor
+							</div>
+							<div class="span2">
+								<input style="margin-bottom: 0px; width: 4.0em;" type="text" ng-model="user.currentTradeStats.sellFloor"/>
+								{{user.currentTradeStats.currencyLeft|uppercase}}
+							</div>
+						</div>
+					</div>
+				</div>
+			</form>
+		</div>
+
+	</div>
+
+</div>
+

@@ -1,5 +1,7 @@
 var API = {
 		
+		loopInterval: 0,
+		
 		userId: "testUser456",
 		tradeStatsId: null,
 		

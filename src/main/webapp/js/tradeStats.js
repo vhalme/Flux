@@ -1,12 +1,13 @@
 function TradeStatsCtrl($scope, $routeParams, $http) {
 	
-	$scope.tradeStatsId = $routeParams.tradeStatsId;
-	API.tradeStatsId = $scope.tradeStatsId;
+	if($routeParams.tradeStatsId != 0) {
+		$scope.tradeStatsId = $routeParams.tradeStatsId;
+		API.tradeStatsId = $scope.tradeStatsId;
+	}
 	
 	$scope.intervalIds = { main: 0, loop: 0 };
 	
 	$scope.refreshInterval = 1;
-	$scope.refreshCounter = 0;
 	
 	$scope.transactions = [];
 	
@@ -35,38 +36,6 @@ function TradeStatsCtrl($scope, $routeParams, $http) {
 		$scope.initChart();
 	};
 	
-	$scope.user = {
-		
-		uninitialized: true,
-		
-		currentTradeStats: {
-			
-			rate: {
-				buy: 0,
-				sell: 0,
-				last: 0
-			},
-			
-			uninitialized: true,
-			
-			live: false,
-			currencyLeft: "usd",
-			currencyRight: "ltc",
-		
-		}
-		
-	};
-	
-	$scope.selectedUser = API.userId;
-	
-	$scope.availableUsers =
-		[
-		 
-		 	"testUser123",
-		 	"testUser456"
-		 
-		];
-	
 	$scope.autoTradingOptions = 
 		[
 		 	{ name: "Accumulate USD", value: "accumulateUsd" }
@@ -94,9 +63,9 @@ function TradeStatsCtrl($scope, $routeParams, $http) {
 		
 		$scope.refreshInterval = 15;
 		
-		//$scope.setUser();
+		//$scope.refresh();
 		
-		$scope.intervalIds.counter = setInterval( function() { 
+		$scope.intervalIds.main = setInterval( function() { 
 			$scope.$apply( function() {
 				$scope.refreshCounter--; 
 			});
@@ -112,14 +81,6 @@ function TradeStatsCtrl($scope, $routeParams, $http) {
 	
 	};
 	
-	$scope.stop = function() {
-		
-		console.log("stopping...");
-		
-		clearInterval($scope.intervalIds.counter);
-		clearInterval($scope.intervalIds.loop);
-		
-	}
 	
 	$scope.loop = function() {
 		
@@ -170,6 +131,10 @@ function TradeStatsCtrl($scope, $routeParams, $http) {
 						}
 						
 						var rates = angular.fromJson(localStorage.rates);
+						if(rates.length > 600) { 
+							rates.shift(); 
+						}
+						
 						rates[$scope.user.currentTradeStats.pair].push(dataPoint);
 						localStorage.rates = angular.toJson(rates);
 						
@@ -292,7 +257,7 @@ function TradeStatsCtrl($scope, $routeParams, $http) {
 			
 				}
 			
-				console.log(dataPoints1);
+				//console.log(dataPoints1);
 				$scope.chartData = dataPoints1;
 				$scope.chart.options.data[0].dataPoints = $scope.chartData;
 				$scope.chart.render();
@@ -308,6 +273,8 @@ function TradeStatsCtrl($scope, $routeParams, $http) {
 				$scope.chartData = dataPoints1;
 				$scope.chart.options.data[0].dataPoints = $scope.chartData;
 			}
+			
+			$scope.chart.render();
 			
 		}
 		
@@ -536,130 +503,6 @@ function TradeStatsCtrl($scope, $routeParams, $http) {
 	};
 	
 	
-	$scope.setUser = function() {
-		
-		API.getUser(function(users) {
-			
-			$scope.user = users[0];
-			
-			console.log($scope.user);
-			
-			var userTabs = $scope.user.tradeStats;
-			
-			if(API.tradeStatsId == null || API.tradeStatsId == 0) {
-				API.tradeStatsId = userTabs[0].id;
-				$scope.user.currentTradeStats = userTabs[0];
-			}
-			
-			API.getTransactions(function(transactions) {
-				
-				$scope.setTransactions(transactions);
-				
-				$scope.chart = null;
-				$scope.refresh();
-				
-			});
-		
-		});
-
-		
-	};
-	
-	$scope.changeToTestUser = function() {
-		
-		if(API.userId != "testUser123") {
-			API.tradeStatsId = null;
-		}
-		
-		console.log("user changed from "+API.userId+" to testuser456");
-		
-		API.userId = "testUser123";
-		
-		$scope.setUser();
-		
-		
-	}
-	
-	$scope.changeToLiveUser = function() {
-		
-		if(API.userId != "testUser456") {
-			API.tradeStatsId = null;
-		}
-		
-		console.log("user changed from "+API.userId+" to testuser456");
-		
-		API.userId = "testUser456";
-		
-		$scope.setUser();
-		
-		
-	}
-	
-	/* Test mode methods */
-	
-	$scope.raisePrice = function() {
-		
-		var random = true;
-		
-		if(random) {
-			$scope.user.currentTradeStats.rate.sell += parseFloat(Math.random()*0.01);
-			$scope.user.currentTradeStats.rate.buy = $scope.user.currentTradeStats.rate.sell + parseFloat(0.005 * Math.random());
-			$scope.user.currentTradeStats.rate.last = $scope.user.currentTradeStats.rate.sell + parseFloat(0.00025 * Math.random());
-		} else {
-			$scope.user.currentTradeStats.rate.sell += 0.1000;
-			$scope.user.currentTradeStats.rate.buy = $scope.user.currentTradeStats.rate.sell;
-			$scope.user.currentTradeStats.rate.last = $scope.user.currentTradeStats.rate.sell;
-		}
-		
-		
-	};
-	
-	
-	$scope.lowerPrice = function() {
-		
-		var random = true;
-		
-		if(random) {
-			var priceChange = -parseFloat(Math.random()*0.01);
-			if($scope.user.currentTradeStats.rate.sell + priceChange > 0.1) {
-				$scope.user.currentTradeStats.rate.sell += priceChange;
-				$scope.user.currentTradeStats.rate.buy = $scope.user.currentTradeStats.rate.sell + parseFloat(0.005 * Math.random());
-				$scope.user.currentTradeStats.rate.last = $scope.user.currentTradeStats.rate.sell + parseFloat(0.00025 * Math.random());
-			}
-		} else {
-			$scope.user.currentTradeStats.rate.sell -= 0.1000;
-			$scope.user.currentTradeStats.rate.buy = $scope.user.currentTradeStats.rate.sell;
-			$scope.user.currentTradeStats.rate.last = $scope.user.currentTradeStats.rate.sell;
-		}
-		
-		
-	};
-	
-	$scope.removeFundsLeft = function() {
-		
-		$scope.user.currentTradeStats.fundsLeft -= 10;
-	
-	};
-	
-	$scope.addFundsLeft = function() {
-		
-		$scope.user.currentTradeStats.fundsLeft += 10;
-	
-	};
-	
-	$scope.removeFundsRight = function() {
-		
-		$scope.user.currentTradeStats.fundsRight -= 10;
-	
-	};
-	
-	$scope.addFundsRight = function() {
-		
-		$scope.user.currentTradeStats.fundsRight += 10;
-	
-	};
-	
-	
 	/* Variable properties */
 	
 	$scope.showAutoTrading = true;
@@ -766,29 +609,29 @@ function TradeStatsCtrl($scope, $routeParams, $http) {
 		
 		if(!value.uninitialized) {
 			
-			API.saveCurrentTradeStats(value, function(response) {
-				$scope.user.currentTradeStats = response;
-			});
+			var profitTarget = $scope.user.currentTradeStats.profitTarget;
+			var buyCeiling = $scope.user.currentTradeStats.buyCeiling;
+			var sellFloor = $scope.user.currentTradeStats.sellFloor;
+			
+			console.log(isNaN(profitTarget));
+			if(typeof profitTarget === "number") {
+				API.saveCurrentTradeStats(value, function(response) {
+					$scope.user.currentTradeStats = response;
+				});
+			}
 			
 		}
 		
 	}, true);
 	
 	
-	$scope.$watch('selectedUser', function(value) {
+	$scope.$watch('user.currentTradeStats.id', function(value) {
 		
-		if(API.userId != value) {
-			API.tradeStatsId = null;
-		}
-		
-		console.log("user changed from "+API.userId+" to "+value);
-		
-		API.userId = value;
-		
-		$scope.setUser();
-		
+		$scope.chart = null;
+		$scope.refresh();
 		
 	}, true);
+	
 	
 	$scope.truncate = function(val, length) {
 		
@@ -801,68 +644,14 @@ function TradeStatsCtrl($scope, $routeParams, $http) {
 		return parseFloat(val);
 		
 	};
-	
-	$scope.go = function (hash) {
-		console.log("go to #"+hash);
-		location.href = "#"+hash;
-	};
 		
+	$scope.$on('$destroy', function() {
+        console.log("destroying intervals: "+$scope.intervalIds);
+        clearInterval($scope.intervalIds.main);
+        clearInterval($scope.intervalIds.loop);
+    });
 	
 	$scope.start();
 	
 	
 };
-
-var myApp = angular.module('myApp', ['filters']);
-
-angular.module('filters', []).filter('truncate', function () {
-    
-	return function (text, length, end) {
-		
-		text = ""+text;
-		
-		if(isNaN(length))
-			length = 10;
-
-        if(end === undefined)
-        	end = "...";
-
-        if(text.length <= length || text.length - end.length <= length) {
-            return text;
-        } else {
-            return String(text).substring(0, length-end.length) + end;
-        }
-
-    };
-});
-
-myApp.directive('customstyle', function () {
-	
-	return {
-		
-		restrict: 'AC',
-		link: function (scope, element, attrs) {          
-			
-			console.log(attrs);
-			console.log(attrs.myWidth);
-			element.css('width', attrs.myWidth);
-			
-			scope.$watch(attrs.myWidth, function(value) {     
-				console.log("myWidth: "+value);
-				element.css('width', (value*100)+'%');            
-			});
-			
-		}
-		
-   }
-	
-});
-
-myApp.config(['$routeProvider', function($routeProvider) {
-	
-	$routeProvider.
-    	when('/tradeStats/:tradeStatsId', { templateUrl: 'trading-view.html', controller: TradeStatsCtrl }).
-    	otherwise( { redirectTo: '/tradeStats/0' } );
-	}]
-
-);
