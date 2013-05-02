@@ -80,6 +80,7 @@ public class TravellerService {
 	@Scheduled(fixedDelay = 15000)
 	public void update() {
 		
+		
 		List<TickerQuote> recentLtcUsd = recentRates.get("ltc_usd");
 		List<TickerQuote> recentBtcUsd = recentRates.get("btc_usd");
 		List<TickerQuote> recentLtcBtc = recentRates.get("ltc_btc");
@@ -104,6 +105,7 @@ public class TravellerService {
 		tickerMap.put("ltc_usd", tickerLtcUsd);
 		tickerMap.put("btc_usd", tickerBtcUsd);
 		tickerMap.put("ltc_btc", tickerLtcBtc);
+		
 		
 		if(tickerCounter > 0) {
 		
@@ -131,6 +133,7 @@ public class TravellerService {
 		}
 		
 		tickerCounter++;
+		
 		
 		//System.out.println(tickerMap);
 		
@@ -211,14 +214,20 @@ public class TravellerService {
 		transactionRepository.save(changedTransactions);
 		
 		List<TradeStats> allTradeStats = tradeStatsRepository.findAll();
+		//System.out.println("Trade stats total: "+allTradeStats.size());
 		
-		for(TradeStats tradeStats : allTradeStats) {
+		for(int i=0; i<allTradeStats.size(); i++) {
+			
+			TradeStats tradeStats = allTradeStats.get(i);
+			
+			//System.out.println(tradeStats.getId()+": "+tradeStats.getLive());
+			
 			
 			if(tradeStats.getLive() == true) {
 				
 				TickerQuote tickerQuote = tickerMap.get(tradeStats.getPair());
 				
-				//System.out.println("ticker for "+tradeStats.getPair()+": "+tickerQuote);
+				//System.out.println("ticker for "+tradeStats.getPair()+": "+tickerQuote.getLast());
 				
 				if(tickerQuote != null) {
 					tradeStats.setRate(tickerQuote);
@@ -226,12 +235,14 @@ public class TravellerService {
 				
 			} else {
 				
+				
 				TickerQuote tickerQuote = tradeStats.getRate();
 				tickerQuote.setTime(System.currentTimeMillis()/1000L);
 				
 				tradeStats.setRate(tickerQuote);
 				
 			}
+			
 			
 			Boolean resetOldRate =
 					( (tradeStats.getRate().getLast() - tradeStats.getOldRate() > tradeStats.getProfitTarget()) && 
@@ -251,6 +262,7 @@ public class TravellerService {
 				AutoTrader autoTrader = new AutoTrader(tradeStats, tradeStatsRepository, transactionRepository, tradeRepository);
 				autoTrader.autoTrade();
 			}
+			
 			
 		}
 		
@@ -467,13 +479,18 @@ public class TravellerService {
     public RequestResponse getTradeStats(@HeaderParam("User-Id") String userId,
     		@HeaderParam("TradeStats-Id") String tradeStatsId) {
 		
+		
 		RequestResponse response = new RequestResponse();
-		User user = userRepository.findByUsername(userId);
-		TradeStats tradeStats = tradeStatsRepository.findOne(tradeStatsId); //user.getCurrentTradeStats();
-		//user.setCurrentTradeStats(tradeStats);
+		
+		if(tradeStatsId != null) {
+			TradeStats tradeStats = tradeStatsRepository.findOne(tradeStatsId); //user.getCurrentTradeStats();
+			response.setData(tradeStats);
+		} else {
+			List<TradeStats> tradeStats = tradeStatsRepository.findAll();
+			response.setData(tradeStats);
+		}
 		
 		response.setSuccess(1);
-		response.setData(tradeStats);
 		
 		return response;
 		

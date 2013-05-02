@@ -210,15 +210,9 @@
 									<div class="span12">
 										<div style="margin-left: 4.6em; margin-top: 0.6em;">
 											<div class="btn-group">
-  												<button class="btn">6h</button>
-  												<button class="btn">24h</button>
-  												<button class="btn">1wk</button>
-  												<button class="btn">2wk</button>
-  												<button class="btn">1m</button>
-  												<button class="btn">6m</button>
-  												<button class="btn">12m</button>
+  												<button class="btn" ng-repeat="option in chartScaleOptions" ng-click="setChartScale(option.precision)" ng-class="{ active: option.precision == chartScale }">{{option.period}}</button>
 											</div>
-											<span style="margin-left: 1.0em;">Max. precision: 15 sec</span>
+											<span style="margin-left: 1.0em;">Max. precision: {{chartScale}}</span>
 										</div>
 									</div>
 								</div>

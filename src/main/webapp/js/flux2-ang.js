@@ -12,12 +12,28 @@ function TradeStatsCtrl($scope, $routeParams, $http) {
 	
 	console.log("tradeStatsId="+$scope.tradeStatsId);
 	
+	$scope.chartScaleOptions = 
+		[
+		 	{ period: "6h", precision: "15s" },
+		 	{ period: "24h", precision: "1min" },
+		 	{ period: "1wk", precision: "10min" },
+		 	{ period: "1m", precision: "30min" },
+		 	{ period: "6m", precision: "4h" },
+		 	{ period: "12m", precision: "6h" }
+		 	
+		];
+	
 	$scope.chart = null;
-	$scope.chartScale = "6h";
+	$scope.chartScale = "15s";
 	$scope.chartFrom = 0;
 	$scope.chartUntil = Math.round((new Date()).getTime()/1000);
 	$scope.chartData = [];
 	
+	$scope.setChartScale = function(precision) {
+		$scope.chartScale = precision;
+		console.log("new chart scale = "+$scope.chartScale);
+		$scope.initChart();
+	};
 	
 	$scope.user = {
 		
@@ -126,11 +142,12 @@ function TradeStatsCtrl($scope, $routeParams, $http) {
 				if($scope.chart == null) {
 					
 					$scope.initChart();
-					$scope.chart.render();
+					//$scope.chart.render();
 					
 				} else {
-				
-					var time = new Date();
+					
+					//console.log($scope.user.currentTradeStats.rate);
+					
 					var dataPoint = {
 							x: $scope.user.currentTradeStats.rate.time*1000,
 							y: $scope.user.currentTradeStats.rate.last
@@ -257,7 +274,7 @@ function TradeStatsCtrl($scope, $routeParams, $http) {
 			var from = unixTime - (6 * 60 * 60);
 			var until = unixTime;
 			
-			API.getRates($scope.user.currentTradeStats.pair, "15s", from, until, function(response) {
+			API.getRates($scope.user.currentTradeStats.pair, $scope.chartScale, from, until, function(response) {
 			
 				var rates = response.data;
 			
@@ -278,6 +295,7 @@ function TradeStatsCtrl($scope, $routeParams, $http) {
 				console.log(dataPoints1);
 				$scope.chartData = dataPoints1;
 				$scope.chart.options.data[0].dataPoints = $scope.chartData;
+				$scope.chart.render();
 			
 			});
 			
