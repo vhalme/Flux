@@ -564,16 +564,78 @@ public class TravellerService {
 	
 	
 	@POST
-    @Path("/register")
+    @Path("/login")
 	@Consumes({ MediaType.APPLICATION_JSON })
-	@Produces({ MediaType.TEXT_PLAIN })
-    public String register(User user) {
+	@Produces({ MediaType.APPLICATION_JSON })
+    public RequestResponse register(@HeaderParam("User-Id") String email, @HeaderParam("password") String password) {
         
-		System.out.println("Registering user: "+user);
+		RequestResponse response = new RequestResponse();
 		
-		userRepository.save(user);
+		User user = userRepository.findByUsername(email);
 		
-		return "OK!";
+		if(user != null) {
+			
+			response.setSuccess(1);
+			
+		} else {
+			
+			user = new User();
+			user.setUsername(email);
+			user.setLive(true);
+			Map<String, Double> funds = new HashMap<String, Double>();
+			funds.put("usd", 0.0);
+			funds.put("ltc", 0.0);
+			funds.put("btc", 0.0);
+			user.setFunds(funds);
+			
+			TradeStats tradeStats = new TradeStats();
+			tradeStats.setCurrencyLeft("usd");
+			tradeStats.setCurrencyRight("ltc");
+			tradeStats.setLive(true);
+			TickerQuote rate = new TickerQuote();
+			rate.setTime(System.currentTimeMillis()/1000L);
+			rate.setPair("ltc_usd");
+			tradeStats.setRate(rate);
+			tradeStats = tradeStatsRepository.save(tradeStats);
+			user.addTradeStats(tradeStats);
+			user.setCurrentTradeStats(tradeStats);
+			
+			User testUser = new User();
+			testUser.setUsername(email+" (test)");
+			testUser.setLive(false);
+			Map<String, Double> testFunds = new HashMap<String, Double>();
+			testFunds.put("usd", 100.0);
+			testFunds.put("ltc", 100.0);
+			testFunds.put("btc", 100.0);
+			testUser.setFunds(testFunds);
+			
+			TradeStats testTradeStats = new TradeStats();
+			testTradeStats.setCurrencyLeft("usd");
+			testTradeStats.setCurrencyRight("ltc");
+			testTradeStats.setBuyCeiling(1.0);
+			testTradeStats.setSellFloor(1.0);
+			testTradeStats.setLive(false);
+			TickerQuote testRate = new TickerQuote();
+			testRate.setBuy(1.0);
+			testRate.setSell(1.0);
+			testRate.setLast(1.0);
+			testRate.setTime(System.currentTimeMillis()/1000L);
+			testRate.setPair("ltc_usd");
+			testTradeStats.setRate(rate);
+			testTradeStats = tradeStatsRepository.save(testTradeStats);
+			testUser.addTradeStats(testTradeStats);
+			testUser.setCurrentTradeStats(testTradeStats);
+			
+			userRepository.save(user);
+			userRepository.save(testUser);
+			
+			response.setSuccess(2);
+			
+		}
+		
+		response.setData(user);
+		
+		return response;
     
 	}
 	

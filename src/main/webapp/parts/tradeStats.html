@@ -1,193 +1,269 @@
-<div class="tab-pane active" id="tab1">
-	
-	<div ng-include src="'parts/autoTrading.html'"></div>
-	
-	<div ng-include src="'parts/charts.html'"></div>
-	
-	<div class="row">
+<div class="row" style="margin-bottom: 2.0em; background: black; color: white;" ng-hide="user.live">
 
-		<div class="span12" style="padding-bottom: 0.3em; margin-bottom: 2.0em;">
+	<div class="span4" style="text-align: left;">
+		<div class="row" style="margin-top: 0.3em; margin-bottom: 0.3em;">
+			<div class="span2" style="text-align: right;">
+				<button ng-click="lowerPrice()" class="btn" style="width: 100%">
+					- RATE
+				</button>
+			</div>
+			<div class="span2">
+				<button ng-click="raisePrice()" class="btn" style="width: 100%">
+					+ RATE
+				</button>
+			</div>
+		</div>
+	</div>
+	<div class="span4" style="text-align: center; color: #d00000;">
+		RUNNING IN TEST MODE
+	</div>
+	<div class="span4" style="text-align: right;">
+		<div class="row" style="margin-top: 0.3em; margin-bottom: 0.3em;">
+			<div class="span2" style="text-align: right;">
+				<button ng-click="removeFundsLeft()" class="btn" style="width: 6em;">
+					- {{user.currentTradeStats.currencyLeft|uppercase}}
+				</button>
+			</div>
+			<div class="span2">
+				<button ng-click="addFundsLeft()" class="btn" style="width: 6em; margin-right: 1.4em;">
+					+ {{user.currentTradeStats.currencyLeft|uppercase}}
+				</button>
+			</div>
+		</div>
+		<div class="row" style="margin-top: 0.3em; margin-bottom: 0.3em;">
+			<div class="span2" style="text-align: right;">
+				<button ng-click="removeFundsRight()" class="btn" style="width: 6em;">
+					- {{user.currentTradeStats.currencyRight|uppercase}}
+				</button>
+			</div>
+			<div class="span2">
+				<button ng-click="addFundsRight()" class="btn" style="width: 6em; margin-right: 1.4em;">
+					+ {{user.currentTradeStats.currencyRight|uppercase}}
+				</button>
+			</div>
+		</div>
+	</div>
+
+</div>
+
+<div class="row" ng-hide="!user.currentTradeStats.uninitialized">
+	<div class="span12" style="text-align: center;">
+		Loading
+	</div>
+</div>
+
+<div class="tabbable" ng-hide="user.currentTradeStats.uninitialized">
+
+	<ul class="nav nav-tabs">
+
+		<li ng-repeat="stats in user.tradeStats" ng-class="{ active: user.currentTradeStats.id == stats.id }">
+			<a href="" ng-click="go('/tradeStats/{{stats.id}}')" data-toggle="tab">{{stats.currencyLeft|uppercase}}-{{stats.currencyRight|uppercase}}</a>
+		</li>
+
+		<li style="padding-top: 4px; padding-left: 1.0em;">
+			<button ng-click="addTab()" class="btn" href="" style="display: inline-block;">
+				Add tab
+			</button>
+			<select ng-model="newCurrencyPair" style="width: 8em; margin-bottom: 0px;">
+				<option value="ltc_usd" title="LTC-USD">USD-LTC</option>
+				<option value="ltc_btc" title="LTC-BTC">BTC-LTC</option>
+				<option value="btc_usd" title="BTC-USD">USD-BTC</option>
+			</select>
+		</li>
+	</ul>
+
+	<div class="tab-content">
+
+		<div class="tab-pane active" id="tab1">
+
+			<div ng-include src="'parts/autoTrading.html'"></div>
+
+			<div ng-include src="'parts/charts.html'"></div>
 
 			<div class="row">
-				<div class="span12" style="border-top: 1px solid black; border-bottom: 1px solid black; height: 1.85em;">
-					<div style="padding-top: 0.2em;">
-						<a href="" ng-click="showManualTrading = !showManualTrading"><i ng-class="{ 'icon-chevron-down': showManualTrading, 'icon-chevron-right': !showManualTrading }"></i></a>
-						Manual trading
-					</div>
-				</div>
-			</div>
 
-			<div class="row" ng-class="{ hidden: !showManualTrading }">
+				<div class="span12" style="padding-bottom: 0.3em; margin-bottom: 2.0em;">
 
-				<div class="span4">
 					<div class="row">
-						<div class="span2" style="background: #ededed; margin-bottom: 0.2em;">
-							<div style="margin: 0.3em;">
-								{{user.currentTradeStats.currencyLeft|uppercase}} [<a href="" ng-click="manualBuyCurrencyLeft = user.currentTradeStats.fundsLeft">All</a>] [<a href="" ng-click="manualBuyCurrencyLeft = user.currentTradeStats.fundsLeft/2">1/2</a>]
-								<br/>
-								<input style="width: 100%; margin-bottom: 0px; margin-top: 0.15em;" type="text" ng-model="manualBuyCurrencyLeft"/>
-							</div>
-						</div>
-						<div class="span2" style="background: #ededed; margin-bottom: 0.2em;">
-							<div style="margin: 0.3em;">
-								{{user.currentTradeStats.currencyRight|uppercase}} [<a href="" ng-click="manualBuyCurrencyRight = user.currentTradeStats.fundsRight">All</a>] [<a href="" ng-click="manualBuyCurrencyRight = user.currentTradeStats.fundsRight/2">1/2</a>]
-								<br/>
-								<input style="width: 100%; margin-bottom: 0px; margin-top: 0.15em;" type="text" ng-model="manualBuyCurrencyRight"/>
+						<div class="span12" style="border-top: 1px solid black; border-bottom: 1px solid black; height: 1.85em;">
+							<div style="padding-top: 0.2em;">
+								<a href="" ng-click="showManualTrading = !showManualTrading"><i ng-class="{ 'icon-chevron-down': showManualTrading, 'icon-chevron-right': !showManualTrading }"></i></a>
+								Manual trading
 							</div>
 						</div>
 					</div>
-					<div class="row">
-						<div class="span4" style="margin-bottom: 0.7em;">
-							<button style="width: 100%; margin-top: 0.15em;" ng-click="manualTransaction('buy')">
-								Buy
-							</button>
-						</div>
-					</div>
-				</div>
 
-				<div class="span4" style="background: #ededed; margin-bottom: 0.7em;">
-					<div style="margin: 0.3em;">
-						<div style="width: 100%">
-							<div style="display: inline-block; width: 38%;">
-								Buy rate
-								<br/>
-								<input style="width: 5.0em; margin-bottom: 0px; margin-top: 0.15em;" type="text" ng-model="manualBuyRate"/>
-							</div>
-							<div style="display: inline-block; width: 20%; text-align: center;">
-								<span>Track</span>
-								<br/>
-								<input type="checkbox" style="margin-top: 0.25em; margin-bottom: 0.35em;" ng-model="trackManualTransactions" />
-							</div>
-							<div style="display: inline-block; width: 38%; text-align: right;">
-								Sell rate
-								<br/>
-								<input style="width: 5.0em; margin-bottom: 0px; margin-top: 0.15em;" type="text" ng-model="manualSellRate"/>
-							</div>
-						</div>
-						<div style="width: 100%; padding-top: 0.4em; text-align: center;">
-							<input type="checkbox" style="margin-top: -2px;" ng-model="rateAuto" />
-							Auto
-							<input type="checkbox" style="margin-top: -2px; margin-left: 1.0em;" ng-model="rateBuffered" ng-disabled="!rateAuto" />
-							Buf.
-							<input style="width: 4.0em; margin-bottom: 0px;" type="text" ng-model="user.currentTradeStats.rateBuffer" ng-disabled="!rateBuffered || !rateAuto" />
-						</div>
-					</div>
-				</div>
+					<div class="row" ng-class="{ hidden: !showManualTrading }">
 
-				<div class="span4">
-					<div class="row">
-						<div class="span2" style="background: #ededed; margin-bottom: 0.2em;">
-							<div style="margin: 0.3em;">
-								{{user.currentTradeStats.currencyRight|uppercase}} [<a href="" ng-click="manualSellCurrencyRight = user.currentTradeStats.fundsRight">All</a>] [<a href="" ng-click="manualSellCurrencyRight = user.currentTradeStats.fundsRight/2">1/2</a>]
-								<br/>
-								<input style="width: 100%; margin-bottom: 0px; margin-top: 0.15em;" type="text" ng-model="manualSellCurrencyRight"/>
+						<div class="span4">
+							<div class="row">
+								<div class="span2" style="background: #ededed; margin-bottom: 0.2em;">
+									<div style="margin: 0.3em;">
+										{{user.currentTradeStats.currencyLeft|uppercase}} [<a href="" ng-click="manualBuyCurrencyLeft = user.currentTradeStats.fundsLeft">All</a>] [<a href="" ng-click="manualBuyCurrencyLeft = user.currentTradeStats.fundsLeft/2">1/2</a>]
+										<br/>
+										<input style="width: 100%; margin-bottom: 0px; margin-top: 0.15em;" type="text" ng-model="manualBuyCurrencyLeft"/>
+									</div>
+								</div>
+								<div class="span2" style="background: #ededed; margin-bottom: 0.2em;">
+									<div style="margin: 0.3em;">
+										{{user.currentTradeStats.currencyRight|uppercase}} [<a href="" ng-click="manualBuyCurrencyRight = user.currentTradeStats.fundsRight">All</a>] [<a href="" ng-click="manualBuyCurrencyRight = user.currentTradeStats.fundsRight/2">1/2</a>]
+										<br/>
+										<input style="width: 100%; margin-bottom: 0px; margin-top: 0.15em;" type="text" ng-model="manualBuyCurrencyRight"/>
+									</div>
+								</div>
+							</div>
+							<div class="row">
+								<div class="span4" style="margin-bottom: 0.7em;">
+									<button style="width: 100%; margin-top: 0.15em;" ng-click="manualTransaction('buy')">
+										Buy
+									</button>
+								</div>
 							</div>
 						</div>
-						<div class="span2" style="background: #ededed; margin-bottom: 0.2em;">
+
+						<div class="span4" style="background: #ededed; margin-bottom: 0.7em;">
 							<div style="margin: 0.3em;">
-								{{user.currentTradeStats.currencyLeft|uppercase}} [<a href="" ng-click="manualSellCurrencyLeft = user.currentTradeStats.fundsLeft">All</a>] [<a href="" ng-click="manualSellCurrencyLeft = user.currentTradeStats.fundsLeft/2">1/2</a>]
-								<br/>
-								<input style="width: 100%; margin-bottom: 0px; margin-top: 0.15em;" type="text" ng-model="manualSellCurrencyLeft"/>
+								<div style="width: 100%">
+									<div style="display: inline-block; width: 38%;">
+										Buy rate
+										<br/>
+										<input style="width: 5.0em; margin-bottom: 0px; margin-top: 0.15em;" type="text" ng-model="manualBuyRate"/>
+									</div>
+									<div style="display: inline-block; width: 20%; text-align: center;">
+										<span>Track</span>
+										<br/>
+										<input type="checkbox" style="margin-top: 0.25em; margin-bottom: 0.35em;" ng-model="trackManualTransactions" />
+									</div>
+									<div style="display: inline-block; width: 38%; text-align: right;">
+										Sell rate
+										<br/>
+										<input style="width: 5.0em; margin-bottom: 0px; margin-top: 0.15em;" type="text" ng-model="manualSellRate"/>
+									</div>
+								</div>
+								<div style="width: 100%; padding-top: 0.4em; text-align: center;">
+									<input type="checkbox" style="margin-top: -2px;" ng-model="rateAuto" />
+									Auto
+									<input type="checkbox" style="margin-top: -2px; margin-left: 1.0em;" ng-model="rateBuffered" ng-disabled="!rateAuto" />
+									Buf.
+									<input style="width: 4.0em; margin-bottom: 0px;" type="text" ng-model="user.currentTradeStats.rateBuffer" ng-disabled="!rateBuffered || !rateAuto" />
+								</div>
 							</div>
 						</div>
-					</div>
-					<div class="row">
-						<div class="span4" style="margin-bottom: 0.7em;">
-							<button style="width: 100%; margin-top: 0.15em;" ng-click="manualTransaction('sell')">
-								Sell
-							</button>
+
+						<div class="span4">
+							<div class="row">
+								<div class="span2" style="background: #ededed; margin-bottom: 0.2em;">
+									<div style="margin: 0.3em;">
+										{{user.currentTradeStats.currencyRight|uppercase}} [<a href="" ng-click="manualSellCurrencyRight = user.currentTradeStats.fundsRight">All</a>] [<a href="" ng-click="manualSellCurrencyRight = user.currentTradeStats.fundsRight/2">1/2</a>]
+										<br/>
+										<input style="width: 100%; margin-bottom: 0px; margin-top: 0.15em;" type="text" ng-model="manualSellCurrencyRight"/>
+									</div>
+								</div>
+								<div class="span2" style="background: #ededed; margin-bottom: 0.2em;">
+									<div style="margin: 0.3em;">
+										{{user.currentTradeStats.currencyLeft|uppercase}} [<a href="" ng-click="manualSellCurrencyLeft = user.currentTradeStats.fundsLeft">All</a>] [<a href="" ng-click="manualSellCurrencyLeft = user.currentTradeStats.fundsLeft/2">1/2</a>]
+										<br/>
+										<input style="width: 100%; margin-bottom: 0px; margin-top: 0.15em;" type="text" ng-model="manualSellCurrencyLeft"/>
+									</div>
+								</div>
+							</div>
+							<div class="row">
+								<div class="span4" style="margin-bottom: 0.7em;">
+									<button style="width: 100%; margin-top: 0.15em;" ng-click="manualTransaction('sell')">
+										Sell
+									</button>
+								</div>
+							</div>
 						</div>
+
 					</div>
+
 				</div>
 
 			</div>
 
-		</div>
-
-	</div>
-
-	<div class="row">
-		<div class="span4" style="font-size: 2.0em;">
-			<b>{{user.currentTradeStats.currencyLeft|uppercase}}</b>
-			{{user.currentTradeStats.fundsLeft|truncate:6:""}}
-		</div>
-		<div class="span4" style="text-align: center;">
-			<b>HI</b> {{user.currentTradeStats.rate.buy|truncate:6:""}}
-			<div style="display: inline; font-size: 2.0em;">
-				{{user.currentTradeStats.rate.last|truncate:6:""}}
-			</div>
-			{{user.currentTradeStats.rate.sell|truncate:6:""}} <b>LO</b>
-		</div>
-		<div class="span4" style="font-size: 2.0em; text-align: right;">
-			<b>{{user.currentTradeStats.currencyRight|uppercase}}</b>
-			{{user.currentTradeStats.fundsRight|truncate:6:""}}
-		</div>
-	</div>
-	
-	<div class="row">
-		<div class="span6" style="text-align: left;">
-			<input ng-model="newFundsLeft" style="width: 5.0em; margin-bottom: 0px; margin-top: 0.15em; padding: 10px 6px;" type="text" />
-			<button style="width: 3.0em; margin-top: 0.15em; padding: 0px;" ng-click="setFundsLeft()">Set</button>
-			<span style="margin-left: 0.5em;">
-				<a href="" ng-click="newFundsLeft = user.funds[user.currentTradeStats.currencyLeft] + user.currentTradeStats.fundsLeft">Max</a> 
-				{{ user.funds[user.currentTradeStats.currencyLeft] + user.currentTradeStats.fundsLeft }} {{user.currentTradeStats.currencyLeft|uppercase}}
-			</span>
-		</div>
-		<div class="span6" style="text-align: right;">
-			<span style="margin-right: 0.5em;">
-				<a href="" ng-click="newFundsRight = user.funds[user.currentTradeStats.currencyRight] + user.currentTradeStats.fundsRight">Max</a> 
-				{{ user.funds[user.currentTradeStats.currencyRight] + user.currentTradeStats.fundsRight }} {{user.currentTradeStats.currencyRight|uppercase}}
-			</span>
-			<button style="width: 3.0em; margin-top: 0.15em; padding: 0px;" ng-click="setFundsRight()">Set</button>
-			<input ng-model="newFundsRight" style="width: 5.0em; margin-bottom: 0px; margin-top: 0.15em; padding: 10px 6px;" type="text" />
-		</div>
-	</div>
-	
-	<div class="row">
-
-		<div class="span6">
-
-			<div class="row" style="margin-top: 1.0em;">
-
-				<div class="span3">
-					<b>{{user.currentTradeStats.currencyLeft|uppercase}} CASHOUT:</b> {{currencyLeftCashout()|truncate:6:""}}
+			<div class="row">
+				<div class="span4" style="font-size: 2.0em;">
+					<b>{{user.currentTradeStats.currencyLeft|uppercase}}</b>
+					{{user.currentTradeStats.fundsLeft|truncate:6:""}}
 				</div>
-
-				<div class="span3">
-					<b>{{user.currentTradeStats.currencyLeft|uppercase}} REVENUE:</b> {{user.currentTradeStats.profitLeft|truncate:6:""}}
+				<div class="span4" style="text-align: center;">
+					<b>HI</b> {{user.currentTradeStats.rate.buy|truncate:6:""}}
+					<div style="display: inline; font-size: 2.0em;">
+						{{user.currentTradeStats.rate.last|truncate:6:""}}
+					</div>
+					{{user.currentTradeStats.rate.sell|truncate:6:""}} <b>LO</b>
 				</div>
-
+				<div class="span4" style="font-size: 2.0em; text-align: right;">
+					<b>{{user.currentTradeStats.currencyRight|uppercase}}</b>
+					{{user.currentTradeStats.fundsRight|truncate:6:""}}
+				</div>
 			</div>
 
-		</div>
+			<div class="row">
+				<div class="span6" style="text-align: left;">
+					<input ng-model="newFundsLeft" style="width: 5.0em; margin-bottom: 0px; margin-top: 0.15em; padding: 10px 6px;" type="text" />
+					<button style="width: 3.0em; margin-top: 0.15em; padding: 0px;" ng-click="setFundsLeft()">
+						Set
+					</button>
+					<span style="margin-left: 0.5em;"> <a href="" ng-click="newFundsLeft = user.funds[user.currentTradeStats.currencyLeft] + user.currentTradeStats.fundsLeft">Max</a> {{ user.funds[user.currentTradeStats.currencyLeft] + user.currentTradeStats.fundsLeft }} {{user.currentTradeStats.currencyLeft|uppercase}} </span>
+				</div>
+				<div class="span6" style="text-align: right;">
+					<span style="margin-right: 0.5em;"> <a href="" ng-click="newFundsRight = user.funds[user.currentTradeStats.currencyRight] + user.currentTradeStats.fundsRight">Max</a> {{ user.funds[user.currentTradeStats.currencyRight] + user.currentTradeStats.fundsRight }} {{user.currentTradeStats.currencyRight|uppercase}} </span>
+					<button style="width: 3.0em; margin-top: 0.15em; padding: 0px;" ng-click="setFundsRight()">
+						Set
+					</button>
+					<input ng-model="newFundsRight" style="width: 5.0em; margin-bottom: 0px; margin-top: 0.15em; padding: 10px 6px;" type="text" />
+				</div>
+			</div>
 
-		<div class="span6">
+			<div class="row">
 
-			<div class="row" style="margin-top: 1.0em;">
+				<div class="span6">
 
-				<div class="span3" style="text-align: right;">
-					<b>{{user.currentTradeStats.currencyRight|uppercase}} CASHOUT:</b> {{currencyRightCashout()|truncate:6:""}}
+					<div class="row" style="margin-top: 1.0em;">
+
+						<div class="span3">
+							<b>{{user.currentTradeStats.currencyLeft|uppercase}} CASHOUT:</b> {{currencyLeftCashout()|truncate:6:""}}
+						</div>
+
+						<div class="span3">
+							<b>{{user.currentTradeStats.currencyLeft|uppercase}} REVENUE:</b> {{user.currentTradeStats.profitLeft|truncate:6:""}}
+						</div>
+
+					</div>
+
 				</div>
 
-				<div class="span3" style="text-align: right;">
-					<b>{{user.currentTradeStats.currencyRight|uppercase}} REVENUE:</b> 0
+				<div class="span6">
+
+					<div class="row" style="margin-top: 1.0em;">
+
+						<div class="span3" style="text-align: right;">
+							<b>{{user.currentTradeStats.currencyRight|uppercase}} CASHOUT:</b> {{currencyRightCashout()|truncate:6:""}}
+						</div>
+
+						<div class="span3" style="text-align: right;">
+							<b>{{user.currentTradeStats.currencyRight|uppercase}} REVENUE:</b> 0
+						</div>
+
+					</div>
+
 				</div>
 
 			</div>
 
-		</div>
+			<div ng-include src="'parts/txLog.html'"></div>
 
-	</div>
+			<div class="row" style="margin-top: 4.0em;">
 
-	
-	<div ng-include src="'parts/txLog.html'"></div>
-	
-	
-	<div class="row" style="margin-top: 4.0em;">
+				<div class="span12" styl="text-align: center;">
 
-		<div class="span12" styl="text-align: center;">
+					Refresh in {{refreshCounter}} seconds.
 
-			Refresh in {{refreshCounter}} seconds.
+				</div>
+
+			</div>
 
 		</div>
 

@@ -1,8 +1,9 @@
 function AppCtrl($scope, $routeParams, $http) {
 	
+	$scope.currentView = "app";
+	
 	$scope.refreshCounter = 0;
 	$scope.currentTradeStatsId = 0;
-	
 	
 	$scope.user = {
 		
@@ -37,7 +38,11 @@ function AppCtrl($scope, $routeParams, $http) {
 		
 	};
 	
-	$scope.setUser = function() {
+	$scope.setUser = function(user) {
+		
+		if(user != undefined) {
+			API.userId = user.username;
+		}
 		
 		API.getUser(function(users) {
 			
@@ -45,7 +50,8 @@ function AppCtrl($scope, $routeParams, $http) {
 			console.log($scope.user);
 			var userTabs = $scope.user.tradeStats;
 			
-			$scope.go("/tradeStats/"+userTabs[0].id);
+			API.tradeStatsId = userTabs[0].id;
+			//$scope.go("/tradeStats/"+userTabs[0].id);
 			
 		});
 
@@ -54,13 +60,7 @@ function AppCtrl($scope, $routeParams, $http) {
 	
 	$scope.changeToTestUser = function() {
 		
-		if(API.userId != "testUser123") {
-			API.tradeStatsId = null;
-		}
-		
-		console.log("user changed from "+API.userId+" to testuser123");
-		
-		API.userId = "testUser123";
+		API.userId = $scope.user.username+" (test)";
 		
 		$scope.setUser();
 		
@@ -69,13 +69,7 @@ function AppCtrl($scope, $routeParams, $http) {
 	
 	$scope.changeToLiveUser = function() {
 		
-		if(API.userId != "testUser456") {
-			API.tradeStatsId = null;
-		}
-		
-		console.log("user changed from "+API.userId+" to testuser456");
-		
-		API.userId = "testUser456";
+		API.userId = $scope.user.username.substring(0, $scope.user.username.length-7);
 		
 		$scope.setUser();
 		

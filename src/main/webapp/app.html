@@ -27,6 +27,7 @@
 
 		<script src="js/btce.js"></script>
 		<script src="js/app.js"></script>
+		<script src="js/login.js"></script>
 		<script src="js/tradeStats.js"></script>
 		<script src="js/charts.js"></script>
 		<script src="js/txLog.js"></script>
@@ -35,119 +36,44 @@
 	</head>
 
 	<body ng-controller="AppCtrl">
-		
+
 		<div class="container">
-		
-		<div class="row" style="margin-bottom: 2.0em;">
 
-			<div class="span3" style="font-size: 1.8em;">
-				FLUXOMAT 3000
-			</div>
+			<div class="row" style="margin-bottom: 2.0em;">
+				
+				<div class="span12" style="background: #ededed;">
+					
+					<div class="row">
+						
+						<div class="span3" style="font-size: 1.6em; padding-top: 0.4em;">
+							<span style="margin-left: 0.3em;">FLUXOMAT 3000</span>
+						</div>
 
-			<div class="span6" style="text-align: center;">
-				Signed in as: {{user.username}}
-				<br/>
-				USD {{user.funds.usd}} LTC {{user.funds.ltc}} BTC {{user.funds.btc}}
-			</div>
+						<div class="span6" style="text-align: center;">
+							Signed in as: {{user.username}}
+							<br/>
+							USD {{user.funds.usd}} LTC {{user.funds.ltc}} BTC {{user.funds.btc}}
+						</div>
 
-			<div class="span3" style="text-align: right;">
-				<button ng-click="changeToTestUser()" class="btn" ng-hide="!user.live">
-					Engage Test Mode
-				</button>
-				<button ng-click="changeToLiveUser()" class="btn" ng-hide="user.live">
-					Disengage Test Mode
-				</button>
-			</div>
-
-		</div>
-
-		<div class="row" style="margin-bottom: 2.0em; background: black; color: white;" ng-hide="user.live">
-
-			<div class="span4" style="text-align: left;">
-				<div class="row" style="margin-top: 0.3em; margin-bottom: 0.3em;">
-					<div class="span2" style="text-align: right;">
-						<button ng-click="lowerPrice()" class="btn" style="width: 100%">
-							- RATE
-						</button>
+						<div class="span3" style="text-align: right; padding-top: 0.3em;" ng-hide="location.path() == '/login'">
+							<button ng-click="changeToTestUser()" class="btn" ng-hide="!user.live">
+								Engage Test Mode
+							</button>
+							<button ng-click="changeToLiveUser()" class="btn" ng-hide="user.live">
+								Disengage Test Mode
+							</button>
+						</div>
+				
 					</div>
-					<div class="span2">
-						<button ng-click="raisePrice()" class="btn" style="width: 100%">
-							+ RATE
-						</button>
-					</div>
+					
 				</div>
-			</div>
-			<div class="span4" style="text-align: center; color: #d00000;">
-				RUNNING IN TEST MODE
-			</div>
-			<div class="span4" style="text-align: right;">
-				<div class="row" style="margin-top: 0.3em; margin-bottom: 0.3em;">
-					<div class="span2" style="text-align: right;">
-						<button ng-click="removeFundsLeft()" class="btn" style="width: 6em;">
-							- {{user.currentTradeStats.currencyLeft|uppercase}}
-						</button>
-					</div>
-					<div class="span2">
-						<button ng-click="addFundsLeft()" class="btn" style="width: 6em; margin-right: 1.4em;">
-							+ {{user.currentTradeStats.currencyLeft|uppercase}}
-						</button>
-					</div>
-				</div>
-				<div class="row" style="margin-top: 0.3em; margin-bottom: 0.3em;">
-					<div class="span2" style="text-align: right;">
-						<button ng-click="removeFundsRight()" class="btn" style="width: 6em;">
-							- {{user.currentTradeStats.currencyRight|uppercase}}
-						</button>
-					</div>
-					<div class="span2">
-						<button ng-click="addFundsRight()" class="btn" style="width: 6em; margin-right: 1.4em;">
-							+ {{user.currentTradeStats.currencyRight|uppercase}}
-						</button>
-					</div>
-				</div>
-			</div>
-
-		</div>
-
-		<div class="row" ng-hide="!user.currentTradeStats.uninitialized">
-			<div class="span12" style="text-align: center;">
-				Loading
-			</div>
-		</div>
-
-		<div class="tabbable" ng-hide="user.currentTradeStats.uninitialized">
-
-			<ul class="nav nav-tabs">
-
-				<li ng-repeat="stats in user.tradeStats" ng-class="{ active: user.currentTradeStats.id == stats.id }">
-					<a href="" ng-click="go('/tradeStats/{{stats.id}}')" data-toggle="tab">{{stats.currencyLeft|uppercase}}-{{stats.currencyRight|uppercase}}</a>
-				</li>
-
-				<li style="padding-top: 4px; padding-left: 1.0em;">
-					<button ng-click="addTab()" class="btn" href="" style="display: inline-block;">
-						Add tab
-					</button>
-					<select ng-model="newCurrencyPair" style="width: 8em; margin-bottom: 0px;">
-						<option value="ltc_usd" title="LTC-USD">USD-LTC</option>
-						<option value="ltc_btc" title="LTC-BTC">BTC-LTC</option>
-						<option value="btc_usd" title="BTC-USD">USD-BTC</option>
-					</select>
-				</li>
-			</ul>
-
-			<div class="tab-content">
-
-				<div ng-view></div>
 
 			</div>
-
-		</div>
-
 		
+			<div ng-view></div>
+			
 		</div>
-		
-	</div>
-	
+
 	</body>
 
 </html>

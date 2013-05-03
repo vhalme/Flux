@@ -62,8 +62,12 @@ myApp.directive('smartFloat', function() {
 myApp.config(['$routeProvider', function($routeProvider) {
 	
 	$routeProvider.
-    	when('/tradeStats/:tradeStatsId', { templateUrl: 'parts/tradeStats.html', controller: TradeStatsCtrl }).
-    	otherwise( { redirectTo: '/tradeStats/0' } );
+		when('/login', { templateUrl: 'parts/login.html', controller: LoginCtrl }).
+    	when('/tradeStats/:tradeStatsId', { templateUrl: 'parts/tradeStats.html', controller: TradeStatsCtrl });
 	}]
 
 );
+
+myApp.run(function($rootScope, $location) {
+    $rootScope.location = $location;
+});

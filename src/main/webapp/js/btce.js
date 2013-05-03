@@ -211,6 +211,26 @@ var API = {
 		    	
 		    });
 			
+		},
+		
+		
+		login: function(email, password, callback) {
+			
+			$.ajax({
+		    	
+				async: false,
+		    	type: "POST",
+		    	url: "service/login",
+		    	dataType: "json",
+	  			contentType: "application/json",
+	  			headers: {
+					"User-Id": email,
+					"Password": password
+		    	},
+		    	success: callback
+		    	
+		    });
+			
 		}
 		
 
