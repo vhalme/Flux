@@ -2,7 +2,9 @@ package com.lenin.project.domain;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
@@ -22,6 +24,9 @@ public class User implements Serializable {
 	private String email;
 	private String username;
 	private String password;
+	
+	private Map<String, Double> funds = new HashMap<String, Double>();
+	
 	
 	@DBRef
 	private List<TradeStats> tradeStats = new ArrayList<TradeStats>();
@@ -71,6 +76,14 @@ public class User implements Serializable {
 
 	public void setPassword(String password) {
 		this.password = password;
+	}
+
+	public Map<String, Double> getFunds() {
+		return funds;
+	}
+
+	public void setFunds(Map<String, Double> funds) {
+		this.funds = funds;
 	}
 
 	public List<TradeStats> getTradeStats() {

@@ -172,8 +172,12 @@ public class UserTrader {
 			String orderId = ""+unixTime;
 			
 			transaction.setOrderId(orderId);
-			transaction.setReceived(transaction.getBrokerAmount()*Math.random());
+			transaction.setReceived(transaction.getBrokerAmount()); //*Math.random());
 			transaction.setRemains(transaction.getBrokerAmount()-transaction.getReceived());
+			
+			if(transaction.getRemains() == 0) {
+				transaction.setFilledAmount(transaction.getBrokerAmount());
+			}
 			
 			Trade trade = new Trade();
 			trade.setLive(false);
@@ -196,8 +200,6 @@ public class UserTrader {
 	
 	private void executeTransaction(Transaction transaction) {
 		
-		System.out.println("exec tx");
-		
 		Double brokerFeeFactor = 1-BtceApi.transactionFee;
 		
 		transaction.setFinalAmount(transaction.getBrokerAmount()*brokerFeeFactor);
@@ -219,6 +221,7 @@ public class UserTrader {
 		}
 		
 		Transaction reversedTransaction = transaction.getReversedTransaction();
+		System.out.println("exec tx (reverse="+(reversedTransaction != null)+", fill="+transaction.getFilledAmount()+"/broker="+transaction.getBrokerAmount()+")");
 		
 		if(reversedTransaction != null) {
 			
@@ -230,17 +233,23 @@ public class UserTrader {
 			reversedTransaction.setIsReversed(true);
 			reversedTransaction.setFilledAmount(transaction.getFilledAmount());
 			
-			transactionRepository.save(reversedTransaction);
-			transactionRepository.save(transaction);
+			if(transaction.getFilledAmount() < transaction.getBrokerAmount()) {
+				transactionRepository.save(reversedTransaction);
+				transactionRepository.save(transaction);
+			} else {
+				transactionRepository.delete(reversedTransaction);
+				//transactionRepository.delete(transaction);
+			}
+			
+		} else {
+			
+			if(transaction.getSave()) {
+				transactionRepository.save(transaction);
+			}
 			
 		}
 		
 		tradeStatsRepository.save(tradeStats);
-		
-		if(transaction.getSave()) {
-			transactionRepository.save(transaction);
-		}
-		
 		
 	}
 	

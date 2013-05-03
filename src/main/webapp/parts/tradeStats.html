@@ -2,42 +2,8 @@
 	
 	<div ng-include src="'parts/autoTrading.html'"></div>
 	
-	<div class="row">
-
-		<div class="span12" style="padding-bottom: 0.3em;">
-
-			<div class="row">
-				<div class="span12" style="border-top: 1px solid black; border-bottom: 1px solid black; height: 1.85em;">
-					<div style="padding-top: 0.2em;">
-						<a href="" ng-click="showGraphs = !showGraphs"><i ng-class="{ 'icon-chevron-down': showGraphs, 'icon-chevron-right': !showGraphs }"></i></a>
-						Chart
-					</div>
-				</div>
-			</div>
-			<div class="row" ng-class="{ hidden: !showGraphs }">
-				<div class="span12">
-					<div class="row">
-						<div class="span12">
-							<div style="margin-left: 4.6em; margin-top: 0.6em;">
-								<div class="btn-group">
-									<button class="btn" ng-repeat="option in chartScaleOptions" ng-click="setChartScale(option.precision)" ng-class="{ active: option.precision == chartScale }">
-										{{option.period}}
-									</button>
-								</div>
-								<span style="margin-left: 1.0em;">Max. precision: {{chartScale}}</span>
-							</div>
-						</div>
-					</div>
-					<div class="row">
-						<div id="chartContainer" class="span12" style="height: 320px;"></div>
-					</div>
-				</div>
-			</div>
-
-		</div>
-
-	</div>
-
+	<div ng-include src="'parts/charts.html'"></div>
+	
 	<div class="row">
 
 		<div class="span12" style="padding-bottom: 0.3em; margin-bottom: 2.0em;">
@@ -157,7 +123,26 @@
 			{{user.currentTradeStats.fundsRight|truncate:6:""}}
 		</div>
 	</div>
-
+	
+	<div class="row">
+		<div class="span6" style="text-align: left;">
+			<input ng-model="newFundsLeft" style="width: 5.0em; margin-bottom: 0px; margin-top: 0.15em; padding: 10px 6px;" type="text" />
+			<button style="width: 3.0em; margin-top: 0.15em; padding: 0px;" ng-click="setFundsLeft()">Set</button>
+			<span style="margin-left: 0.5em;">
+				<a href="" ng-click="newFundsLeft = user.funds[user.currentTradeStats.currencyLeft] + user.currentTradeStats.fundsLeft">Max</a> 
+				{{ user.funds[user.currentTradeStats.currencyLeft] + user.currentTradeStats.fundsLeft }} {{user.currentTradeStats.currencyLeft|uppercase}}
+			</span>
+		</div>
+		<div class="span6" style="text-align: right;">
+			<span style="margin-right: 0.5em;">
+				<a href="" ng-click="newFundsRight = user.funds[user.currentTradeStats.currencyRight] + user.currentTradeStats.fundsRight">Max</a> 
+				{{ user.funds[user.currentTradeStats.currencyRight] + user.currentTradeStats.fundsRight }} {{user.currentTradeStats.currencyRight|uppercase}}
+			</span>
+			<button style="width: 3.0em; margin-top: 0.15em; padding: 0px;" ng-click="setFundsRight()">Set</button>
+			<input ng-model="newFundsRight" style="width: 5.0em; margin-bottom: 0px; margin-top: 0.15em; padding: 10px 6px;" type="text" />
+		</div>
+	</div>
+	
 	<div class="row">
 
 		<div class="span6">
@@ -194,133 +179,9 @@
 
 	</div>
 
-	<div class="row" style="margin-top: 2.0em;">
-
-		<div class="span6">
-
-			<div class="row">
-				<div class="span6">
-					<b>MY SELLS</b>
-				</div>
-			</div>
-
-			<div class="row" style="margin-top: 0.7em;">
-				<div class="span1">
-					<a href="" ng-click="sellSort='amount'; sellSortReverse=!sellSortReverse">{{user.currentTradeStats.currencyRight|uppercase}}</a>
-				</div>
-				<div class="span1">
-					<a href="" ng-click="buySort='amount'; buySortReverse=!buySortReverse">{{user.currentTradeStats.currencyLeft|uppercase}}</a>
-				</div>
-				<div class="span1">
-					<a href="" ng-click="sellSort='rate'; sellSortReverse=!sellSortReverse">RATE</a>
-				</div>
-				<div class="span2">
-					<a href="" ng-click="sellSort=sellProfit; sellSortReverse=!sellSortReverse">PROFIT</a>
-					(<a href="" ng-click="changeProfitFormat('sell')">{{otherProfitFormat('sell')}}</a>)
-				</div>
-			</div>
-
-			<div class="row" ng-hide="sell.reversedTransaction != null" style="margin-bottom: 0.1em;" ng-repeat="sell in transactions['sell'] | orderBy:sellSort:!sellSortReverse">
-
-				<div class="span4" ng-class="{ profitBorder: sellProfit(sell) > 0, lossBorder: sellProfit(sell) < 0 }" style="position: relative; padding-right: 2.0em;">
-
-					<div class="orderFill customstyle" ng-class="{ profitFill: sellProfit(sell) > 0, lossFill: sellProfit(sell) < 0 }" my-width="sell.filledAmount / sell.brokerAmount"></div>
-
-					<div class="transparentCover" ng-hide="!sell.isReversed"></div>
-
-					<div class="row">
-						<div class="span1">
-							{{sell.amount|truncate:6:""}}
-						</div>
-						<div class="span1">
-							{{(sell.rate*sell.amount)|truncate:6:""}}
-						</div>
-						<div class="span1">
-							{{sell.rate|truncate:6:""}}
-						</div>
-						<div class="span1">
-							{{sellProfit(sell)|truncate:6:""}}{{sellProfitFormat}}
-						</div>
-					</div>
-
-				</div>
-
-				<div class="span2" style="margin-left: 0px; width: 6em; padding-left: 0.5em;" ng-hide="sell.filledAmount < sell.brokerAmount">
-					<a style="margin-left: 1.0em;" href="" ng-click="reverseTrade(sell, true)">Buy</a>
-					<a href="" ng-click="removeTransaction(sell)">Forget</a>
-				</div>
-
-				<div class="span2" style="margin-left: 0px; width: 6em; padding-left: 0.5em;" ng-hide="sell.filledAmount >= sell.brokerAmount">
-					<a style="margin-left: 1.0em;" href="" ng-click="cancelTrade(sell)">Cancel</a>
-				</div>
-
-			</div>
-
-		</div>
-
-		<div class="span6">
-
-			<div class="row">
-				<div class="span6">
-					<b>MY BUYS</b>
-				</div>
-			</div>
-
-			<div class="row" style="margin-top: 0.7em;">
-				<div class="span1">
-					<a href="" ng-click="buySort='amount'; buySortReverse=!buySortReverse">{{user.currentTradeStats.currencyRight|uppercase}}</a>
-				</div>
-				<div class="span1">
-					<a href="" ng-click="buySort='amount'; buySortReverse=!buySortReverse">{{user.currentTradeStats.currencyLeft|uppercase}}</a>
-				</div>
-				<div class="span1">
-					<a href="" ng-click="buySort='rate'; buySortReverse=!buySortReverse">RATE</a>
-				</div>
-				<div class="span2">
-					<a href="" ng-click="buySort=buyProfit; buySortReverse=!buySortReverse">PROFIT</a>
-					(<a href="" ng-click="changeProfitFormat('buy')">{{otherProfitFormat('buy')}}</a>)
-				</div>
-			</div>
-
-			<div class="row" ng-hide="buy.reversedTransaction != null" style="margin-bottom: 0.1em;" ng-repeat="buy in transactions['buy'] | orderBy:buySort:!buySortReverse">
-
-				<div class="span4" ng-class="{ profitBorder: buyProfit(buy) > 0, lossBorder: buyProfit(buy) < 0 }" style="position: relative; padding-right: 2.0em;">
-
-					<div class="orderFill customstyle" ng-class="{ profitFill: buyProfit(buy) > 0, lossFill: buyProfit(buy) < 0 }" my-width="buy.filledAmount / buy.brokerAmount"></div>
-
-					<div class="transparentCover" ng-hide="!buy.isReversed"></div>
-
-					<div class="row">
-						<div class="span1">
-							{{buy.amount|truncate:6:""}}
-						</div>
-						<div class="span1">
-							{{(buy.rate*buy.amount)|truncate:6:""}}
-						</div>
-						<div class="span1">
-							{{buy.rate|truncate:6:""}}
-						</div>
-						<div class="span1">
-							{{buyProfit(buy)|truncate:6:""}}{{buyProfitFormat}}
-						</div>
-					</div>
-
-				</div>
-
-				<div class="span2" style="margin-left: 0px; width: 6em; padding-left: 0.5em;" ng-hide="buy.filledAmount < buy.brokerAmount">
-					<a style="margin-left: 1.0em;" href="" ng-click="reverseTrade(buy, true)">Sell</a>
-					<a href="" ng-click="removeTransaction(buy)">Forget</a>
-				</div>
-
-				<div class="span2" style="margin-left: 0px; width: 6em; padding-left: 0.5em;" ng-hide="buy.filledAmount >= buy.brokerAmount">
-					<a style="margin-left: 1.0em;" href="" ng-click="cancelTrade(buy)">Cancel</a>
-				</div>
-
-			</div>
-
-		</div>
-
-	</div>
+	
+	<div ng-include src="'parts/txLog.html'"></div>
+	
 	
 	<div class="row" style="margin-top: 4.0em;">
 

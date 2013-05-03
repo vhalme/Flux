@@ -1,6 +1,8 @@
 function AppCtrl($scope, $routeParams, $http) {
 	
 	$scope.refreshCounter = 0;
+	$scope.currentTradeStatsId = 0;
+	
 	
 	$scope.user = {
 		
@@ -40,12 +42,10 @@ function AppCtrl($scope, $routeParams, $http) {
 		API.getUser(function(users) {
 			
 			$scope.user = users[0];
-			
 			console.log($scope.user);
-			
 			var userTabs = $scope.user.tradeStats;
-			API.tradeStatsId = userTabs[0].id;
-			$scope.user.currentTradeStats = userTabs[0];
+			
+			$scope.go("/tradeStats/"+userTabs[0].id);
 			
 		});
 
@@ -58,7 +58,7 @@ function AppCtrl($scope, $routeParams, $http) {
 			API.tradeStatsId = null;
 		}
 		
-		console.log("user changed from "+API.userId+" to testuser456");
+		console.log("user changed from "+API.userId+" to testuser123");
 		
 		API.userId = "testUser123";
 		

@@ -34,7 +34,7 @@ public class TradeStats implements Serializable {
 	private Double profitRight = 0.0;
 	
 	private Boolean tradeAuto = false;
-	private String autoTradingModel = null;
+	private String autoTradingModel = "accumulateUsd";
 	
 	private Double profitTarget = 0.05;
 	private Double rateBuffer = 0.001;

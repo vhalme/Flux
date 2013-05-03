@@ -61,385 +61,34 @@ public class TravellerService {
 	@Autowired
 	private TickerRepository tickerRepository;
 	
-	private Long tickerCounter = 0L;
-	private Long lastTickerTime = 0L;
-	
-	private Long lastTradeTime = 0L;
-	
-	private Map<String, List<TickerQuote>> recentRates = new HashMap<String, List<TickerQuote>>();
+	DataProcessor dataProcessor;
 	
 	
 	public TravellerService() {
-		
-		recentRates.put("ltc_usd", new ArrayList<TickerQuote>());
-		recentRates.put("btc_usd", new ArrayList<TickerQuote>());
-		recentRates.put("ltc_btc", new ArrayList<TickerQuote>());
-		
 	}
 	
 	@Scheduled(fixedDelay = 15000)
 	public void update() {
 		
+		if(dataProcessor == null) {
 		
-		List<TickerQuote> recentLtcUsd = recentRates.get("ltc_usd");
-		List<TickerQuote> recentBtcUsd = recentRates.get("btc_usd");
-		List<TickerQuote> recentLtcBtc = recentRates.get("ltc_btc");
+			dataProcessor = new DataProcessor(userRepository, tradeStatsRepository, transactionRepository, 
+				tradeRepository, tickerRepository);
 		
-		TickerQuote tickerLtcUsd = getTickerQuote("ltc_usd");
-		TickerQuote tickerBtcUsd = getTickerQuote("btc_usd");
-		TickerQuote tickerLtcBtc = getTickerQuote("ltc_btc");
-		
-		List<TickerQuote> tickerQuotes = new ArrayList<TickerQuote>();
-		tickerQuotes.add(tickerLtcUsd);
-		tickerQuotes.add(tickerBtcUsd);
-		tickerQuotes.add(tickerLtcBtc);
-		tickerRepository.save(tickerQuotes);
-		
-		lastTickerTime = tickerLtcUsd.getTime();
-		
-		recentLtcUsd.add(tickerLtcUsd);
-		recentBtcUsd.add(tickerBtcUsd);
-		recentLtcBtc.add(tickerLtcBtc);
-		
-		Map<String, TickerQuote> tickerMap = new HashMap<String, TickerQuote>();
-		tickerMap.put("ltc_usd", tickerLtcUsd);
-		tickerMap.put("btc_usd", tickerBtcUsd);
-		tickerMap.put("ltc_btc", tickerLtcBtc);
-		
-		
-		if(tickerCounter > 0) {
-		
-			if(tickerCounter % 4 == 0) {
-				createAverageQuotes("1min");
-			}
-		
-			if(tickerCounter % 40 == 0) {
-				createAverageQuotes("10min");
-			}
-		
-			if(tickerCounter % 120 == 0) {
-				createAverageQuotes("30min");
-			}
-		
-			if(tickerCounter % 960 == 0) {
-				createAverageQuotes("4h");
-			}
-		
-			if(tickerCounter % 1440 == 0) {
-				createAverageQuotes("6h");
-				tickerCounter = 0L;
-			}
-			
 		}
 		
-		tickerCounter++;
+		dataProcessor.updateTicker();
 		
+		dataProcessor.updateTradeHistory();
 		
-		//System.out.println(tickerMap);
+		dataProcessor.updateTransactions();
 		
-		updateTradeHistory();
-		
-		List<Transaction> transactions = transactionRepository.findAll();
-		List<Transaction> changedTransactions = new ArrayList<Transaction>();
-		
-		for(Transaction transaction : transactions) {
-			
-			if(transaction.getFilledAmount() < transaction.getBrokerAmount() && transaction.getIsReversed() != true) {
-				
-				List<Trade> trades = tradeRepository.findByOrderId(transaction.getOrderId());
-				
-				Double amount = 0.0;
-				
-				if(trades.size() > 0) {
-					
-					for(Trade trade : trades) {
-						amount += trade.getAmount();
-					}
-				
-				}
-				
-				if(amount > transaction.getFilledAmount()) {
-					
-					Double amountChange = amount-transaction.getFilledAmount();
-					
-					transaction.setFilledAmount(amount);
-					changedTransactions.add(transaction);
-					
-					Transaction reversedTransaction = transaction.getReversedTransaction();
-					
-					if(reversedTransaction != null) {
-						
-						Double totalFeeFactor = (1-UserTrader.transactionFee) * (1-BtceApi.transactionFee);
-						
-						reversedTransaction.setFilledAmount(transaction.getFilledAmount());
-						changedTransactions.add(reversedTransaction);
-						
-						Trade trade = new Trade();
-						trade.setAmount(amountChange);
-						
-						TradeStats tradeStats = transaction.getTradeStats();
-						tradeStats.setProfitLeft(tradeStats.getProfitLeft() + (transaction.calcTradeRevenue(trade)*totalFeeFactor));
-						tradeStatsRepository.save(tradeStats);
-						
-						if(transaction.getFilledAmount() >= transaction.getBrokerAmount()) {
-							changedTransactions.remove(transaction);
-							changedTransactions.remove(reversedTransaction);
-							transactionRepository.delete(transaction);
-							transactionRepository.delete(reversedTransaction);
-						}
-						
-					}
-					
-				}
-				
-				
-			}
-			
-			if(transaction.getLive() == false && transaction.getFilledAmount() < transaction.getBrokerAmount()) {
-				
-				Long unixTime = System.currentTimeMillis() / 1000L;
-				
-				Trade trade = new Trade();
-				trade.setLive(false);
-				trade.setOrderId(transaction.getOrderId());
-				trade.setAmount(transaction.getBrokerAmount()-transaction.getFilledAmount());
-				trade.setTime(unixTime);
-				
-				tradeRepository.save(trade);
-				
-			}
-			
-		}
-		
-		transactionRepository.save(changedTransactions);
-		
-		List<TradeStats> allTradeStats = tradeStatsRepository.findAll();
-		//System.out.println("Trade stats total: "+allTradeStats.size());
-		
-		for(int i=0; i<allTradeStats.size(); i++) {
-			
-			TradeStats tradeStats = allTradeStats.get(i);
-			
-			//System.out.println(tradeStats.getId()+": "+tradeStats.getLive());
-			
-			
-			if(tradeStats.getLive() == true) {
-				
-				TickerQuote tickerQuote = tickerMap.get(tradeStats.getPair());
-				
-				//System.out.println("ticker for "+tradeStats.getPair()+": "+tickerQuote.getLast());
-				
-				if(tickerQuote != null) {
-					tradeStats.setRate(tickerQuote);
-				}
-				
-			} else {
-				
-				
-				TickerQuote tickerQuote = tradeStats.getRate();
-				tickerQuote.setTime(System.currentTimeMillis()/1000L);
-				
-				tradeStats.setRate(tickerQuote);
-				
-			}
-			
-			
-			Boolean resetOldRate =
-					( (tradeStats.getRate().getLast() - tradeStats.getOldRate() > tradeStats.getProfitTarget()) && 
-							tradeStats.getRate().getLast() < tradeStats.getBuyCeiling() ) ||
-					( (tradeStats.getRate().getLast() - tradeStats.getOldRate() < - tradeStats.getProfitTarget()) &&
-							tradeStats.getRate().getLast() > tradeStats.getSellFloor() );
-			
-			if(tradeStats.getOldRate() == 0.0 || resetOldRate) {
-				tradeStats.setOldRate(tradeStats.getRate().getLast());
-			}
-			
-			tradeStatsRepository.save(tradeStats);
-			
-			//System.out.println(tradeStats.getPair()+"("+tradeStats.getId()+"): "+tradeStats.getRate());
-			
-			if(tradeStats.getTradeAuto() == true && tradeStats.getRate().getLast() != 0.0) {
-				AutoTrader autoTrader = new AutoTrader(tradeStats, tradeStatsRepository, transactionRepository, tradeRepository);
-				autoTrader.autoTrade();
-			}
-			
-			
-		}
+		dataProcessor.updateTradeStats();
 		
 		
 	}
 	
 	
-	private void createAverageQuotes(String setType) {
-		
-		TickerQuote avgLtcUsd = getAverageQuote("ltc_usd", setType);
-		TickerQuote avgBtcUsd = getAverageQuote("btc_usd", setType);
-		TickerQuote avgLtcBtc = getAverageQuote("ltc_btc", setType);
-		
-		List<TickerQuote> avgQuotes = new ArrayList<TickerQuote>();
-		avgQuotes.add(avgLtcUsd);
-		avgQuotes.add(avgBtcUsd);
-		avgQuotes.add(avgLtcBtc);
-		
-		tickerRepository.save(avgQuotes);
-		
-	}
-	
-	
-	private TickerQuote getAverageQuote(String pair, String setType) {
-		
-		Long period = 0L;
-		
-		if(setType.equals("1min")) {
-			period = 60L;
-		} else if(setType.equals("10min")) {
-			period = 600L;
-		} else if(setType.equals("30min")) {
-			period = 1800L;
-		} else if(setType.equals("4h")) {
-			period = 14400L;
-		} else if(setType.equals("6h")) {
-			period = 21600L;
-		}
-		
-		List<TickerQuote> tickerQuotes = tickerRepository.findByPairAndTimeGreaterThan(pair, lastTickerTime - period);
-		
-		Integer count = 0;
-		Double totalLast = 0.0;
-		Double totalBuy = 0.0;
-		Double totalSell = 0.0;
-		
-		for(TickerQuote quote : tickerQuotes) {
-			
-			totalLast += quote.getLast();
-			totalBuy += quote.getBuy();
-			totalSell += quote.getSell();
-			
-			count++;
-		
-		}
-		
-		Double avgLast = 0.0;
-		Double avgBuy = 0.0;
-		Double avgSell = 0.0;
-		
-		if(count > 0) {
-			avgLast = totalLast/count;
-			avgBuy = totalBuy/count;
-			avgSell = totalSell/count;
-		}
-		
-		TickerQuote avgQuote = new TickerQuote();
-		avgQuote.setSetType(setType);
-		avgQuote.setPair(pair);
-		avgQuote.setTime(lastTickerTime);
-		
-		avgQuote.setLast(avgLast);
-		avgQuote.setBuy(avgBuy);
-		avgQuote.setSell(avgSell);
-		
-		return avgQuote;
-		
-	}
-	
-	
-	private TickerQuote getTickerQuote(String pair) {
-		
-		try {
-		
-			TickerQuote tickerQuote = new TickerQuote();
-		
-			JSONObject rates = BtceApi.getRates(pair);
-			JSONObject ticker = rates.getJSONObject("ticker");
-			
-			tickerQuote.setSetType("15s");
-			tickerQuote.setPair(pair);
-			tickerQuote.setLast(ticker.getDouble("last"));
-			tickerQuote.setBuy(ticker.getDouble("buy"));
-			tickerQuote.setSell(ticker.getDouble("sell"));
-			tickerQuote.setTime(ticker.getLong("server_time"));
-			
-			return tickerQuote;
-			
-		} catch(Exception e) {
-			
-			e.printStackTrace();
-			return null;
-			
-		}
-    	
-	}
-	
-	
-	private void updateTradeHistory() {
-		
-		List<Trade> savedTrades = tradeRepository.findAll();
-		for(Trade trade : savedTrades) {
-			if(trade.getLive() == true && trade.getTime() > lastTradeTime) {
-				lastTradeTime = trade.getTime();
-			}
-		}
-		
-		JSONObject tradeListResult = BtceApi.getTradeList(lastTradeTime+1);
-		
-		try {
-			
-			if(tradeListResult.getInt("success") == 1) {
-				
-				JSONObject tradeListResultData = tradeListResult.getJSONObject("return");
-				Iterator<String> tradeIds = tradeListResultData.keys();
-				
-				List<Trade> trades = new ArrayList<Trade>();
-				
-				while(tradeIds.hasNext()) {
-					
-					String tradeId = tradeIds.next();
-					JSONObject tradeData = tradeListResultData.getJSONObject(tradeId);
-					
-					String orderId = tradeData.getString("order_id");
-					String pair = tradeData.getString("pair");
-					Double amount = tradeData.getDouble("amount");
-					Double rate = tradeData.getDouble("rate");
-					String type = tradeData.getString("type");
-					Long time = tradeData.getLong("timestamp");
-					
-					Trade trade = new Trade();
-					trade.setLive(true);
-					trade.setOrderId(orderId);
-					trade.setPair(pair);
-					trade.setAmount(amount);
-					trade.setRate(rate);
-					trade.setType(type);
-					trade.setTime(time);
-					
-					trades.add(trade);
-					
-					if(time > lastTradeTime) {
-						lastTradeTime = time;
-					}
-					
-				}
-				
-				if(trades.size() > 0) {
-					System.out.println("New trades: "+trades.size()+"; Last trade time: "+lastTradeTime);
-					tradeRepository.save(trades);
-				}
-				
-			} else {
-				
-				String error = tradeListResult.getString("error");
-				if(!error.equals("no trades")) {
-					System.out.println("Trades update unsuccessful: "+error);
-				}
-				
-			}
-			
-		} catch(Exception e) {
-			e.printStackTrace();
-		}
-		
-		
-	}
 	
 	@GET
 	@Path("/rates")
@@ -504,8 +153,11 @@ public class TravellerService {
     		@HeaderParam("TradeStats-Id") String tradeStatsId, TradeStats tradeStats) {
         
 		TradeStats dbTradeStats = tradeStatsRepository.findOne(tradeStats.getId());
-		Long rateTime = dbTradeStats.getRate().getTime();
-		tradeStats.getRate().setTime(rateTime);
+		
+		if(dbTradeStats.getRate() != null) {
+			Long rateTime = dbTradeStats.getRate().getTime();
+			tradeStats.getRate().setTime(rateTime);
+		}
 		
 		tradeStatsRepository.save(tradeStats);
 		
@@ -549,6 +201,72 @@ public class TravellerService {
 		
 	}
 	
+	@POST
+    @Path("/funds")
+	@Consumes({ MediaType.APPLICATION_JSON })
+	@Produces({ MediaType.APPLICATION_JSON })
+    public RequestResponse setFunds(@HeaderParam("User-Id") String userId, 
+    		@HeaderParam("TradeStats-Id") String tradeStatsId, 
+    		@QueryParam("left") Double left, @QueryParam("right") Double right) {
+        
+		RequestResponse response = new RequestResponse();
+		
+		User user = userRepository.findByUsername(userId);
+		Map<String, Double> fundsMap = user.getFunds();
+		
+		TradeStats tradeStats = tradeStatsRepository.findOne(tradeStatsId);
+		
+		if(left != null) {
+			
+			Double tsFundsLeft = tradeStats.getFundsLeft();
+			String tsCurrencyLeft = tradeStats.getCurrencyLeft();
+			Double userFundsLeft = fundsMap.get(tsCurrencyLeft);
+			Double changeLeft = tsFundsLeft - left;
+			
+			userFundsLeft = userFundsLeft + changeLeft;
+			
+			if(userFundsLeft >= 0) {
+				tradeStats.setFundsLeft(left);
+				fundsMap.put(tsCurrencyLeft, userFundsLeft);
+				user.setFunds(fundsMap);
+				userRepository.save(user);
+				tradeStatsRepository.save(tradeStats);
+				response.setSuccess(1);
+				response.setData(fundsMap);
+			} else {
+				response.setSuccess(0);
+				response.setMessage("Not enough funds");
+			}
+			
+		}
+		
+		if(right != null) {
+			
+			Double tsFundsRight = tradeStats.getFundsRight();
+			String tsCurrencyRight = tradeStats.getCurrencyRight();
+			Double userFundsRight = fundsMap.get(tsCurrencyRight);
+			Double changeRight = tsFundsRight - right;
+			
+			userFundsRight = userFundsRight + changeRight;
+			
+			if(userFundsRight >= 0) {
+				tradeStats.setFundsRight(right);
+				fundsMap.put(tsCurrencyRight, userFundsRight);
+				user.setFunds(fundsMap);
+				userRepository.save(user);
+				tradeStatsRepository.save(tradeStats);
+				response.setSuccess(1);
+				response.setData(fundsMap);
+			} else {
+				response.setSuccess(0);
+				response.setMessage("Not enough funds");
+			}
+			
+		}
+		
+		return response;
+		
+	}
 	
 	@GET
 	@Path("/info")
@@ -758,6 +476,11 @@ public class TravellerService {
 		User testUser1 = new User();
 		testUser1.setUsername("testUser123");
 		testUser1.setLive(false);
+		Map<String, Double> funds1_1 = new HashMap<String, Double>();
+		funds1_1.put("usd", 100.0);
+		funds1_1.put("ltc", 100.0);
+		funds1_1.put("btc", 100.0);
+		testUser1.setFunds(funds1_1);
 		
 		TradeStats tradeStats1_1 = new TradeStats();
 		tradeStats1_1.setCurrencyLeft("usd");
@@ -768,6 +491,7 @@ public class TravellerService {
 		rate1_1.setPair("ltc_usd");
 		tradeStats1_1.setRate(rate1_1);
 		tradeStats1_1 = tradeStatsRepository.save(tradeStats1_1);
+		
 		
 		TradeStats tradeStats1_2 = new TradeStats();
 		tradeStats1_2.setCurrencyLeft("btc");
@@ -787,6 +511,11 @@ public class TravellerService {
 		User testUser2 = new User();
 		testUser2.setUsername("testUser456");
 		testUser2.setLive(true);
+		Map<String, Double> funds2_1 = new HashMap<String, Double>();
+		funds2_1.put("usd", 0.0);
+		funds2_1.put("ltc", 0.0);
+		funds2_1.put("btc", 0.0);
+		testUser2.setFunds(funds2_1);
 		
 		TradeStats tradeStats2 = new TradeStats();
 		tradeStats2.setCurrencyLeft("usd");

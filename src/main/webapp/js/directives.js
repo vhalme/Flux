@@ -28,12 +28,10 @@ myApp.directive('customstyle', function () {
 		restrict: 'AC',
 		link: function (scope, element, attrs) {          
 			
-			console.log(attrs);
-			console.log(attrs.myWidth);
 			element.css('width', attrs.myWidth);
 			
 			scope.$watch(attrs.myWidth, function(value) {     
-				console.log("myWidth: "+value);
+				//console.log("myWidth: "+value);
 				element.css('width', (value*100)+'%');            
 			});
 			

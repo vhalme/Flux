@@ -177,8 +177,41 @@ var API = {
 		    	success: callback
 		    });
 			
-		}
+		},
 		
+		setFunds: function(left, right, callback) {
+			
+			var url = "service/funds?";
+			
+			if(left != null) {
+				url += "left="+left;
+			}
+			
+			if(right != null) {
+				
+				if(left != null) {
+					url += "&";
+				}
+				
+				url += "right="+right;
+			}
+			
+			$.ajax({
+		    	
+				async: false,
+		    	type: "POST",
+		    	url: url,
+		    	dataType: "json",
+	  			contentType: "application/json",
+	  			headers: {
+					"User-Id": this.userId,
+					"TradeStats-Id": this.tradeStatsId
+		    	},
+		    	success: callback
+		    	
+		    });
+			
+		}
 		
 
 }
