@@ -103,13 +103,13 @@ public class TravellerService {
 		List<TickerQuote> rates = new ArrayList<TickerQuote>();
 		
 		if(pair != null && setType != null && from != null && until != null) {
-			rates = tickerRepository.findByPairAndSetTypeAndTimeBetween(pair, setType, from, until);
+			rates = tickerRepository.findByPairAndSetTypeAndTimeBetweenOrderByTimeAsc(pair, setType, from, until);
 		} else if(pair != null && from != null && until != null) {
-			rates = tickerRepository.findByPairAndTimeBetween(pair, from, until);
+			rates = tickerRepository.findByPairAndTimeBetweenOrderByTimeAsc(pair, from, until);
 		} else if(pair != null && from != null) {
-			rates = tickerRepository.findByPairAndTimeGreaterThan(pair, from);
+			rates = tickerRepository.findByPairAndTimeGreaterThanOrderByTimeAsc(pair, from);
 		} else if(pair != null && until != null) {
-			rates = tickerRepository.findByPairAndTimeLessThan(pair, until);
+			rates = tickerRepository.findByPairAndTimeLessThanOrderByTimeAsc(pair, until);
 		} else {
 			rates = tickerRepository.findAll();
 		}
@@ -344,13 +344,16 @@ public class TravellerService {
     public List<Transaction> getTransactions(@HeaderParam("User-Id") String userId, 
     		@HeaderParam("TradeStats-Id") String tradeStatsId, @QueryParam("type") String type) {
         
-		User user = userRepository.findByUsername(userId);
-		TradeStats tradeStats = tradeStatsRepository.findOne(tradeStatsId); //user.getCurrentTradeStats();
-		user.setCurrentTradeStats(tradeStats);
 		
 		if(type != null) {
+			User user = userRepository.findByUsername(userId);
+			TradeStats tradeStats = tradeStatsRepository.findOne(tradeStatsId); //user.getCurrentTradeStats();
+			user.setCurrentTradeStats(tradeStats);
 			return transactionRepository.findByTradeStatsAndType(tradeStats, type);
 		} else if(userId != null) {
+			User user = userRepository.findByUsername(userId);
+			TradeStats tradeStats = tradeStatsRepository.findOne(tradeStatsId); //user.getCurrentTradeStats();
+			user.setCurrentTradeStats(tradeStats);
 			return transactionRepository.findByTradeStats(tradeStats);
 		} else {
 			return transactionRepository.findAll();
@@ -434,9 +437,17 @@ public class TravellerService {
     @Produces({ MediaType.APPLICATION_JSON })
     public List<Transaction> test(@QueryParam("fromId") String tradeStatsId) {
 		
-		TradeStats tradeStats = tradeStatsRepository.findOne(tradeStatsId);
-		List<Transaction> transactions = transactionRepository.findByTradeStatsAndType(tradeStats, "sell");
-        
+		Double feeFactor = 1-0.002;
+		
+		List<Transaction> transactions = transactionRepository.findAll();
+		
+		for(Transaction transaction : transactions) {
+			Double brokerAmount = transaction.getAmount()*(feeFactor-0.001);
+			transaction.setBrokerAmount(brokerAmount);
+		}
+		
+		transactionRepository.save(transactions);
+		
 		return transactions;
     
 	}
@@ -457,6 +468,31 @@ public class TravellerService {
 		tradeStatsRepository.save(user.getCurrentTradeStats());
 		
 		return "OK";
+		
+	}
+	
+	
+	@POST
+    @Path("/userfunds")
+	@Consumes({ MediaType.APPLICATION_JSON })
+	@Produces({ MediaType.APPLICATION_JSON })
+    public RequestResponse addUserFunds(@HeaderParam("User-Id") String userId,
+    		@QueryParam("currency") String currency, @QueryParam("amount") Double amount) {
+		
+		RequestResponse response = new RequestResponse();
+		
+		User user = userRepository.findByUsername(userId);
+		
+		Map<String, Double> userFunds = user.getFunds();
+		userFunds.put(currency, userFunds.get(currency) + amount);
+		user.setFunds(userFunds);
+		
+		user = userRepository.save(user);
+		
+		response.setData(user);
+		response.setSuccess(1);
+		
+		return response;
 		
 	}
 	

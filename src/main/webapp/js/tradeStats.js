@@ -81,7 +81,7 @@ function TradeStatsCtrl($scope, $routeParams, $http) {
 				
 				$scope.user.currentTradeStats = response.data;
 				
-				console.log($scope.user.currentTradeStats);
+				//console.log($scope.user.currentTradeStats);
 				
 				API.getTransactions(function(transactions) {
 						

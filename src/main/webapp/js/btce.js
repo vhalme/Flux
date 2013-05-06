@@ -231,6 +231,24 @@ var API = {
 		    	
 		    });
 			
+		},
+		
+		addUserFunds: function(currency, amount, callback) {
+			
+			$.ajax({
+		    	
+				async: false,
+		    	type: "POST",
+		    	url: "service/userfunds?currency="+currency+"&amount="+amount,
+		    	dataType: "json",
+	  			contentType: "application/json",
+	  			headers: {
+					"User-Id": this.userId
+		    	},
+		    	success: callback
+		    	
+		    });
+			
 		}
 		
 

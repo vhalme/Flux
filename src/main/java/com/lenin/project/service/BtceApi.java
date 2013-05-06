@@ -130,8 +130,19 @@ public class BtceApi {
 		methodParams.add(new BasicNameValuePair("method", "Trade"));
 		methodParams.add(new BasicNameValuePair("type", transaction.getType()));
 		methodParams.add(new BasicNameValuePair("pair", transaction.getPair()));
-		methodParams.add(new BasicNameValuePair("amount", ""+(transaction.getAmount()*feeFactor)));
-		methodParams.add(new BasicNameValuePair("rate", ""+transaction.getRate()));
+		
+		String amountStr = ""+(transaction.getAmount()*feeFactor);
+		if(amountStr.length() > 8) {
+			amountStr = amountStr.substring(0, 8);
+		}
+		
+		String rateStr = ""+transaction.getRate();
+		if(rateStr.length() > 8) {
+			rateStr = rateStr.substring(0, 8);
+		}
+		
+		methodParams.add(new BasicNameValuePair("amount", amountStr));
+		methodParams.add(new BasicNameValuePair("rate", ""+rateStr));
 		
 		JSONObject tradeResult = authenticatedHTTPRequest(methodParams);
 		

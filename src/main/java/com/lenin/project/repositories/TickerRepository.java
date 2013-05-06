@@ -8,13 +8,13 @@ import com.lenin.project.domain.TickerQuote;
 
 public interface TickerRepository extends MongoRepository<TickerQuote, String> {
 	
-	List<TickerQuote> findByPairAndTimeGreaterThan(String pair, Long from);
+	List<TickerQuote> findByPairAndTimeGreaterThanOrderByTimeAsc(String pair, Long from);
 	
-	List<TickerQuote> findByPairAndTimeLessThan(String pair, Long until);
+	List<TickerQuote> findByPairAndTimeLessThanOrderByTimeAsc(String pair, Long until);
 	
-	List<TickerQuote> findByPairAndSetTypeAndTimeBetween(String pair, String setType, Long from, Long until);
+	List<TickerQuote> findByPairAndSetTypeAndTimeBetweenOrderByTimeAsc(String pair, String setType, Long from, Long until);
 	
-	List<TickerQuote> findByPairAndTimeBetween(String pair, Long from, Long until);
+	List<TickerQuote> findByPairAndTimeBetweenOrderByTimeAsc(String pair, Long from, Long until);
 	
 	List<TickerQuote> findAll();
 	

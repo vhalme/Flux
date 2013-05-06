@@ -111,7 +111,7 @@ public class UserTrader {
 		transaction.setLive(tradeStats.getLive());
 		
 		Double feeFactor = 1-UserTrader.transactionFee;
-		transaction.setBrokerAmount(transaction.getAmount()*feeFactor);
+		transaction.setBrokerAmount(transaction.getAmount()*(feeFactor-0.001));
 		
 		if(tradeStats.getLive()) {
 			

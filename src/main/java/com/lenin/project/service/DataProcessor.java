@@ -132,7 +132,7 @@ public class DataProcessor {
 			period = 21600L;
 		}
 		
-		List<TickerQuote> tickerQuotes = tickerRepository.findByPairAndTimeGreaterThan(pair, lastTickerTime - period);
+		List<TickerQuote> tickerQuotes = tickerRepository.findByPairAndTimeGreaterThanOrderByTimeAsc(pair, lastTickerTime - period);
 		
 		Integer count = 0;
 		Double totalLast = 0.0;

@@ -5,27 +5,7 @@ function AppCtrl($scope, $routeParams, $http) {
 	$scope.refreshCounter = 0;
 	$scope.currentTradeStatsId = 0;
 	
-	$scope.user = {
-		
-		uninitialized: true,
-		
-		currentTradeStats: {
-			
-			rate: {
-				buy: 0,
-				sell: 0,
-				last: 0
-			},
-			
-			uninitialized: true,
-			
-			live: false,
-			currencyLeft: "usd",
-			currencyRight: "ltc",
-		
-		}
-		
-	};
+	$scope.user = null; 
 	
 	$scope.newCurrencyPair = "ltc_usd";
 	
@@ -42,6 +22,8 @@ function AppCtrl($scope, $routeParams, $http) {
 		
 		if(user != undefined) {
 			API.userId = user.username;
+			$scope.setCookie("fluxUser", user.username);
+			$scope.go("/tradeStats/0");
 		}
 		
 		API.getUser(function(users) {
@@ -145,10 +127,51 @@ function AppCtrl($scope, $routeParams, $http) {
 		location.href = "#"+hash;
 	};
 	
+	$scope.setCookie = function(key, value, expires) {
+		
+		var expDate = new Date();
+		expDate.setTime(expDate.getTime() + expires*1000*60);
+		var value = escape(value) + ((expires==null) ? "" : "; expires="+expDate.toUTCString());
+		document.cookie = key + "=" + value;
+	
+	};
+	
+	$scope.getCookie = function(key) {
+		
+		var value = document.cookie;
+		var start = value.indexOf(" " + key + "=");
+		if(start == -1) {
+			start = value.indexOf(key + "=");
+		}
+		
+		if(start == -1) {
+			value = null;
+		} else {
+			start = value.indexOf("=", start) + 1;
+			var end = value.indexOf(";", start);
+			if(end == -1) {
+				end = value.length;
+			}
+		
+			value = unescape(value.substring(start,end));
+		}
+		
+		return value;
+	
+	};
 	
 	console.log("setting up user");
 	
-	$scope.setUser();
+	var cookieId = $scope.getCookie("fluxUser", 1);
+	console.log("cookie user: "+cookieId);
+	if(cookieId != null) {
+		API.userId = cookieId;
+		$scope.setUser();
+	} else {
+		$scope.go("/front");
+	}
+	
+	//$scope.setUser();
 	
 	
 };

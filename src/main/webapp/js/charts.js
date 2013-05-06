@@ -172,7 +172,7 @@ function ChartsCtrl($scope, $routeParams, $http) {
 		
 		if($scope.chart != null) {
 			$scope.updateChart();
-			console.log("update chart: "+value.last);
+			//console.log("update chart: "+value.last);
 		}
 		
 	}, true);
