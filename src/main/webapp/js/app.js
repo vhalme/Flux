@@ -7,17 +7,6 @@ function AppCtrl($scope, $routeParams, $http) {
 	
 	$scope.user = null; 
 	
-	$scope.newCurrencyPair = "ltc_usd";
-	
-	$scope.addTab = function() {
-		
-		API.addTradeStats($scope.newCurrencyPair, function(newTradeStats) {
-			console.log(angular.fromJson(newTradeStats));
-			$scope.user.tradeStats.push(angular.fromJson(newTradeStats));
-		});
-		
-	};
-	
 	$scope.setUser = function(user) {
 		
 		if(user != undefined) {
@@ -33,7 +22,8 @@ function AppCtrl($scope, $routeParams, $http) {
 			var userTabs = $scope.user.tradeStats;
 			
 			API.tradeStatsId = userTabs[0].id;
-			//$scope.go("/tradeStats/"+userTabs[0].id);
+			//$scope.currentTradeStatsId = userTabs[0].id;
+			$scope.go("/tradeStats/"+userTabs[0].id);
 			
 		});
 
@@ -73,6 +63,10 @@ function AppCtrl($scope, $routeParams, $http) {
 			$scope.user.currentTradeStats.rate.last = $scope.user.currentTradeStats.rate.sell;
 		}
 		
+		API.setRate($scope.user.currentTradeStats.rate, function(response) {
+			$scope.user.currentTradeStats.rate = response.data;
+		});
+		
 		
 	};
 	
@@ -94,6 +88,9 @@ function AppCtrl($scope, $routeParams, $http) {
 			$scope.user.currentTradeStats.rate.last = $scope.user.currentTradeStats.rate.sell;
 		}
 		
+		API.setRate($scope.user.currentTradeStats.rate, function(response) {
+			$scope.user.currentTradeStats.rate = response.data;
+		});
 		
 	};
 	

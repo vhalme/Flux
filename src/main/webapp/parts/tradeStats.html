@@ -94,21 +94,23 @@
 					</div>
 
 					<div class="row" ng-class="{ hidden: !showManualTrading }">
-
+						
+						<form name="manualTrading" class="css-form" novalidate>
+							
 						<div class="span4">
 							<div class="row">
 								<div class="span2" style="background: #ededed; margin-bottom: 0.2em;">
-									<div style="margin: 0.3em;">
+									<div style="margin: 0.3em;" class="control-group" ng-class="{ error: manualBuyCurrencyLeft == undefined }">
 										{{user.currentTradeStats.currencyLeft|uppercase}} [<a href="" ng-click="manualBuyCurrencyLeft = user.currentTradeStats.fundsLeft">All</a>] [<a href="" ng-click="manualBuyCurrencyLeft = user.currentTradeStats.fundsLeft/2">1/2</a>]
 										<br/>
-										<input style="width: 100%; margin-bottom: 0px; margin-top: 0.15em;" type="text" ng-model="manualBuyCurrencyLeft"/>
+										<input style="width: 100%; margin-bottom: 0px; margin-top: 0.15em;" type="text" name="buyCurrencyLeft" ng-model="manualBuyCurrencyLeft" smart-float />
 									</div>
 								</div>
 								<div class="span2" style="background: #ededed; margin-bottom: 0.2em;">
-									<div style="margin: 0.3em;">
+									<div style="margin: 0.3em;" class="control-group" ng-class="{ error: manualBuyCurrencyRight == undefined }">
 										{{user.currentTradeStats.currencyRight|uppercase}} [<a href="" ng-click="manualBuyCurrencyRight = user.currentTradeStats.fundsRight">All</a>] [<a href="" ng-click="manualBuyCurrencyRight = user.currentTradeStats.fundsRight/2">1/2</a>]
 										<br/>
-										<input style="width: 100%; margin-bottom: 0px; margin-top: 0.15em;" type="text" ng-model="manualBuyCurrencyRight"/>
+										<input style="width: 100%; margin-bottom: 0px; margin-top: 0.15em;" type="text" name="buyCurrencyRight" ng-model="manualBuyCurrencyRight" smart-float />
 									</div>
 								</div>
 							</div>
@@ -124,28 +126,30 @@
 						<div class="span4" style="background: #ededed; margin-bottom: 0.7em;">
 							<div style="margin: 0.3em;">
 								<div style="width: 100%">
-									<div style="display: inline-block; width: 38%;">
+									<div style="display: inline-block; width: 38%;" class="control-group" ng-class="{ error: manualBuyRate == undefined }">
 										Buy rate
 										<br/>
-										<input style="width: 5.0em; margin-bottom: 0px; margin-top: 0.15em;" type="text" ng-model="manualBuyRate"/>
+										<input style="width: 5.0em; margin-bottom: 0px; margin-top: 0.15em;" type="text" name="manualBuyRate" ng-model="manualBuyRate" smart-float />
 									</div>
 									<div style="display: inline-block; width: 20%; text-align: center;">
 										<span>Track</span>
 										<br/>
 										<input type="checkbox" style="margin-top: 0.25em; margin-bottom: 0.35em;" ng-model="trackManualTransactions" />
 									</div>
-									<div style="display: inline-block; width: 38%; text-align: right;">
+									<div style="display: inline-block; width: 38%; text-align: right;" class="control-group" ng-class="{ error: manualSellRate == undefined }">
 										Sell rate
 										<br/>
-										<input style="width: 5.0em; margin-bottom: 0px; margin-top: 0.15em;" type="text" ng-model="manualSellRate"/>
+										<input style="width: 5.0em; margin-bottom: 0px; margin-top: 0.15em;" type="text" name="manualSellRate" ng-model="manualSellRate" smart-float />
 									</div>
 								</div>
 								<div style="width: 100%; padding-top: 0.4em; text-align: center;">
-									<input type="checkbox" style="margin-top: -2px;" ng-model="rateAuto" />
-									Auto
-									<input type="checkbox" style="margin-top: -2px; margin-left: 1.0em;" ng-model="rateBuffered" ng-disabled="!rateAuto" />
-									Buf.
-									<input style="width: 4.0em; margin-bottom: 0px;" type="text" ng-model="user.currentTradeStats.rateBuffer" ng-disabled="!rateBuffered || !rateAuto" />
+									<div class="control-group" ng-class="{ error: manualRateBuffer == undefined }">
+										<input type="checkbox" style="margin-top: -2px;" ng-model="rateAuto" />
+										Auto
+										<input type="checkbox" style="margin-top: -2px; margin-left: 1.0em;" ng-model="rateBuffered" ng-disabled="!rateAuto" />
+										Buf.
+										<input style="width: 4.0em; margin-bottom: 0px;" type="text" name="manualRateBuffer" ng-model="manualRateBuffer" ng-disabled="!rateBuffered || !rateAuto"  smart-float />
+									</div>
 								</div>
 							</div>
 						</div>
@@ -153,17 +157,17 @@
 						<div class="span4">
 							<div class="row">
 								<div class="span2" style="background: #ededed; margin-bottom: 0.2em;">
-									<div style="margin: 0.3em;">
+									<div style="margin: 0.3em;" class="control-group" ng-class="{ error: manualSellCurrencyRight == undefined }">
 										{{user.currentTradeStats.currencyRight|uppercase}} [<a href="" ng-click="manualSellCurrencyRight = user.currentTradeStats.fundsRight">All</a>] [<a href="" ng-click="manualSellCurrencyRight = user.currentTradeStats.fundsRight/2">1/2</a>]
 										<br/>
-										<input style="width: 100%; margin-bottom: 0px; margin-top: 0.15em;" type="text" ng-model="manualSellCurrencyRight"/>
+										<input style="width: 100%; margin-bottom: 0px; margin-top: 0.15em;" type="text" name="sellCurrencyRight" ng-model="manualSellCurrencyRight" smart-float />
 									</div>
 								</div>
 								<div class="span2" style="background: #ededed; margin-bottom: 0.2em;">
-									<div style="margin: 0.3em;">
+									<div style="margin: 0.3em;" class="control-group" ng-class="{ error: manualSellCurrencyLeft == undefined }">
 										{{user.currentTradeStats.currencyLeft|uppercase}} [<a href="" ng-click="manualSellCurrencyLeft = user.currentTradeStats.fundsLeft">All</a>] [<a href="" ng-click="manualSellCurrencyLeft = user.currentTradeStats.fundsLeft/2">1/2</a>]
 										<br/>
-										<input style="width: 100%; margin-bottom: 0px; margin-top: 0.15em;" type="text" ng-model="manualSellCurrencyLeft"/>
+										<input style="width: 100%; margin-bottom: 0px; margin-top: 0.15em;" type="text" name="sellCurrencyLeft" ng-model="manualSellCurrencyLeft" smart-float />
 									</div>
 								</div>
 							</div>
@@ -175,9 +179,11 @@
 								</div>
 							</div>
 						</div>
+						
+						</form>
 
 					</div>
-
+				
 				</div>
 
 			</div>

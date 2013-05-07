@@ -7,7 +7,7 @@ function TradeStatsCtrl($scope, $routeParams, $http) {
 	
 	$scope.intervalIds = { main: 0, loop: 0 };
 	
-	$scope.refreshInterval = 1;
+	$scope.refreshInterval = 15;
 	
 	console.log("tradeStatsId="+$scope.currenTradeStatsId);
 	
@@ -20,14 +20,12 @@ function TradeStatsCtrl($scope, $routeParams, $http) {
 		 	{ name: "Accumulate USD", value: "accumulateUsd" }
 	    ];
 	
-	$scope.newCurrencyPair = "ltc_usd";
-	
 	$scope.rateChange = 0;
 	
 	$scope.trackManualTransactions = true;
 	$scope.rateAuto = true;
 	$scope.rateBuffered = true;
-	
+	$scope.manualRateBuffer = 0.001;
 	$scope.manualBuyCurrencyRight = 0;
 	$scope.manualBuyCurrencyLeft = 0;
 	$scope.manualSellCurrencyRight = 0;
@@ -38,11 +36,15 @@ function TradeStatsCtrl($scope, $routeParams, $http) {
 	$scope.newFundsLeft = undefined;
 	$scope.newFundsRight = undefined;
 	
+	$scope.newCurrencyPair = "ltc_usd";
+	
+	
 	$scope.start = function() {
 		
 		console.log("starting...");
 		
 		$scope.refreshInterval = 15;
+		$scope.refreshCounter = $scope.refreshInterval;
 		
 		//$scope.refresh();
 		
@@ -75,21 +77,16 @@ function TradeStatsCtrl($scope, $routeParams, $http) {
 		
 		$scope.chart = null;
 		
-		API.getTradeStats(function(response) {
+		API.refreshTradeStats(function(response) {
 			
 			if(response.success == 1) {
 				
-				$scope.user.currentTradeStats = response.data;
+				$scope.user.currentTradeStats.fundsLeft = response.data.fundsLeft;
+				$scope.user.currentTradeStats.fundsRight = response.data.fundsRight;
+				$scope.user.currentTradeStats.rate = response.data.rate;
 				
-				//console.log($scope.user.currentTradeStats);
+				$scope.setTransactions(response.data.transactions);
 				
-				API.getTransactions(function(transactions) {
-						
-					$scope.setTransactions(transactions);
-					$scope.update();
-						
-				});
-			
 			} else {
 				
 				console.log(response);
@@ -105,6 +102,17 @@ function TradeStatsCtrl($scope, $routeParams, $http) {
 	$scope.update = function() {
 		
 		$scope.rateChange = $scope.user.currentTradeStats.currentRate - $scope.user.currentTradeStats.oldRate;
+		
+	};
+	
+	$scope.addTab = function() {
+		
+		console.log($scope.newCurrencyPair);
+		
+		API.addTradeStats($scope.newCurrencyPair, function(newTradeStats) {
+			console.log(angular.fromJson(newTradeStats));
+			$scope.user.tradeStats.push(angular.fromJson(newTradeStats));
+		});
 		
 	};
 	
@@ -135,6 +143,10 @@ function TradeStatsCtrl($scope, $routeParams, $http) {
 		} else if(type == "sell") {
 			rate = $scope.manualSellRate;
 			amount = $scope.manualSellCurrencyRight;
+		}
+		
+		if(rate == undefined || amount == undefined) {
+			return;
 		}
 		
 		var transaction = $scope.createTransaction($scope.user.currentTradeStats.pair, amount, rate, type);
@@ -207,20 +219,20 @@ function TradeStatsCtrl($scope, $routeParams, $http) {
 	$scope.actualTradeRate = function(type) {
 		
 		if(type == "buy") {
-			return $scope.user.currentTradeStats.rate.buy - parseFloat($scope.user.currentTradeStats.rateBuffer);
+			return $scope.user.currentTradeStats.rate.buy - parseFloat($scope.user.currentTradeStats.autoTradingOptions.rateBuffer);
 		} else if(type == "sell") {
-			return $scope.user.currentTradeStats.rate.sell + parseFloat($scope.user.currentTradeStats.rateBuffer);
+			return $scope.user.currentTradeStats.rate.sell + parseFloat($scope.user.currentTradeStats.autoTradingOptions.rateBuffer);
 		}
 		
 	};
 	
 	
 	$scope.currencyRightCashout = function() {
-		return $scope.user.currentTradeStats.fundsRight + ($scope.user.currentTradeStats.fundsLeft / $scope.actualTradeRate("buy"));
+		return $scope.user.currentTradeStats.fundsRight + ($scope.user.currentTradeStats.fundsLeft / $scope.user.currentTradeStats.rate.buy);
 	};
 	
 	$scope.currencyLeftCashout = function() {
-		return $scope.user.currentTradeStats.fundsLeft + ($scope.user.currentTradeStats.fundsRight * $scope.actualTradeRate("sell"));
+		return $scope.user.currentTradeStats.fundsLeft + ($scope.user.currentTradeStats.fundsRight * $scope.user.currentTradeStats.rate.sell);
 	};
 	
 	
@@ -237,6 +249,8 @@ function TradeStatsCtrl($scope, $routeParams, $http) {
 	$scope.firstPassDetails = true;
 	
 	$scope.$watch('manualBuyCurrencyRight', function(value) {
+		
+		//console.log(value);
 		
 	    if(value && value !== '' && value !== '0') {
 	    	
@@ -316,17 +330,27 @@ function TradeStatsCtrl($scope, $routeParams, $http) {
 	}, true);
 	
 	
-	$scope.$watch('user.currentTradeStats', function(value) {
+	$scope.$watch('user.currentTradeStats.autoTradingOptions', function(value) {
 		
 		if(value != null) {
 			
-			var profitTarget = $scope.user.currentTradeStats.profitTarget;
-			var buyCeiling = $scope.user.currentTradeStats.buyCeiling;
-			var sellFloor = $scope.user.currentTradeStats.sellFloor;
+			console.log("autotrading options changed");
 			
-			API.saveCurrentTradeStats(value, function(response) {
-				$scope.user.currentTradeStats = response;
+			var profitTarget = $scope.user.currentTradeStats.autoTradingOptions.profitTarget;
+			var tradeChunk = $scope.user.currentTradeStats.autoTradingOptions.tradeChunk;
+			var buyCeiling = $scope.user.currentTradeStats.autoTradingOptions.buyCeiling;
+			var sellFloor = $scope.user.currentTradeStats.autoTradingOptions.sellFloor;
+			
+			if(profitTarget == undefined || tradeChunk == undefined || buyCeiling == undefined | sellFloor == undefined) {
+				return;
+			}
+			
+			API.saveAutoTradingOptions(value, function(response) {
+				if(response.success == 1) {
+					$scope.user.currentTradeStats.autoTradingOptions = response.data;
+				}
 			});
+			
 			
 		}
 		
@@ -337,7 +361,17 @@ function TradeStatsCtrl($scope, $routeParams, $http) {
 		
 		console.log("currentTradeStatsId set: "+value);
 		
-		$scope.refresh();
+		API.getTradeStats(function(response) {
+			
+			if(response.success == 1) {
+				
+				$scope.user.currentTradeStats = response.data;
+				
+			} else {
+				console.log(response);		
+			}
+			
+		});
 		
 	}, true);
 	

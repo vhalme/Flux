@@ -24,6 +24,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import com.lenin.project.domain.AutoTradingOptions;
 import com.lenin.project.domain.TickerQuote;
 import com.lenin.project.domain.Trade;
 import com.lenin.project.domain.TradeStats;
@@ -121,6 +122,95 @@ public class TravellerService {
 		
 	}
 	
+	@PUT
+    @Path("/rate")
+	@Consumes({ MediaType.APPLICATION_JSON })
+	@Produces({ MediaType.APPLICATION_JSON })
+    public RequestResponse setRate(@HeaderParam("User-Id") String userId, 
+    		@HeaderParam("TradeStats-Id") String tradeStatsId, TickerQuote rate) {
+        
+		RequestResponse response = new RequestResponse();
+		
+		TradeStats tradeStats = tradeStatsRepository.findOne(tradeStatsId);
+		
+		if(tradeStats.getLive() == false) {
+			
+			rate.setTime(System.currentTimeMillis()/1000L);
+			tradeStats.setRate(rate);
+			tradeStatsRepository.save(tradeStats);
+		
+			response.setSuccess(1);
+			response.setData(rate);
+		
+		} else {
+			response.setSuccess(0);
+		}
+		
+		return response;
+		
+	}
+	
+	
+	@PUT
+    @Path("/autoTradingOptions")
+	@Consumes({ MediaType.APPLICATION_JSON })
+	@Produces({ MediaType.APPLICATION_JSON })
+    public RequestResponse saveAutoTradingOptions(@HeaderParam("User-Id") String userId, 
+    		@HeaderParam("TradeStats-Id") String tradeStatsId, AutoTradingOptions autoTradingOptions) {
+        
+		RequestResponse response = new RequestResponse();
+		
+		TradeStats tradeStats = tradeStatsRepository.findOne(tradeStatsId);
+		tradeStats.setAutoTradingOptions(autoTradingOptions);
+		
+		/*
+		if(dbTradeStats.getRate() != null) {
+			Long rateTime = dbTradeStats.getRate().getTime();
+			tradeStats.getRate().setTime(rateTime);
+		}
+		*/
+		
+		tradeStatsRepository.save(tradeStats);
+		
+		response.setSuccess(1);
+		response.setData(autoTradingOptions);
+		
+		return response;
+		
+	}
+	
+	@GET
+	@Path("/tradeStatsRefresh")
+	@Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
+    public RequestResponse getRefreshData(@HeaderParam("User-Id") String userId,
+    		@HeaderParam("TradeStats-Id") String tradeStatsId) {
+		
+		RequestResponse response = new RequestResponse();
+		
+		if(tradeStatsId != null) {
+			
+			TradeStats tradeStats = tradeStatsRepository.findOne(tradeStatsId);
+			
+			RefreshData refreshData = new RefreshData();
+			refreshData.setTransactions(transactionRepository.findByTradeStats(tradeStats));
+			refreshData.setFundsLeft(tradeStats.getFundsLeft());
+			refreshData.setFundsRight(tradeStats.getFundsRight());
+			refreshData.setRate(tradeStats.getRate());
+			
+			response.setData(refreshData);
+		
+		} else {
+			response.setSuccess(0);
+		}
+		
+		response.setSuccess(1);
+		
+		return response;
+		
+	}
+	
+	
 	@GET
 	@Path("/tradeStats")
 	@Consumes({ MediaType.APPLICATION_JSON })
@@ -144,6 +234,7 @@ public class TravellerService {
 		return response;
 		
 	}
+	
 	
 	@PUT
     @Path("/tradeStats")
@@ -169,7 +260,7 @@ public class TravellerService {
     @Path("/tradeStats")
 	@Consumes({ MediaType.TEXT_PLAIN })
 	@Produces({ MediaType.APPLICATION_JSON })
-    public TradeStats addUserDetails(@HeaderParam("User-Id") String userId, String currencyPair) {
+    public TradeStats addTradeStats(@HeaderParam("User-Id") String userId, String currencyPair) {
         
 		System.out.println("new pair: ]"+currencyPair+"[");
 		
@@ -177,6 +268,7 @@ public class TravellerService {
 		
 		String[] currencies = currencyPair.split("_");
 		TradeStats tradeStats = new TradeStats();
+		tradeStats.setAutoTradingOptions(new AutoTradingOptions());
 		tradeStats.setCurrencyRight(currencies[0]);
 		tradeStats.setCurrencyLeft(currencies[1]);
 		tradeStats.setLive(user.getLive());
@@ -527,7 +619,7 @@ public class TravellerService {
 		rate1_1.setPair("ltc_usd");
 		tradeStats1_1.setRate(rate1_1);
 		tradeStats1_1 = tradeStatsRepository.save(tradeStats1_1);
-		
+		tradeStats1_1.setAutoTradingOptions(new AutoTradingOptions());
 		
 		TradeStats tradeStats1_2 = new TradeStats();
 		tradeStats1_2.setCurrencyLeft("btc");
@@ -538,6 +630,7 @@ public class TravellerService {
 		rate1_2.setPair("ltc_btc");
 		tradeStats1_2.setRate(rate1_2);
 		tradeStats1_2 = tradeStatsRepository.save(tradeStats1_2);
+		tradeStats1_2.setAutoTradingOptions(new AutoTradingOptions());
 		
 		testUser1.addTradeStats(tradeStats1_1);
 		testUser1.addTradeStats(tradeStats1_2);
@@ -558,6 +651,7 @@ public class TravellerService {
 		tradeStats2.setCurrencyRight("ltc");
 		tradeStats2.setLive(true);
 		tradeStats2 = tradeStatsRepository.save(tradeStats2);
+		tradeStats2.setAutoTradingOptions(new AutoTradingOptions());
 		
 		testUser2.addTradeStats(tradeStats2);
 		testUser2.setCurrentTradeStats(tradeStats2);
@@ -624,10 +718,12 @@ public class TravellerService {
 			funds.put("btc", 0.0);
 			user.setFunds(funds);
 			
+			AutoTradingOptions autoTradingOptions = new AutoTradingOptions();
 			TradeStats tradeStats = new TradeStats();
 			tradeStats.setCurrencyLeft("usd");
 			tradeStats.setCurrencyRight("ltc");
 			tradeStats.setLive(true);
+			tradeStats.setAutoTradingOptions(autoTradingOptions);
 			TickerQuote rate = new TickerQuote();
 			rate.setTime(System.currentTimeMillis()/1000L);
 			rate.setPair("ltc_usd");
@@ -645,12 +741,14 @@ public class TravellerService {
 			testFunds.put("btc", 100.0);
 			testUser.setFunds(testFunds);
 			
+			AutoTradingOptions testAutoTradingOptions = new AutoTradingOptions();
+			testAutoTradingOptions.setBuyCeiling(1.0);
+			testAutoTradingOptions.setSellFloor(1.0);
 			TradeStats testTradeStats = new TradeStats();
 			testTradeStats.setCurrencyLeft("usd");
 			testTradeStats.setCurrencyRight("ltc");
-			testTradeStats.setBuyCeiling(1.0);
-			testTradeStats.setSellFloor(1.0);
 			testTradeStats.setLive(false);
+			testTradeStats.setAutoTradingOptions(testAutoTradingOptions);
 			TickerQuote testRate = new TickerQuote();
 			testRate.setBuy(1.0);
 			testRate.setSell(1.0);

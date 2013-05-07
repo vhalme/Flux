@@ -36,8 +36,8 @@
 						<input type="checkbox" style="margin-top: -2px;" ng-model="user.currentTradeStats.tradeAuto" />
 						Trade automatically
 						<br/>
-						<select ng-model="user.currentTradeStats.autoTradingModel" ng-disabled="!user.currentTradeStats.tradeAuto" style="margin-top: 0.5em;">
-							<option ng-repeat="model in autoTradingOptions" value="{{model.value}}" title="{{model.name}}" ng-selected="model.value == user.currentTradeStats.autoTradingModel">{{model.name}}</option>
+						<select ng-model="user.currentTradeStats.autoTradingOptions.autoTradingModel" ng-disabled="!user.currentTradeStats.tradeAuto" style="margin-top: 0.5em;">
+							<option ng-repeat="model in autoTradingOptions" value="{{model.value}}" title="{{model.name}}" ng-selected="model.value == user.currentTradeStats.autoTradingOptions.autoTradingModel">{{model.name}}</option>
 						</select>
 					</div>
 				</div>
@@ -47,19 +47,22 @@
 							<div class="span2" style="text-align: right;">
 								Profit target
 							</div>
-							<div class="span2 control-group">
-								<input smart-float style="margin-bottom: 0px; width: 4.0em;" type="text" ng-model="user.currentTradeStats.profitTarget"/>
-								{{stats.currencyLeft|uppercase}}
-								<span ng-show="form.length.$error.float"> This is not a valid float number!</span>
+							<div class="span2">
+								<div class="control-group" ng-class="{ error: user.currentTradeStats.autoTradingOptions.profitTarget == undefined }">
+									<input style="margin-bottom: 0px; width: 4.0em;" type="text" name="profitTarget" ng-model="user.currentTradeStats.autoTradingOptions.profitTarget" smart-float />
+									{{user.currentTradeStats.currencyLeft|uppercase}}
+								</div>
 							</div>
 						</div>
 						<div class="row">
 							<div class="span2" style="text-align: right;">
 								Buy ceiling
 							</div>
-							<div class="span2 control-group">
-								<input style="margin-bottom: 0px; width: 4.0em;" type="text" ng-model="user.currentTradeStats.buyCeiling"/>
-								{{stats.currencyLeft|uppercase}}
+							<div class="span2">
+								<div class="control-group" ng-class="{ error: user.currentTradeStats.autoTradingOptions.buyCeiling == undefined }">
+									<input style="margin-bottom: 0px; width: 4.0em;" type="text" name="buyCeiling" ng-model="user.currentTradeStats.autoTradingOptions.buyCeiling" smart-float />
+									{{user.currentTradeStats.currencyLeft|uppercase}}
+								</div>
 							</div>
 						</div>
 					</div>
@@ -71,8 +74,10 @@
 								Trade chunk
 							</div>
 							<div class="span2">
-								<input style="margin-bottom: 0px; width: 4.0em;" type="text" ng-model="user.currentTradeStats.tradeChunk"/>
-								{{user.currentTradeStats.currencyRight|uppercase}}
+								<div class="control-group" ng-class="{ error: user.currentTradeStats.autoTradingOptions.tradeChunk == undefined }">
+									<input style="margin-bottom: 0px; width: 4.0em;" type="text" name="tradeChunk" ng-model="user.currentTradeStats.autoTradingOptions.tradeChunk" smart-float />
+									{{user.currentTradeStats.currencyRight|uppercase}}
+								</div>
 							</div>
 						</div>
 						<div class="row">
@@ -80,8 +85,10 @@
 								Sell floor
 							</div>
 							<div class="span2">
-								<input style="margin-bottom: 0px; width: 4.0em;" type="text" ng-model="user.currentTradeStats.sellFloor"/>
-								{{user.currentTradeStats.currencyLeft|uppercase}}
+								<div class="control-group" ng-class="{ error: user.currentTradeStats.autoTradingOptions.sellFloor == undefined }">
+									<input style="margin-bottom: 0px; width: 4.0em;" type="text" name="sellFloor" ng-model="user.currentTradeStats.autoTradingOptions.sellFloor" smart-float />
+									{{user.currentTradeStats.currencyLeft|uppercase}}
+								</div>
 							</div>
 						</div>
 					</div>

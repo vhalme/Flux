@@ -83,6 +83,19 @@ function ChartsCtrl($scope, $routeParams, $http) {
 			
 			var unixTime = Math.round((new Date()).getTime()/1000);
 			var from = unixTime - (6 * 60 * 60);
+			
+			if($scope.chartScale == "1min") {
+				from = unixTime - (24 * 60 * 60);
+			} else if($scope.chartScale == "10min") {
+				from = unixTime - (7 * 24 * 60 * 60);
+			} else if($scope.chartScale == "30min") {
+				from = unixTime - (30 * 24 * 60 * 60);
+			} else if($scope.chartScale == "4h") {
+				from = unixTime - (182 * 24 * 60 * 60);
+			} else if($scope.chartScale == "6h") {
+				from = unixTime - (365 * 24 * 60 * 60);
+			}
+			
 			var until = unixTime;
 			
 			API.getRates($scope.user.currentTradeStats.pair, $scope.chartScale, from, until, function(response) {
@@ -154,8 +167,9 @@ function ChartsCtrl($scope, $routeParams, $http) {
 			}
 			
 			var rates = angular.fromJson(localStorage.rates);
-			if(rates.length > 600) { 
-				rates.shift(); 
+			
+			if(rates[$scope.user.currentTradeStats.pair].length > 600) { 
+				rates[$scope.user.currentTradeStats.pair].shift();
 			}
 			
 			rates[$scope.user.currentTradeStats.pair].push(dataPoint);
@@ -171,21 +185,22 @@ function ChartsCtrl($scope, $routeParams, $http) {
 	$scope.$watch('user.currentTradeStats.rate', function(value) {
 		
 		if($scope.chart != null) {
-			$scope.updateChart();
 			//console.log("update chart: "+value.last);
+			$scope.updateChart();
 		}
 		
 	}, true);
 	
 	
-	$scope.$watch('chart', function(value) {
+	$scope.$watch('currentTradeStatsId', function(value) {
 		
-		if(value == null) {
-			console.log("init chart");
-			$scope.createChart();
-			$scope.initChart();
-		}
+		console.log("chart tradestats changed");
+		
+		console.log("init chart");
+		$scope.createChart();
+		$scope.initChart();
 		
 	}, true);
+	
 	
 };

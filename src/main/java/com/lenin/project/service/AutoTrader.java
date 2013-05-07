@@ -3,6 +3,7 @@ package com.lenin.project.service;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.lenin.project.domain.AutoTradingOptions;
 import com.lenin.project.domain.TradeStats;
 import com.lenin.project.domain.Transaction;
 import com.lenin.project.domain.User;
@@ -22,6 +23,8 @@ public class AutoTrader extends UserTrader {
 	
 	
 	public void autoTrade() {
+		
+		AutoTradingOptions options = tradeStats.getAutoTradingOptions();
 		
 		Double highestSell = highestSell();
 		if(highestSell == null) {
@@ -52,15 +55,15 @@ public class AutoTrader extends UserTrader {
 		
 		if(reversibleBuys.size() == 0 && reversibleSells.size() == 0) {
 			
-			Double tradeChunk = tradeStats.getTradeChunk();
+			Double tradeChunk = options.getTradeChunk();
 			
 			Double sellRateChange = tradeStats.getRate().getSell() - highestSell;
 			Double buyRateChange = tradeStats.getRate().getBuy() - lowestBuy;
 			
 			//System.out.println("sellRateChange="+tradeStats.getRate().getSell()+"-"+highestSell+"="+sellRateChange+"/buyRateChange="+buyRateChange);
 			
-			if(sellRateChange >= tradeStats.getProfitTarget() && 
-				tradeStats.getFundsRight() >= tradeChunk && tradeStats.getRate().getSell() > tradeStats.getSellFloor()) {
+			if(sellRateChange >= options.getProfitTarget() && 
+				tradeStats.getFundsRight() >= tradeChunk && tradeStats.getRate().getSell() > options.getSellFloor()) {
 				
 				Transaction sellTransaction = 
 						BtceApi.createTransaction(tradeStats.getCurrencyRight()+"_"+tradeStats.getCurrencyLeft(), 
@@ -73,8 +76,8 @@ public class AutoTrader extends UserTrader {
 				tradeStatsRepository.save(tradeStats);
 				
 			
-			} else if(buyRateChange <= -(tradeStats.getProfitTarget()*1) && 
-					tradeStats.getRate().getBuy() < tradeStats.getBuyCeiling() &&
+			} else if(buyRateChange <= -(options.getProfitTarget()*1) && 
+					tradeStats.getRate().getBuy() < options.getBuyCeiling() &&
 					tradeStats.getFundsLeft() >= (tradeChunk * actualTradeRate("buy"))) {
 			
 				Transaction buyTransaction = 
@@ -157,7 +160,7 @@ public class AutoTrader extends UserTrader {
 			
 			//System.out.println(tradeStats.getRate().getBuy()+" <= ("+rateVal+" - "+tradeStats.getProfitTarget()+")");
 			
-			if(tradeStats.getRate().getBuy() <= (rateVal - tradeStats.getProfitTarget())) {
+			if(tradeStats.getRate().getBuy() <= (rateVal - tradeStats.getAutoTradingOptions().getProfitTarget())) {
 					
 				Double actualBuyRate = actualTradeRate("buy");
 				
@@ -195,7 +198,7 @@ public class AutoTrader extends UserTrader {
 			Double rateVal = transaction.getRate();
 			Double amountVal = transaction.getAmount();
 			
-			if(tradeStats.getRate().getSell() >= (rateVal + tradeStats.getProfitTarget())) {
+			if(tradeStats.getRate().getSell() >= (rateVal + tradeStats.getAutoTradingOptions().getProfitTarget())) {
 				
 				Double actualSellRate = actualTradeRate("sell");
 				Double newSellAmount = calculatedSellAmount + amountVal;

@@ -388,10 +388,10 @@ public class DataProcessor {
 			
 			
 			Boolean resetOldRate =
-					( (tradeStats.getRate().getLast() - tradeStats.getOldRate() > tradeStats.getProfitTarget()) && 
-							tradeStats.getRate().getLast() < tradeStats.getBuyCeiling() ) ||
-					( (tradeStats.getRate().getLast() - tradeStats.getOldRate() < - tradeStats.getProfitTarget()) &&
-							tradeStats.getRate().getLast() > tradeStats.getSellFloor() );
+					( (tradeStats.getRate().getLast() - tradeStats.getOldRate() > tradeStats.getAutoTradingOptions().getProfitTarget()) && 
+							tradeStats.getRate().getLast() < tradeStats.getAutoTradingOptions().getBuyCeiling() ) ||
+					( (tradeStats.getRate().getLast() - tradeStats.getOldRate() < - tradeStats.getAutoTradingOptions().getProfitTarget()) &&
+							tradeStats.getRate().getLast() > tradeStats.getAutoTradingOptions().getSellFloor() );
 			
 			if(tradeStats.getOldRate() == 0.0 || resetOldRate) {
 				tradeStats.setOldRate(tradeStats.getRate().getLast());

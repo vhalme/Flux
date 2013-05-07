@@ -36,6 +36,22 @@ var API = {
 			
 		},
 		
+		refreshTradeStats: function(callback) {
+		    
+			$.ajax({
+		    	async: false,
+		    	type: "GET",
+		    	url: "service/tradeStatsRefresh",
+	  			headers: {
+					"User-Id": this.userId,
+					"TradeStats-Id": this.tradeStatsId
+		    	},
+		    	success: callback
+		    });
+			
+			
+		},
+		
 		addTradeStats: function(pair, callback) {
 		    
 			$.ajax({
@@ -146,6 +162,47 @@ var API = {
 					"TradeStats-Id": this.tradeStatsId
 		    	},
 		    	data: angular.toJson(tradeStats),
+		    	success: callback
+		    
+			});
+			
+		},
+		
+		
+		saveAutoTradingOptions: function(autoTradingOptions, callback) {
+			
+			$.ajax({
+				
+				async: false,
+		    	type: "PUT",
+		    	url: "service/autoTradingOptions",
+		    	dataType: "json",
+	  			contentType: "application/json",
+	  			headers: {
+					"User-Id": this.userId,
+					"TradeStats-Id": this.tradeStatsId
+		    	},
+		    	data: angular.toJson(autoTradingOptions),
+		    	success: callback
+		    
+			});
+			
+		},
+		
+		setRate: function(rate, callback) {
+			
+			$.ajax({
+				
+				async: false,
+		    	type: "PUT",
+		    	url: "service/rate",
+		    	dataType: "json",
+	  			contentType: "application/json",
+	  			headers: {
+					"User-Id": this.userId,
+					"TradeStats-Id": this.tradeStatsId
+		    	},
+		    	data: angular.toJson(rate),
 		    	success: callback
 		    
 			});
