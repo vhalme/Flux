@@ -53,6 +53,8 @@ public class AutoTrader extends UserTrader {
 			}
 		}
 		
+		//System.out.println("autotrading...");
+		
 		if(reversibleBuys.size() == 0 && reversibleSells.size() == 0) {
 			
 			Double tradeChunk = options.getTradeChunk();
@@ -109,13 +111,16 @@ public class AutoTrader extends UserTrader {
 		
 		for(Transaction transaction : transactions) {
 			
-			if(lowest == null) {
-				lowest = transaction.getRate();
-			} else {
-				if(transaction.getRate() < lowest) {
+			if(transaction.getFilledAmount() >= transaction.getBrokerAmount()) {
+				if(lowest == null) {
 					lowest = transaction.getRate();
+				} else {
+					if(transaction.getRate() < lowest) {
+						lowest = transaction.getRate();
+					}
 				}
 			}
+			
 		}
 		
 		return lowest;
@@ -130,11 +135,13 @@ public class AutoTrader extends UserTrader {
 		Double highest = null;
 		
 		for(Transaction transaction : transactions) {
-			if(highest == null) {
-				highest = transaction.getRate();
-			} else {
-				if(transaction.getRate() > highest) {
+			if(transaction.getFilledAmount() >= transaction.getBrokerAmount()) {
+				if(highest == null) {
 					highest = transaction.getRate();
+				} else {
+					if(transaction.getRate() > highest) {
+						highest = transaction.getRate();
+					}
 				}
 			}
 		}
@@ -170,7 +177,7 @@ public class AutoTrader extends UserTrader {
 				if(tradeStats.getFundsLeft() > (newBuyAmount * actualBuyRate)) {
 					calculatedBuyAmount = newBuyAmount;
 					reversibleTransactions.add(transaction);
-					System.out.println("buy "+amountVal+" for "+(amountVal * actualBuyRate));
+					//System.out.println("buy "+amountVal+" for "+(amountVal * actualBuyRate));
 				} else {
 					//System.out.println("OUT OF USD!");
 					break;
@@ -206,7 +213,7 @@ public class AutoTrader extends UserTrader {
 				if(tradeStats.getFundsRight() > newSellAmount) {
 					calculatedSellAmount = newSellAmount;
 					reversibleTransactions.add(transaction);
-					System.out.println("sell "+amountVal+" for "+(amountVal * actualSellRate));
+					//System.out.println("sell "+amountVal+" for "+(amountVal * actualSellRate));
 				} else {
 					//System.out.println("OUT OF LTC!");
 					break;

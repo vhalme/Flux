@@ -33,8 +33,6 @@ public class TradeStats implements Serializable {
 	private Double profitLeft = 0.0;
 	private Double profitRight = 0.0;
 	
-	private Boolean tradeAuto = false;
-	
 	private AutoTradingOptions autoTradingOptions;
 	
 	
@@ -119,14 +117,6 @@ public class TradeStats implements Serializable {
 
 	public void setProfitRight(Double profitRight) {
 		this.profitRight = profitRight;
-	}
-
-	public Boolean getTradeAuto() {
-		return tradeAuto;
-	}
-
-	public void setTradeAuto(Boolean tradeAuto) {
-		this.tradeAuto = tradeAuto;
 	}
 	
 	public AutoTradingOptions getAutoTradingOptions() {

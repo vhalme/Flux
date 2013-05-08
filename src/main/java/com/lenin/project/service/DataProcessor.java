@@ -401,7 +401,7 @@ public class DataProcessor {
 			
 			//System.out.println(tradeStats.getPair()+"("+tradeStats.getId()+"): "+tradeStats.getRate());
 			
-			if(tradeStats.getTradeAuto() == true && tradeStats.getRate().getLast() != 0.0) {
+			if(tradeStats.getAutoTradingOptions().getTradeAuto() == true && tradeStats.getRate().getLast() != 0.0) {
 				AutoTrader autoTrader = new AutoTrader(tradeStats, tradeStatsRepository, transactionRepository, tradeRepository);
 				autoTrader.autoTrade();
 			}

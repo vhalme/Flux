@@ -196,6 +196,8 @@ public class TravellerService {
 			refreshData.setTransactions(transactionRepository.findByTradeStats(tradeStats));
 			refreshData.setFundsLeft(tradeStats.getFundsLeft());
 			refreshData.setFundsRight(tradeStats.getFundsRight());
+			refreshData.setProfitLeft(tradeStats.getProfitLeft());
+			refreshData.setProfitRight(tradeStats.getProfitRight());
 			refreshData.setRate(tradeStats.getRate());
 			
 			response.setData(refreshData);
@@ -680,7 +682,7 @@ public class TravellerService {
     @Produces({ MediaType.TEXT_PLAIN })
     public String deleteAll() {
 		
-		tickerRepository.deleteAll();
+		//tickerRepository.deleteAll();
 		tradeStatsRepository.deleteAll();
 		tradeRepository.deleteAll();
 		transactionRepository.deleteAll();

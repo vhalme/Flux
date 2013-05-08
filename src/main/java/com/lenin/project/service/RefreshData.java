@@ -13,6 +13,8 @@ public class RefreshData implements Serializable {
 	private List<Transaction> transactions;
 	private Double fundsLeft;
 	private Double fundsRight;
+	private Double profitLeft;
+	private Double profitRight;
 	
 	private TickerQuote rate;
 	
@@ -42,6 +44,22 @@ public class RefreshData implements Serializable {
 
 	public void setFundsRight(Double fundsRight) {
 		this.fundsRight = fundsRight;
+	}
+
+	public Double getProfitLeft() {
+		return profitLeft;
+	}
+
+	public void setProfitLeft(Double profitLeft) {
+		this.profitLeft = profitLeft;
+	}
+
+	public Double getProfitRight() {
+		return profitRight;
+	}
+
+	public void setProfitRight(Double profitRight) {
+		this.profitRight = profitRight;
 	}
 
 	public TickerQuote getRate() {

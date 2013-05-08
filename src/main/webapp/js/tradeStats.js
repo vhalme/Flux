@@ -83,6 +83,8 @@ function TradeStatsCtrl($scope, $routeParams, $http) {
 				
 				$scope.user.currentTradeStats.fundsLeft = response.data.fundsLeft;
 				$scope.user.currentTradeStats.fundsRight = response.data.fundsRight;
+				$scope.user.currentTradeStats.profitLeft = response.data.profitLeft;
+				$scope.user.currentTradeStats.profitRight = response.data.profitRight;
 				$scope.user.currentTradeStats.rate = response.data.rate;
 				
 				$scope.setTransactions(response.data.transactions);
@@ -364,9 +366,8 @@ function TradeStatsCtrl($scope, $routeParams, $http) {
 		API.getTradeStats(function(response) {
 			
 			if(response.success == 1) {
-				
 				$scope.user.currentTradeStats = response.data;
-				
+				$scope.refresh();
 			} else {
 				console.log(response);		
 			}

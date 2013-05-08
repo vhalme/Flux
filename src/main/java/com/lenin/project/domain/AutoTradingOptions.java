@@ -7,6 +7,7 @@ public class AutoTradingOptions implements Serializable {
 	
 	private static final long serialVersionUID = 4044855246441420579L;
 
+	private Boolean tradeAuto = false;
 	
 	private String autoTradingModel = "accumulateUsd";
 	
@@ -19,6 +20,17 @@ public class AutoTradingOptions implements Serializable {
 	public AutoTradingOptions() {
 		
 	}
+
+	
+	public Boolean getTradeAuto() {
+		return tradeAuto;
+	}
+
+
+	public void setTradeAuto(Boolean tradeAuto) {
+		this.tradeAuto = tradeAuto;
+	}
+
 
 	public String getAutoTradingModel() {
 		return autoTradingModel;

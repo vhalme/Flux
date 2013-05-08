@@ -148,6 +148,8 @@ public class UserTrader {
 					
 				} else {
 					
+					BtceApi._nonce = System.currentTimeMillis() / 10000L;
+					
 					System.out.println("Trade request failed: "+success);
 					Iterator<String> keys = tradeResult.keys();
 					

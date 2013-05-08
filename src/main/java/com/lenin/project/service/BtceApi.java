@@ -27,7 +27,7 @@ import com.lenin.project.domain.Transaction;
 
 public class BtceApi {
 	
-	private static long _nonce = System.currentTimeMillis() / 10000L;
+	public static long _nonce = System.currentTimeMillis() / 10000L;
 	
 	private static String _key = "XSR43QT2-B7PBL6EY-U6JCVFCM-7IMTI26B-7XEL3DGO";
 	private static String _secret = "a93adec600bd65960d26d779343b70700fbb4a93e333e15350b2bb1a21fb46de";
