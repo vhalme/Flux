@@ -30,6 +30,31 @@ function AppCtrl($scope, $routeParams, $http) {
 		
 	};
 	
+	$scope.deleteCurrentTab = function() {
+		
+		API.deleteTradeStats($scope.user.currentTradeStats, function(response) {
+			
+			if(response.success == 1) {
+				
+				var tabs = response.data;
+				
+				console.log(tabs);
+				
+				$scope.user.tradeStats = tabs;
+				
+				if(tabs.length > 0) {
+					$scope.user.currentTradeStats = tabs[0];
+					var tabId = tabs[0].id;
+					API.tradeStatsId = tabId;
+					$scope.go("/tradeStats/"+tabId);
+				}
+				
+			}
+			
+		});
+		
+	};
+	
 	$scope.changeToTestUser = function() {
 		
 		API.userId = $scope.user.username+" (test)";

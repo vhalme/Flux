@@ -55,7 +55,7 @@ public class UserTrader {
 				
 				if(success == 1) {
 					
-					if(transaction.getIsReversed()) {
+					if(transaction.getIsReversed() || transaction.getFilledAmount() == 0) {
 						transactionRepository.delete(transaction);
 					} else {
 						transaction.setBrokerAmount(transaction.getFilledAmount());

@@ -295,6 +295,60 @@ public class TravellerService {
 		
 	}
 	
+	
+	@DELETE
+    @Path("/tradeStats")
+	@Consumes({ MediaType.APPLICATION_JSON })
+	@Produces({ MediaType.APPLICATION_JSON })
+    public RequestResponse deleteTradeStats(@HeaderParam("User-Id") String userId, 
+    		@HeaderParam("TradeStats-Id") String tradeStatsId, TradeStats tradeStats) {
+        
+		
+		RequestResponse response = new RequestResponse();
+		
+		if(tradeStatsId != null) {
+			
+			tradeStats = tradeStatsRepository.findOne(tradeStatsId); //user.getCurrentTradeStats();
+			
+			User user = userRepository.findByUsername(userId);
+			List<TradeStats> tradeStatsList = user.getTradeStats();
+			System.out.println("Deleting from "+tradeStatsList.size()+" tabs");
+			
+			int index = -1;
+			for(int i=0; i<tradeStatsList.size(); i++) {
+				if(tradeStatsList.get(i).getId().equals(tradeStats.getId())) {
+					index = i;
+					break;
+				}
+			}
+			
+			if(index != -1)  {
+				System.out.println("Deleting tradeStat "+tradeStatsId+" at "+index);
+				tradeStatsList.remove(index);
+			}
+			
+			System.out.print("Remaining tradeStats size "+tradeStatsList.size()+" ... ");
+			user.setTradeStats(tradeStatsList);
+			
+			TradeStats current = null;
+			if(tradeStatsList.size() > 0) {
+				user.setCurrentTradeStats(tradeStatsList.get(0));
+			}
+			
+			user = userRepository.save(user);
+			System.out.println(user.getTradeStats().size());
+			
+			tradeStatsRepository.delete(tradeStats);
+			
+			response.setSuccess(1);
+			response.setData(user.getTradeStats());
+			
+		}
+		
+		return response;
+		
+	}
+	
 	@POST
     @Path("/funds")
 	@Consumes({ MediaType.APPLICATION_JSON })
@@ -319,7 +373,7 @@ public class TravellerService {
 			
 			userFundsLeft = userFundsLeft + changeLeft;
 			
-			if(userFundsLeft >= 0) {
+			if(userFundsLeft >= 0 || user.getLive() == false) {
 				tradeStats.setFundsLeft(left);
 				fundsMap.put(tsCurrencyLeft, userFundsLeft);
 				user.setFunds(fundsMap);
@@ -343,7 +397,7 @@ public class TravellerService {
 			
 			userFundsRight = userFundsRight + changeRight;
 			
-			if(userFundsRight >= 0) {
+			if(userFundsRight >= 0 || user.getLive() == false) {
 				tradeStats.setFundsRight(right);
 				fundsMap.put(tsCurrencyRight, userFundsRight);
 				user.setFunds(fundsMap);

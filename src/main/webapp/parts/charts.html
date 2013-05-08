@@ -13,7 +13,7 @@
 		<div class="row" ng-class="{ hidden: !showGraphs }">
 			<div class="span12">
 				<div class="row">
-					<div class="span12">
+					<div class="span9">
 						<div style="margin-left: 4.6em; margin-top: 0.6em;">
 							<div class="btn-group">
 								<button class="btn" ng-repeat="option in chartScaleOptions" ng-click="setChartScale(option.precision)" ng-class="{ active: option.precision == chartScale }">
@@ -22,6 +22,22 @@
 							</div>
 							<span style="margin-left: 1.0em;">Max. precision: {{chartScale}}</span>
 						</div>
+					</div>
+					<div class="span3" ng-hide="user.live">
+						
+						<div style="margin-top: 0.6em;">
+							<div class="btn-group" style="border: 4px solid red; border-radius: 6px;">
+							
+								<button ng-click="lowerPrice()" class="btn">
+									Down (-)
+								</button>
+								<button ng-click="raisePrice()" class="btn">
+									Up (+)
+								</button>
+							
+							</div>
+						</div>
+						
 					</div>
 				</div>
 				<div class="row">

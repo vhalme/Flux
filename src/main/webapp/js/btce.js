@@ -70,6 +70,25 @@ var API = {
 			
 		},
 		
+		deleteTradeStats: function(tradeStats, callback) {
+			
+			$.ajax({
+				
+				async: false,
+		    	type: "DELETE",
+		    	url: "service/tradeStats",
+		    	dataType: "json",
+	  			contentType: "application/json",
+	  			headers: {
+					"User-Id": this.userId,
+					"TradeStats-Id": this.tradeStatsId
+		    	},
+		    	data: angular.toJson(tradeStats),
+		    	success: callback
+		    
+			});
+			
+		},
 		
 		getTransactions: function(callback) {
 			

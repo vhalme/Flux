@@ -48,24 +48,24 @@
 					<div class="row">
 						
 						<div class="span3" style="font-size: 1.6em; padding-top: 0.4em;">
-							<span style="margin-left: 0.3em;">FLUXOMAT 3000</span>
+							<span style="margin-left: 0.3em;">FLUXOMAT3000</span>
 						</div>
 
 						<div class="span6" style="text-align: center;">
 							<div ng-hide="user == null">
 								Signed in as: {{user.username}}
-								<br/>
-								USD {{user.funds.usd}} LTC {{user.funds.ltc}} BTC {{user.funds.btc}}
+								<div ng-hide="!user.live">
+									USD {{user.funds.usd}} LTC {{user.funds.ltc}} BTC {{user.funds.btc}}
+								</div>
+								<div ng-hide="user.live">
+									&nbsp;
+								</div>
 							</div>
 						</div>
 
 						<div class="span3" style="text-align: right; padding-top: 0.3em;" ng-hide="location.path() == '/login'">
-							<button ng-click="changeToTestUser()" class="btn" ng-hide="!user.live">
-								Engage Test Mode
-							</button>
-							<button ng-click="changeToLiveUser()" class="btn" ng-hide="user.live">
-								Disengage Test Mode
-							</button>
+							
+							
 						</div>
 				
 					</div>

@@ -40,17 +40,11 @@ public class AutoTrader extends UserTrader {
 		List<Transaction> reversibleSells = getReversibleSells();
 		
 		for(Transaction reversibleBuy : reversibleBuys) {
-			Boolean isFilled = reversibleBuy.getFilledAmount() >= reversibleBuy.getBrokerAmount();
-			if(isFilled) {
-				reverseTrade(reversibleBuy, false);
-			}
+			reverseTrade(reversibleBuy, false);
 		}
 		
 		for(Transaction reversibleSell : reversibleSells) {
-			Boolean isFilled = reversibleSell.getFilledAmount() >= reversibleSell.getBrokerAmount();
-			if(isFilled) {
-				reverseTrade(reversibleSell, false);
-			}
+			reverseTrade(reversibleSell, false);
 		}
 		
 		//System.out.println("autotrading...");
@@ -167,7 +161,9 @@ public class AutoTrader extends UserTrader {
 			
 			//System.out.println(tradeStats.getRate().getBuy()+" <= ("+rateVal+" - "+tradeStats.getProfitTarget()+")");
 			
-			if(tradeStats.getRate().getBuy() <= (rateVal - tradeStats.getAutoTradingOptions().getProfitTarget())) {
+			Boolean isFilled = transaction.getFilledAmount() >= transaction.getBrokerAmount();
+			
+			if(isFilled && tradeStats.getRate().getBuy() <= (rateVal - tradeStats.getAutoTradingOptions().getProfitTarget())) {
 					
 				Double actualBuyRate = actualTradeRate("buy");
 				
@@ -205,7 +201,9 @@ public class AutoTrader extends UserTrader {
 			Double rateVal = transaction.getRate();
 			Double amountVal = transaction.getAmount();
 			
-			if(tradeStats.getRate().getSell() >= (rateVal + tradeStats.getAutoTradingOptions().getProfitTarget())) {
+			Boolean isFilled = transaction.getFilledAmount() >= transaction.getBrokerAmount();
+			
+			if(isFilled && tradeStats.getRate().getSell() >= (rateVal + tradeStats.getAutoTradingOptions().getProfitTarget())) {
 				
 				Double actualSellRate = actualTradeRate("sell");
 				Double newSellAmount = calculatedSellAmount + amountVal;

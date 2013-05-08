@@ -1,50 +1,45 @@
-<div class="row" style="margin-bottom: 2.0em; background: black; color: white;" ng-hide="user.live">
-
-	<div class="span4" style="text-align: left;">
-		<div class="row" style="margin-top: 0.3em; margin-bottom: 0.3em;">
-			<div class="span2" style="text-align: right;">
-				<button ng-click="lowerPrice()" class="btn" style="width: 100%">
-					- RATE
-				</button>
+<div class="row" style="margin-bottom: 2.0em;">
+	
+	<div class="span12" style="background: #d00000; color: white; text-align: center;" ng-hide="user.live">
+		
+		<div class="row">
+			<div class="span9" style="background: #d00000; color: white; text-align: center;">
+				<b>RUNNING IN TEST MODE</b>
+				<br/>
+				<i>1. Use 'Up' and 'Down' buttons above the chart to simulate rate changes</i>
+				<br/>
+				<i>2. You are free to set any amount of funds for any tab</i>
 			</div>
-			<div class="span2">
-				<button ng-click="raisePrice()" class="btn" style="width: 100%">
-					+ RATE
-				</button>
-			</div>
-		</div>
-	</div>
-	<div class="span4" style="text-align: center; color: #d00000;">
-		RUNNING IN TEST MODE
-	</div>
-	<div class="span4" style="text-align: right;">
-		<div class="row" style="margin-top: 0.3em; margin-bottom: 0.3em;">
-			<div class="span2" style="text-align: right;">
-				<button ng-click="removeFundsLeft()" class="btn" style="width: 6em;">
-					- {{user.currentTradeStats.currencyLeft|uppercase}}
-				</button>
-			</div>
-			<div class="span2">
-				<button ng-click="addFundsLeft()" class="btn" style="width: 6em; margin-right: 1.4em;">
-					+ {{user.currentTradeStats.currencyLeft|uppercase}}
+			<div class="span3" style="height: 4.2em; position: relative;">
+				<button ng-click="changeToLiveUser()" class="btn" style="top: 50%; margin-top: -1.0em; margin-left: -50%; height: 2.0em; width: 10em; position: absolute;">
+					Go to LIVE mode
 				</button>
 			</div>
 		</div>
-		<div class="row" style="margin-top: 0.3em; margin-bottom: 0.3em;">
-			<div class="span2" style="text-align: right;">
-				<button ng-click="removeFundsRight()" class="btn" style="width: 6em;">
-					- {{user.currentTradeStats.currencyRight|uppercase}}
-				</button>
+		
+	</div>
+	
+	<div class="span12" style="background: #00b000; color: white; text-align: center;" ng-hide="!user.live">
+		
+		<div class="row">
+			<div class="span9">
+				<b>RUNNING IN LIVE MODE</b>
+				<br/>
+				<i>1. You have read and accepted the EULA. Use at your own risk.</i>
+				<br/>
+				<i>2. Read the documentation and practice in TEST mode first.</i>
 			</div>
-			<div class="span2">
-				<button ng-click="addFundsRight()" class="btn" style="width: 6em; margin-right: 1.4em;">
-					+ {{user.currentTradeStats.currencyRight|uppercase}}
+			<div class="span3" style="height: 4.2em; position: relative;">
+				<button ng-click="changeToTestUser()" class="btn" style="top: 50%; margin-top: -1.0em; margin-left: -50%; height: 2.0em; width: 10em; position: absolute;">
+		 			Go to TEST mode
 				</button>
 			</div>
 		</div>
+		
 	</div>
-
+	
 </div>
+
 
 <div class="row" ng-hide="!user.currentTradeStats.uninitialized">
 	<div class="span12" style="text-align: center;">
@@ -53,25 +48,35 @@
 </div>
 
 <div class="tabbable" ng-hide="user.currentTradeStats.uninitialized">
+	
+	<div class="row">
+		<div class="span10">
+			
+			<ul class="nav nav-tabs">
 
-	<ul class="nav nav-tabs">
+				<li ng-repeat="stats in user.tradeStats" ng-class="{ active: user.currentTradeStats.id == stats.id }">
+					<a href="" ng-click="go('/tradeStats/{{stats.id}}')" data-toggle="tab">{{stats.currencyLeft|uppercase}}-{{stats.currencyRight|uppercase}}</a>
+				</li>
 
-		<li ng-repeat="stats in user.tradeStats" ng-class="{ active: user.currentTradeStats.id == stats.id }">
-			<a href="" ng-click="go('/tradeStats/{{stats.id}}')" data-toggle="tab">{{stats.currencyLeft|uppercase}}-{{stats.currencyRight|uppercase}}</a>
-		</li>
-
-		<li style="padding-top: 4px; padding-left: 1.0em;">
-			<button ng-click="addTab()" class="btn" href="" style="display: inline-block;">
-				Add tab
-			</button>
-			<select ng-model="newCurrencyPair" style="width: 8em; margin-bottom: 0px;">
-				<option value="ltc_usd" title="LTC-USD">USD-LTC</option>
-				<option value="ltc_btc" title="LTC-BTC">BTC-LTC</option>
-				<option value="btc_usd" title="BTC-USD">USD-BTC</option>
-			</select>
-		</li>
-	</ul>
-
+				<li style="padding-top: 4px; padding-left: 1.0em;">
+					<button ng-click="addTab()" class="btn" href="" style="display: inline-block;">
+						Add tab
+					</button>
+					<select ng-model="newCurrencyPair" style="width: 8em; margin-bottom: 0px;">
+						<option value="ltc_usd" title="LTC-USD">USD-LTC</option>
+						<option value="ltc_btc" title="LTC-BTC">BTC-LTC</option>
+						<option value="btc_usd" title="BTC-USD">USD-BTC</option>
+					</select>
+				</li>
+			
+			</ul>
+			
+		</div>
+		<div class="span2" style="text-align: right; border-bottom: 1px solid #ddd; margin-left: 0px; padding-top: 8px; padding-bottom: 9px;">
+			<span>&nbsp;</span><a href="" ng-hide="user.tradeStats.length <= 1" ng-click="deleteCurrentTab()">Delete tab</a>
+		</div>
+	</div>
+	
 	<div class="tab-content">
 
 		<div class="tab-pane active" id="tab1">
@@ -207,20 +212,41 @@
 			</div>
 
 			<div class="row">
-				<div class="span6" style="text-align: left;">
-					<input ng-model="newFundsLeft" style="width: 5.0em; margin-bottom: 0px; margin-top: 0.15em; padding: 10px 6px;" type="text" />
-					<button style="width: 3.0em; margin-top: 0.15em; padding: 0px;" ng-click="setFundsLeft()">
-						Set
-					</button>
-					<span style="margin-left: 0.5em;"> <a href="" ng-click="newFundsLeft = user.funds[user.currentTradeStats.currencyLeft] + user.currentTradeStats.fundsLeft">Max</a> {{ user.funds[user.currentTradeStats.currencyLeft] + user.currentTradeStats.fundsLeft }} {{user.currentTradeStats.currencyLeft|uppercase}} </span>
+				<div class="span6">
+					<div style="display: inline; float: left;">
+						<input ng-model="newFundsLeft" style="width: 5.0em; margin-bottom: 0px; margin-top: 0.15em; padding: 10px 6px;" type="text" />
+						<button style="width: 3.0em; margin-top: 0.15em; padding: 0px;" ng-click="setFundsLeft()">
+							Set
+						</button>
+					</div>
+					<div style="display: inline; float: left; padding-top: 0.3em;">
+						<div ng-hide="!user.live">
+							<span style="margin-left: 0.5em;"> <a href="" ng-click="newFundsLeft = user.funds[user.currentTradeStats.currencyLeft] + user.currentTradeStats.fundsLeft">Max</a> {{ user.funds[user.currentTradeStats.currencyLeft] + user.currentTradeStats.fundsLeft }} {{user.currentTradeStats.currencyLeft|uppercase}} </span>
+						</div>
+						<div style="color: red; padding-left: 0.5em;" ng-hide="user.live">
+							Unlimited
+						</div>
+					</div>
 				</div>
+				
 				<div class="span6" style="text-align: right;">
-					<span style="margin-right: 0.5em;"> <a href="" ng-click="newFundsRight = user.funds[user.currentTradeStats.currencyRight] + user.currentTradeStats.fundsRight">Max</a> {{ user.funds[user.currentTradeStats.currencyRight] + user.currentTradeStats.fundsRight }} {{user.currentTradeStats.currencyRight|uppercase}} </span>
-					<button style="width: 3.0em; margin-top: 0.15em; padding: 0px;" ng-click="setFundsRight()">
-						Set
-					</button>
-					<input ng-model="newFundsRight" style="width: 5.0em; margin-bottom: 0px; margin-top: 0.15em; padding: 10px 6px;" type="text" />
+					<div style="display: inline; float: right;">
+						<button style="width: 3.0em; margin-top: 0.15em; padding: 0px;" ng-click="setFundsRight()">
+							Set
+						</button>
+						<input ng-model="newFundsRight" style="width: 5.0em; margin-bottom: 0px; margin-top: 0.15em; padding: 10px 6px;" type="text" />
+					</div>
+					<div style="display: inline; float: right; padding-top: 0.3em;">
+						<div ng-hide="!user.live">
+							<span style="margin-right: 0.5em;"> <a href="" ng-click="newFundsRight = user.funds[user.currentTradeStats.currencyRight] + user.currentTradeStats.fundsRight">Max</a> {{ user.funds[user.currentTradeStats.currencyRight] + user.currentTradeStats.fundsRight }} {{user.currentTradeStats.currencyRight|uppercase}} </span>
+						</div>
+						<div style="color: red; padding-right: 0.5em;" ng-hide="user.live">
+							Unlimited
+						</div>
+						
+					</div>
 				</div>
+			
 			</div>
 
 			<div class="row">
