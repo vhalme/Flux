@@ -338,14 +338,15 @@ function TradeStatsCtrl($scope, $routeParams, $http) {
 			
 			console.log("autotrading options changed");
 			
-			var profitTarget = $scope.user.currentTradeStats.autoTradingOptions.profitTarget;
+			var buyThreshold = $scope.user.currentTradeStats.autoTradingOptions.buyThreshold;
+			var sellThreshold = $scope.user.currentTradeStats.autoTradingOptions.sellThreshold;
 			var tradeChunk = $scope.user.currentTradeStats.autoTradingOptions.tradeChunk;
 			var buyCeiling = $scope.user.currentTradeStats.autoTradingOptions.buyCeiling;
 			var sellFloor = $scope.user.currentTradeStats.autoTradingOptions.sellFloor;
 			
 			console.log($scope.user.currentTradeStats.autoTradingOptions);
 			
-			if(profitTarget == undefined || tradeChunk == undefined || buyCeiling == undefined | sellFloor == undefined) {
+			if(buyThreshold == undefined || sellThreshold == undefined || tradeChunk == undefined || buyCeiling == undefined | sellFloor == undefined) {
 				return;
 			}
 			

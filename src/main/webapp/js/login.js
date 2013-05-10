@@ -6,6 +6,8 @@ function LoginCtrl($scope, $routeParams, $http) {
 	
 	$scope.login = function() {
 		
+		console.log("try to log in user "+$scope.email);
+		
 		API.login($scope.email, $scope.password, function(response) {
 			
 			console.log(response);

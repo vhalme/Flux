@@ -45,30 +45,26 @@
 					<div style="margin-top: 0.3em; margin-bottom: 0.3em;">
 						<div class="row" style="margin-bottom: 0.8em;">
 							<div class="span2" style="text-align: right;">
-								Profit target
+								Buy threshold
 							</div>
 							<div class="span2">
-								<div class="control-group" ng-class="{ error: user.currentTradeStats.autoTradingOptions.profitTarget == undefined }">
-									<input style="margin-bottom: 0px; width: 4.0em;" type="text" name="profitTarget" ng-model="user.currentTradeStats.autoTradingOptions.profitTarget" smart-float />
+								<div class="control-group" ng-class="{ error: user.currentTradeStats.autoTradingOptions.buyThreshold == undefined }">
+									<input style="margin-bottom: 0px; width: 4.0em;" type="text" name="buyThreshold" ng-model="user.currentTradeStats.autoTradingOptions.buyThreshold" smart-float />
 									{{user.currentTradeStats.currencyLeft|uppercase}}
 								</div>
 							</div>
 						</div>
-						<div class="row">
+						<div class="row" style="margin-bottom: 0.8em;">
 							<div class="span2" style="text-align: right;">
-								Buy ceiling
+								Sell threshold
 							</div>
 							<div class="span2">
-								<div class="control-group" ng-class="{ error: user.currentTradeStats.autoTradingOptions.buyCeiling == undefined }">
-									<input style="margin-bottom: 0px; width: 4.0em;" type="text" name="buyCeiling" ng-model="user.currentTradeStats.autoTradingOptions.buyCeiling" smart-float />
+								<div class="control-group" ng-class="{ error: user.currentTradeStats.autoTradingOptions.sellThreshold == undefined }">
+									<input style="margin-bottom: 0px; width: 4.0em;" type="text" name="sellThreshold" ng-model="user.currentTradeStats.autoTradingOptions.sellThreshold" smart-float />
 									{{user.currentTradeStats.currencyLeft|uppercase}}
 								</div>
 							</div>
 						</div>
-					</div>
-				</div>
-				<div class="span4" style="background: #ededed; margin-bottom: 0.7em;">
-					<div style="margin-top: 0.3em; margin-bottom: 0.3em;">
 						<div class="row" style="margin-bottom: 0.8em;">
 							<div class="span2" style="text-align: right;">
 								Trade chunk
@@ -80,6 +76,22 @@
 								</div>
 							</div>
 						</div>
+						
+					</div>
+				</div>
+				<div class="span4" style="background: #ededed; margin-bottom: 0.7em;">
+					<div style="margin-top: 0.3em; margin-bottom: 0.3em;">
+						<div class="row">
+							<div class="span2" style="text-align: right;">
+								Buy ceiling
+							</div>
+							<div class="span2">
+								<div class="control-group" ng-class="{ error: user.currentTradeStats.autoTradingOptions.buyCeiling == undefined }">
+									<input style="margin-bottom: 0px; width: 4.0em;" type="text" name="buyCeiling" ng-model="user.currentTradeStats.autoTradingOptions.buyCeiling" smart-float />
+									{{user.currentTradeStats.currencyLeft|uppercase}}
+								</div>
+							</div>
+						</div>
 						<div class="row">
 							<div class="span2" style="text-align: right;">
 								Sell floor
@@ -87,6 +99,17 @@
 							<div class="span2">
 								<div class="control-group" ng-class="{ error: user.currentTradeStats.autoTradingOptions.sellFloor == undefined }">
 									<input style="margin-bottom: 0px; width: 4.0em;" type="text" name="sellFloor" ng-model="user.currentTradeStats.autoTradingOptions.sellFloor" smart-float />
+									{{user.currentTradeStats.currencyLeft|uppercase}}
+								</div>
+							</div>
+						</div>
+						<div class="row">
+							<div class="span2" style="text-align: right;">
+								Rate buffer
+							</div>
+							<div class="span2">
+								<div class="control-group" ng-class="{ error: user.currentTradeStats.autoTradingOptions.rateBuffer == undefined }">
+									<input style="margin-bottom: 0px; width: 4.0em;" type="text" name="rateBuffer" ng-model="user.currentTradeStats.autoTradingOptions.rateBuffer" smart-float />
 									{{user.currentTradeStats.currencyLeft|uppercase}}
 								</div>
 							</div>

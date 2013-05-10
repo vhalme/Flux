@@ -11,8 +11,9 @@ public class AutoTradingOptions implements Serializable {
 	
 	private String autoTradingModel = "accumulateUsd";
 	
-	private Double profitTarget = 0.05;
-	private Double rateBuffer = 0.001;
+	private Double sellThreshold = 0.05;
+	private Double buyThreshold = 0.05;
+	private Double rateBuffer = 0.0;
 	private Double tradeChunk = 10.0;
 	private Double sellFloor = 1.0;
 	private Double buyCeiling = 1.0;
@@ -39,14 +40,26 @@ public class AutoTradingOptions implements Serializable {
 	public void setAutoTradingModel(String autoTradingModel) {
 		this.autoTradingModel = autoTradingModel;
 	}
-
-	public Double getProfitTarget() {
-		return profitTarget;
+	
+	public Double getSellThreshold() {
+		return sellThreshold;
 	}
 
-	public void setProfitTarget(Double profitTarget) {
-		this.profitTarget = profitTarget;
+
+	public void setSellThreshold(Double sellThreshold) {
+		this.sellThreshold = sellThreshold;
 	}
+
+
+	public Double getBuyThreshold() {
+		return buyThreshold;
+	}
+
+
+	public void setBuyThreshold(Double buyThreshold) {
+		this.buyThreshold = buyThreshold;
+	}
+
 
 	public Double getRateBuffer() {
 		return rateBuffer;

@@ -11,7 +11,9 @@ function AppCtrl($scope, $routeParams, $http) {
 		
 		if(user != undefined) {
 			API.userId = user.username;
-			$scope.setCookie("fluxUser", user.username);
+			API.authToken = user.authToken;
+			$scope.setCookie("fluxToken", user.authToken, 15);
+			$scope.setCookie("fluxUser", user.username, 15);
 			$scope.go("/tradeStats/0");
 		}
 		
@@ -153,7 +155,10 @@ function AppCtrl($scope, $routeParams, $http) {
 		
 		var expDate = new Date();
 		expDate.setTime(expDate.getTime() + expires*1000*60);
-		var value = escape(value) + ((expires==null) ? "" : "; expires="+expDate.toUTCString());
+		var expStr = expDate.toUTCString();
+		console.log(key+" expires "+expStr);
+		
+		var value = escape(value) + ((expires==null) ? "" : "; expires="+expStr+"; path=/");
 		document.cookie = key + "=" + value;
 	
 	};
@@ -184,11 +189,18 @@ function AppCtrl($scope, $routeParams, $http) {
 	
 	console.log("setting up user");
 	
-	var cookieId = $scope.getCookie("fluxUser", 1);
-	console.log("cookie user: "+cookieId);
-	if(cookieId != null) {
-		API.userId = cookieId;
+	var cookieUserId = $scope.getCookie("fluxUser");
+	var cookieToken = $scope.getCookie("fluxToken");
+	
+	console.log("cookie user: "+cookieUserId+" / cookie token: "+cookieToken);
+	
+	if(cookieUserId != null && cookieToken != null) {
+		
+		API.userId = cookieUserId;
+		API.authToken = cookieToken;
+		
 		$scope.setUser();
+	
 	} else {
 		$scope.go("/front");
 	}

@@ -765,9 +765,22 @@ public class TravellerService {
 		
 		if(user != null) {
 			
+			User testUser = userRepository.findByUsername(email+" (test)");
+			
+			String token = ""+Math.random();
+			
+			user.setAuthToken(token);
+			testUser.setAuthToken(token);
+			
+			userRepository.save(user);
+			userRepository.save(testUser);
+			
+			System.out.println("Logging in user "+email);
 			response.setSuccess(1);
 			
 		} else {
+			
+			System.out.println("Creating user "+email);
 			
 			user = new User();
 			user.setUsername(email);
@@ -820,12 +833,18 @@ public class TravellerService {
 			testUser.addTradeStats(testTradeStats);
 			testUser.setCurrentTradeStats(testTradeStats);
 			
+			String token = ""+Math.random();
+			
+			user.setAuthToken(token);
+			testUser.setAuthToken(token);
+			
 			userRepository.save(user);
 			userRepository.save(testUser);
 			
 			response.setSuccess(2);
 			
 		}
+		
 		
 		response.setData(user);
 		

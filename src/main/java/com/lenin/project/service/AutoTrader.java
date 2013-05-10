@@ -58,7 +58,7 @@ public class AutoTrader extends UserTrader {
 			
 			//System.out.println("sellRateChange="+tradeStats.getRate().getSell()+"-"+highestSell+"="+sellRateChange+"/buyRateChange="+buyRateChange);
 			
-			if(sellRateChange >= options.getProfitTarget() && 
+			if(sellRateChange >= options.getSellThreshold() && 
 				tradeStats.getFundsRight() >= tradeChunk && tradeStats.getRate().getSell() > options.getSellFloor()) {
 				
 				Transaction sellTransaction = 
@@ -72,7 +72,7 @@ public class AutoTrader extends UserTrader {
 				tradeStatsRepository.save(tradeStats);
 				
 			
-			} else if(buyRateChange <= -(options.getProfitTarget()*1) && 
+			} else if(buyRateChange <= -(options.getBuyThreshold()) && 
 					tradeStats.getRate().getBuy() < options.getBuyCeiling() &&
 					tradeStats.getFundsLeft() >= (tradeChunk * actualTradeRate("buy"))) {
 			
@@ -106,7 +106,7 @@ public class AutoTrader extends UserTrader {
 		for(Transaction transaction : transactions) {
 			
 			Double difference = Math.abs(transaction.getRate()-tradeStats.getRate().getSell());
-			Boolean withinRange = difference < tradeStats.getAutoTradingOptions().getProfitTarget();
+			Boolean withinRange = difference < tradeStats.getAutoTradingOptions().getBuyThreshold();
 			
 			if(withinRange || transaction.getFilledAmount() >= transaction.getBrokerAmount()) {
 				if(lowest == null) {
@@ -134,7 +134,7 @@ public class AutoTrader extends UserTrader {
 		for(Transaction transaction : transactions) {
 			
 			Double difference = Math.abs(transaction.getRate()-tradeStats.getRate().getBuy());
-			Boolean withinRange = difference < tradeStats.getAutoTradingOptions().getProfitTarget();
+			Boolean withinRange = difference < tradeStats.getAutoTradingOptions().getSellThreshold();
 			
 			if(withinRange || transaction.getFilledAmount() >= transaction.getBrokerAmount()) {
 				if(highest == null) {
@@ -170,7 +170,7 @@ public class AutoTrader extends UserTrader {
 			
 			Boolean isFilled = transaction.getFilledAmount() >= transaction.getBrokerAmount();
 			
-			if(isFilled && tradeStats.getRate().getBuy() <= (rateVal - tradeStats.getAutoTradingOptions().getProfitTarget())) {
+			if(isFilled && tradeStats.getRate().getBuy() <= (rateVal - tradeStats.getAutoTradingOptions().getSellThreshold())) {
 					
 				Double actualBuyRate = actualTradeRate("buy");
 				
@@ -210,7 +210,7 @@ public class AutoTrader extends UserTrader {
 			
 			Boolean isFilled = transaction.getFilledAmount() >= transaction.getBrokerAmount();
 			
-			if(isFilled && tradeStats.getRate().getSell() >= (rateVal + tradeStats.getAutoTradingOptions().getProfitTarget())) {
+			if(isFilled && tradeStats.getRate().getSell() >= (rateVal + tradeStats.getAutoTradingOptions().getBuyThreshold())) {
 				
 				Double actualSellRate = actualTradeRate("sell");
 				Double newSellAmount = calculatedSellAmount + amountVal;

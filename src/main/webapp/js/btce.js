@@ -3,6 +3,7 @@ var API = {
 		loopInterval: 0,
 		
 		userId: "testUser456",
+		authToken: null,
 		tradeStatsId: null,
 		
 		changeFunds: function(fund, change, callback) {
@@ -13,6 +14,7 @@ var API = {
 		    	url: "service/funds?fund="+fund+"&change="+change,
 	  			headers: {
 					"User-Id": this.userId,
+					"Token": this.authToken,
 					"TradeStats-Id": this.tradeStatsId
 		    	},
 		    	success: callback
@@ -28,6 +30,7 @@ var API = {
 		    	url: "service/tradeStats",
 	  			headers: {
 					"User-Id": this.userId,
+					"Token": this.authToken,
 					"TradeStats-Id": this.tradeStatsId
 		    	},
 		    	success: callback
@@ -44,6 +47,7 @@ var API = {
 		    	url: "service/tradeStatsRefresh",
 	  			headers: {
 					"User-Id": this.userId,
+					"Token": this.authToken,
 					"TradeStats-Id": this.tradeStatsId
 		    	},
 		    	success: callback
@@ -61,7 +65,8 @@ var API = {
 		    	dataType: "text",
 	  			contentType: "text/plain",
 		    	headers: {
-					"User-Id": this.userId
+					"User-Id": this.userId,
+					"Token": this.authToken
 		    	},
 		    	data: pair,
 		    	success: callback
@@ -81,6 +86,7 @@ var API = {
 	  			contentType: "application/json",
 	  			headers: {
 					"User-Id": this.userId,
+					"Token": this.authToken,
 					"TradeStats-Id": this.tradeStatsId
 		    	},
 		    	data: angular.toJson(tradeStats),
@@ -98,6 +104,7 @@ var API = {
 		    	url: "service/transaction",
 	  			headers: {
 					"User-Id": this.userId,
+					"Token": this.authToken,
 					"TradeStats-Id": this.tradeStatsId
 		    	},
 		    	success: callback
@@ -117,6 +124,7 @@ var API = {
 	  			contentType: "application/json",
 	  			headers: {
 					"User-Id": this.userId,
+					"Token": this.authToken,
 					"TradeStats-Id": this.tradeStatsId
 		    	},
 		    	data: angular.toJson(transaction),
@@ -138,6 +146,7 @@ var API = {
 	  			contentType: "application/json",
 	  			headers: {
 					"User-Id": this.userId,
+					"Token": this.authToken,
 					"TradeStats-Id": this.tradeStatsId
 		    	},
 		    	data: angular.toJson(transaction),
@@ -158,6 +167,7 @@ var API = {
 	  			contentType: "application/json",
 	  			headers: {
 					"User-Id": this.userId,
+					"Token": this.authToken,
 					"TradeStats-Id": this.tradeStatsId
 		    	},
 		    	data: angular.toJson(transaction),
@@ -178,6 +188,7 @@ var API = {
 	  			contentType: "application/json",
 	  			headers: {
 					"User-Id": this.userId,
+					"Token": this.authToken,
 					"TradeStats-Id": this.tradeStatsId
 		    	},
 		    	data: angular.toJson(tradeStats),
@@ -199,6 +210,7 @@ var API = {
 	  			contentType: "application/json",
 	  			headers: {
 					"User-Id": this.userId,
+					"Token": this.authToken,
 					"TradeStats-Id": this.tradeStatsId
 		    	},
 		    	data: angular.toJson(autoTradingOptions),
@@ -219,6 +231,7 @@ var API = {
 	  			contentType: "application/json",
 	  			headers: {
 					"User-Id": this.userId,
+					"Token": this.authToken,
 					"TradeStats-Id": this.tradeStatsId
 		    	},
 		    	data: angular.toJson(rate),
@@ -236,6 +249,7 @@ var API = {
 		    	url: "service/user",
 	  			headers: {
 					"User-Id": this.userId,
+					"Token": this.authToken,
 					"TradeStats-Id": this.tradeStatsId
 		    	},
 		    	success: callback
@@ -281,6 +295,7 @@ var API = {
 	  			contentType: "application/json",
 	  			headers: {
 					"User-Id": this.userId,
+					"Token": this.authToken,
 					"TradeStats-Id": this.tradeStatsId
 		    	},
 		    	success: callback
@@ -301,6 +316,7 @@ var API = {
 	  			contentType: "application/json",
 	  			headers: {
 					"User-Id": email,
+					"Token": this.authToken,
 					"Password": password
 		    	},
 		    	success: callback
@@ -319,7 +335,8 @@ var API = {
 		    	dataType: "json",
 	  			contentType: "application/json",
 	  			headers: {
-					"User-Id": this.userId
+					"User-Id": this.userId,
+					"Token": this.authToken
 		    	},
 		    	success: callback
 		    	

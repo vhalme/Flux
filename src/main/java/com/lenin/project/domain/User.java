@@ -25,6 +25,8 @@ public class User implements Serializable {
 	private String username;
 	private String password;
 	
+	private String authToken;
+	
 	private Map<String, Double> funds = new HashMap<String, Double>();
 	
 	
@@ -102,6 +104,14 @@ public class User implements Serializable {
 		this.currentTradeStats = currentTradeStats;
 	}
 	
+	public String getAuthToken() {
+		return authToken;
+	}
+
+	public void setAuthToken(String authToken) {
+		this.authToken = authToken;
+	}
+
 	public Double getFunds(String fund) {
 		
 		if(fund.equals("left")) {
