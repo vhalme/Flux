@@ -41,14 +41,14 @@
 
 		<div class="container">
 
-			<div class="row" style="margin-bottom: 2.0em;">
+			<div class="row" style="margin-bottom: 0.3em;">
 				
-				<div class="span12" style="background: #ededed;">
+				<div class="span12" style="background: #808080; color: white; height: 4.2em;">
 					
 					<div class="row">
 						
 						<div class="span3" style="font-size: 1.6em; padding-top: 0.4em;">
-							<span style="margin-left: 0.3em;">FLUXOMAT3000</span>
+							<span style="margin-left: 0.3em; top: 50%; margin-top: 0.8em;">[xTrade logo]</span>
 						</div>
 
 						<div class="span6" style="text-align: center;">
@@ -63,8 +63,12 @@
 							</div>
 						</div>
 
-						<div class="span3" style="text-align: right; padding-top: 0.3em;" ng-hide="location.path() == '/login'">
+						<div class="span3" style="text-align: right; padding-top: 0.3em;" 
+							ng-hide="location.path() == '/login'">
 							
+							<a ng-show="location.path() != '/account'" style="text-decoration: underline; color: white;" href="#/account">Account / Funds</a>
+							<a ng-show="location.path() == '/account'" style="text-decoration: underline; color: white;" href="#/front">Trade</a> |
+							<a style="color: white; text-decoration: underline;" href="#/logout">Log out</a>&nbsp;&nbsp;
 							
 						</div>
 				

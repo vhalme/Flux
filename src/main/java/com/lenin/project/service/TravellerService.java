@@ -163,6 +163,10 @@ public class TravellerService {
 		TradeStats tradeStats = tradeStatsRepository.findOne(tradeStatsId);
 		tradeStats.setAutoTradingOptions(autoTradingOptions);
 		
+		User user = userRepository.findByUsername(userId);
+		user.setCurrentTradeStats(tradeStats);
+		userRepository.save(user);
+		
 		/*
 		if(dbTradeStats.getRate() != null) {
 			Long rateTime = dbTradeStats.getRate().getTime();
@@ -840,7 +844,10 @@ public class TravellerService {
 			User user = userRepository.findByUsername(userId);
 			
 			if(tradeStatsId != null) {
-				user.setCurrentTradeStats(tradeStatsRepository.findOne(tradeStatsId));
+				List<TradeStats> tradeStatsList = user.getTradeStats();
+				if(tradeStatsList.size() > 0) {
+					user.setCurrentTradeStats(tradeStatsList.get(0));
+				}
 			}
 			
 			List<User> users = new ArrayList<User>();

@@ -105,7 +105,10 @@ public class AutoTrader extends UserTrader {
 		
 		for(Transaction transaction : transactions) {
 			
-			if(transaction.getFilledAmount() >= transaction.getBrokerAmount()) {
+			Double difference = Math.abs(transaction.getRate()-tradeStats.getRate().getSell());
+			Boolean withinRange = difference < tradeStats.getAutoTradingOptions().getProfitTarget();
+			
+			if(withinRange || transaction.getFilledAmount() >= transaction.getBrokerAmount()) {
 				if(lowest == null) {
 					lowest = transaction.getRate();
 				} else {
@@ -129,7 +132,11 @@ public class AutoTrader extends UserTrader {
 		Double highest = null;
 		
 		for(Transaction transaction : transactions) {
-			if(transaction.getFilledAmount() >= transaction.getBrokerAmount()) {
+			
+			Double difference = Math.abs(transaction.getRate()-tradeStats.getRate().getBuy());
+			Boolean withinRange = difference < tradeStats.getAutoTradingOptions().getProfitTarget();
+			
+			if(withinRange || transaction.getFilledAmount() >= transaction.getBrokerAmount()) {
 				if(highest == null) {
 					highest = transaction.getRate();
 				} else {

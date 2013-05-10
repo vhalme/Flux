@@ -259,6 +259,7 @@ public class DataProcessor {
 				
 				String error = tradeListResult.getString("error");
 				if(!error.equals("no trades")) {
+					BtceApi._nonce = System.currentTimeMillis() / 10000L;
 					System.out.println("Trades update unsuccessful: "+error);
 				}
 				

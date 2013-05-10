@@ -343,6 +343,8 @@ function TradeStatsCtrl($scope, $routeParams, $http) {
 			var buyCeiling = $scope.user.currentTradeStats.autoTradingOptions.buyCeiling;
 			var sellFloor = $scope.user.currentTradeStats.autoTradingOptions.sellFloor;
 			
+			console.log($scope.user.currentTradeStats.autoTradingOptions);
+			
 			if(profitTarget == undefined || tradeChunk == undefined || buyCeiling == undefined | sellFloor == undefined) {
 				return;
 			}
@@ -366,6 +368,7 @@ function TradeStatsCtrl($scope, $routeParams, $http) {
 		API.getTradeStats(function(response) {
 			
 			if(response.success == 1) {
+				console.log(response.data);
 				$scope.user.currentTradeStats = response.data;
 				$scope.refresh();
 			} else {
