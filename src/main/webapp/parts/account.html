@@ -2,42 +2,141 @@
 
 	<div class="span12" style="padding-bottom: 0.3em;">
 		
-		<div class="row">
+		<div class="row" style="margin-top: 2.0em; margin-bottom: 2.0em;">
 			
 			<div class="span12" style="text-align: center;">
-				<b>ADD FUNDS</b>
+				<b>MANAGE FUNDS</b>
 				<br/><br/>
 			</div>
 			
 		</div>
 		
-		<div class="row">
-			<div class="span5" style="text-align: right;">
-				USD
-			</div>
-			<div class="span7">
-				<input type="text" style="height: 2.0em;" ng-model="addUsd"/>
-				<button class="btn" ng-click="addUserFunds('usd', addUsd)">Add</button>
-			</div>
-		</div>
-		
-		<div class="row">
-			<div class="span5" style="text-align: right;">
-				LTC
-			</div>
-			<div class="span7">
-				<input type="text" style="height: 2.0em;" ng-model="addLtc"/>
-				<button class="btn" ng-click="addUserFunds('ltc', addLtc)">Add</button>
-			</div>
-		</div>
-		
-		<div class="row">
-			<div class="span5" style="text-align: right;">
+		<div class="row" style="margin-bottom: 1.0em;">
+			<div class="span1" style="text-align: right; font-size: 1.8em; font-weight: bold;">
 				BTC
 			</div>
+			<div class="span2" style="margin-top: -0.3em;">
+				<span style="">Reserve: 236.45</span><br/>
+				<span style="font-style: italic;">Active: 1092.21</span><br/>
+				<span style="font-weight: bold;">Total: 1344.66</span><br/>
+			</div>
+			<div class="span2" style="margin-top: -0.3em;">
+				<button class="btn">
+					Release all active
+				</button>
+			</div>
 			<div class="span7">
-				<input type="text" style="height: 2.0em;" ng-model="addBtc"/>
-				<button class="btn" ng-click="addUserFunds('btc', addBtc)">Add</button>
+				<div class="row" style="margin-bottom: 0.8em;">
+					<div class="span2" style="text-align: right;">
+						<b>Deposit addr.</b>
+					</div>
+					<div class="span5">
+						729349n294c2934n234n9324327n432743923
+					</div>
+				</div>
+				<div class="row">
+					<div class="span2" style="text-align: right;">
+						<b>Withdrawal addr.</b>
+					</div>
+					<div class="span5">
+						<input type="text" style="height: 2.0em; margin-bottom: 0.3em" ng-model="addBtc"/>
+					</div>
+				</div>
+				<div class="row" style="">
+					<div class="span2" style="text-align: right;">
+						<b>Withdrawal amount</b>
+					</div>
+					<div class="span5">
+						<input type="text" style="height: 2.0em; width: 4.0em;" ng-model="addBtc"/>
+						<button class="btn" style="margin-top: -0.8em;" ng-click="addUserFunds('btc', addBtc)">Withdraw</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<div class="row" style="margin-bottom: 1.0em;">
+			<div class="span1" style="text-align: right; font-size: 1.8em; font-weight: bold;">
+				LTC
+			</div>
+			<div class="span2" style="margin-top: -0.3em;">
+				<span style="">Reserve: 236.45</span><br/>
+				<span style="font-style: italic;">Active: 1092.21</span><br/>
+				<span style="font-weight: bold;">Total: 1344.66</span><br/>
+			</div>
+			<div class="span2" style="margin-top: -0.3em;">
+				<button class="btn">
+					Release all active
+				</button>
+			</div>
+			<div class="span7">
+				<div class="row" style="margin-bottom: 0.8em;">
+					<div class="span2" style="text-align: right;">
+						<b>Deposit addr.</b>
+					</div>
+					<div class="span5">
+						729349n294c2934n234n9324327n432743923
+					</div>
+				</div>
+				<div class="row">
+					<div class="span2" style="text-align: right;">
+						<b>Withdrawal addr.</b>
+					</div>
+					<div class="span5">
+						<input type="text" style="height: 2.0em; margin-bottom: 0.3em" ng-model="addBtc"/>
+					</div>
+				</div>
+				<div class="row" style="">
+					<div class="span2" style="text-align: right;">
+						<b>Withdrawal amount</b>
+					</div>
+					<div class="span5">
+						<input type="text" style="height: 2.0em; width: 4.0em;" ng-model="addBtc"/>
+						<button class="btn" style="margin-top: -0.8em;" ng-click="addUserFunds('btc', addBtc)">Withdraw</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<div class="row" style="margin-bottom: 1.0em;">
+			<div class="span1" style="text-align: right; font-size: 1.8em; font-weight: bold;">
+				USD
+			</div>
+			<div class="span2" style="margin-top: -0.3em;">
+				<span style="">Reserve: 236.45</span><br/>
+				<span style="font-style: italic;">Active: 1092.21</span><br/>
+				<span style="font-weight: bold;">Total: 1344.66</span><br/>
+			</div>
+			<div class="span2" style="margin-top: -0.3em;">
+				<button class="btn">
+					Release all active
+				</button>
+			</div>
+			<div class="span7">
+				<div class="row" style="margin-bottom: 0.8em;">
+					<div class="span2" style="text-align: right;">
+						<b>Deposit</b>
+					</div>
+					<div class="span5">
+						<button class="btn" style="margin-top: -0.3em;" ng-click="addUserFunds('btc', addBtc)">Make OKPAY payment</button>
+					</div>
+				</div>
+				<div class="row">
+					<div class="span2" style="text-align: right;">
+						<b>OKPAY Wallet ID</b>
+					</div>
+					<div class="span5">
+						<input type="text" style="height: 2.0em; margin-bottom: 0.3em" ng-model="addBtc"/>
+					</div>
+				</div>
+				<div class="row" style="">
+					<div class="span2" style="text-align: right;">
+						<b>Withdrawal amount</b>
+					</div>
+					<div class="span5">
+						<input type="text" style="height: 2.0em; width: 4.0em;" ng-model="addBtc"/>
+						<button class="btn" style="margin-top: -0.8em;" ng-click="addUserFunds('btc', addBtc)">Withdraw</button>
+					</div>
+				</div>
 			</div>
 		</div>
 		
