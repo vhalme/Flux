@@ -1,11 +1,18 @@
 package com.lenin.project.service;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.Authenticator;
+import java.net.PasswordAuthentication;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -17,6 +24,19 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
+import org.apache.commons.codec.binary.Hex;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.Credentials;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicHeader;
+import org.apache.http.protocol.HTTP;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -587,20 +607,22 @@ public class TravellerService {
 	@GET
     @Path("/test")
     @Produces({ MediaType.APPLICATION_JSON })
-    public List<Transaction> test(@QueryParam("fromId") String tradeStatsId) {
+    public RequestResponse test(@QueryParam("fromId") String tradeStatsId) {
 		
-		Double feeFactor = 1-0.002;
+		RequestResponse response = new RequestResponse();
 		
-		List<Transaction> transactions = transactionRepository.findAll();
+		BitcoinClient client = new BitcoinClient("127.0.0.1", 8332);
+		JSONObject result = client.exec("getdifficulty", null); 
 		
-		for(Transaction transaction : transactions) {
-			Double brokerAmount = transaction.getAmount()*(feeFactor-0.001);
-			transaction.setBrokerAmount(brokerAmount);
+		try {
+			System.out.println(result.get("result"));
+		} catch(Exception e) {
+			e.printStackTrace();
 		}
 		
-		transactionRepository.save(transactions);
+		response.setData(result.toString());
 		
-		return transactions;
+		return response;
     
 	}
 	
@@ -640,6 +662,68 @@ public class TravellerService {
 		user.setFunds(userFunds);
 		
 		user = userRepository.save(user);
+		
+		response.setData(user);
+		response.setSuccess(1);
+		
+		return response;
+		
+	}
+	
+	
+	@POST
+    @Path("/coincommand")
+	@Consumes({ MediaType.APPLICATION_JSON })
+	@Produces({ MediaType.APPLICATION_JSON })
+    public RequestResponse coinCommand(@HeaderParam("User-Id") String userId,
+    		@QueryParam("method") String method, List<String> params) {
+		
+		System.out.println(method+": "+params+"/"+params.size());
+		
+		RequestResponse response = new RequestResponse();
+		
+		User user = userRepository.findByUsername(userId);
+		
+		List<String> clientParams = new ArrayList<String>();
+		
+		BitcoinClient client = new BitcoinClient("127.0.0.1", 8332);
+		
+		if(method.equals("sendfrom")) {
+			
+			Map<String, Double> funds = user.getFunds();
+			Double availableAmount = funds.get(params.get(0));
+			
+			String currency = params.get(0);
+			String toAddress = params.get(1);
+			Double amount = Double.parseDouble(params.get(2));
+			
+			if(availableAmount >= amount) {
+			
+				String fromAccount = user.getAccounts().get(currency);
+			
+				clientParams.add(fromAccount);
+				clientParams.add(toAddress);
+				clientParams.add(""+amount);
+				
+				JSONObject result = client.exec(method, params);
+				
+				try {
+					System.out.println(result.get("result"));
+				} catch(Exception e) {
+					e.printStackTrace();
+				}
+				
+			}
+				
+		}
+		
+		/*
+		Map<String, Double> userFunds = user.getFunds();
+		userFunds.put(currency, userFunds.get(currency) + amount);
+		user.setFunds(userFunds);
+		
+		user = userRepository.save(user);
+		*/
 		
 		response.setData(user);
 		response.setSuccess(1);

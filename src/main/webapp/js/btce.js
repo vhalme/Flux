@@ -260,10 +260,13 @@ var API = {
 		
 		getRates: function(pair, setType, from, until, callback) {
 			
+			var url = "service/rates?pair="+pair+"&setType="+setType+"&from="+from+"&until="+until;
+			console.log(url);
+			
 			$.ajax({
 		    	async: false,
 		    	type: "GET",
-		    	url: "service/rates?pair="+pair+"&setType="+setType+"&from="+from+"&until="+until,
+		    	url: url,
 		    	success: callback
 		    });
 			
@@ -338,6 +341,34 @@ var API = {
 					"User-Id": this.userId,
 					"Token": this.authToken
 		    	},
+		    	success: callback
+		    	
+		    });
+			
+		},
+		
+		
+		execCoinCommand: function(method, params, callback) {
+			
+			var params = 
+				[
+				 	currency,
+				 	address,
+				 	amount
+			    ];
+			
+			$.ajax({
+		    	
+				async: false,
+		    	type: "POST",
+		    	url: "service/coincommand?method="+method,
+		    	dataType: "json",
+	  			contentType: "application/json",
+	  			headers: {
+					"User-Id": this.userId,
+					"Token": this.authToken
+		    	},
+		    	data: angular.toJson(params),
 		    	success: callback
 		    	
 		    });

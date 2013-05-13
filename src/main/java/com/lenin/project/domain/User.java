@@ -28,7 +28,8 @@ public class User implements Serializable {
 	private String authToken;
 	
 	private Map<String, Double> funds = new HashMap<String, Double>();
-	
+	private Map<String, String> accounts = new HashMap<String, String>();
+	private Map<String, String> addresses = new HashMap<String, String>();
 	
 	@DBRef
 	private List<TradeStats> tradeStats = new ArrayList<TradeStats>();
@@ -132,6 +133,23 @@ public class User implements Serializable {
 			currentTradeStats.setFundsRight(amount);
 		}
 		
+	}
+
+	
+	public Map<String, String> getAccounts() {
+		return accounts;
+	}
+
+	public void setAccounts(Map<String, String> accounts) {
+		this.accounts = accounts;
+	}
+
+	public Map<String, String> getAddresses() {
+		return addresses;
+	}
+
+	public void setAddresses(Map<String, String> addresses) {
+		this.addresses = addresses;
 	}
 
 	public void addTradeStats(TradeStats newTradeStats) {

@@ -39,7 +39,7 @@
 						<b>Withdrawal addr.</b>
 					</div>
 					<div class="span5">
-						<input type="text" style="height: 2.0em; margin-bottom: 0.3em" ng-model="addBtc"/>
+						<input type="text" style="height: 2.0em; margin-bottom: 0.3em" ng-model="withdrawAddress['btc']"/>
 					</div>
 				</div>
 				<div class="row" style="">
@@ -47,8 +47,8 @@
 						<b>Withdrawal amount</b>
 					</div>
 					<div class="span5">
-						<input type="text" style="height: 2.0em; width: 4.0em;" ng-model="addBtc"/>
-						<button class="btn" style="margin-top: -0.8em;" ng-click="addUserFunds('btc', addBtc)">Withdraw</button>
+						<input type="text" style="height: 2.0em; width: 4.0em;" ng-model="withdrawAmount['btc']"/>
+						<button class="btn" style="margin-top: -0.8em;" ng-click="withdrawCoins('btc', withdrawAddress['btc'], withdrawAmount['btc'])">Withdraw</button>
 					</div>
 				</div>
 			</div>
@@ -82,7 +82,7 @@
 						<b>Withdrawal addr.</b>
 					</div>
 					<div class="span5">
-						<input type="text" style="height: 2.0em; margin-bottom: 0.3em" ng-model="addBtc"/>
+						<input type="text" style="height: 2.0em; margin-bottom: 0.3em" ng-model="withdrawAddress['ltc']"/>
 					</div>
 				</div>
 				<div class="row" style="">
@@ -90,8 +90,8 @@
 						<b>Withdrawal amount</b>
 					</div>
 					<div class="span5">
-						<input type="text" style="height: 2.0em; width: 4.0em;" ng-model="addBtc"/>
-						<button class="btn" style="margin-top: -0.8em;" ng-click="addUserFunds('btc', addBtc)">Withdraw</button>
+						<input type="text" style="height: 2.0em; width: 4.0em;" ng-model="withdrawAmount['ltc']"/>
+						<button class="btn" style="margin-top: -0.8em;" ng-click="withdrawCoins('ltc', withdrawAddress['ltc'], withdrawAmount['ltc'])">Withdraw</button>
 					</div>
 				</div>
 			</div>
