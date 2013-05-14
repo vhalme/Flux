@@ -48,6 +48,7 @@ public class BitcoinClient {
 			bitcoinApiCall.put("id", "1");
 			bitcoinApiCall.put("method", method);
 			bitcoinApiCall.put("jsonrpc", "1.0");
+			bitcoinApiCall.put("params", params);
 
 			String apiCallStr = bitcoinApiCall.toString();
 

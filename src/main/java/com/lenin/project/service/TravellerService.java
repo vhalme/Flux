@@ -611,8 +611,14 @@ public class TravellerService {
 		
 		RequestResponse response = new RequestResponse();
 		
+		String accountName = randomString();
+		
 		BitcoinClient client = new BitcoinClient("127.0.0.1", 8332);
-		JSONObject result = client.exec("getdifficulty", null); 
+		
+		List<String> params = new ArrayList<String>();
+		params.add(accountName);
+		
+		JSONObject result = client.exec("getnewaddress", params); 
 		
 		try {
 			System.out.println(result.get("result"));
@@ -875,6 +881,8 @@ public class TravellerService {
 			funds.put("btc", 0.0);
 			user.setFunds(funds);
 			
+			initAccountAndAddress("ltc", user);
+			
 			AutoTradingOptions autoTradingOptions = new AutoTradingOptions();
 			TradeStats tradeStats = new TradeStats();
 			tradeStats.setCurrencyLeft("usd");
@@ -934,6 +942,65 @@ public class TravellerService {
 		
 		return response;
     
+	}
+	
+	
+	private void initAccountAndAddress(String currency, User user) {
+		
+		String accountName = currency+randomString();
+		
+		Map<String, String> accounts = user.getAccounts();
+		if(accounts == null) {
+			accounts = new HashMap<String, String>();
+		}
+		
+		Map<String, String> addresses = user.getAddresses();
+		if(addresses == null) {
+			addresses = new HashMap<String, String>();
+		}
+		
+		accounts.put(currency, accountName);
+		
+		BitcoinClient client = new BitcoinClient("127.0.0.1", 8332);
+		
+		List<String> params = new ArrayList<String>();
+		params.add(accountName);
+		
+		try {
+			
+			JSONObject ltcAddrResult = client.exec("getnewaddress", params);
+			String addrStr = ltcAddrResult.getString("result");
+			System.out.println("New address/account: "+addrStr+"/"+accountName);
+			
+			addresses.put(currency, addrStr);
+			
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		
+		user.setAccounts(accounts);
+		user.setAddresses(addresses);
+		
+	}
+	
+	
+	private String randomString() {
+		
+		String[] chars = new String[] {
+				"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "R", "S", "T", "U", "V", "X", "Z"
+		};
+		
+		String str = "";
+		
+		for(int i=0; i<5; i++) {
+			int charIndex = (int)Math.round(Math.random()*23);
+			str += chars[charIndex];
+		}
+		
+		str += System.currentTimeMillis();
+		
+		return str;
+		
 	}
 	
 	
