@@ -18,14 +18,22 @@ import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 
 public class BitcoinClient {
-
+	
+	private String username;
+	private String password;
+	
 	private String host;
 	private int port;
 	
 	
-	public BitcoinClient(String host, int port) {
+	public BitcoinClient(String host, int port, String username, String password) {
+		
 		this.host = host;
 		this.port = port;
+		
+		this.username = username;
+		this.password = password;
+		
 	}
 
 	public JSONObject exec(String method, List<String> params) {
@@ -34,7 +42,7 @@ public class BitcoinClient {
 		DefaultHttpClient httpclient = new DefaultHttpClient();
 		httpclient.getCredentialsProvider().setCredentials(
 				new AuthScope(host, port, AuthScope.ANY_REALM),
-				new UsernamePasswordCredentials("fluxltc1", "fLuxThuyu1eP"));
+				new UsernamePasswordCredentials(username, password));
 		
 		
 		String hostUrl = "http://"+host+":"+port;
