@@ -611,6 +611,7 @@ public class TravellerService {
 		
 		RequestResponse response = new RequestResponse();
 		
+<<<<<<< HEAD
 		String accountName = randomString();
 		
 		BitcoinClient client = new BitcoinClient("127.0.0.1", 8332);
@@ -619,6 +620,10 @@ public class TravellerService {
 		params.add(accountName);
 		
 		JSONObject result = client.exec("getnewaddress", params); 
+=======
+		BitcoinClient client = new BitcoinClient("127.0.0.1", 8332, "fluxltc1", "fLuxThuyu1eP");
+		JSONObject result = client.exec("getdifficulty", null); 
+>>>>>>> branch 'master' of https://github.com/vhalme/Flux.git
 		
 		try {
 			System.out.println(result.get("result"));
@@ -692,7 +697,7 @@ public class TravellerService {
 		
 		List<String> clientParams = new ArrayList<String>();
 		
-		BitcoinClient client = new BitcoinClient("127.0.0.1", 8332);
+		BitcoinClient client = new BitcoinClient("127.0.0.1", 8332, "fluxltc1", "fLuxThuyu1eP");
 		
 		if(method.equals("sendfrom")) {
 			

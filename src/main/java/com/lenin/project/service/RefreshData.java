@@ -3,31 +3,31 @@ package com.lenin.project.service;
 import java.io.Serializable;
 import java.util.List;
 
-import com.lenin.project.domain.TickerQuote;
-import com.lenin.project.domain.Transaction;
+import com.lenin.tradingplatform.data.entities.Order;
+import com.lenin.tradingplatform.data.entities.Rate;
 
 public class RefreshData implements Serializable {
 
 	private static final long serialVersionUID = 2610594290222395205L;
 	
-	private List<Transaction> transactions;
+	private List<Order> orders;
 	private Double fundsLeft;
 	private Double fundsRight;
 	private Double profitLeft;
 	private Double profitRight;
 	
-	private TickerQuote rate;
+	private Rate rate;
 	
 	public RefreshData() {
 		
 	}
 
-	public List<Transaction> getTransactions() {
-		return transactions;
+	public List<Order> getOrders() {
+		return orders;
 	}
 
-	public void setTransactions(List<Transaction> transactions) {
-		this.transactions = transactions;
+	public void setOrders(List<Order> orders) {
+		this.orders = orders;
 	}
 
 	public Double getFundsLeft() {
@@ -62,11 +62,11 @@ public class RefreshData implements Serializable {
 		this.profitRight = profitRight;
 	}
 
-	public TickerQuote getRate() {
+	public Rate getRate() {
 		return rate;
 	}
 
-	public void setRate(TickerQuote rate) {
+	public void setRate(Rate rate) {
 		this.rate = rate;
 	}
 	

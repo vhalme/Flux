@@ -6,275 +6,167 @@ var API = {
 		authToken: null,
 		tradeStatsId: null,
 		
-		changeFunds: function(fund, change, callback) {
+		send: function(method, url, data, dataType, contentType, callback) {
 			
-			$.ajax({
-		    	async: false,
-		    	type: "GET",
-		    	url: "service/funds?fund="+fund+"&change="+change,
-	  			headers: {
+			var request = {
+			    	
+				async: false,
+			    type: method,
+			    url: url,
+		  		headers: {
 					"User-Id": this.userId,
 					"Token": this.authToken,
 					"TradeStats-Id": this.tradeStatsId
-		    	},
-		    	success: callback
-		    });
+			    },
+			    	
+			    success: callback
+			    
+			};
+			
+			if(data != undefined) {
+				request.data = data;
+			}
+			
+			if(dataType != undefined) {
+				request.dataType = dataType;
+			}
+			
+			if(contentType != undefined) {
+				request.contentType = contentType;
+			}
+			
+			$.ajax(request);
+			
+			
+		},
+		
+		
+		changeFunds: function(fund, change, callback) {
+			
+			var url = "service/user/funds?fund="+fund+"&change="+change;
+			
+			this.send("GET", url, undefined, undefined, undefined, callback);
 			
 		},
 		
 		getTradeStats: function(callback) {
 		    
-			$.ajax({
-		    	async: false,
-		    	type: "GET",
-		    	url: "service/tradeStats",
-	  			headers: {
-					"User-Id": this.userId,
-					"Token": this.authToken,
-					"TradeStats-Id": this.tradeStatsId
-		    	},
-		    	success: callback
-		    });
+			var url = "service/tradingsession";
 			
+			this.send("GET", url, undefined, undefined, undefined, callback);
 			
 		},
 		
 		refreshTradeStats: function(callback) {
 		    
-			$.ajax({
-		    	async: false,
-		    	type: "GET",
-		    	url: "service/tradeStatsRefresh",
-	  			headers: {
-					"User-Id": this.userId,
-					"Token": this.authToken,
-					"TradeStats-Id": this.tradeStatsId
-		    	},
-		    	success: callback
-		    });
+			var url = "service/tradingsession";
 			
+			this.send("GET", url, undefined, undefined, undefined, callback);
 			
 		},
 		
 		addTradeStats: function(pair, callback) {
 		    
-			$.ajax({
-		    	async: false,
-		    	type: "POST",
-		    	url: "service/tradeStats",
-		    	dataType: "text",
-	  			contentType: "text/plain",
-		    	headers: {
-					"User-Id": this.userId,
-					"Token": this.authToken
-		    	},
-		    	data: pair,
-		    	success: callback
-		    });
+			var url = "service/tradingsession";
+			
+			this.send("POST", url, pair, "text", "text/plain", callback);
 			
 			
 		},
 		
 		deleteTradeStats: function(tradeStats, callback) {
 			
-			$.ajax({
-				
-				async: false,
-		    	type: "DELETE",
-		    	url: "service/tradeStats",
-		    	dataType: "json",
-	  			contentType: "application/json",
-	  			headers: {
-					"User-Id": this.userId,
-					"Token": this.authToken,
-					"TradeStats-Id": this.tradeStatsId
-		    	},
-		    	data: angular.toJson(tradeStats),
-		    	success: callback
-		    
-			});
+			var url = "service/tradingsession";
+			
+			this.send("DELETE", url, angular.toJson(tradeStats), "json", "application/json", callback);
 			
 		},
 		
+		
 		getTransactions: function(callback) {
 			
-			$.ajax({
-		    	async: false,
-		    	type: "GET",
-		    	url: "service/transaction",
-	  			headers: {
-					"User-Id": this.userId,
-					"Token": this.authToken,
-					"TradeStats-Id": this.tradeStatsId
-		    	},
-		    	success: callback
-		    });
+			var url = "service/order";
+			
+			this.send("GET", url, undefined, undefined, undefined, callback);
 			
 		},
 		
 		
 		cancelTransaction: function(transaction, callback) {
 			
-			$.ajax({
-		    	
-				async: false,
-		    	type: "POST",
-		    	url: "service/transaction?cancel=true",
-		    	dataType: "json",
-	  			contentType: "application/json",
-	  			headers: {
-					"User-Id": this.userId,
-					"Token": this.authToken,
-					"TradeStats-Id": this.tradeStatsId
-		    	},
-		    	data: angular.toJson(transaction),
-		    	success: callback
-		    	
-		    });
+			var url = "service/order?cancel=true";
+			
+			this.send("POST", url, angular.toJson(transaction), "json", "application/json", callback);
 			
 		},
 		
 		
 		postTransaction: function(transaction, callback) {
 			
-			$.ajax({
-		    	
-				async: false,
-		    	type: "POST",
-		    	url: "service/transaction",
-		    	dataType: "json",
-	  			contentType: "application/json",
-	  			headers: {
-					"User-Id": this.userId,
-					"Token": this.authToken,
-					"TradeStats-Id": this.tradeStatsId
-		    	},
-		    	data: angular.toJson(transaction),
-		    	success: callback
-		    	
-		    });
+			var url = "service/order";
+			
+			this.send("POST", url, angular.toJson(transaction), "json", "application/json", callback);
 			
 		},
 		
 		deleteTransaction: function(transaction, callback) {
 			
-			$.ajax({
-				
-				async: false,
-		    	type: "DELETE",
-		    	url: "service/transaction",
-		    	dataType: "json",
-	  			contentType: "application/json",
-	  			headers: {
-					"User-Id": this.userId,
-					"Token": this.authToken,
-					"TradeStats-Id": this.tradeStatsId
-		    	},
-		    	data: angular.toJson(transaction),
-		    	success: callback
-		    
-			});
+			var url = "service/order";
+			
+			this.send("DELETE", url, angular.toJson(transaction), "json", "application/json", callback);
+			
 			
 		},
 		
 		saveCurrentTradeStats: function(tradeStats, callback) {
 			
-			$.ajax({
-				
-				async: false,
-		    	type: "PUT",
-		    	url: "service/tradeStats",
-		    	dataType: "json",
-	  			contentType: "application/json",
-	  			headers: {
-					"User-Id": this.userId,
-					"Token": this.authToken,
-					"TradeStats-Id": this.tradeStatsId
-		    	},
-		    	data: angular.toJson(tradeStats),
-		    	success: callback
-		    
-			});
+			var url = "service/tradingsession";
 			
+			this.send("PUT", url, angular.toJson(tradeStats), "json", "application/json", callback);
+				
 		},
 		
 		
 		saveAutoTradingOptions: function(autoTradingOptions, callback) {
 			
-			$.ajax({
-				
-				async: false,
-		    	type: "PUT",
-		    	url: "service/autoTradingOptions",
-		    	dataType: "json",
-	  			contentType: "application/json",
-	  			headers: {
-					"User-Id": this.userId,
-					"Token": this.authToken,
-					"TradeStats-Id": this.tradeStatsId
-		    	},
-		    	data: angular.toJson(autoTradingOptions),
-		    	success: callback
-		    
-			});
+			var url = "service/tradingsession/autotradingoptions";
+			
+			this.send("PUT", url, angular.toJson(autoTradingOptions), "json", "application/json", callback);
 			
 		},
+		
 		
 		setRate: function(rate, callback) {
 			
-			$.ajax({
-				
-				async: false,
-		    	type: "PUT",
-		    	url: "service/rate",
-		    	dataType: "json",
-	  			contentType: "application/json",
-	  			headers: {
-					"User-Id": this.userId,
-					"Token": this.authToken,
-					"TradeStats-Id": this.tradeStatsId
-		    	},
-		    	data: angular.toJson(rate),
-		    	success: callback
-		    
-			});
+			var url = "service/rate";
+			
+			this.send("PUT", url, angular.toJson(rate), "json", "application/json", callback);
 			
 		},
 		
+		
 		getUser: function(callback) {
 			
-			$.ajax({
-		    	async: false,
-		    	type: "GET",
-		    	url: "service/user",
-	  			headers: {
-					"User-Id": this.userId,
-					"Token": this.authToken,
-					"TradeStats-Id": this.tradeStatsId
-		    	},
-		    	success: callback
-		    });
+			var url = "service/user";
+			
+			this.send("GET", url, undefined, undefined, undefined, callback);
 			
 		},
 		
 		
 		getRates: function(pair, setType, from, until, callback) {
 			
-			var url = "service/rates?pair="+pair+"&setType="+setType+"&from="+from+"&until="+until;
+			var url = "service/rate?pair="+pair+"&setType="+setType+"&from="+from+"&until="+until;
 			console.log(url);
 			
-			$.ajax({
-		    	async: false,
-		    	type: "GET",
-		    	url: url,
-		    	success: callback
-		    });
+			this.send("GET", url, undefined, undefined, undefined, callback);
 			
 		},
 		
+		
 		setFunds: function(left, right, callback) {
 			
-			var url = "service/funds?";
+			var url = "service/user/funds?";
 			
 			if(left != null) {
 				url += "left="+left;
@@ -289,61 +181,26 @@ var API = {
 				url += "right="+right;
 			}
 			
-			$.ajax({
-		    	
-				async: false,
-		    	type: "POST",
-		    	url: url,
-		    	dataType: "json",
-	  			contentType: "application/json",
-	  			headers: {
-					"User-Id": this.userId,
-					"Token": this.authToken,
-					"TradeStats-Id": this.tradeStatsId
-		    	},
-		    	success: callback
-		    	
-		    });
+			this.send("POST", url, undefined, "json", "application/json", callback);
+			
 			
 		},
 		
 		
 		login: function(email, password, callback) {
 			
-			$.ajax({
-		    	
-				async: false,
-		    	type: "POST",
-		    	url: "service/login",
-		    	dataType: "json",
-	  			contentType: "application/json",
-	  			headers: {
-					"User-Id": email,
-					"Token": this.authToken,
-					"Password": password
-		    	},
-		    	success: callback
-		    	
-		    });
+			var url = "service/login";
+			
+			this.send("POST", url, undefined, "json", "application/json", callback);
 			
 		},
 		
+		
 		addUserFunds: function(currency, amount, callback) {
 			
-			$.ajax({
-		    	
-				async: false,
-		    	type: "POST",
-		    	url: "service/userfunds?currency="+currency+"&amount="+amount,
-		    	dataType: "json",
-	  			contentType: "application/json",
-	  			headers: {
-					"User-Id": this.userId,
-					"Token": this.authToken
-		    	},
-		    	success: callback
-		    	
-		    });
+			var url = "service/user/funds?currency="+currency+"&amount="+amount;
+			
+			this.send("POST", url, undefined, "json", "application/json", callback);
 			
 		},
 		
@@ -357,21 +214,10 @@ var API = {
 				 	amount
 			    ];
 			
-			$.ajax({
-		    	
-				async: false,
-		    	type: "POST",
-		    	url: "service/coincommand?method="+method,
-		    	dataType: "json",
-	  			contentType: "application/json",
-	  			headers: {
-					"User-Id": this.userId,
-					"Token": this.authToken
-		    	},
-		    	data: angular.toJson(params),
-		    	success: callback
-		    	
-		    });
+			var url = "service/btcrpc?method="+method;
+			
+			this.send("POST", url, angular.toJson(params), "json", "application/json", callback);
+			
 			
 		}
 		

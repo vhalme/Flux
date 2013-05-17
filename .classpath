@@ -6,6 +6,7 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry including="com/lenin/tradingplatform/client/|com/lenin/tradingplatform/data/" kind="src" path="tradingplatform"/>
 	<classpathentry kind="src" path="src/main/resources"/>
 	<classpathentry kind="src" path="src/main/webapp"/>
 	<classpathentry kind="src" output="target/test-classes" path="src/test/java">
@@ -27,5 +28,6 @@
 	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.web.container"/>
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.module.container"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/TradingPlatform"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
