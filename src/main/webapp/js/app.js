@@ -3,38 +3,51 @@ function AppCtrl($scope, $routeParams, $http) {
 	$scope.currentView = "app";
 	
 	$scope.refreshCounter = 0;
-	$scope.currentTradeStatsId = 0;
+	$scope.currentTradingSessionId = 0;
 	
 	$scope.user = null; 
 	
 	$scope.setUser = function(user) {
 		
 		if(user != undefined) {
+			
 			API.userId = user.username;
 			API.authToken = user.authToken;
+			
 			$scope.setCookie("fluxToken", user.authToken, 15);
 			$scope.setCookie("fluxUser", user.username, 15);
-			$scope.go("/tradeStats/0");
-		}
+			
+			$scope.user = user;
+			
+			var tradingSessions = $scope.user.tradingSessions;
+			var tradingSessionId = tradingSessions[0].id
+			API.tradingSessionId = tradingSessionId;
+			
+			$scope.go("/tradingSession/"+tradingSessionId);
+			
+		} else {
 		
-		API.getUser(function(users) {
+			API.getUser(function(users) {
 			
-			$scope.user = users[0];
-			console.log($scope.user);
-			var userTabs = $scope.user.tradeStats;
+				$scope.user = users[0];
+				console.log($scope.user);
 			
-			API.tradeStatsId = userTabs[0].id;
-			//$scope.currentTradeStatsId = userTabs[0].id;
-			$scope.go("/tradeStats/"+userTabs[0].id);
+				var tradingSessions = $scope.user.tradingSessions;
+				var tradingSessionId = tradingSessions[0].id
+				API.tradingSessionId = tradingSessionId;
 			
-		});
+				$scope.go("/tradingSession/"+tradingSessionId);
+			
+			});
+			
+		}
 
 		
 	};
 	
 	$scope.deleteCurrentTab = function() {
 		
-		API.deleteTradeStats($scope.user.currentTradeStats, function(response) {
+		API.deleteTradingSession($scope.user.currentTradingSession, function(response) {
 			
 			if(response.success == 1) {
 				
@@ -42,13 +55,13 @@ function AppCtrl($scope, $routeParams, $http) {
 				
 				console.log(tabs);
 				
-				$scope.user.tradeStats = tabs;
+				$scope.user.tradingSession = tabs;
 				
 				if(tabs.length > 0) {
-					$scope.user.currentTradeStats = tabs[0];
+					$scope.user.currentTradingSession = tabs[0];
 					var tabId = tabs[0].id;
-					API.tradeStatsId = tabId;
-					$scope.go("/tradeStats/"+tabId);
+					API.tradingSessionId = tabId;
+					$scope.go("/tradingSession/"+tabId);
 				}
 				
 			}
@@ -81,17 +94,17 @@ function AppCtrl($scope, $routeParams, $http) {
 		var random = true;
 		
 		if(random) {
-			$scope.user.currentTradeStats.rate.sell += parseFloat(Math.random()*0.01);
-			$scope.user.currentTradeStats.rate.buy = $scope.user.currentTradeStats.rate.sell + parseFloat(0.005 * Math.random());
-			$scope.user.currentTradeStats.rate.last = $scope.user.currentTradeStats.rate.sell + parseFloat(0.00025 * Math.random());
+			$scope.user.currentTradingSession.rate.sell += parseFloat(Math.random()*0.01);
+			$scope.user.currentTradingSession.rate.buy = $scope.user.currentTradingSession.rate.sell + parseFloat(0.005 * Math.random());
+			$scope.user.currentTradingSession.rate.last = $scope.user.currentTradingSession.rate.sell + parseFloat(0.00025 * Math.random());
 		} else {
-			$scope.user.currentTradeStats.rate.sell += 0.1000;
-			$scope.user.currentTradeStats.rate.buy = $scope.user.currentTradeStats.rate.sell;
-			$scope.user.currentTradeStats.rate.last = $scope.user.currentTradeStats.rate.sell;
+			$scope.user.currentTradingSession.rate.sell += 0.1000;
+			$scope.user.currentTradingSession.rate.buy = $scope.user.currentTradingSession.rate.sell;
+			$scope.user.currentTradingSession.rate.last = $scope.user.currentTradingSession.rate.sell;
 		}
 		
-		API.setRate($scope.user.currentTradeStats.rate, function(response) {
-			$scope.user.currentTradeStats.rate = response.data;
+		API.setRate($scope.user.currentTradingSession.rate, function(response) {
+			$scope.user.currentTradingSession.rate = response.data;
 		});
 		
 		
@@ -104,44 +117,44 @@ function AppCtrl($scope, $routeParams, $http) {
 		
 		if(random) {
 			var priceChange = -parseFloat(Math.random()*0.01);
-			if($scope.user.currentTradeStats.rate.sell + priceChange > 0.1) {
-				$scope.user.currentTradeStats.rate.sell += priceChange;
-				$scope.user.currentTradeStats.rate.buy = $scope.user.currentTradeStats.rate.sell + parseFloat(0.005 * Math.random());
-				$scope.user.currentTradeStats.rate.last = $scope.user.currentTradeStats.rate.sell + parseFloat(0.00025 * Math.random());
+			if($scope.user.currentTradingSession.rate.sell + priceChange > 0.1) {
+				$scope.user.currentTradingSession.rate.sell += priceChange;
+				$scope.user.currentTradingSession.rate.buy = $scope.user.currentTradingSession.rate.sell + parseFloat(0.005 * Math.random());
+				$scope.user.currentTradingSession.rate.last = $scope.user.currentTradingSession.rate.sell + parseFloat(0.00025 * Math.random());
 			}
 		} else {
-			$scope.user.currentTradeStats.rate.sell -= 0.1000;
-			$scope.user.currentTradeStats.rate.buy = $scope.user.currentTradeStats.rate.sell;
-			$scope.user.currentTradeStats.rate.last = $scope.user.currentTradeStats.rate.sell;
+			$scope.user.currentTradingSession.rate.sell -= 0.1000;
+			$scope.user.currentTradingSession.rate.buy = $scope.user.currentTradingSession.rate.sell;
+			$scope.user.currentTradingSession.rate.last = $scope.user.currentTradingSession.rate.sell;
 		}
 		
-		API.setRate($scope.user.currentTradeStats.rate, function(response) {
-			$scope.user.currentTradeStats.rate = response.data;
+		API.setRate($scope.user.currentTradingSession.rate, function(response) {
+			$scope.user.currentTradingSession.rate = response.data;
 		});
 		
 	};
 	
 	$scope.removeFundsLeft = function() {
 		
-		$scope.user.currentTradeStats.fundsLeft -= 10;
+		$scope.user.currentTradingSession.fundsLeft -= 10;
 	
 	};
 	
 	$scope.addFundsLeft = function() {
 		
-		$scope.user.currentTradeStats.fundsLeft += 10;
+		$scope.user.currentTradingSession.fundsLeft += 10;
 	
 	};
 	
 	$scope.removeFundsRight = function() {
 		
-		$scope.user.currentTradeStats.fundsRight -= 10;
+		$scope.user.currentTradingSession.fundsRight -= 10;
 	
 	};
 	
 	$scope.addFundsRight = function() {
 		
-		$scope.user.currentTradeStats.fundsRight += 10;
+		$scope.user.currentTradingSession.fundsRight += 10;
 	
 	};
 	

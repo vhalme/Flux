@@ -41,21 +41,21 @@
 </div>
 
 
-<div class="row" ng-hide="!user.currentTradeStats.uninitialized">
+<div class="row" ng-hide="!user.currentTradingSession.uninitialized">
 	<div class="span12" style="text-align: center;">
 		Loading
 	</div>
 </div>
 
-<div class="tabbable" ng-hide="user.currentTradeStats.uninitialized">
+<div class="tabbable" ng-hide="user.currentTradingSession.uninitialized">
 	
 	<div class="row">
 		<div class="span10">
 			
 			<ul class="nav nav-tabs">
 
-				<li ng-repeat="stats in user.tradeStats" ng-class="{ active: user.currentTradeStats.id == stats.id }">
-					<a href="" ng-click="go('/tradeStats/{{stats.id}}')" data-toggle="tab">{{stats.currencyLeft|uppercase}}-{{stats.currencyRight|uppercase}}</a>
+				<li ng-repeat="session in user.tradingSessions" ng-class="{ active: user.currentTradingSession.id == session.id }">
+					<a href="" ng-click="go('/tradeSession/{{session.id}}')" data-toggle="tab">{{session.currencyLeft|uppercase}}-{{session.currencyRight|uppercase}}</a>
 				</li>
 
 				<li style="padding-top: 4px; padding-left: 1.0em;">
@@ -73,7 +73,7 @@
 			
 		</div>
 		<div class="span2" style="text-align: right; border-bottom: 1px solid #ddd; margin-left: 0px; padding-top: 8px; padding-bottom: 9px;">
-			<span>&nbsp;</span><a href="" ng-hide="user.tradeStats.length <= 1" ng-click="deleteCurrentTab()">Delete tab</a>
+			<span>&nbsp;</span><a href="" ng-hide="user.tradingSessions.length <= 1" ng-click="deleteCurrentTab()">Delete tab</a>
 		</div>
 	</div>
 	
@@ -106,14 +106,14 @@
 							<div class="row">
 								<div class="span2" style="background: #ededed; margin-bottom: 0.2em;">
 									<div style="margin: 0.3em;" class="control-group" ng-class="{ error: manualBuyCurrencyLeft == undefined }">
-										{{user.currentTradeStats.currencyLeft|uppercase}} [<a href="" ng-click="manualBuyCurrencyLeft = user.currentTradeStats.fundsLeft">All</a>] [<a href="" ng-click="manualBuyCurrencyLeft = user.currentTradeStats.fundsLeft/2">1/2</a>]
+										{{user.currentTradingSession.currencyLeft|uppercase}} [<a href="" ng-click="manualBuyCurrencyLeft = user.currentTradingSession.fundsLeft">All</a>] [<a href="" ng-click="manualBuyCurrencyLeft = user.currentTradingSession.fundsLeft/2">1/2</a>]
 										<br/>
 										<input style="width: 100%; margin-bottom: 0px; margin-top: 0.15em;" type="text" name="buyCurrencyLeft" ng-model="manualBuyCurrencyLeft" smart-float />
 									</div>
 								</div>
 								<div class="span2" style="background: #ededed; margin-bottom: 0.2em;">
 									<div style="margin: 0.3em;" class="control-group" ng-class="{ error: manualBuyCurrencyRight == undefined }">
-										{{user.currentTradeStats.currencyRight|uppercase}} [<a href="" ng-click="manualBuyCurrencyRight = user.currentTradeStats.fundsRight">All</a>] [<a href="" ng-click="manualBuyCurrencyRight = user.currentTradeStats.fundsRight/2">1/2</a>]
+										{{user.currentTradingSession.currencyRight|uppercase}} [<a href="" ng-click="manualBuyCurrencyRight = user.currentTradingSession.fundsRight">All</a>] [<a href="" ng-click="manualBuyCurrencyRight = user.currentTradingSession.fundsRight/2">1/2</a>]
 										<br/>
 										<input style="width: 100%; margin-bottom: 0px; margin-top: 0.15em;" type="text" name="buyCurrencyRight" ng-model="manualBuyCurrencyRight" smart-float />
 									</div>
@@ -163,14 +163,14 @@
 							<div class="row">
 								<div class="span2" style="background: #ededed; margin-bottom: 0.2em;">
 									<div style="margin: 0.3em;" class="control-group" ng-class="{ error: manualSellCurrencyRight == undefined }">
-										{{user.currentTradeStats.currencyRight|uppercase}} [<a href="" ng-click="manualSellCurrencyRight = user.currentTradeStats.fundsRight">All</a>] [<a href="" ng-click="manualSellCurrencyRight = user.currentTradeStats.fundsRight/2">1/2</a>]
+										{{user.currentTradingSession.currencyRight|uppercase}} [<a href="" ng-click="manualSellCurrencyRight = user.currentTradingSession.fundsRight">All</a>] [<a href="" ng-click="manualSellCurrencyRight = user.currentTradingSession.fundsRight/2">1/2</a>]
 										<br/>
 										<input style="width: 100%; margin-bottom: 0px; margin-top: 0.15em;" type="text" name="sellCurrencyRight" ng-model="manualSellCurrencyRight" smart-float />
 									</div>
 								</div>
 								<div class="span2" style="background: #ededed; margin-bottom: 0.2em;">
 									<div style="margin: 0.3em;" class="control-group" ng-class="{ error: manualSellCurrencyLeft == undefined }">
-										{{user.currentTradeStats.currencyLeft|uppercase}} [<a href="" ng-click="manualSellCurrencyLeft = user.currentTradeStats.fundsLeft">All</a>] [<a href="" ng-click="manualSellCurrencyLeft = user.currentTradeStats.fundsLeft/2">1/2</a>]
+										{{user.currentTradingSession.currencyLeft|uppercase}} [<a href="" ng-click="manualSellCurrencyLeft = user.currentTradingSession.fundsLeft">All</a>] [<a href="" ng-click="manualSellCurrencyLeft = user.currentTradingSession.fundsLeft/2">1/2</a>]
 										<br/>
 										<input style="width: 100%; margin-bottom: 0px; margin-top: 0.15em;" type="text" name="sellCurrencyLeft" ng-model="manualSellCurrencyLeft" smart-float />
 									</div>
@@ -195,19 +195,19 @@
 
 			<div class="row">
 				<div class="span4" style="font-size: 2.0em;">
-					<b>{{user.currentTradeStats.currencyLeft|uppercase}}</b>
-					{{user.currentTradeStats.fundsLeft|truncate:6:""}}
+					<b>{{user.currentTradingSession.currencyLeft|uppercase}}</b>
+					{{user.currentTradingSession.fundsLeft|truncate:6:""}}
 				</div>
 				<div class="span4" style="text-align: center;">
-					<b>HI</b> {{user.currentTradeStats.rate.buy|truncate:6:""}}
+					<b>HI</b> {{user.currentTradingSession.rate.buy|truncate:6:""}}
 					<div style="display: inline; font-size: 2.0em;">
-						{{user.currentTradeStats.rate.last|truncate:6:""}}
+						{{user.currentTradingSession.rate.last|truncate:6:""}}
 					</div>
-					{{user.currentTradeStats.rate.sell|truncate:6:""}} <b>LO</b>
+					{{user.currentTradingSession.rate.sell|truncate:6:""}} <b>LO</b>
 				</div>
 				<div class="span4" style="font-size: 2.0em; text-align: right;">
-					<b>{{user.currentTradeStats.currencyRight|uppercase}}</b>
-					{{user.currentTradeStats.fundsRight|truncate:6:""}}
+					<b>{{user.currentTradingSession.currencyRight|uppercase}}</b>
+					{{user.currentTradingSession.fundsRight|truncate:6:""}}
 				</div>
 			</div>
 
@@ -221,7 +221,7 @@
 					</div>
 					<div style="display: inline; float: left; padding-top: 0.3em;">
 						<div ng-hide="!user.live">
-							<span style="margin-left: 0.5em;"> <a href="" ng-click="newFundsLeft = user.funds[user.currentTradeStats.currencyLeft] + user.currentTradeStats.fundsLeft">Max</a> {{ (user.funds[user.currentTradeStats.currencyLeft] + user.currentTradeStats.fundsLeft)|truncate:6:"" }} {{user.currentTradeStats.currencyLeft|uppercase}} </span>
+							<span style="margin-left: 0.5em;"> <a href="" ng-click="newFundsLeft = user.funds[user.currentTradingSession.currencyLeft] + user.currentTradingSession.fundsLeft">Max</a> {{ (user.funds[user.currentTradingSession.currencyLeft] + user.currentTradingSession.fundsLeft)|truncate:6:"" }} {{user.currentTradingSession.currencyLeft|uppercase}} </span>
 						</div>
 						<div style="color: red; padding-left: 0.5em;" ng-hide="user.live">
 							Unlimited
@@ -238,7 +238,7 @@
 					</div>
 					<div style="display: inline; float: right; padding-top: 0.3em;">
 						<div ng-hide="!user.live">
-							<span style="margin-right: 0.5em;"> <a href="" ng-click="newFundsRight = user.funds[user.currentTradeStats.currencyRight] + user.currentTradeStats.fundsRight">Max</a> {{ (user.funds[user.currentTradeStats.currencyRight] + user.currentTradeStats.fundsRight)|truncate:6:"" }} {{user.currentTradeStats.currencyRight|uppercase}} </span>
+							<span style="margin-right: 0.5em;"> <a href="" ng-click="newFundsRight = user.funds[user.currentTradingSession.currencyRight] + user.currentTradingSession.fundsRight">Max</a> {{ (user.funds[user.currentTradingSession.currencyRight] + user.currentTradingSession.fundsRight)|truncate:6:"" }} {{user.currentTradingSession.currencyRight|uppercase}} </span>
 						</div>
 						<div style="color: red; padding-right: 0.5em;" ng-hide="user.live">
 							Unlimited
@@ -256,11 +256,11 @@
 					<div class="row" style="margin-top: 1.0em;">
 
 						<div class="span3">
-							<b>{{user.currentTradeStats.currencyLeft|uppercase}} CASHOUT:</b> {{currencyLeftCashout()|truncate:6:""}}
+							<b>{{user.currentTradingSession.currencyLeft|uppercase}} CASHOUT:</b> {{currencyLeftCashout()|truncate:6:""}}
 						</div>
 
 						<div class="span3">
-							<b>{{user.currentTradeStats.currencyLeft|uppercase}} REVENUE:</b> {{user.currentTradeStats.profitLeft|truncate:6:""}}
+							<b>{{user.currentTradingSession.currencyLeft|uppercase}} REVENUE:</b> {{user.currentTradingSession.profitLeft|truncate:6:""}}
 						</div>
 
 					</div>
@@ -272,11 +272,11 @@
 					<div class="row" style="margin-top: 1.0em;">
 
 						<div class="span3" style="text-align: right;">
-							<b>{{user.currentTradeStats.currencyRight|uppercase}} CASHOUT:</b> {{currencyRightCashout()|truncate:6:""}}
+							<b>{{user.currentTradingSession.currencyRight|uppercase}} CASHOUT:</b> {{currencyRightCashout()|truncate:6:""}}
 						</div>
 
 						<div class="span3" style="text-align: right;">
-							<b>{{user.currentTradeStats.currencyRight|uppercase}} REVENUE:</b> 0
+							<b>{{user.currentTradingSession.currencyRight|uppercase}} REVENUE:</b> 0
 						</div>
 
 					</div>

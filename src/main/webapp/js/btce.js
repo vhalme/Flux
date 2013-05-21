@@ -4,7 +4,7 @@ var API = {
 		
 		userId: "testUser456",
 		authToken: null,
-		tradeStatsId: null,
+		tradingSessionId: null,
 		
 		send: function(method, url, data, dataType, contentType, callback) {
 			
@@ -16,7 +16,7 @@ var API = {
 		  		headers: {
 					"User-Id": this.userId,
 					"Token": this.authToken,
-					"TradeStats-Id": this.tradeStatsId
+					"TradingSession-Id": this.tradingSessionId
 			    },
 			    	
 			    success: callback
@@ -49,7 +49,7 @@ var API = {
 			
 		},
 		
-		getTradeStats: function(callback) {
+		getTradingSession: function(callback) {
 		    
 			var url = "service/tradingsession";
 			
@@ -57,7 +57,7 @@ var API = {
 			
 		},
 		
-		refreshTradeStats: function(callback) {
+		refreshTradingSession: function(callback) {
 		    
 			var url = "service/tradingsession";
 			
@@ -65,7 +65,7 @@ var API = {
 			
 		},
 		
-		addTradeStats: function(pair, callback) {
+		addTradingSession: function(pair, callback) {
 		    
 			var url = "service/tradingsession";
 			
@@ -74,11 +74,11 @@ var API = {
 			
 		},
 		
-		deleteTradeStats: function(tradeStats, callback) {
+		deleteTradingSession: function(tradingSession, callback) {
 			
 			var url = "service/tradingsession";
 			
-			this.send("DELETE", url, angular.toJson(tradeStats), "json", "application/json", callback);
+			this.send("DELETE", url, angular.toJson(tradingSession), "json", "application/json", callback);
 			
 		},
 		
@@ -118,11 +118,11 @@ var API = {
 			
 		},
 		
-		saveCurrentTradeStats: function(tradeStats, callback) {
+		saveCurrentTradingSession: function(tradingSession, callback) {
 			
 			var url = "service/tradingsession";
 			
-			this.send("PUT", url, angular.toJson(tradeStats), "json", "application/json", callback);
+			this.send("PUT", url, angular.toJson(tradingSession), "json", "application/json", callback);
 				
 		},
 		
@@ -190,6 +190,8 @@ var API = {
 		login: function(email, password, callback) {
 			
 			var url = "service/login";
+			
+			this.userId = email;
 			
 			this.send("POST", url, undefined, "json", "application/json", callback);
 			

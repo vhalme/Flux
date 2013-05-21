@@ -55,7 +55,7 @@ function TxLogCtrl($scope, $routeParams, $http) {
 		console.log("REVERSED TYPE TO "+reverseType);
 		
 		var reverseTransaction = 
-			$scope.createTransaction($scope.user.currentTradeStats.pair, transaction.amount, $scope.actualTradeRate(reverseType), reverseType);
+			$scope.createTransaction($scope.user.currentTradingSession.pair, transaction.amount, $scope.actualTradeRate(reverseType), reverseType);
 		
 		reverseTransaction.reversedTransaction = transaction;
 		

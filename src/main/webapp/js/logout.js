@@ -4,7 +4,7 @@ function LogoutCtrl($scope, $routeParams, $http) {
 		
 		$scope.user = null;
 		API.userId = null;
-		API.tradeStatsId = null;
+		API.tradingSessionId = null;
 		
 		$scope.setCookie("fluxUser", "", -1);
 		
