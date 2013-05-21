@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 
+import com.lenin.tradingplatform.client.BitcoinApi;
 import com.lenin.tradingplatform.client.RequestResponse;
 import com.lenin.tradingplatform.data.entities.AutoTradingOptions;
 import com.lenin.tradingplatform.data.entities.Rate;
@@ -68,7 +69,7 @@ public class RootService {
 
 		List<String> clientParams = new ArrayList<String>();
 
-		BitcoinClient client = new BitcoinClient("127.0.0.1", 8332, "fluxltc1", "fLuxThuyu1eP");
+		BitcoinApi api = new BitcoinApi("127.0.0.1", 8332, "fluxltc1", "fLuxThuyu1eP");
 
 		if (method.equals("sendfrom")) {
 
@@ -87,7 +88,7 @@ public class RootService {
 				clientParams.add(toAddress);
 				clientParams.add("" + amount);
 
-				JSONObject result = client.exec(method, params);
+				JSONObject result = api.exec(method, params);
 
 				try {
 					System.out.println(result.get("result"));
@@ -225,14 +226,14 @@ public class RootService {
 
 		accounts.put(currency, accountName);
 
-		BitcoinClient client = new BitcoinClient("127.0.0.1", 8332,  "fluxltc1", "fLuxThuyu1eP");
+		BitcoinApi api = new BitcoinApi("127.0.0.1", 8332,  "fluxltc1", "fLuxThuyu1eP");
 
 		List<String> params = new ArrayList<String>();
 		params.add(accountName);
 
 		try {
 
-			JSONObject ltcAddrResult = client.exec("getnewaddress", params);
+			JSONObject ltcAddrResult = api.exec("getnewaddress", params);
 			String addrStr = ltcAddrResult.getString("result");
 			System.out.println("New address/account: " + addrStr + "/"
 					+ accountName);
@@ -257,7 +258,7 @@ public class RootService {
 		String str = "";
 
 		for (int i = 0; i < 5; i++) {
-			int charIndex = (int) Math.round(Math.random() * 23);
+			int charIndex = (int) Math.round(Math.random() * 22);
 			str += chars[charIndex];
 		}
 
@@ -293,12 +294,12 @@ public class RootService {
 
 		String accountName = randomString();
 
-		BitcoinClient client = new BitcoinClient("127.0.0.1", 8332,  "fluxltc1", "fLuxThuyu1eP");
+		BitcoinApi api = new BitcoinApi("127.0.0.1", 8332,  "fluxltc1", "fLuxThuyu1eP");
 
 		List<String> params = new ArrayList<String>();
 		params.add(accountName);
 
-		JSONObject result = client.exec("getnewaddress", params);
+		JSONObject result = api.exec("getnewaddress", params);
 
 		try {
 			System.out.println(result.get("result"));
