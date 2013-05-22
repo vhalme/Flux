@@ -82,7 +82,7 @@ public class RootService {
 
 			if (availableAmount >= amount) {
 
-				String fromAccount = user.getAccounts().get(currency);
+				String fromAccount = user.getAccountName();
 
 				clientParams.add(fromAccount);
 				clientParams.add(toAddress);
@@ -148,7 +148,7 @@ public class RootService {
 			funds.put("btc", 0.0);
 			user.setFunds(funds);
 
-			initAccountAndAddress("ltc", user);
+			createAddress("ltc", user);
 
 			AutoTradingOptions autoTradingOptions = new AutoTradingOptions();
 			TradingSession tradingSession = new TradingSession();
@@ -210,27 +210,24 @@ public class RootService {
 
 	}
 
-	private void initAccountAndAddress(String currency, User user) {
-
-		String accountName = currency + randomString();
-
-		Map<String, String> accounts = user.getAccounts();
-		if (accounts == null) {
-			accounts = new HashMap<String, String>();
+	private void createAddress(String currency, User user) {
+		
+		String accountName = user.getAccountName();
+		if (accountName == null) {
+			accountName = randomString();
+			user.setAccountName(accountName);
 		}
 
 		Map<String, String> addresses = user.getAddresses();
 		if (addresses == null) {
 			addresses = new HashMap<String, String>();
 		}
-
-		accounts.put(currency, accountName);
-
+		
 		BitcoinApi api = new BitcoinApi("127.0.0.1", 8332,  "fluxltc1", "fLuxThuyu1eP");
-
+		
 		List<String> params = new ArrayList<String>();
 		params.add(accountName);
-
+		
 		try {
 
 			JSONObject ltcAddrResult = api.exec("getnewaddress", params);
@@ -243,8 +240,7 @@ public class RootService {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
-		user.setAccounts(accounts);
+		
 		user.setAddresses(addresses);
 
 	}
