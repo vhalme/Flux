@@ -21,8 +21,10 @@ import org.springframework.stereotype.Service;
 
 import com.lenin.tradingplatform.client.BitcoinApi;
 import com.lenin.tradingplatform.client.RequestResponse;
+import com.lenin.tradingplatform.client.Transaction;
 import com.lenin.tradingplatform.data.entities.AutoTradingOptions;
 import com.lenin.tradingplatform.data.entities.Rate;
+import com.lenin.tradingplatform.data.entities.Settings;
 import com.lenin.tradingplatform.data.entities.TradingSession;
 import com.lenin.tradingplatform.data.entities.User;
 import com.lenin.tradingplatform.data.repositories.OrderRepository;
@@ -271,6 +273,8 @@ public class RootService {
 	public String deleteAll() {
 
 		// tickerRepository.deleteAll();
+		mongoTemplate.dropCollection(Settings.class);
+		mongoTemplate.dropCollection(Transaction.class);
 		tradingSessionRepository.deleteAll();
 		tradeRepository.deleteAll();
 		orderRepository.deleteAll();
