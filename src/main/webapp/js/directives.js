@@ -89,7 +89,7 @@ myApp.config(['$routeProvider', function($routeProvider) {
 		when('/login', { templateUrl: 'parts/login.html', controller: LoginCtrl }).
 		when('/logout', { templateUrl: 'parts/logout.html', controller: LogoutCtrl }).
     	when('/tradingSession/:tradingSessionId', { templateUrl: 'parts/tradeStats.html', controller: TradingSessionCtrl }).
-    	otherwise( {redirectTo: '/front'} );
+    	otherwise( { redirectTo: '/front' } );
 	}]
 
 );

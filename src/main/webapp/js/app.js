@@ -215,7 +215,9 @@ function AppCtrl($scope, $routeParams, $http) {
 		$scope.setUser();
 	
 	} else {
+		
 		$scope.go("/front");
+	
 	}
 	
 	//$scope.setUser();
