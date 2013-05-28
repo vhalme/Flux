@@ -200,6 +200,23 @@ function AppCtrl($scope, $routeParams, $http) {
 	
 	};
 	
+	$scope.logout = function() {
+		
+		console.log("logging out");
+		
+		$scope.user = null;
+		API.userId = null;
+		API.tradingSessionId = null;
+		console.log($scope.user);
+		
+		$scope.setCookie("fluxUser", "", -1);
+		$scope.setCookie("fluxToken", "", -1);
+		
+		console.log($scope.user);
+		$scope.go("/front");
+		
+	};
+	
 	console.log("setting up user");
 	
 	var cookieUserId = $scope.getCookie("fluxUser");

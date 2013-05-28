@@ -6,7 +6,7 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry including="com/lenin/tradingplatform/client/|com/lenin/tradingplatform/data/" kind="src" path="TradingPlatform"/>
+	<classpathentry including="com/lenin/tradingplatform/client/|com/lenin/tradingplatform/data/" kind="src" path="TadingPlatform"/>
 	<classpathentry kind="src" path="src/main/resources"/>
 	<classpathentry kind="src" path="src/main/webapp"/>
 	<classpathentry kind="src" path="src/test/java">
@@ -29,6 +29,6 @@
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.web.container"/>
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.module.container"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/TradingPlatform"/>
-	<classpathentry kind="lib" path="C:/Users/halmevl/Projects/workspace-juno-ee/TradingPlatform/okpaysoap.jar"/>
+	<classpathentry kind="lib" path="/TradingPlatform/okpaysoap.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

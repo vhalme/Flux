@@ -125,6 +125,10 @@ function TradingSessionCtrl($scope, $routeParams, $http) {
 	
 	$scope.setTransactions = function(transactions) {
 		
+		if(transactions == undefined) {
+			return;
+		}
+		
 		var updatedTransactions = [];
 		updatedTransactions["buy"] = [];
 		updatedTransactions["sell"] = [];
