@@ -42,6 +42,7 @@
     <bean id="tradeServiceImpl" class="com.lenin.project.service.TradeService" />
     <bean id="tradingSessionServiceImpl" class="com.lenin.project.service.TradingSessionService" />
     <bean id="userServiceImpl" class="com.lenin.project.service.UserService" />
+    <bean id="fundTransactionServiceImpl" class="com.lenin.project.service.FundTransactionService" />
      
 	<task:annotation-driven scheduler="taskScheduler"/>
 	<task:scheduler id="taskScheduler" pool-size="2"/>
@@ -58,6 +59,7 @@
         	<ref bean="tradeServiceImpl"/>
         	<ref bean="tradingSessionServiceImpl"/>
         	<ref bean="userServiceImpl"/>
+        	<ref bean="fundTransactionServiceImpl"/>
         </jaxrs:serviceBeans>
         <jaxrs:providers>
 			<ref bean='jacksonProvider' />

@@ -21,8 +21,8 @@ import org.springframework.stereotype.Service;
 
 import com.lenin.tradingplatform.client.BitcoinApi;
 import com.lenin.tradingplatform.client.RequestResponse;
-import com.lenin.tradingplatform.client.Transaction;
 import com.lenin.tradingplatform.data.entities.AutoTradingOptions;
+import com.lenin.tradingplatform.data.entities.FundTransaction;
 import com.lenin.tradingplatform.data.entities.Rate;
 import com.lenin.tradingplatform.data.entities.Settings;
 import com.lenin.tradingplatform.data.entities.TradingSession;
@@ -61,7 +61,7 @@ public class RootService {
 	@Consumes({ MediaType.APPLICATION_JSON })
 	@Produces({ MediaType.APPLICATION_JSON })
 	public RequestResponse btcApiCall(@HeaderParam("User-Id") String userId,
-			@QueryParam("method") String method, List<String> params) {
+			@QueryParam("method") String method, List<Object> params) {
 
 		System.out.println(method + ": " + params + "/" + params.size());
 
@@ -78,9 +78,9 @@ public class RootService {
 			Map<String, Double> funds = user.getFunds();
 			Double availableAmount = funds.get(params.get(0));
 
-			String currency = params.get(0);
-			String toAddress = params.get(1);
-			Double amount = Double.parseDouble(params.get(2));
+			String currency = (String)params.get(0);
+			String toAddress = (String)params.get(1);
+			Double amount = Double.parseDouble((String)params.get(2));
 
 			if (availableAmount >= amount) {
 
@@ -149,7 +149,14 @@ public class RootService {
 			funds.put("ltc", 0.0);
 			funds.put("btc", 0.0);
 			user.setFunds(funds);
-
+			Map<String, Map<String, Double>> activeFunds = new HashMap<String, Map<String, Double>>();
+			Map<String, Double> activeBtceFunds = new HashMap<String, Double>();
+			activeBtceFunds.put("usd", 0.0);
+			activeBtceFunds.put("ltc", 0.0);
+			activeBtceFunds.put("btc", 0.0);
+			activeFunds.put("btce", activeBtceFunds);
+			user.setActiveFunds(activeFunds);
+			
 			createAddress("ltc", user);
 
 			AutoTradingOptions autoTradingOptions = new AutoTradingOptions();
@@ -227,7 +234,7 @@ public class RootService {
 		
 		BitcoinApi api = new BitcoinApi("127.0.0.1", 8332,  "fluxltc1", "fLuxThuyu1eP");
 		
-		List<String> params = new ArrayList<String>();
+		List<Object> params = new ArrayList<Object>();
 		params.add(accountName);
 		
 		try {
@@ -274,7 +281,7 @@ public class RootService {
 
 		// tickerRepository.deleteAll();
 		mongoTemplate.dropCollection(Settings.class);
-		mongoTemplate.dropCollection(Transaction.class);
+		mongoTemplate.dropCollection(FundTransaction.class);
 		tradingSessionRepository.deleteAll();
 		tradeRepository.deleteAll();
 		orderRepository.deleteAll();
@@ -296,7 +303,7 @@ public class RootService {
 
 		BitcoinApi api = new BitcoinApi("127.0.0.1", 8332,  "fluxltc1", "fLuxThuyu1eP");
 
-		List<String> params = new ArrayList<String>();
+		List<Object> params = new ArrayList<Object>();
 		params.add(accountName);
 
 		JSONObject result = api.exec("getnewaddress", params);

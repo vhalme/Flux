@@ -41,6 +41,35 @@ var API = {
 		},
 		
 		
+		refreshReqTransactions: function(type, state, callback) {
+			
+			var url = "service/fundtransaction?type="+type+"&state="+state;
+			
+			this.send("GET", url, undefined, undefined, undefined, callback);
+			
+		},
+		
+		
+		refreshTransactions: function(account, stateNot, callback) {
+			
+			var url = "service/fundtransaction?account="+account+"&stateNot="+stateNot;
+			
+			this.send("GET", url, undefined, undefined, undefined, callback);
+			
+		},
+		
+		
+		transferFunds: function(type, fromAccount, amount, currency, callback) {
+		    
+			var url = "service/fundtransaction/transfer?type="+type+"&account="+fromAccount+
+				"&amount="+amount+"&currency="+currency;
+			
+			this.send("POST", url, undefined, "json", "application/json", callback);
+			
+			
+		},
+		
+		
 		changeFunds: function(fund, change, callback) {
 			
 			var url = "service/user/funds?fund="+fund+"&change="+change;

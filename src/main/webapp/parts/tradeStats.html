@@ -55,17 +55,17 @@
 			<ul class="nav nav-tabs">
 
 				<li ng-repeat="session in user.tradingSessions" ng-class="{ active: user.currentTradingSession.id == session.id }">
-					<a href="" ng-click="go('/tradeSession/{{session.id}}')" data-toggle="tab">{{session.currencyLeft|uppercase}}-{{session.currencyRight|uppercase}}</a>
+					<a href="" ng-click="go('/tradeSession/{{session.id}}')" data-toggle="tab">{{session.currencyLeft|uppercase}}-{{session.currencyRight|uppercase}} @ BTC-E</a>
 				</li>
 
 				<li style="padding-top: 4px; padding-left: 1.0em;">
 					<button ng-click="addTab()" class="btn" href="" style="display: inline-block;">
-						Add tab
+						Add session
 					</button>
-					<select ng-model="newCurrencyPair" style="width: 8em; margin-bottom: 0px;">
-						<option value="ltc_usd" title="LTC-USD">USD-LTC</option>
-						<option value="ltc_btc" title="LTC-BTC">BTC-LTC</option>
-						<option value="btc_usd" title="BTC-USD">USD-BTC</option>
+					<select ng-model="newCurrencyPair" style="width: 12em; margin-bottom: 0px;">
+						<option value="ltc_usd" title="LTC-USD">USD-LTC @ BTC-E</option>
+						<option value="ltc_btc" title="LTC-BTC">BTC-LTC @ BTC-E</option>
+						<option value="btc_usd" title="BTC-USD">USD-BTC @ BTC-E</option>
 					</select>
 				</li>
 			
@@ -80,7 +80,9 @@
 	<div class="tab-content">
 
 		<div class="tab-pane active" id="tab1">
-
+			
+			<div ng-include src="'parts/sessionFunds.html'"></div>
+			
 			<div ng-include src="'parts/autoTrading.html'"></div>
 
 			<div ng-include src="'parts/charts.html'"></div>

@@ -11,137 +11,323 @@
 			
 		</div>
 		
-		<div class="row" style="margin-bottom: 1.0em;">
-			<div class="span1" style="text-align: right; font-size: 1.8em; font-weight: bold;">
-				BTC
-			</div>
-			<div class="span2" style="margin-top: -0.3em;">
-				<span style="">Reserve: 236.45</span><br/>
-				<span style="font-style: italic;">Active: 1092.21</span><br/>
-				<span style="font-weight: bold;">Total: 1344.66</span><br/>
-			</div>
-			<div class="span2" style="margin-top: -0.3em;">
-				<button class="btn">
-					Release all active
-				</button>
-			</div>
-			<div class="span7">
+		<div class="row">
+			
+			<div class="span6">
+				
+				<div class="row" style="margin-bottom: 2.0em;">
+			
+					<div class="span6">
+						<b>RESERVES</b>
+					</div>
+						
+				</div>
+				
+				
+				<div class="row" style="margin-bottom: 1.0em;">
+			
+					<div class="span2" style="font-size: 1.8em; font-weight: bold;">
+						BTC
+					</div>
+			
+					<div class="span4" style="font-size: 1.8em;">
+						{{user.funds['btc']}} BTC
+					</div>
+					
+				</div>
+				
 				<div class="row" style="margin-bottom: 0.8em;">
+					
 					<div class="span2" style="text-align: right;">
 						<b>Deposit addr.</b>
 					</div>
-					<div class="span5">
+					<div class="span4">
 						{{user.addresses["btc"]}}
 					</div>
 				</div>
+				
 				<div class="row">
 					<div class="span2" style="text-align: right;">
 						<b>Withdrawal addr.</b>
 					</div>
-					<div class="span5">
+					<div class="span4">
 						<input type="text" style="height: 2.0em; margin-bottom: 0.3em" ng-model="withdrawAddress['btc']"/>
 					</div>
 				</div>
-				<div class="row" style="">
+				
+				<div class="row" style="margin-bottom: 2.0em;">
 					<div class="span2" style="text-align: right;">
 						<b>Withdrawal amount</b>
 					</div>
-					<div class="span5">
+					<div class="span4">
 						<input type="text" style="height: 2.0em; width: 4.0em;" ng-model="withdrawAmount['btc']"/>
 						<button class="btn" style="margin-top: -0.8em;" ng-click="withdrawCoins('btc', withdrawAddress['btc'], withdrawAmount['btc'])">Withdraw</button>
 					</div>
 				</div>
-			</div>
-		</div>
-		
-		<div class="row" style="margin-bottom: 1.0em;">
-			<div class="span1" style="text-align: right; font-size: 1.8em; font-weight: bold;">
-				LTC
-			</div>
-			<div class="span2" style="margin-top: -0.3em;">
-				<span style="">Reserve: 236.45</span><br/>
-				<span style="font-style: italic;">Active: 1092.21</span><br/>
-				<span style="font-weight: bold;">Total: 1344.66</span><br/>
-			</div>
-			<div class="span2" style="margin-top: -0.3em;">
-				<button class="btn">
-					Release all active
-				</button>
-			</div>
-			<div class="span7">
+				
+				<div class="row" style="margin-bottom: 1.0em;">
+			
+					<div class="span2" style="font-size: 1.8em; font-weight: bold;">
+						LTC
+					</div>
+			
+					<div class="span4" style="font-size: 1.8em;">
+						{{user.funds['ltc']|truncate:6:""}} LTC
+					</div>
+					
+				</div>
+				
 				<div class="row" style="margin-bottom: 0.8em;">
+					
 					<div class="span2" style="text-align: right;">
 						<b>Deposit addr.</b>
 					</div>
-					<div class="span5">
+					<div class="span4">
 						{{user.addresses["ltc"]}}
 					</div>
 				</div>
+				
 				<div class="row">
 					<div class="span2" style="text-align: right;">
 						<b>Withdrawal addr.</b>
 					</div>
-					<div class="span5">
+					<div class="span4">
 						<input type="text" style="height: 2.0em; margin-bottom: 0.3em" ng-model="withdrawAddress['ltc']"/>
 					</div>
 				</div>
-				<div class="row" style="">
+				
+				<div class="row">
 					<div class="span2" style="text-align: right;">
 						<b>Withdrawal amount</b>
 					</div>
-					<div class="span5">
+					<div class="span4">
 						<input type="text" style="height: 2.0em; width: 4.0em;" ng-model="withdrawAmount['ltc']"/>
 						<button class="btn" style="margin-top: -0.8em;" ng-click="withdrawCoins('ltc', withdrawAddress['ltc'], withdrawAmount['ltc'])">Withdraw</button>
 					</div>
 				</div>
-			</div>
-		</div>
-		
-		<div class="row" style="margin-bottom: 1.0em;">
-			<div class="span1" style="text-align: right; font-size: 1.8em; font-weight: bold;">
-				USD
-			</div>
-			<div class="span2" style="margin-top: -0.3em;">
-				<span style="">Reserve: 236.45</span><br/>
-				<span style="font-style: italic;">Active: 1092.21</span><br/>
-				<span style="font-weight: bold;">Total: 1344.66</span><br/>
-			</div>
-			<div class="span2" style="margin-top: -0.3em;">
-				<button class="btn">
-					Release all active
-				</button>
-			</div>
-			<div class="span7">
+				
+				<div class="row"  style="margin-top: 1.0em;" ng-show="pendingTxLtc.length > 0">
+					<div class="span6">
+						<b>Pending LTC transactions</b>
+					</div>
+				</div>
+				
+				
+				<div class="row" ng-repeat="transaction in pendingTxLtc" style="margin-top: 2px;">
+					<div class="span6" style="background: #d0d0d0;">
+						<div class="row">
+							<div class="span2">
+								{{transaction.dateStr}}
+							</div>
+							<div class="span1">
+								{{transaction.type}}
+							</div>
+							<div class="span2" style="text-align: right;">
+								{{transaction.amount|truncate:6:""}} LTC
+							</div>
+						</div>
+						<div class="row">
+							<div class="span6">
+								Status: {{transaction.stateInfo}}
+								{{transaction.confirmations}} confirmations.
+							</div>
+						</div>
+					</div>
+				</div>
+				
+				<div class="row" style="margin-bottom: 1.0em; margin-top: 2.0em;">
+			
+					<div class="span2" style="font-size: 1.8em; font-weight: bold;">
+						USD
+					</div>
+			
+					<div class="span4" style="font-size: 1.8em;">
+						{{user.funds['usd']}} USD
+					</div>
+					
+				</div>
+				
 				<div class="row" style="margin-bottom: 0.8em;">
+					
 					<div class="span2" style="text-align: right;">
 						<b>Deposit</b>
 					</div>
-					<div class="span5">
+					<div class="span4">
 						<a class="btn" style="margin-top: -0.3em;" 
 							href="https://www.okpay.com/process.html?ok_receiver=OK990732954&ok_item_1_name=Add+USD&ok_currency=USD&ok_item_1_type=service&ok_invoice={{user.accountName}}">
 								Make OKPAY payment
 						</a>
 					</div>
+					
 				</div>
+				
 				<div class="row">
 					<div class="span2" style="text-align: right;">
 						<b>OKPAY Wallet ID</b>
 					</div>
-					<div class="span5">
-						<input type="text" style="height: 2.0em; margin-bottom: 0.3em" ng-model="addBtc"/>
+					<div class="span4">
+						<input type="text" style="height: 2.0em; margin-bottom: 0.3em" ng-model="withdrawAddress['usd']"/>
 					</div>
 				</div>
+				
 				<div class="row" style="">
 					<div class="span2" style="text-align: right;">
 						<b>Withdrawal amount</b>
 					</div>
-					<div class="span5">
-						<input type="text" style="height: 2.0em; width: 4.0em;" ng-model="addBtc"/>
-						<button class="btn" style="margin-top: -0.8em;" ng-click="addUserFunds('btc', addBtc)">Withdraw</button>
+					<div class="span4">
+						<input type="text" style="height: 2.0em; width: 4.0em;" ng-model="withdrawAmount['usd']"/>
+						<button class="btn" style="margin-top: -0.8em;" ng-click="withdrawUsd('usd', withdrawAddress['usd'], withdrawAmount['usd'])">Withdraw</button>
 					</div>
 				</div>
+		
 			</div>
+
+			
+			<div class="span5">
+				
+				<div class="row" style="margin-bottom: 2.0em;">
+					<div class="span5">
+						<b>EXCHANGE ACCOUNTS</b>
+					</div>
+				</div>
+				
+				<div class="row" style="margin-bottom: 1.0em;">
+			
+					<div class="span5" style="font-size: 1.8em; font-weight: bold;">
+						BTC-E
+					</div>
+			
+				</div>
+				
+				<div class="row" style="margin-bottom: 1.0em;">
+			
+					<div class="span5">
+						{{user.activeFunds["btce"]["usd"]}} USD &nbsp;&nbsp; 
+						{{user.activeFunds["btce"]["btc"]}} BTC &nbsp;&nbsp;
+						{{user.activeFunds["btce"]["ltc"]}} LTC
+					</div>
+					
+				</div>
+				
+				<div class="row" style="margin-bottom: 2.0em;">
+					
+					<div class="span5">
+						
+						<div class="row">
+							<div class="span5">
+								<ul class="nav nav-pills">
+  									<li ng-class="{ active: btceAdd }">
+    									<a href="" ng-click="btceAdd = true">Add to BTC-E</a>
+  									</li>
+  									<li ng-class="{ active: !btceAdd }">
+  										<a href="" ng-click="btceAdd = false">Return to reserve</a>
+  									</li>
+								</ul>
+							</div>
+						</div>
+						<div class="row">
+							<div class="span5">
+								<input type="text" ng-model="btceTransferAmount" style="width: 6em; padding-top: 14px; padding-bottom: 14px; margin-bottom: 0px;"/>
+								<select ng-model="btceTransferCurrency" style="width: 12em; margin-bottom: 0px;">
+									<option value="btc" title="BTC">BTC</option>
+									<option value="ltc" title="LTC">LTC</option>
+									<option value="usd" title="USD">USD</option>
+								</select>
+								<button class="btn" ng-click="transfer('addToBtce', btceTransferAmount, btceTransferCurrency)" ng-show="btceAdd">
+									Add
+								</button>
+								<button class="btn" ng-click="transfer('returnFromBtce', btceTransferAmount, btceTransferCurrency)" ng-show="!btceAdd">
+									Return
+								</button>
+							</div>
+						</div>
+					</div>
+				
+				</div>
+				
+				<div class="row"  style="margin-top: 1.0em;" ng-show="pendingTxBtce.length > 0">
+						<div class="span5">
+							<b>Pending BTC-E transfers</b>
+						</div>
+					</div>
+					
+					<div class="row" ng-repeat="transaction in pendingTxBtce" style="margin-top: 2px;">
+						<div class="span5" style="background: #d0d0d0;">
+							<div class="row">
+								<div class="span2">
+									{{transaction.dateStr}}
+								</div>
+								<div class="span1">
+									{{transaction.type}}
+								</div>
+								<div class="span2" style="text-align: right;">
+									{{transaction.amount|truncate:6:""}} {{transaction.currency|uppercase}}
+								</div>
+							</div>
+							<div class="row">
+								<div class="span5">
+									Status: {{transaction.stateInfo}}
+									{{transaction.confirmations}} confirmations.
+								</div>
+							</div>
+						</div>
+					</div>
+				
+				<div class="row" style="margin-bottom: 1.0em; margin-top: 2.0em;">
+			
+					<div class="span7" style="font-size: 1.8em; font-weight: bold;">
+						Mt. Gox
+					</div>
+			
+				</div>
+				
+				<div class="row" style="margin-bottom: 1.0em;">
+			
+					<div class="span5">
+						1219.88 USD &nbsp;&nbsp; 12.831 BTC &nbsp;&nbsp; 211.166 LTC
+					</div>
+					
+				</div>
+				
+				<div class="row" style="margin-bottom: 2.0em;">
+					
+					<div class="span5">
+						
+						<div class="row">
+							<div class="span5">
+								<ul class="nav nav-pills">
+  									<li ng-class="{ active: mtgoxAdd }">
+    									<a href="" ng-click="mtgoxAdd = true">Add to Mt. Gox</a>
+  									</li>
+  									<li ng-class="{ active: !mtgoxAdd }">
+  										<a href="" ng-click="mtgoxAdd = false">Return to reserve</a>
+  									</li>
+								</ul>
+							</div>
+						</div>
+						<div class="row">
+							<div class="span5">
+								<input type="text" style="width: 6em; padding-top: 14px; padding-bottom: 14px; margin-bottom: 0px;"/>
+								<select ng-model="addToMtgox" style="width: 12em; margin-bottom: 0px;">
+									<option value="btc" title="BTC">BTC</option>
+									<option value="usd" title="USD">USD</option>
+								</select>
+								<button class="btn" ng-show="mtgoxAdd">
+									Add
+								</button>
+								<button class="btn" ng-show="!mtgoxAdd">
+									Return
+								</button>
+							</div>
+						</div>
+					</div>
+					
+				</div>
+				
+			</div>
+			
 		</div>
+		
 		
 	</div>
 
