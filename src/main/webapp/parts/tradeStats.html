@@ -55,7 +55,7 @@
 			<ul class="nav nav-tabs">
 
 				<li ng-repeat="session in user.tradingSessions" ng-class="{ active: user.currentTradingSession.id == session.id }">
-					<a href="" ng-click="go('/tradeSession/{{session.id}}')" data-toggle="tab">{{session.currencyLeft|uppercase}}-{{session.currencyRight|uppercase}} @ BTC-E</a>
+					<a href="" ng-click="go('/tradingSession/{{session.id}}')" data-toggle="tab">{{session.currencyLeft|uppercase}}-{{session.currencyRight|uppercase}} @ BTC-E</a>
 				</li>
 
 				<li style="padding-top: 4px; padding-left: 1.0em;">

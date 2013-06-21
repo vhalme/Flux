@@ -4,7 +4,7 @@ function FrontCtrl($scope, $routeParams, $http) {
 	
 	if($scope.user != null) {
 		console.log($scope.user);
-		//$scope.go();
+		$scope.go("tradingSession/"+$scope.user.currentTradingSession.id);
 	}
 	
 	

@@ -92,7 +92,7 @@
 						<b>Withdrawal addr.</b>
 					</div>
 					<div class="span4">
-						<input type="text" style="height: 2.0em; margin-bottom: 0.3em" ng-model="withdrawAddress['ltc']"/>
+						<input type="text" style="height: 2.0em; margin-bottom: 0.3em" ng-model="withdrawAddressLtc"/>
 					</div>
 				</div>
 				
@@ -101,8 +101,8 @@
 						<b>Withdrawal amount</b>
 					</div>
 					<div class="span4">
-						<input type="text" style="height: 2.0em; width: 4.0em;" ng-model="withdrawAmount['ltc']"/>
-						<button class="btn" style="margin-top: -0.8em;" ng-click="withdrawCoins('ltc', withdrawAddress['ltc'], withdrawAmount['ltc'])">Withdraw</button>
+						<input type="text" style="height: 2.0em; width: 4.0em;" ng-model="ltcWithdrawalAmount"/>
+						<button class="btn" style="margin-top: -0.8em;" ng-click="transfer('withdrawal', ltcWithdrawalAmount, 'ltc', withdrawAddressLtc)">Withdraw</button>
 					</div>
 				</div>
 				

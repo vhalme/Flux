@@ -1,4 +1,4 @@
-function AppCtrl($scope, $routeParams, $http) {
+function AppCtrl($scope, $routeParams, $location, $http) {
 	
 	$scope.currentView = "app";
 	
@@ -36,7 +36,7 @@ function AppCtrl($scope, $routeParams, $http) {
 				var tradingSessionId = tradingSessions[0].id
 				API.tradingSessionId = tradingSessionId;
 			
-				$scope.go("/tradingSession/"+tradingSessionId);
+				//$scope.go("/tradingSession/"+tradingSessionId);
 			
 			});
 			
@@ -159,9 +159,9 @@ function AppCtrl($scope, $routeParams, $http) {
 	};
 	
 	
-	$scope.go = function (hash) {
-		console.log("go to #"+hash);
-		location.href = "#"+hash;
+	$scope.go = function(path) {
+		console.log("go to path "+path);
+		$location.path(path);
 	};
 	
 	$scope.setCookie = function(key, value, expires) {

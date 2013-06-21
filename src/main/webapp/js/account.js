@@ -68,6 +68,8 @@ function AccountCtrl($scope, $routeParams, $http) {
 			$scope.pendingTxBtce = [];
 			$scope.pendingTxMtgox = [];
 			
+			//console.log(response);
+			
 			for(var i=0; i<response.length; i++) {
 				
 				var transaction = response[i];
@@ -76,7 +78,8 @@ function AccountCtrl($scope, $routeParams, $http) {
 				
 				if(transaction.currency == "btc" && transaction.state == "deposited") {
 					$scope.pendingTxBtc.push(transaction);
-				} else if(transaction.currency == "ltc" && transaction.state == "deposited") {
+				} else if(transaction.currency == "ltc" && 
+						(transaction.state == "deposited" || transaction.type == "Withdrawal")) {
 					$scope.pendingTxLtc.push(transaction);
 				} else if(transaction.currency == "usd" && transaction.state == "deposited") {
 					$scope.pendingTxUsd.push(transaction);
@@ -92,11 +95,16 @@ function AccountCtrl($scope, $routeParams, $http) {
 		
 	};
 	
-	$scope.transfer = function(type, amount, currency) {
+	$scope.transfer = function(type, amount, currency, toAddress) {
 		
 		console.log(type+"/"+amount+"/"+currency+" from "+$scope.user.accountName);
 		
-		API.transferFunds(type, $scope.user.accountName, amount, currency, function(response) {
+		var address = null;
+		if(toAddress != undefined) {
+			address = toAddress;
+		}
+		
+		API.transferFunds(type, $scope.user.accountName, toAddress, amount, currency, function(response) {
 			
 			console.log(response);
 			

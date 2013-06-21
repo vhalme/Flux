@@ -59,16 +59,28 @@ var API = {
 		},
 		
 		
-		transferFunds: function(type, fromAccount, amount, currency, callback) {
+		transferFunds: function(type, fromAccount, toAddress, amount, currency, callback) {
 		    
 			var url = "service/fundtransaction/transfer?type="+type+"&account="+fromAccount+
 				"&amount="+amount+"&currency="+currency;
+			
+			if(toAddress != null) {
+				url += "&address="+toAddress;
+			}
 			
 			this.send("POST", url, undefined, "json", "application/json", callback);
 			
 			
 		},
 		
+		setTransactionState: function(id, state, callback) {
+		    
+			var url = "service/fundtransaction/"+id+"?state="+state;
+			
+			this.send("POST", url, undefined, "json", "application/json", callback);
+			
+			
+		},
 		
 		changeFunds: function(fund, change, callback) {
 			
