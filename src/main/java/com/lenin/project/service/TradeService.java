@@ -12,6 +12,8 @@ import javax.ws.rs.core.MediaType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.lenin.project.AuthComponent;
+import com.lenin.tradingplatform.client.RequestResponse;
 import com.lenin.tradingplatform.data.entities.Trade;
 import com.lenin.tradingplatform.data.repositories.TradeRepository;
 
@@ -22,6 +24,9 @@ public class TradeService {
 	@Autowired
 	private TradeRepository tradeRepository;
 	
+	@Autowired
+	private AuthComponent authComponent;
+	
 	public TradeService() {
 	}
 
@@ -29,14 +34,30 @@ public class TradeService {
 	@GET
 	@Path("/")
 	@Produces({ MediaType.APPLICATION_JSON })
-	public List<Trade> getTrades(@HeaderParam("User-Id") String userId,
+	public RequestResponse getTrades(@HeaderParam("Username") String username, @HeaderParam("Auth-Token") String authToken,
 			@QueryParam("orderId") String orderId) {
-
-		if (orderId != null) {
-			return tradeRepository.findByOrderId(orderId);
-		} else {
-			return tradeRepository.findAll();
+		
+		RequestResponse response = authComponent.getInitialResponse(username, authToken);
+		
+		if(response.getSuccess() < 0) {
+			return response;
 		}
+		
+		if (orderId != null) {
+			
+			List<Trade> trades =  tradeRepository.findByOrderId(orderId);
+			response.setData(trades);
+			response.setSuccess(1);
+			
+		} else {
+			
+			List<Trade> trades = tradeRepository.findAll();
+			response.setData(trades);
+			response.setSuccess(1);
+			
+		}
+		
+		return response;
 
 	}
 
@@ -44,7 +65,7 @@ public class TradeService {
 	@GET
 	@Path("/del")
 	@Produces({ MediaType.TEXT_PLAIN })
-	public String delTrades(@HeaderParam("User-Id") String userId,
+	public String delTrades(@HeaderParam("Username") String username, @HeaderParam("Auth-Token") String authToken,
 			@QueryParam("orderId") String orderId) {
 		
 		tradeRepository.deleteAll();

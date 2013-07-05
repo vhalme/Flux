@@ -27,18 +27,12 @@
 
 		<script src="js/btce.js"></script>
 		<script src="js/app.js"></script>
-		<script src="js/front.js"></script>
-		<script src="js/login.js"></script>
-		<script src="js/logout.js"></script>
-		<script src="js/account.js"></script>
-		<script src="js/tradeStats.js"></script>
-		<script src="js/charts.js"></script>
-		<script src="js/txLog.js"></script>
-		<script src="js/directives.js"></script>
+		<script src="js/admin.js"></script>
+		<script src="js/admin-directives.js"></script>
 
 	</head>
 
-	<body ng-controller="AppCtrl">
+	<body ng-controller="AdminCtrl">
 
 		<div class="container">
 
@@ -49,27 +43,16 @@
 					<div class="row">
 						
 						<div class="span3" style="font-size: 1.6em; padding-top: 0.4em;">
-							<span style="margin-left: 0.3em; top: 50%; margin-top: 0.8em;">[COINS4ALL]</span>
+							<span style="margin-left: 0.3em; top: 50%; margin-top: 0.8em;">[xTrade logo]</span>
 						</div>
 
 						<div class="span6" style="text-align: center;">
-							<div ng-hide="user == null">
-								Signed in as: {{user.username}}
-								<div ng-hide="!user.live">
-									USD {{user.funds.usd}} LTC {{user.funds.ltc}} BTC {{user.funds.btc}}
-								</div>
-								<div ng-hide="user.live">
-									&nbsp;
-								</div>
-							</div>
+							
 						</div>
 
-						<div class="span3" style="text-align: right; padding-top: 0.3em;" 
-							ng-hide="user == null || user == undefined">
+						<div class="span3" style="text-align: right; padding-top: 0.3em;">
 							
-							<a ng-show="location.path() != '/account'" style="text-decoration: underline; color: white;" href="#/account">Account / Funds</a>
-							<a ng-show="location.path() == '/account'" style="text-decoration: underline; color: white;" href="#/front">Trade</a> |
-							<a style="color: white; text-decoration: underline;" href="#/logout">Log out</a>&nbsp;&nbsp;
+							ADMIN UI
 							
 						</div>
 				
@@ -79,7 +62,21 @@
 
 			</div>
 		
-			<div ng-view></div>
+			<div class="row">
+				<div class="span12">
+					BTC-E transfer requests
+				</div>
+			</div>
+			
+			<div class="row" ng-repeat="req in btceTxReqs">
+				<div class="span10">
+					Transfer {{req.amount}} {{req.currency}} to {{req.address}}{{req.receiverWalletId}}
+				</div>
+				<div class="span2">
+					<button ng-show="req.state == 'readyTransferBtce' || req.state == 'transferReqBtce'" ng-click="setTransactionState(req.id, 'transferBtce')">Start transfer</button>
+					<button ng-show="req.state == 'transferBtce'" ng-click="setTransactionState(req.id, 'confirmedAddBtce')">Complete</button>
+				</div>
+			</div>
 			
 		</div>
 

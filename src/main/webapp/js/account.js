@@ -27,36 +27,6 @@ function AccountCtrl($scope, $routeParams, $http) {
 		
 	};
 	
-	$scope.withdrawCoins = function(currency, address, amount) {
-		
-		console.log("withdraw "+currency+" "+amount+" to "+address);
-		
-		API.execCoinCommand("sendfrom", [ currency, address, amount ], function(response) {
-			
-			console.log(response);
-			
-			if(response.success == 1) {
-				$scope.user.funds[currency] = response.data.funds[currency] - amount;
-			}
-			
-		});
-		
-	};
-	
-	$scope.addUserFunds = function(currency, amount) {
-		
-		API.addUserFunds(currency, amount, function(response) {
-			
-			console.log(response);
-			
-			if(response.success == 1) {
-				$scope.user.funds[currency] = response.data.funds[currency];
-			}
-			
-		});
-		
-	};
-	
 	
 	$scope.refreshTransactions = function() {
 		
@@ -68,28 +38,39 @@ function AccountCtrl($scope, $routeParams, $http) {
 			$scope.pendingTxBtce = [];
 			$scope.pendingTxMtgox = [];
 			
-			//console.log(response);
+			console.log(response);
 			
-			for(var i=0; i<response.length; i++) {
+			var result = response.data;
+			
+			var transactions = result.transactions;
+			
+			for(var i=0; i<transactions.length; i++) {
 				
-				var transaction = response[i];
+				var transaction = transactions[i];
 				transaction.dateStr = $scope.getDateString(transaction.time);
 				transaction.type = transaction.type.substring(0, 1).toUpperCase()+transaction.type.substring(1);
 				
-				if(transaction.currency == "btc" && transaction.state == "deposited") {
+				if(transaction.currency == "btc" && 
+						(transaction.state == "deposited" || transaction.type == "Withdrawal")) {
 					$scope.pendingTxBtc.push(transaction);
 				} else if(transaction.currency == "ltc" && 
 						(transaction.state == "deposited" || transaction.type == "Withdrawal")) {
 					$scope.pendingTxLtc.push(transaction);
-				} else if(transaction.currency == "usd" && transaction.state == "deposited") {
+				} else if(transaction.currency == "usd" && 
+						(transaction.state == "deposited" || transaction.type == "Withdrawal")) {
 					$scope.pendingTxUsd.push(transaction);
-				} else if(transaction.state == "transferReqBtce" || transaction.state == "transferBtce") {
+				} else if(transaction.state == "transferReqBtce" || transaction.state == "readyTransferBtce" || transaction.state == "transferBtce") {
 					$scope.pendingTxBtce.push(transaction);
 				} else if(transaction.state == "mtgoxReqIn" || transaction.state == "mtgoxReqOut") {
 					$scope.pendingTxMtgox.push(transaction);
 				}
 				
 			}
+			
+			
+			$scope.user.funds = result.reserveFunds;
+			$scope.user.activeFunds = result.activeFunds;
+			
 			
 		});
 		
@@ -108,10 +89,24 @@ function AccountCtrl($scope, $routeParams, $http) {
 			
 			console.log(response);
 			
+			if(response.success == 1) {
+				
+			} else {
+				alert("Failed to transfer funds. Error message: "+response.message);
+			}
+			
 		});
 		
 		
 	};
+	
+	$scope.getInvoice = function(account) {
+		
+		var date = new Date();
+		
+		return date.getTime()+"_"+account;
+		
+	}
 	
 	$scope.getDateString = function(time) {
 		

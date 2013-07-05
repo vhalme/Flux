@@ -13,11 +13,16 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoOperations;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 
+import com.lenin.project.AuthComponent;
+import com.lenin.tradingplatform.client.BtceApi;
 import com.lenin.tradingplatform.client.RequestResponse;
 import com.lenin.tradingplatform.client.TradingClient;
 import com.lenin.tradingplatform.data.entities.Order;
+import com.lenin.tradingplatform.data.entities.Settings;
 import com.lenin.tradingplatform.data.entities.TradingSession;
 import com.lenin.tradingplatform.data.entities.User;
 import com.lenin.tradingplatform.data.repositories.OrderRepository;
@@ -41,7 +46,12 @@ public class OrderService {
 	@Autowired
 	private TradeRepository tradeRepository;
 	
-
+	@Autowired
+	private MongoTemplate mongoTemplate;
+	
+	@Autowired
+	private AuthComponent authComponent;
+	
 	public OrderService() {
 	}
 
@@ -49,48 +59,79 @@ public class OrderService {
 	@GET
 	@Path("/")
 	@Produces({ MediaType.APPLICATION_JSON })
-	public List<Order> getOrders(@HeaderParam("User-Id") String userId,
-			@HeaderParam("TradingSession-Id") String tradingSessionId,
+	public RequestResponse getOrders(@HeaderParam("Username") String username, @HeaderParam("Auth-Token") String authToken,
+			@HeaderParam("Trading-Session-Id") String tradingSessionId,
 			@QueryParam("type") String type) {
 
-		if (type != null) {
-			User user = userRepository.findByUsername(userId);
-			TradingSession tradingSession = tradingSessionRepository.findOne(tradingSessionId); // user.getCurrentTradingSession();
-			user.setCurrentTradingSession(tradingSession);
-			return orderRepository.findByTradingSessionAndType(tradingSession,
-					type);
-		} else if (userId != null) {
-			User user = userRepository.findByUsername(userId);
-			TradingSession tradingSession = tradingSessionRepository.findOne(tradingSessionId); // user.getCurrentTradingSession();
-			user.setCurrentTradingSession(tradingSession);
-			return orderRepository.findByTradingSession(tradingSession);
-		} else {
-			return orderRepository.findAll();
+		RequestResponse response = authComponent.getInitialResponse(username, authToken);
+		
+		if(response.getSuccess() < 0) {
+			return response;
 		}
+		
+		List<Order> orders = queryOrders(username, tradingSessionId, type);
+		response.setData(orders);
+		response.setSuccess(1);
+		
+		return response;
+		
 
 	}
+	
+	
+	private List<Order> queryOrders(String username, String tradingSessionId, String type) {
+
+		if(type != null) {
+			
+			User user = userRepository.findByUsername(username);
+			TradingSession tradingSession = tradingSessionRepository.findOne(tradingSessionId); // user.getCurrentTradingSession();
+			user.setCurrentTradingSession(tradingSession);
+			
+			List<Order> orders = orderRepository.findByTradingSessionAndType(tradingSession, type);
+			return orders;
+			
+		} else if(username != null) {
+			
+			User user = userRepository.findByUsername(username);
+			TradingSession tradingSession = tradingSessionRepository.findOne(tradingSessionId); // user.getCurrentTradingSession();
+			user.setCurrentTradingSession(tradingSession);
+			
+			List<Order> orders = orderRepository.findByTradingSession(tradingSession);
+			return orders;
+			
+		} else {
+			
+			List<Order> orders = orderRepository.findAll();
+			return orders;
+		}
+		
+
+	}
+	
 
 	@DELETE
 	@Path("/")
 	@Consumes({ MediaType.APPLICATION_JSON })
 	@Produces({ MediaType.APPLICATION_JSON })
-	public RequestResponse deleteOrder(@HeaderParam("User-Id") String userId,
-			@HeaderParam("TradingSession-Id") String tradingSessionId, Order order) {
-
+	public RequestResponse deleteOrder(@HeaderParam("Username") String username, @HeaderParam("Auth-Token") String authToken,
+			@HeaderParam("Trading-Session-Id") String tradingSessionId, Order order) {
+		
+		RequestResponse response = authComponent.getInitialResponse(username, authToken);
+		
+		if(response.getSuccess() < 0) {
+			return response;
+		}
+		
 		orderRepository.delete(order);
 		order = orderRepository.findOne(order.getId());
 
-		RequestResponse response = new RequestResponse();
-
-		if (order == null) {
+		if(order == null) {
 			response.setSuccess(1);
-		} else {
-			response.setSuccess(0);
 		}
-
-		List<Order> orders = getOrders(userId, tradingSessionId, null);
+		
+		List<Order> orders = queryOrders(username, tradingSessionId, null);
 		response.setData(orders);
-
+		
 		return response;
 
 	}
@@ -100,15 +141,25 @@ public class OrderService {
 	@Path("/")
 	@Consumes({ MediaType.APPLICATION_JSON })
 	@Produces({ MediaType.APPLICATION_JSON })
-	public RequestResponse postOrder(@HeaderParam("User-Id") String userId,
-			@HeaderParam("TradingSession-Id") String tradingSessionId,
+	public RequestResponse postOrder(@HeaderParam("Username") String username, @HeaderParam("Auth-Token") String authToken,
+			@HeaderParam("Trading-Session-Id") String tradingSessionId,
 			Order order, @QueryParam("cancel") String cancel) {
+		
+		RequestResponse response = authComponent.getInitialResponse(username, authToken);
+		
+		if(response.getSuccess() < 0) {
+			return response;
+		}
+		
+		MongoOperations mongoOps = (MongoOperations)mongoTemplate;
+		List<Settings> settingsResult = mongoOps.findAll(Settings.class);
+		
+		Settings settings = settingsResult.get(0);
+		BtceApi btceApi = new BtceApi(settings.getBtceApiKey(), settings.getBtceApiSecret());
+		btceApi.setOrderFee(0.002);
 
-		RequestResponse response = new RequestResponse();
-
-		User user = userRepository.findByUsername(userId);
+		User user = userRepository.findByUsername(username);
 		if (user == null) {
-			response.setSuccess(0);
 			response.setMessage("Could not read user data.");
 			return response;
 		}
@@ -117,24 +168,33 @@ public class OrderService {
 		user.setCurrentTradingSession(tradingSession);
 
 		if (tradingSession.getRate().getLast() == 0.0) {
-			response.setSuccess(0);
 			response.setMessage("Rate not set");
 			return response;
 		}
 
 		TradingClient tradingClient = new TradingClient(tradingSession,
 				tradingSessionRepository, orderRepository, tradeRepository);
-
-		if (cancel == null) {
-			response = tradingClient.trade(order);
+		
+		tradingClient.setBtceApi(btceApi);
+		
+		RequestResponse tradeResponse = null;
+		
+		if(cancel == null) {
+			tradeResponse = tradingClient.trade(order);
 		} else {
-			response = tradingClient.cancelOrder(order);
+			tradeResponse = tradingClient.cancelOrder(order);
+		}
+		
+		if(tradeResponse != null && tradeResponse.getSuccess() > 0) {
+			
+			List<Order> orders = queryOrders(username, tradingSessionId, null);
+			response.setData(orders);
+			response.setSuccess(1);
+			
 		}
 
-		List<Order> orders = getOrders(userId, tradingSessionId, null);
-		response.setData(orders);
-
 		return response;
+		
 
 	}
 	

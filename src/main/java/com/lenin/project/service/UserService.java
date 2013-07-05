@@ -16,6 +16,7 @@ import javax.ws.rs.core.MediaType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.lenin.project.AuthComponent;
 import com.lenin.tradingplatform.client.RequestResponse;
 import com.lenin.tradingplatform.data.entities.TradingSession;
 import com.lenin.tradingplatform.data.entities.User;
@@ -32,6 +33,9 @@ public class UserService {
 	@Autowired
 	private TradingSessionRepository tradingSessionRepository;
 
+	@Autowired
+	private AuthComponent authComponent;
+	
 
 	public UserService() {
 	}
@@ -41,13 +45,17 @@ public class UserService {
 	@Path("/funds")
 	@Consumes({ MediaType.APPLICATION_JSON })
 	@Produces({ MediaType.APPLICATION_JSON })
-	public RequestResponse postFunds(@HeaderParam("User-Id") String userId,
+	public RequestResponse postFunds(@HeaderParam("Username") String username, @HeaderParam("Auth-Token") String authToken,
 			@QueryParam("currency") String currency,
 			@QueryParam("amount") Double amount) {
 
-		RequestResponse response = new RequestResponse();
+		RequestResponse response = authComponent.getInitialResponse(username, authToken);
+		
+		if(response.getSuccess() < 0) {
+			return response;
+		}
 
-		User user = userRepository.findByUsername(userId);
+		User user = userRepository.findByUsername(username);
 		
 		Map<String, Double> userFunds = user.getFunds();
 		userFunds.put(currency, userFunds.get(currency) + amount);
@@ -66,12 +74,18 @@ public class UserService {
 	@GET
 	@Path("/")
 	@Produces({ MediaType.APPLICATION_JSON })
-	public List<User> listUsers(@HeaderParam("User-Id") String userId,
-			@HeaderParam("TradingSession-Id") String tradingSessionId) {
+	public RequestResponse listUsers(@HeaderParam("Username") String username, @HeaderParam("Auth-Token") String authToken,
+			@HeaderParam("Trading-Session-Id") String tradingSessionId) {
+		
+		RequestResponse response = authComponent.getInitialResponse(username, authToken);
+		
+		if(response.getSuccess() < 0) {
+			return response;
+		}
+		
+		if(username != null) {
 
-		if (userId != null) {
-
-			User user = userRepository.findByUsername(userId);
+			User user = userRepository.findByUsername(username);
 
 			if (tradingSessionId != null) {
 				List<TradingSession> tradingSessionList = user.getTradingSessions();
@@ -82,13 +96,22 @@ public class UserService {
 
 			List<User> users = new ArrayList<User>();
 			users.add(user);
-
-			return users;
+			
+			response.setData(users);
+			response.setSuccess(1);
+			
+			return response;
 
 		} else {
 
-			return userRepository.findAll();
+			List<User> users = userRepository.findAll();
 
+			response.setData(users);
+			response.setSuccess(1);
+			
+			return response;
+
+			
 		}
 
 	}

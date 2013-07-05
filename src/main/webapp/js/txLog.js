@@ -15,6 +15,7 @@ function TxLogCtrl($scope, $routeParams, $http) {
 		API.cancelTransaction(transaction, function(response) {
 			
 			console.log(response);
+			$scope.checkResponse(response);
 			
 			if(response.success == 1) {
 				
@@ -27,14 +28,14 @@ function TxLogCtrl($scope, $routeParams, $http) {
 	};
 	
 	
-	$scope.reverseTrade = function(transaction, save) {
+	$scope.reverseTrade = function(order, save) {
 		
 		console.log("reverse trading...");
 		
-		var reverseTransaction = $scope.createReverseTransaction(transaction);
-		reverseTransaction.save = save;
+		var reverseOrder = $scope.createReverseOrder(order);
+		reverseOrder.save = save;
 		
-		$scope.performTransaction(reverseTransaction, function() {
+		$scope.performTransaction(reverseOrder, function() {
 			
 		});
 		
@@ -42,24 +43,24 @@ function TxLogCtrl($scope, $routeParams, $http) {
 	};
 	
 	
-	$scope.createReverseTransaction = function(transaction) {
+	$scope.createReverseOrder = function(order) {
 		
 		var reverseType;
 		
-		if(transaction.type == "sell") {
+		if(order.type == "sell") {
 			reverseType = "buy";
-		} else if(transaction.type == "buy") {
+		} else if(order.type == "buy") {
 			reverseType = "sell";
 		}
 		
 		console.log("REVERSED TYPE TO "+reverseType);
 		
-		var reverseTransaction = 
-			$scope.createTransaction($scope.user.currentTradingSession.pair, transaction.amount, $scope.actualTradeRate(reverseType), reverseType);
+		var reverseOrder = 
+			$scope.createTransaction($scope.user.currentTradingSession.pair, order.amount, $scope.actualTradeRate(reverseType), reverseType);
 		
-		reverseTransaction.reversedTransaction = transaction;
+		reverseOrder.reversedOrder = order;
 		
-		return reverseTransaction;
+		return reverseOrder;
 		
 	};
 	
@@ -69,6 +70,7 @@ function TxLogCtrl($scope, $routeParams, $http) {
 		API.deleteTransaction(transaction, function(response) {
 			
 			console.log(response);
+			$scope.checkResponse(response);
 			
 			if(response.success == 1) {
 				

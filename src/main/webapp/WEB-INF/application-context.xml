@@ -43,6 +43,9 @@
     <bean id="tradingSessionServiceImpl" class="com.lenin.project.service.TradingSessionService" />
     <bean id="userServiceImpl" class="com.lenin.project.service.UserService" />
     <bean id="fundTransactionServiceImpl" class="com.lenin.project.service.FundTransactionService" />
+    
+    <!-- Component -->
+    <bean id="authComponent" class="com.lenin.project.AuthComponent" />
      
 	<task:annotation-driven scheduler="taskScheduler"/>
 	<task:scheduler id="taskScheduler" pool-size="2"/>

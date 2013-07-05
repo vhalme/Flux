@@ -2,23 +2,35 @@ var API = {
 		
 		loopInterval: 0,
 		
-		userId: "testUser456",
+		userId: null,
 		authToken: null,
 		tradingSessionId: null,
 		
-		send: function(method, url, data, dataType, contentType, callback) {
+		send: function(method, url, headerParams, data, dataType, contentType, callback) {
+			
+			var headerData = {
+				"Username": this.userId,
+				"Auth-Token": this.authToken,
+				"Trading-Session-Id": this.tradingSessionId
+			};
+			
+			if(headerParams != undefined) {
+			
+				for(var i=0; i<headerParams.length; i++) {
+				
+					var headerParam = headerParams[i];
+					headerData[headerParam.key] = headerParam.value;
+				
+				}
+				
+			}
 			
 			var request = {
 			    	
 				async: false,
 			    type: method,
 			    url: url,
-		  		headers: {
-					"User-Id": this.userId,
-					"Token": this.authToken,
-					"TradingSession-Id": this.tradingSessionId
-			    },
-			    	
+		  		headers: headerData,
 			    success: callback
 			    
 			};
@@ -41,11 +53,12 @@ var API = {
 		},
 		
 		
+		
 		refreshReqTransactions: function(type, state, callback) {
 			
 			var url = "service/fundtransaction?type="+type+"&state="+state;
 			
-			this.send("GET", url, undefined, undefined, undefined, callback);
+			this.send("GET", url, undefined, undefined, undefined, undefined, callback);
 			
 		},
 		
@@ -54,7 +67,7 @@ var API = {
 			
 			var url = "service/fundtransaction?account="+account+"&stateNot="+stateNot;
 			
-			this.send("GET", url, undefined, undefined, undefined, callback);
+			this.send("GET", url, undefined, undefined, undefined, undefined, callback);
 			
 		},
 		
@@ -68,7 +81,7 @@ var API = {
 				url += "&address="+toAddress;
 			}
 			
-			this.send("POST", url, undefined, "json", "application/json", callback);
+			this.send("POST", url, undefined, undefined, "json", "application/json", callback);
 			
 			
 		},
@@ -77,7 +90,7 @@ var API = {
 		    
 			var url = "service/fundtransaction/"+id+"?state="+state;
 			
-			this.send("POST", url, undefined, "json", "application/json", callback);
+			this.send("POST", url, undefined, undefined, "json", "application/json", callback);
 			
 			
 		},
@@ -86,7 +99,7 @@ var API = {
 			
 			var url = "service/user/funds?fund="+fund+"&change="+change;
 			
-			this.send("GET", url, undefined, undefined, undefined, callback);
+			this.send("GET", url, undefined, undefined, undefined, undefined, callback);
 			
 		},
 		
@@ -94,7 +107,7 @@ var API = {
 		    
 			var url = "service/tradingsession";
 			
-			this.send("GET", url, undefined, undefined, undefined, callback);
+			this.send("GET", url, undefined, undefined, undefined, undefined, callback);
 			
 		},
 		
@@ -102,15 +115,15 @@ var API = {
 		    
 			var url = "service/tradingsession";
 			
-			this.send("GET", url, undefined, undefined, undefined, callback);
+			this.send("GET", url, undefined, undefined, undefined, undefined, callback);
 			
 		},
 		
-		addTradingSession: function(pair, callback) {
+		addTradingSession: function(session, callback) {
 		    
 			var url = "service/tradingsession";
 			
-			this.send("POST", url, pair, "text", "text/plain", callback);
+			this.send("POST", url, undefined, session, "text", "text/plain", callback);
 			
 			
 		},
@@ -119,7 +132,7 @@ var API = {
 			
 			var url = "service/tradingsession";
 			
-			this.send("DELETE", url, angular.toJson(tradingSession), "json", "application/json", callback);
+			this.send("DELETE", url, undefined, angular.toJson(tradingSession), "json", "application/json", callback);
 			
 		},
 		
@@ -128,7 +141,7 @@ var API = {
 			
 			var url = "service/order";
 			
-			this.send("GET", url, undefined, undefined, undefined, callback);
+			this.send("GET", url, undefined, undefined, undefined, undefined, callback);
 			
 		},
 		
@@ -137,7 +150,7 @@ var API = {
 			
 			var url = "service/order?cancel=true";
 			
-			this.send("POST", url, angular.toJson(transaction), "json", "application/json", callback);
+			this.send("POST", url, undefined, angular.toJson(transaction), "json", "application/json", callback);
 			
 		},
 		
@@ -146,7 +159,7 @@ var API = {
 			
 			var url = "service/order";
 			
-			this.send("POST", url, angular.toJson(transaction), "json", "application/json", callback);
+			this.send("POST", url, undefined, angular.toJson(transaction), "json", "application/json", callback);
 			
 		},
 		
@@ -154,7 +167,7 @@ var API = {
 			
 			var url = "service/order";
 			
-			this.send("DELETE", url, angular.toJson(transaction), "json", "application/json", callback);
+			this.send("DELETE", url, undefined, angular.toJson(transaction), "json", "application/json", callback);
 			
 			
 		},
@@ -163,7 +176,7 @@ var API = {
 			
 			var url = "service/tradingsession";
 			
-			this.send("PUT", url, angular.toJson(tradingSession), "json", "application/json", callback);
+			this.send("PUT", url, undefined, angular.toJson(tradingSession), "json", "application/json", callback);
 				
 		},
 		
@@ -172,7 +185,7 @@ var API = {
 			
 			var url = "service/tradingsession/autotradingoptions";
 			
-			this.send("PUT", url, angular.toJson(autoTradingOptions), "json", "application/json", callback);
+			this.send("PUT", url, undefined, angular.toJson(autoTradingOptions), "json", "application/json", callback);
 			
 		},
 		
@@ -181,7 +194,7 @@ var API = {
 			
 			var url = "service/rate";
 			
-			this.send("PUT", url, angular.toJson(rate), "json", "application/json", callback);
+			this.send("PUT", url, undefined, angular.toJson(rate), "json", "application/json", callback);
 			
 		},
 		
@@ -190,7 +203,7 @@ var API = {
 			
 			var url = "service/user";
 			
-			this.send("GET", url, undefined, undefined, undefined, callback);
+			this.send("GET", url, undefined, undefined, undefined, undefined, callback);
 			
 		},
 		
@@ -200,14 +213,14 @@ var API = {
 			var url = "service/rate?pair="+pair+"&setType="+setType+"&from="+from+"&until="+until;
 			console.log(url);
 			
-			this.send("GET", url, undefined, undefined, undefined, callback);
+			this.send("GET", url, undefined, undefined, undefined, undefined, callback);
 			
 		},
 		
 		
 		setFunds: function(left, right, callback) {
 			
-			var url = "service/user/funds?";
+			var url = "service/tradingsession/funds?";
 			
 			if(left != null) {
 				url += "left="+left;
@@ -222,19 +235,25 @@ var API = {
 				url += "right="+right;
 			}
 			
-			this.send("POST", url, undefined, "json", "application/json", callback);
+			this.send("POST", url, undefined, undefined, "json", "application/json", callback);
 			
 			
 		},
 		
 		
-		login: function(email, password, callback) {
+		login: function(username, email, password, callback) {
 			
 			var url = "service/login";
 			
-			this.userId = email;
+			this.userId = username;
 			
-			this.send("POST", url, undefined, "json", "application/json", callback);
+			var headerParams = [
+			
+			       { key: "Email", value: email }
+			       
+			];
+			
+			this.send("POST", url, headerParams, password, "text", "text/plain", callback);
 			
 		},
 		
@@ -243,7 +262,7 @@ var API = {
 			
 			var url = "service/user/funds?currency="+currency+"&amount="+amount;
 			
-			this.send("POST", url, undefined, "json", "application/json", callback);
+			this.send("POST", url, undefined, undefined, "json", "application/json", callback);
 			
 		},
 		
@@ -259,7 +278,7 @@ var API = {
 			
 			var url = "service/btcrpc?method="+method;
 			
-			this.send("POST", url, angular.toJson(params), "json", "application/json", callback);
+			this.send("POST", url, undefined, angular.toJson(params), "json", "application/json", callback);
 			
 			
 		}

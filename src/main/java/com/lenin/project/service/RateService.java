@@ -15,6 +15,7 @@ import javax.ws.rs.core.MediaType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.lenin.project.AuthComponent;
 import com.lenin.tradingplatform.client.RequestResponse;
 import com.lenin.tradingplatform.data.entities.Rate;
 import com.lenin.tradingplatform.data.entities.TradingSession;
@@ -32,6 +33,9 @@ public class RateService {
 	@Autowired
 	private RateRepository rateRepository;
 
+	@Autowired
+	private AuthComponent authComponent;
+	
 
 	public RateService() {
 	}
@@ -74,15 +78,20 @@ public class RateService {
 
 	}
 
+	
 	@PUT
 	@Path("/")
 	@Consumes({ MediaType.APPLICATION_JSON })
 	@Produces({ MediaType.APPLICATION_JSON })
-	public RequestResponse setRate(@HeaderParam("User-Id") String userId,
-			@HeaderParam("TradingSession-Id") String tradingSessionId, Rate rate) {
+	public RequestResponse setRate(@HeaderParam("Username") String username, @HeaderParam("Auth-Token") String authToken,
+			@HeaderParam("Trading-Session-Id") String tradingSessionId, Rate rate) {
 
-		RequestResponse response = new RequestResponse();
-
+		RequestResponse response = authComponent.getInitialResponse(username, authToken);
+		
+		if(response.getSuccess() < 0) {
+			return response;
+		}
+		
 		TradingSession tradingSession = tradingSessionRepository.findOne(tradingSessionId);
 
 		if (tradingSession.getLive() == false) {

@@ -24,7 +24,7 @@
 			</div>
 		</div>
 
-		<div class="row" ng-hide="sell.reversedTransaction != null" style="margin-bottom: 0.1em;" ng-repeat="sell in transactions['sell'] | orderBy:sellSort:!sellSortReverse">
+		<div class="row" ng-hide="sell.reversedOrder != null" style="margin-bottom: 0.1em;" ng-repeat="sell in transactions['sell'] | orderBy:sellSort:!sellSortReverse">
 
 			<div class="span4" ng-class="{ profitBorder: sellProfit(sell) > 0, lossBorder: sellProfit(sell) < 0 }" style="position: relative; padding-right: 2.0em;">
 
@@ -86,7 +86,7 @@
 			</div>
 		</div>
 
-		<div class="row" ng-hide="buy.reversedTransaction != null" style="margin-bottom: 0.1em;" ng-repeat="buy in transactions['buy'] | orderBy:buySort:!buySortReverse">
+		<div class="row" ng-hide="buy.reversedOrder != null" style="margin-bottom: 0.1em;" ng-repeat="buy in transactions['buy'] | orderBy:buySort:!buySortReverse">
 
 			<div class="span4" ng-class="{ profitBorder: buyProfit(buy) >= 0, lossBorder: buyProfit(buy) < 0 }" style="position: relative; padding-right: 2.0em;">
 

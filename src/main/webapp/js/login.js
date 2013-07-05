@@ -1,18 +1,23 @@
 function LoginCtrl($scope, $routeParams, $http) {
 	
-	$scope.email = undefined;
+	$scope.username = undefined;
 	
 	$scope.password = undefined;
+	$scope.passwordHidden = true;
 	
 	$scope.login = function() {
 		
 		console.log("try to log in user "+$scope.email);
 		
-		API.login($scope.email, $scope.password, function(response) {
+		API.login($scope.username, $scope.username, $scope.password, function(response) {
+			
+			response = angular.fromJson(response);
 			
 			console.log(response);
+			console.log(typeof(response)+" success="+response.success+"("+typeof(response.success)+")");
 			
 			if(response.success > 0) {
+				console.log("call setUser");
 				$scope.setUser(response.data);
 			}
 			

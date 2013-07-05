@@ -19,6 +19,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 
+import com.lenin.project.AuthComponent;
+import com.lenin.project.util.PasswordHash;
 import com.lenin.tradingplatform.client.BitcoinApi;
 import com.lenin.tradingplatform.client.RequestResponse;
 import com.lenin.tradingplatform.data.entities.AutoTradingOptions;
@@ -51,7 +53,10 @@ public class RootService {
 	@Autowired
 	private TradingSessionRepository tradingSessionRepository;
 
-
+	@Autowired
+	private AuthComponent authComponent;
+	
+	
 	public RootService() {
 	}
 
@@ -60,14 +65,18 @@ public class RootService {
 	@Path("/btcrpc")
 	@Consumes({ MediaType.APPLICATION_JSON })
 	@Produces({ MediaType.APPLICATION_JSON })
-	public RequestResponse btcApiCall(@HeaderParam("User-Id") String userId,
+	public RequestResponse btcApiCall(@HeaderParam("Username") String username, @HeaderParam("Auth-Token") String authToken,
 			@QueryParam("method") String method, List<Object> params) {
 
 		System.out.println(method + ": " + params + "/" + params.size());
 
-		RequestResponse response = new RequestResponse();
+		RequestResponse response = authComponent.getInitialResponse(username, authToken);
+		
+		if(response.getSuccess() < 0) {
+			return response;
+		}
 
-		User user = userRepository.findByUsername(userId);
+		User user = userRepository.findByUsername(username);
 
 		List<String> clientParams = new ArrayList<String>();
 
@@ -81,7 +90,7 @@ public class RootService {
 			String currency = (String)params.get(0);
 			String toAddress = (String)params.get(1);
 			Double amount = Double.parseDouble((String)params.get(2));
-
+			
 			if (availableAmount >= amount) {
 
 				String fromAccount = user.getAccountName();
@@ -113,37 +122,73 @@ public class RootService {
 	
 	@POST
 	@Path("/login")
-	@Consumes({ MediaType.APPLICATION_JSON })
+	@Consumes({ MediaType.TEXT_PLAIN })
 	@Produces({ MediaType.APPLICATION_JSON })
-	public RequestResponse login(@HeaderParam("User-Id") String email,
-			@HeaderParam("password") String password) {
-
+	public RequestResponse login(@HeaderParam("Username") String username, @HeaderParam("Email") String email,
+			String password) {
+		
 		RequestResponse response = new RequestResponse();
 
-		User user = userRepository.findByUsername(email);
-
+		User user = userRepository.findByUsername(username);
+		
+		Long nowTime = System.currentTimeMillis();
+		
 		if (user != null) {
+			
+			Boolean pwdOk = false;
+			
+			try {
+			
+				pwdOk = PasswordHash.validatePassword(password, user.getPassword());
+				
+			} catch(Exception e) {
+				e.printStackTrace();
+			}
+			
+			if(pwdOk == true) {
+				
+				User testUser = userRepository.findByUsername(email + " (test)");
+			
+				String token = "" + Math.random();
 
-			User testUser = userRepository.findByUsername(email + " (test)");
+				user.setAuthToken(token);
+				user.setLastActivity(nowTime);
+				
+				testUser.setAuthToken(token);
+				testUser.setLastActivity(nowTime);
+				
+				userRepository.save(user);
+				userRepository.save(testUser);
 
-			String token = "" + Math.random();
+				System.out.println("Logging in user " + email);
+				response.setSuccess(1);
 
-			user.setAuthToken(token);
-			testUser.setAuthToken(token);
-
-			userRepository.save(user);
-			userRepository.save(testUser);
-
-			System.out.println("Logging in user " + email);
-			response.setSuccess(1);
-
+			} else {
+				
+				System.out.println("Incorrect password " + password+"/"+user.getPassword());
+				response.setSuccess(0);
+				
+			}
+			
 		} else {
 
 			System.out.println("Creating user " + email);
-
+			
 			user = new User();
 			user.setUsername(email);
+			
+			try {
+				
+				String pwdHash = PasswordHash.createHash(password);
+				user.setPassword(pwdHash);
+				
+			} catch(Exception e) {
+				e.printStackTrace();
+			}
+			
 			user.setLive(true);
+			user.setLastActivity(nowTime);
+			
 			Map<String, Double> funds = new HashMap<String, Double>();
 			funds.put("usd", 0.0);
 			funds.put("ltc", 0.0);
@@ -155,14 +200,21 @@ public class RootService {
 			activeBtceFunds.put("ltc", 0.0);
 			activeBtceFunds.put("btc", 0.0);
 			activeFunds.put("btce", activeBtceFunds);
+			Map<String, Double> activeTestFunds = new HashMap<String, Double>();
+			activeBtceFunds.put("usd", 0.0);
+			activeBtceFunds.put("ltc", 0.0);
+			activeBtceFunds.put("btc", 0.0);
+			activeFunds.put("test", activeTestFunds);
 			user.setActiveFunds(activeFunds);
 			
+			createAddress("btc", user);
 			createAddress("ltc", user);
 
 			AutoTradingOptions autoTradingOptions = new AutoTradingOptions();
 			TradingSession tradingSession = new TradingSession();
 			tradingSession.setCurrencyLeft("usd");
 			tradingSession.setCurrencyRight("ltc");
+			tradingSession.setService("btce");
 			tradingSession.setLive(true);
 			tradingSession.setAutoTradingOptions(autoTradingOptions);
 			Rate rate = new Rate();
@@ -174,6 +226,7 @@ public class RootService {
 			user.setCurrentTradingSession(tradingSession);
 
 			User testUser = new User();
+			testUser.setLastActivity(nowTime);
 			testUser.setUsername(email + " (test)");
 			testUser.setLive(false);
 			Map<String, Double> testFunds = new HashMap<String, Double>();
@@ -181,6 +234,13 @@ public class RootService {
 			testFunds.put("ltc", 100.0);
 			testFunds.put("btc", 100.0);
 			testUser.setFunds(testFunds);
+			Map<String, Map<String, Double>> testUserActiveFunds = new HashMap<String, Map<String, Double>>();
+			Map<String, Double> testUserActiveTestFunds = new HashMap<String, Double>();
+			testUserActiveTestFunds.put("usd", 0.0);
+			testUserActiveTestFunds.put("ltc", 0.0);
+			testUserActiveTestFunds.put("btc", 0.0);
+			testUserActiveFunds.put("test", testUserActiveTestFunds);
+			testUser.setActiveFunds(testUserActiveFunds);
 
 			AutoTradingOptions testAutoTradingOptions = new AutoTradingOptions();
 			testAutoTradingOptions.setBuyCeiling(1.0);
@@ -188,6 +248,7 @@ public class RootService {
 			TradingSession testTradingSession = new TradingSession();
 			testTradingSession.setCurrencyLeft("usd");
 			testTradingSession.setCurrencyRight("ltc");
+			testTradingSession.setService("test");
 			testTradingSession.setLive(false);
 			testTradingSession.setAutoTradingOptions(testAutoTradingOptions);
 			Rate testRate = new Rate();
@@ -221,6 +282,21 @@ public class RootService {
 
 	private void createAddress(String currency, User user) {
 		
+		String ip = null;
+		int port = 0;
+		
+		if(currency.equals("btc")) {
+			ip = "82.196.8.147";
+			port = 9332;
+		} else if(currency.equals("ltc")) {
+			ip = "82.196.14.26";
+			port = 8332;
+		}
+		
+		if(port == 0) {
+			return;
+		}
+		
 		String accountName = user.getAccountName();
 		if (accountName == null) {
 			accountName = randomString();
@@ -232,15 +308,15 @@ public class RootService {
 			addresses = new HashMap<String, String>();
 		}
 		
-		BitcoinApi api = new BitcoinApi("127.0.0.1", 8332,  "fluxltc1", "fLuxThuyu1eP");
+		BitcoinApi api = new BitcoinApi(ip, port,  "fluxltc1", "fLuxThuyu1eP");
 		
 		List<Object> params = new ArrayList<Object>();
 		params.add(accountName);
 		
 		try {
 
-			JSONObject ltcAddrResult = api.exec("getnewaddress", params);
-			String addrStr = ltcAddrResult.getString("result");
+			JSONObject addrResult = api.exec("getnewaddress", params);
+			String addrStr = addrResult.getString("result");
 			System.out.println("New address/account: " + addrStr + "/"
 					+ accountName);
 

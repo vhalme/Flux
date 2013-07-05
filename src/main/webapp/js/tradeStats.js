@@ -36,7 +36,6 @@ function TradingSessionCtrl($scope, $routeParams, $http) {
 	$scope.newFundsLeft = undefined;
 	$scope.newFundsRight = undefined;
 	
-	$scope.newCurrencyPair = "ltc_usd";
 	
 	
 	$scope.start = function() {
@@ -79,9 +78,13 @@ function TradingSessionCtrl($scope, $routeParams, $http) {
 		
 		API.refreshTradingSession(function(response) {
 			
+			$scope.checkResponse(response);
+			
 			if(response.success == 1) {
 				
-				$scope.user.currentTradingSession = response.data;
+				console.log(response);
+				
+				$scope.user.currentTradingSession = response.data.session;
 				
 				/*
 				$scope.user.currentTradingSession.fundsLeft = response.data.fundsLeft;
@@ -113,11 +116,18 @@ function TradingSessionCtrl($scope, $routeParams, $http) {
 	
 	$scope.addTab = function() {
 		
-		console.log($scope.newCurrencyPair);
+		console.log($scope.newSession);
 		
-		API.addTradingSession($scope.newCurrencyPair, function(newTradingSession) {
-			console.log(angular.fromJson(newTradingSession));
+		API.addTradingSession($scope.newSession, function(response) {
+			
+			response = angular.fromJson(response);
+			$scope.checkResponse(response);
+			
+			var newTradingSession = response.data;
+			
+			console.log(newTradingSession);
 			$scope.user.tradingSessions.push(angular.fromJson(newTradingSession));
+		
 		});
 		
 	};
@@ -191,6 +201,7 @@ function TradingSessionCtrl($scope, $routeParams, $http) {
 		API.postTransaction(transaction, function(response) {
 			
 			console.log(response);
+			$scope.checkResponse(response);
 			
 			if(response.success == 1) {
 				
@@ -205,23 +216,41 @@ function TradingSessionCtrl($scope, $routeParams, $http) {
 			
 	};
 	
-	
 	$scope.setFundsLeft = function() {
-		API.setFunds($scope.newFundsLeft, null, function(response) {
+		
+		API.setFunds($scope.user.currentTradingSession.fundsLeft, null, function(response) {
+			
+			console.log(response);
+			$scope.checkResponse(response);
+			
 			if(response.success == 1) {
-				$scope.user.funds = response.data;
-				$scope.user.currentTradingSession.fundsLeft = $scope.newFundsLeft;
+				$scope.user.activeFunds[$scope.user.currentTradingSession.service] = response.data;
+			} else {
+				var sFunds = response.data.split("_");
+				$scope.user.currentTradingSession.fundsLeft = parseFloat(sFunds[0]);
+				alert(response.message);
 			}
 		});
+		
 	};
 	
 	$scope.setFundsRight = function() {
-		API.setFunds(null, $scope.newFundsRight, function(response) {
+		
+		API.setFunds(null, $scope.user.currentTradingSession.fundsRight, function(response) {
+			
+			console.log(response);
+			$scope.checkResponse(response);
+			
 			if(response.success == 1) {
-				$scope.user.funds = response.data;
-				$scope.user.currentTradingSession.fundsRight = $scope.newFundsRight;
+				$scope.user.activeFunds[$scope.user.currentTradingSession.service] = response.data;
+			} else {
+				var sFunds = response.data.split("_");
+				$scope.user.currentTradingSession.fundsRight = parseFloat(sFunds[1]);
+				$scope.user.activeFunds[$scope.user.currentTradingSession.service] = response.data;
+				alert(response.message);
 			}
 		});
+		
 	};
 	
 	/* Calculated properties */
@@ -248,10 +277,10 @@ function TradingSessionCtrl($scope, $routeParams, $http) {
 	
 	/* Variable properties */
 	
+	$scope.showSessionFunds = true;
 	$scope.showAutoTrading = true;
 	$scope.showManualTrading = true;
 	$scope.showGraphs = true;
-	
 	
 	/* Watchers */
 	
@@ -359,9 +388,13 @@ function TradingSessionCtrl($scope, $routeParams, $http) {
 			}
 			
 			API.saveAutoTradingOptions(value, function(response) {
+				
+				$scope.checkResponse(response);
+				
 				if(response.success == 1) {
 					$scope.user.currentTradingSession.autoTradingOptions = response.data;
 				}
+			
 			});
 			
 			
@@ -376,6 +409,8 @@ function TradingSessionCtrl($scope, $routeParams, $http) {
 		
 		API.getTradingSession(function(response) {
 			
+			$scope.checkResponse(response);
+			
 			if(response.success == 1) {
 				console.log(response.data);
 				$scope.user.currentTradingSession = response.data;
@@ -385,6 +420,22 @@ function TradingSessionCtrl($scope, $routeParams, $http) {
 			}
 			
 		});
+		
+	}, true);
+	
+	$scope.$watch('user.currentTradingSession.fundsLeft', function(value) {
+		
+		console.log("fundsLeft set: "+value);
+		
+		$scope.setFundsLeft();
+		
+	}, true);
+	
+	$scope.$watch('user.currentTradingSession.fundsRight', function(value) {
+		
+		console.log("fundsRight set: "+value);
+		
+		$scope.setFundsRight();
 		
 	}, true);
 	

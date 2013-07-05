@@ -9,7 +9,11 @@ function AppCtrl($scope, $routeParams, $location, $http) {
 	
 	$scope.setUser = function(user) {
 		
+		console.log("setUser called");
+		
 		if(user != undefined) {
+			
+			console.log("set defined user");
 			
 			API.userId = user.username;
 			API.authToken = user.authToken;
@@ -23,19 +27,35 @@ function AppCtrl($scope, $routeParams, $location, $http) {
 			var tradingSessionId = tradingSessions[0].id
 			API.tradingSessionId = tradingSessionId;
 			
+			if($scope.user.live == true) {
+				$scope.newSession = "ltc_usd_btce";
+			} else {
+				$scope.newSession = "ltc_usd_test";
+			}
+			
 			$scope.go("/tradingSession/"+tradingSessionId);
 			
 		} else {
 		
-			API.getUser(function(users) {
-			
+			API.getUser(function(response) {
+				
+				$scope.checkResponse(response);
+				
+				var users = response.data;
+				
 				$scope.user = users[0];
 				console.log($scope.user);
 			
 				var tradingSessions = $scope.user.tradingSessions;
 				var tradingSessionId = tradingSessions[0].id
 				API.tradingSessionId = tradingSessionId;
-			
+				
+				if($scope.user.live == true) {
+					$scope.newSession = "ltc_usd_btce";
+				} else {
+					$scope.newSession = "ltc_usd_test";
+				}
+				
 				//$scope.go("/tradingSession/"+tradingSessionId);
 			
 			});
@@ -49,13 +69,15 @@ function AppCtrl($scope, $routeParams, $location, $http) {
 		
 		API.deleteTradingSession($scope.user.currentTradingSession, function(response) {
 			
+			$scope.checkResponse(response);
+			
 			if(response.success == 1) {
 				
 				var tabs = response.data;
 				
 				console.log(tabs);
 				
-				$scope.user.tradingSession = tabs;
+				$scope.user.tradingSessions = tabs;
 				
 				if(tabs.length > 0) {
 					$scope.user.currentTradingSession = tabs[0];
@@ -104,6 +126,7 @@ function AppCtrl($scope, $routeParams, $location, $http) {
 		}
 		
 		API.setRate($scope.user.currentTradingSession.rate, function(response) {
+			$scope.checkResponse(response);
 			$scope.user.currentTradingSession.rate = response.data;
 		});
 		
@@ -129,6 +152,7 @@ function AppCtrl($scope, $routeParams, $location, $http) {
 		}
 		
 		API.setRate($scope.user.currentTradingSession.rate, function(response) {
+			$scope.checkResponse(response);
 			$scope.user.currentTradingSession.rate = response.data;
 		});
 		
@@ -214,6 +238,16 @@ function AppCtrl($scope, $routeParams, $location, $http) {
 		
 		console.log($scope.user);
 		$scope.go("/front");
+		
+	};
+	
+	$scope.checkResponse = function(response) {
+	
+		var success = response.success;
+		
+		if(success == -1 || success == -2) {
+			$scope.logout();
+		}
 		
 	};
 	

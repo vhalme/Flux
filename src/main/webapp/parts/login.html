@@ -19,7 +19,7 @@
 				E-mail
 			</div>
 			<div class="span4">
-				<input type="text" style="height: 2.0em;" ng-model="email"/>
+				<input type="text" style="height: 2.0em;" ng-model="username"/>
 			</div>
 		</div>
 		
@@ -28,7 +28,17 @@
 				Password
 			</div>
 			<div class="span4">
-				<input type="text" style="height: 2.0em;" ng-model="password"/>
+				<input type="text" style="height: 2.0em;" ng-model="password" ng-hide="passwordHidden"/>
+				<input type="password" style="height: 2.0em;" ng-model="password" ng-hide="!passwordHidden"/>
+			</div>
+		</div>
+		
+		<div class="row" style="margin-bottom: 1em;">
+			<div class="span2" style="text-align: right;">
+			</div>
+			<div class="span4">
+				<input type="checkbox" ng-model="passwordHidden" style="margin-top: -1px;"/>
+				Hide password
 			</div>
 		</div>
 		

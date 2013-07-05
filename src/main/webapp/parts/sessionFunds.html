@@ -1,0 +1,82 @@
+<div class="row">
+
+	<div class="span12" style="padding-bottom: 0.3em;">
+
+		<div class="row">
+			<div class="span12" style="border-top: 1px solid black; border-bottom: 1px solid black; height: 1.85em;">
+				<div class="row">
+					<div class="span6">
+						<div style="padding-top: 0.2em;">
+							<a href="" ng-click="showSessionFunds = !showSessionFunds"><i ng-class="{ 'icon-chevron-down': showSessionFunds, 'icon-chevron-right': !showSessionFunds }"></i></a>
+							Session funds
+						</div>
+					</div>
+					<div class="span6">
+						
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="row" ng-class="{ hidden: !showSessionFunds }" style="margin-bottom: 1em;">
+			
+			<div class="span12">
+				
+				<div class="row" style="background: #ededed; margin-bottom: 0.2em; padding-top: 0.3em; padding-bottom: 0.3em;">
+					
+					<div class="span4">
+						Unassigned (available) funds @ {{user.currentTradingSession.service|uppercase}}
+					</div> 
+					<div class="span4">
+						<span ng-hide="!user.live">
+							{{user.activeFunds[user.currentTradingSession.service][user.currentTradingSession.currencyLeft]}}
+							{{user.currentTradingSession.currencyLeft|uppercase}}
+						</span>
+						<span ng-show="!user.live" style="color: red;">
+							Unlimited
+						</span>
+					</div>
+					<div class="span4">
+						<span ng-hide="!user.live">
+							{{user.activeFunds[user.currentTradingSession.service][user.currentTradingSession.currencyRight]}}
+							{{user.currentTradingSession.currencyRight|uppercase}}
+						</span>
+						<span ng-show="!user.live" style="color: red;">
+							Unlimited
+						</span>
+					</div>
+					
+				</div>
+				
+				<div class="row" style="background: #ededed; padding-top: 0.3em; padding-bottom: 0.3em;">
+					
+					<form name="form" class="css-form" novalidate>
+					
+						<div class="span4" style="background: #ededed;">
+							Assigned (active) funds in this session
+						</div>
+						
+						<div class="span4">
+							<div class="control-group" ng-class="{ error: user.currentTradingSession.fundsLeft == undefined }" style="margin-bottom: 0px;">
+								<input style="margin-bottom: 0px; width: 4.0em;" type="text" name="fundsLeft" ng-model="user.currentTradingSession.fundsLeft" smart-float />
+								{{user.currentTradingSession.currencyLeft|uppercase}}
+							</div>
+						</div>
+					
+						<div class="span4">
+							<div class="control-group" ng-class="{ error: user.currentTradingSession.fundsRight == undefined }" style="margin-bottom: 0px;">
+								<input style="margin-bottom: 0px; width: 4.0em;" type="text" name="fundsRight" ng-model="user.currentTradingSession.fundsRight" smart-float />
+								{{user.currentTradingSession.currencyRight|uppercase}}
+							</div>
+						</div>
+					
+					</form>
+					
+				</div>
+			</div>
+			
+		</div>
+
+	</div>
+
+</div>

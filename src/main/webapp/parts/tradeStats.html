@@ -55,17 +55,22 @@
 			<ul class="nav nav-tabs">
 
 				<li ng-repeat="session in user.tradingSessions" ng-class="{ active: user.currentTradingSession.id == session.id }">
-					<a href="" ng-click="go('/tradingSession/{{session.id}}')" data-toggle="tab">{{session.currencyLeft|uppercase}}-{{session.currencyRight|uppercase}} @ BTC-E</a>
+					<a href="" ng-click="go('/tradingSession/{{session.id}}')" data-toggle="tab">{{session.currencyLeft|uppercase}}-{{session.currencyRight|uppercase}} @ {{session.service|uppercase}}</a>
 				</li>
 
 				<li style="padding-top: 4px; padding-left: 1.0em;">
 					<button ng-click="addTab()" class="btn" href="" style="display: inline-block;">
 						Add session
 					</button>
-					<select ng-model="newCurrencyPair" style="width: 12em; margin-bottom: 0px;">
-						<option value="ltc_usd" title="LTC-USD">USD-LTC @ BTC-E</option>
-						<option value="ltc_btc" title="LTC-BTC">BTC-LTC @ BTC-E</option>
-						<option value="btc_usd" title="BTC-USD">USD-BTC @ BTC-E</option>
+					<select ng-model="newSession" style="width: 12em; margin-bottom: 0px;" ng-hide="!user.live">
+						<option value="ltc_usd_btce" title="LTC-USD">USD-LTC @ BTC-E</option>
+						<option value="ltc_btc_btce" title="LTC-BTC">BTC-LTC @ BTC-E</option>
+						<option value="btc_usd_btce" title="BTC-USD">USD-BTC @ BTC-E</option>
+					</select>
+					<select ng-model="newSession" style="width: 12em; margin-bottom: 0px;" ng-hide="user.live">
+						<option value="ltc_usd_test" title="LTC-USD">USD-LTC @ TEST</option>
+						<option value="ltc_btc_test" title="LTC-BTC">BTC-LTC @ TEST</option>
+						<option value="btc_usd_test" title="BTC-USD">USD-BTC @ TEST</option>
 					</select>
 				</li>
 			
@@ -213,43 +218,6 @@
 				</div>
 			</div>
 
-			<div class="row">
-				<div class="span6">
-					<div style="display: inline; float: left;">
-						<input ng-model="newFundsLeft" style="width: 5.0em; margin-bottom: 0px; margin-top: 0.15em; padding: 10px 6px;" type="text" />
-						<button style="width: 3.0em; margin-top: 0.15em; padding: 0px;" ng-click="setFundsLeft()">
-							Set
-						</button>
-					</div>
-					<div style="display: inline; float: left; padding-top: 0.3em;">
-						<div ng-hide="!user.live">
-							<span style="margin-left: 0.5em;"> <a href="" ng-click="newFundsLeft = user.funds[user.currentTradingSession.currencyLeft] + user.currentTradingSession.fundsLeft">Max</a> {{ (user.funds[user.currentTradingSession.currencyLeft] + user.currentTradingSession.fundsLeft)|truncate:6:"" }} {{user.currentTradingSession.currencyLeft|uppercase}} </span>
-						</div>
-						<div style="color: red; padding-left: 0.5em;" ng-hide="user.live">
-							Unlimited
-						</div>
-					</div>
-				</div>
-				
-				<div class="span6" style="text-align: right;">
-					<div style="display: inline; float: right;">
-						<button style="width: 3.0em; margin-top: 0.15em; padding: 0px;" ng-click="setFundsRight()">
-							Set
-						</button>
-						<input ng-model="newFundsRight" style="width: 5.0em; margin-bottom: 0px; margin-top: 0.15em; padding: 10px 6px;" type="text" />
-					</div>
-					<div style="display: inline; float: right; padding-top: 0.3em;">
-						<div ng-hide="!user.live">
-							<span style="margin-right: 0.5em;"> <a href="" ng-click="newFundsRight = user.funds[user.currentTradingSession.currencyRight] + user.currentTradingSession.fundsRight">Max</a> {{ (user.funds[user.currentTradingSession.currencyRight] + user.currentTradingSession.fundsRight)|truncate:6:"" }} {{user.currentTradingSession.currencyRight|uppercase}} </span>
-						</div>
-						<div style="color: red; padding-right: 0.5em;" ng-hide="user.live">
-							Unlimited
-						</div>
-						
-					</div>
-				</div>
-			
-			</div>
 
 			<div class="row">
 

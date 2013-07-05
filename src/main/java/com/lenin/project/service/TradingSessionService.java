@@ -1,5 +1,6 @@
 package com.lenin.project.service;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -17,11 +18,14 @@ import javax.ws.rs.core.MediaType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.lenin.project.AuthComponent;
 import com.lenin.tradingplatform.client.RequestResponse;
 import com.lenin.tradingplatform.data.entities.AutoTradingOptions;
+import com.lenin.tradingplatform.data.entities.Order;
 import com.lenin.tradingplatform.data.entities.Rate;
 import com.lenin.tradingplatform.data.entities.TradingSession;
 import com.lenin.tradingplatform.data.entities.User;
+import com.lenin.tradingplatform.data.repositories.OrderRepository;
 import com.lenin.tradingplatform.data.repositories.TradingSessionRepository;
 import com.lenin.tradingplatform.data.repositories.UserRepository;
 
@@ -35,62 +39,46 @@ public class TradingSessionService {
 	@Autowired
 	private TradingSessionRepository tradingSessionRepository;
 	
-
+	@Autowired
+	private OrderRepository orderRepository;
+	
+	@Autowired
+	private AuthComponent authComponent;
+	
 	public TradingSessionService() {
 	}
 	
-	/*
+
 	@GET
 	@Path("/")
 	@Consumes({ MediaType.APPLICATION_JSON })
 	@Produces({ MediaType.APPLICATION_JSON })
-	public RequestResponse getRefreshData(
-			@HeaderParam("User-Id") String userId,
-			@HeaderParam("TradingSession-Id") String tradingSessionId) {
+	public RequestResponse getTradingSession(@HeaderParam("Username") String username, @HeaderParam("Auth-Token") String authToken,
+			@HeaderParam("Trading-Session-Id") String tradingSessionId) {
 
-		RequestResponse response = new RequestResponse();
-
-		if (tradingSessionId != null) {
-
-			TradingSession tradingSession = tradingSessionRepository.findOne(tradingSessionId);
-
-			RefreshData refreshData = new RefreshData();
-			refreshData.setOrders(orderRepository
-					.findByTradingSession(tradingSession));
-			refreshData.setFundsLeft(tradingSession.getFundsLeft());
-			refreshData.setFundsRight(tradingSession.getFundsRight());
-			refreshData.setProfitLeft(tradingSession.getProfitLeft());
-			refreshData.setProfitRight(tradingSession.getProfitRight());
-			refreshData.setRate(tradingSession.getRate());
-
-			response.setData(refreshData);
-
-		} else {
-			response.setSuccess(0);
+		RequestResponse response = authComponent.getInitialResponse(username, authToken, false);
+		
+		if(response.getSuccess() < 0) {
+			return response;
 		}
-
-		response.setSuccess(1);
-
-		return response;
-
-	}
-	*/
-
-	@GET
-	@Path("/")
-	@Consumes({ MediaType.APPLICATION_JSON })
-	@Produces({ MediaType.APPLICATION_JSON })
-	public RequestResponse getTradingSession(@HeaderParam("User-Id") String userId,
-			@HeaderParam("TradingSession-Id") String tradingSessionId) {
-
-		RequestResponse response = new RequestResponse();
+		
+		Map<String, Object> resultObj = new HashMap<String, Object>();
 
 		if (tradingSessionId != null) {
+			
 			TradingSession tradingSession = tradingSessionRepository.findOne(tradingSessionId); // user.getCurrentTradingSession();
-			response.setData(tradingSession);
+			List<Order> orders = orderRepository.findByTradingSession(tradingSession);
+			
+			resultObj.put("session", tradingSession);
+			resultObj.put("orders", orders);
+			
+			response.setData(resultObj);
+			
 		} else {
-			List<TradingSession> tradingSession = tradingSessionRepository.findAll();
-			response.setData(tradingSession);
+			
+			List<TradingSession> tradingSessions = tradingSessionRepository.findAll();
+			response.setData(tradingSessions);
+		
 		}
 
 		response.setSuccess(1);
@@ -103,10 +91,16 @@ public class TradingSessionService {
 	@Path("/")
 	@Consumes({ MediaType.APPLICATION_JSON })
 	@Produces({ MediaType.APPLICATION_JSON })
-	public TradingSession saveUserDetails(@HeaderParam("User-Id") String userId,
-			@HeaderParam("TradingSession-Id") String tradingSessionId,
+	public RequestResponse saveUserDetails(@HeaderParam("Username") String username, @HeaderParam("Auth-Token") String authToken,
+			@HeaderParam("Trading-Session-Id") String tradingSessionId,
 			TradingSession tradingSession) {
-
+		
+		RequestResponse response = authComponent.getInitialResponse(username, authToken);
+		
+		if(response.getSuccess() < 0) {
+			return response;
+		}
+		
 		TradingSession dbTradingSession = tradingSessionRepository.findOne(tradingSession
 				.getId());
 
@@ -116,8 +110,11 @@ public class TradingSessionService {
 		}
 
 		tradingSessionRepository.save(tradingSession);
-
-		return tradingSession;
+		
+		response.setData(tradingSession);
+		response.setSuccess(1);
+		
+		return response;
 
 	}
 
@@ -125,20 +122,27 @@ public class TradingSessionService {
 	@Path("/")
 	@Consumes({ MediaType.TEXT_PLAIN })
 	@Produces({ MediaType.APPLICATION_JSON })
-	public TradingSession addTradingSession(@HeaderParam("User-Id") String userId,
-			String currencyPair) {
+	public RequestResponse addTradingSession(@HeaderParam("Username") String username, @HeaderParam("Auth-Token") String authToken,
+			String session) {
 
-		System.out.println("new pair: ]" + currencyPair + "[");
+		System.out.println("new session: " + session);
+		
+		RequestResponse response = authComponent.getInitialResponse(username, authToken);
+		
+		if(response.getSuccess() < 0) {
+			return response;
+		}
 
-		User user = userRepository.findByUsername(userId);
+		User user = userRepository.findByUsername(username);
 
-		String[] currencies = currencyPair.split("_");
+		String[] sessionValues = session.split("_");
 		TradingSession tradingSession = new TradingSession();
 		tradingSession.setAutoTradingOptions(new AutoTradingOptions());
-		tradingSession.setCurrencyRight(currencies[0]);
-		tradingSession.setCurrencyLeft(currencies[1]);
+		tradingSession.setCurrencyRight(sessionValues[0]);
+		tradingSession.setCurrencyLeft(sessionValues[1]);
 		tradingSession.setLive(user.getLive());
-
+		tradingSession.setService(sessionValues[2]);
+		
 		Rate rate = new Rate();
 		if (user.getLive() == false) {
 			rate.setBuy(1.0);
@@ -157,26 +161,32 @@ public class TradingSessionService {
 		user.addTradingSession(tradingSession);
 		userRepository.save(user);
 
-		return tradingSession;
+		response.setData(tradingSession);
+		response.setSuccess(1);
+		return response;
 
 	}
 
+	
 	@DELETE
 	@Path("/")
 	@Consumes({ MediaType.APPLICATION_JSON })
 	@Produces({ MediaType.APPLICATION_JSON })
-	public RequestResponse deleteTradingSession(
-			@HeaderParam("User-Id") String userId,
-			@HeaderParam("TradingSession-Id") String tradingSessionId,
+	public RequestResponse deleteTradingSession(@HeaderParam("Username") String username, @HeaderParam("Auth-Token") String authToken,
+			@HeaderParam("Trading-Session-Id") String tradingSessionId,
 			TradingSession tradingSession) {
 
-		RequestResponse response = new RequestResponse();
-
+		RequestResponse response = authComponent.getInitialResponse(username, authToken);
+		
+		if(response.getSuccess() < 0) {
+			return response;
+		}
+		
 		if (tradingSessionId != null) {
 
 			tradingSession = tradingSessionRepository.findOne(tradingSessionId); // user.getCurrentTradingSession();
 
-			User user = userRepository.findByUsername(userId);
+			User user = userRepository.findByUsername(username);
 			List<TradingSession> tradingSessionList = user.getTradingSessions();
 			System.out.println("Deleting from " + tradingSessionList.size()
 					+ " tabs");
@@ -221,37 +231,45 @@ public class TradingSessionService {
 	@Path("/funds")
 	@Consumes({ MediaType.APPLICATION_JSON })
 	@Produces({ MediaType.APPLICATION_JSON })
-	public RequestResponse setFunds(@HeaderParam("User-Id") String userId,
-			@HeaderParam("TradingSession-Id") String tradingSessionId,
+	public RequestResponse setFunds(@HeaderParam("Username") String username, @HeaderParam("Auth-Token") String authToken,
+			@HeaderParam("Trading-Session-Id") String tradingSessionId,
 			@QueryParam("left") Double left, @QueryParam("right") Double right) {
 
-		RequestResponse response = new RequestResponse();
+		RequestResponse response = authComponent.getInitialResponse(username, authToken);
+		
+		if(response.getSuccess() < 0) {
+			return response;
+		}
 
-		User user = userRepository.findByUsername(userId);
-		Map<String, Double> fundsMap = user.getFunds();
-
+		User user = userRepository.findByUsername(username);
 		TradingSession tradingSession = tradingSessionRepository.findOne(tradingSessionId);
 
+		Map<String, Double> activeFundsMap = user.getActiveFunds().get(tradingSession.getService());
+		
 		if (left != null) {
 
 			Double tsFundsLeft = tradingSession.getFundsLeft();
 			String tsCurrencyLeft = tradingSession.getCurrencyLeft();
-			Double userFundsLeft = fundsMap.get(tsCurrencyLeft);
+			Double userFundsLeft = activeFundsMap.get(tsCurrencyLeft);
 			Double changeLeft = tsFundsLeft - left;
 
 			userFundsLeft = userFundsLeft + changeLeft;
 
 			if (userFundsLeft >= 0 || user.getLive() == false) {
+				
 				tradingSession.setFundsLeft(left);
-				fundsMap.put(tsCurrencyLeft, userFundsLeft);
-				user.setFunds(fundsMap);
+				activeFundsMap.put(tsCurrencyLeft, userFundsLeft);
+				//user.setFunds(fundsMap);
 				userRepository.save(user);
 				tradingSessionRepository.save(tradingSession);
 				response.setSuccess(1);
-				response.setData(fundsMap);
+				response.setData(activeFundsMap);
+				
 			} else {
-				response.setSuccess(0);
+				
 				response.setMessage("Not enough funds");
+				response.setData(tradingSession.getFundsLeft()+"_"+tradingSession.getFundsRight());
+			
 			}
 
 		}
@@ -260,22 +278,24 @@ public class TradingSessionService {
 
 			Double tsFundsRight = tradingSession.getFundsRight();
 			String tsCurrencyRight = tradingSession.getCurrencyRight();
-			Double userFundsRight = fundsMap.get(tsCurrencyRight);
+			Double userFundsRight = activeFundsMap.get(tsCurrencyRight);
 			Double changeRight = tsFundsRight - right;
 
 			userFundsRight = userFundsRight + changeRight;
 
 			if (userFundsRight >= 0 || user.getLive() == false) {
 				tradingSession.setFundsRight(right);
-				fundsMap.put(tsCurrencyRight, userFundsRight);
-				user.setFunds(fundsMap);
+				activeFundsMap.put(tsCurrencyRight, userFundsRight);
+				//user.setFunds(activeFundsMap);
 				userRepository.save(user);
 				tradingSessionRepository.save(tradingSession);
 				response.setSuccess(1);
-				response.setData(fundsMap);
+				response.setData(activeFundsMap);
 			} else {
-				response.setSuccess(0);
+				
 				response.setMessage("Not enough funds");
+				response.setData(tradingSession.getFundsLeft()+"_"+tradingSession.getFundsRight());
+			
 			}
 
 		}
@@ -289,17 +309,20 @@ public class TradingSessionService {
 	@Path("/autotradingoptions")
 	@Consumes({ MediaType.APPLICATION_JSON })
 	@Produces({ MediaType.APPLICATION_JSON })
-	public RequestResponse saveAutoTradingOptions(
-			@HeaderParam("User-Id") String userId,
-			@HeaderParam("TradingSession-Id") String tradingSessionId,
+	public RequestResponse saveAutoTradingOptions(@HeaderParam("Username") String username, @HeaderParam("Auth-Token") String authToken,
+			@HeaderParam("Trading-Session-Id") String tradingSessionId,
 			AutoTradingOptions autoTradingOptions) {
 
-		RequestResponse response = new RequestResponse();
+		RequestResponse response = authComponent.getInitialResponse(username, authToken);
+		
+		if(response.getSuccess() < 0) {
+			return response;
+		}
 
 		TradingSession tradingSession = tradingSessionRepository.findOne(tradingSessionId);
 		tradingSession.setAutoTradingOptions(autoTradingOptions);
-
-		User user = userRepository.findByUsername(userId);
+		
+		User user = userRepository.findByUsername(username);
 		user.setCurrentTradingSession(tradingSession);
 		userRepository.save(user);
 
