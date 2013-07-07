@@ -14,12 +14,22 @@
 			
 		</div>
 		
+		<div class="row" ng-hide="errors['login'] == undefined" style="margin-bottom: 1em;">
+			<div class="span6" style="text-align: center; border: 1px red solid; background: #fffacd;">
+				{{errors['login'].message}}
+			</div>
+		</div>
+		
+		<form name="form" ng-hide="registration == true" class="css-form" novalidate>
+			
 		<div class="row">
 			<div class="span2" style="text-align: right;">
 				E-mail
 			</div>
 			<div class="span4">
-				<input type="text" style="height: 2.0em;" ng-model="username"/>
+				<div class="control-group" ng-class="{ error: username == undefined }" style="margin-bottom: 0px;">
+					<input type="text" style="height: 2.0em;" name="username" ng-model="username" email/>
+				</div>
 			</div>
 		</div>
 		
@@ -47,9 +57,37 @@
 				
 			</div>
 			<div class="span4">
-				<button class="btn" ng-click="login()">Go</button>
+				<button class="btn" ng-hide="username == undefined || username.length == 0" ng-click="login(false)">Go</button>
+				<button class="btn" disabled ng-show="username == undefined || username.length == 0">Go</button>
 			</div>
 		</div>
+		
+		</form>
+		
+		<form name="form" ng-show="registration == true" class="css-form" novalidate>
+			
+		<div class="row">
+			<div class="span6" style="text-align: center;">
+				Register new user:
+			</div>
+		</div>
+		
+		<div class="row">
+			<div class="span6" style="text-align: center; font-weight: bold;">
+				{{username}}
+			</div>
+		</div>
+		
+		<div class="row" style="margin-top: 1em;">
+			<div class="span6" style="text-align: center; font-weight: bold;">
+				<button class="btn" ng-click="registration = false">Cancel</button>
+				<button class="btn" ng-click="login(true)">Register</button>
+			</div>
+		</div>
+		
+		</form>
+		
+		
 		
 	</div>
 

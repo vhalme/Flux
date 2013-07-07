@@ -241,9 +241,13 @@ var API = {
 		},
 		
 		
-		login: function(username, email, password, callback) {
+		login: function(username, email, password, register, callback) {
 			
 			var url = "service/login";
+			
+			if(register != undefined && register == true) {
+				url += "?reg=true";
+			}
 			
 			this.userId = username;
 			

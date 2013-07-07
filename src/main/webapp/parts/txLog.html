@@ -26,9 +26,9 @@
 
 		<div class="row" ng-hide="sell.reversedOrder != null" style="margin-bottom: 0.1em;" ng-repeat="sell in transactions['sell'] | orderBy:sellSort:!sellSortReverse">
 
-			<div class="span4" ng-class="{ profitBorder: sellProfit(sell) > 0, lossBorder: sellProfit(sell) < 0 }" style="position: relative; padding-right: 2.0em;">
+			<div class="span4" ng-class="{ profitBorder: sellProfit(sell) >= 0, lossBorder: sellProfit(sell) < 0 }" style="position: relative; padding-right: 2.0em;">
 
-				<div class="orderFill customstyle" ng-class="{ profitFill: sellProfit(sell) > 0, lossFill: sellProfit(sell) < 0 }" my-width="sell.filledAmount / sell.brokerAmount"></div>
+				<div class="orderFill customstyle" ng-class="{ profitFill: sellProfit(sell) >= 0, lossFill: sellProfit(sell) < 0 }" my-width="sell.filledAmount / sell.brokerAmount"></div>
 
 				<div class="transparentCover" ng-hide="!sell.isReversed"></div>
 
@@ -49,12 +49,12 @@
 
 			</div>
 
-			<div class="span2" style="margin-left: 0px; width: 6em; padding-left: 0.5em;" ng-hide="sell.filledAmount < sell.brokerAmount">
+			<div class="span2" style="margin-left: 0px; width: 6em; padding-left: 0.5em;" ng-hide="!sell.isFilled">
 				<a style="margin-left: 1.0em;" href="" ng-click="reverseTrade(sell, true)">Buy</a>
 				<a href="" ng-click="removeTransaction(sell)">Forget</a>
 			</div>
 
-			<div class="span2" style="margin-left: 0px; width: 6em; padding-left: 0.5em;" ng-hide="sell.filledAmount >= sell.brokerAmount">
+			<div class="span2" style="margin-left: 0px; width: 6em; padding-left: 0.5em;" ng-hide="sell.isFilled">
 				<a style="margin-left: 1.0em;" href="" ng-click="cancelTrade(sell)">Cancel</a>
 			</div>
 
@@ -111,12 +111,12 @@
 
 			</div>
 
-			<div class="span2" style="margin-left: 0px; width: 6em; padding-left: 0.5em;" ng-hide="buy.filledAmount < buy.brokerAmount">
+			<div class="span2" style="margin-left: 0px; width: 6em; padding-left: 0.5em;" ng-hide="!buy.isFilled">
 				<a style="margin-left: 1.0em;" href="" ng-click="reverseTrade(buy, true)">Sell</a>
 				<a href="" ng-click="removeTransaction(buy)">Forget</a>
 			</div>
 
-			<div class="span2" style="margin-left: 0px; width: 6em; padding-left: 0.5em;" ng-hide="buy.filledAmount >= buy.brokerAmount">
+			<div class="span2" style="margin-left: 0px; width: 6em; padding-left: 0.5em;" ng-hide="buy.isFilled">
 				<a style="margin-left: 1.0em;" href="" ng-click="cancelTrade(buy)">Cancel</a>
 			</div>
 

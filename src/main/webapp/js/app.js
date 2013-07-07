@@ -5,7 +5,9 @@ function AppCtrl($scope, $routeParams, $location, $http) {
 	$scope.refreshCounter = 0;
 	$scope.currentTradingSessionId = 0;
 	
-	$scope.user = null; 
+	$scope.user = null;
+	
+	$scope.errors = [];
 	
 	$scope.setUser = function(user) {
 		
@@ -56,7 +58,7 @@ function AppCtrl($scope, $routeParams, $location, $http) {
 					$scope.newSession = "ltc_usd_test";
 				}
 				
-				//$scope.go("/tradingSession/"+tradingSessionId);
+				$scope.go("/tradingSession/"+tradingSessionId);
 			
 			});
 			

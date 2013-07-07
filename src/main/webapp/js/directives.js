@@ -80,6 +80,27 @@ myApp.directive('smartFloat', function() {
   };
 });
 
+var EMAIL_REGEXP = /^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/;
+myApp.directive('email', function() {
+	  return {
+	    require: 'ngModel',
+	    link: function(scope, elm, attrs, ctrl) {
+	      ctrl.$parsers.unshift(function(viewValue) {
+	        if (EMAIL_REGEXP.test(viewValue) || viewValue == undefined || viewValue.length == 0) {
+	          ctrl.$setValidity('email', true);
+	          if(viewValue == undefined) {
+	        	  return "";
+	          } else {
+	        	  return viewValue;
+	          }
+	        } else {
+	          ctrl.$setValidity('email', false);
+	          return undefined;
+	        }
+	      });
+	    }
+	  };
+	});
 
 myApp.config(['$routeProvider', function($routeProvider) {
 	

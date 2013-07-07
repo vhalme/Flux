@@ -124,7 +124,7 @@ public class RootService {
 	@Path("/login")
 	@Consumes({ MediaType.TEXT_PLAIN })
 	@Produces({ MediaType.APPLICATION_JSON })
-	public RequestResponse login(@HeaderParam("Username") String username, @HeaderParam("Email") String email,
+	public RequestResponse login(@HeaderParam("Username") String username, @HeaderParam("Email") String email, @QueryParam("reg") String reg,
 			String password) {
 		
 		RequestResponse response = new RequestResponse();
@@ -166,12 +166,18 @@ public class RootService {
 			} else {
 				
 				System.out.println("Incorrect password " + password+"/"+user.getPassword());
+				response.setMessage("Wrong password.");
 				response.setSuccess(0);
 				
 			}
 			
 		} else {
-
+			
+			if(reg == null) {
+				response.setSuccess(2);
+				return response;
+			}
+			
 			System.out.println("Creating user " + email);
 			
 			user = new User();
@@ -270,7 +276,7 @@ public class RootService {
 			userRepository.save(user);
 			userRepository.save(testUser);
 
-			response.setSuccess(2);
+			response.setSuccess(3);
 
 		}
 
