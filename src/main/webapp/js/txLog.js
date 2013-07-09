@@ -85,13 +85,22 @@ function TxLogCtrl($scope, $routeParams, $http) {
 	
 	$scope.buyProfit = function(buy) {
 		
-		var totalFeeFactor = (1-0.002)*(1-0.002);
-		totalFeeFactor = totalFeeFactor*totalFeeFactor;
+		var brokerFeeFactor = 1-0.002;
+		var serviceFeeFactor = 1-0.002;
+		
+		var totalFeeFactor = brokerFeeFactor*serviceFeeFactor;
+		
+		var buyPrice = buy.amount*buy.rate;
+		var sellPrice = (buy.amount*totalFeeFactor) * $scope.actualTradeRate("sell");
+		
+		var feeDeduction = (buy.amount - (buy.amount*totalFeeFactor)) * $scope.actualTradeRate("sell");
+		
+		var profitUsd = (sellPrice - buyPrice) - feeDeduction;
 		
 		if($scope.buyProfitFormat == "%") {
 			return 100*(1-(buy.rate / ($scope.actualTradeRate("sell"))));
 		} else if($scope.buyProfitFormat == "$") {
-			return ((buy.amount*totalFeeFactor)*$scope.actualTradeRate("sell")) - ((buy.amount*totalFeeFactor)*buy.rate); 
+			return profitUsd; 
 		}
 		
 	};
@@ -99,13 +108,22 @@ function TxLogCtrl($scope, $routeParams, $http) {
 	
 	$scope.sellProfit = function(sell) {
 		
-		var totalFeeFactor = (1-0.002)*(1-0.002);
-		totalFeeFactor = totalFeeFactor*totalFeeFactor;
+		var brokerFeeFactor = 1-0.002;
+		var serviceFeeFactor = 1-0.002;
+		
+		var totalFeeFactor = brokerFeeFactor*serviceFeeFactor;
+		
+		var sellPrice = (sell.amount*totalFeeFactor) * sell.rate;
+		var buyPrice =  sell.amount * $scope.actualTradeRate("buy");
+		
+		var feeDeduction = (sell.amount - (sell.amount*totalFeeFactor)) * $scope.actualTradeRate("buy");
+		
+		var profitUsd = (sellPrice - buyPrice) - feeDeduction;
 		
 		if($scope.sellProfitFormat == "%") {
 			return 100*((sell.rate / ($scope.actualTradeRate("buy")))-1);
 		} else if($scope.sellProfitFormat == "$") {
-			return ((sell.amount*totalFeeFactor)*sell.rate) - ((sell.amount*totalFeeFactor)*$scope.actualTradeRate("buy")); 
+			return profitUsd;
 		}
 		
 	};

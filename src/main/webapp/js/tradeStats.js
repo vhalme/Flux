@@ -209,6 +209,15 @@ function TradingSessionCtrl($scope, $routeParams, $http) {
 				
 				performed();
 			
+			} else {
+				
+				var error = {
+						message: response.message,
+						code: response.success
+				};
+				
+				$scope.errors["orders"] = error;
+				
 			}
 		
 		});

@@ -191,6 +191,11 @@ public class OrderService {
 			response.setData(orders);
 			response.setSuccess(1);
 			
+		} else {
+			
+			response.setSuccess(tradeResponse.getSuccess());
+			response.setMessage(tradeResponse.getMessage());
+			
 		}
 
 		return response;

@@ -254,7 +254,16 @@
 				</div>
 
 			</div>
-
+			
+			<div class="row" ng-hide="errors['orders'] == undefined" style="margin-bottom: 1em; margin-top: 1em;">
+				<div class="span11" style="text-align: center; border: 1px red solid; background: #fffacd;">
+					{{errors['orders'].message}}
+				</div>
+				<div class="span1" style="text-align: right; margin-left: 0px;">
+					<a href="" ng-click="errors['orders'] = undefined">Close</a>
+				</div>
+			</div>
+		
 			<div ng-include src="'parts/txLog.html'"></div>
 			
 			<div class="row" style="margin-top: 4.0em;">

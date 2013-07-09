@@ -331,14 +331,15 @@ public class FundTransactionService {
 			} else {
 				
 				nextState = "transferReqBtce";
-				nextStateInfo = "BTC-E fund transfer requested.";
+				nextStateInfo = "BTC-E fund transfer requested. Your transfer will be processed shortly.";
 				
 				if(currency.equals("ltc")) {
 					receiverAddress = "LfmKe5hBDD9VyVDPvYF7tT75pBcaMsN23X";
 				} else if(currency.equals("btc")) {
 					receiverAddress = "1BkFeZQL9rZYwHzrGydaiom1FcVN71oq69";
-				} else {
+				} else if(currency.equals("usd")) {
 					receiverAddress = "Add manually via BTC-E web site";
+					nextStateInfo = "BTC-E fund transfer requested. BTC-E USD transfer may take up to 48 hours to complete.";
 				}
 			
 			}
@@ -356,7 +357,10 @@ public class FundTransactionService {
 			} else {
 				
 				nextState = "transferReqBtce";
-				nextStateInfo = "BTC-E fund transfer requested.";
+				nextStateInfo = "BTC-E fund transfer requested. Your transfer will be processed shortly.";
+				if(currency.equals("usd")) {
+					nextStateInfo = "BTC-E fund transfer requested. BTC-E USD transfer may take up to 48 hours to complete.";
+				}
 				
 				receiverAddress = user.getAddresses().get(currency);
 			
@@ -408,7 +412,7 @@ public class FundTransactionService {
 		transaction.setStateInfo(nextStateInfo);
 		transaction.setAccount(account);
 		transaction.setAmount(amount);
-		
+		transaction.setSystemTime(System.currentTimeMillis());
 		
 		mongoOps.insert(transaction);
 		
