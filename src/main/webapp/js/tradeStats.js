@@ -386,17 +386,19 @@ function TradingSessionCtrl($scope, $routeParams, $http) {
 			
 			var buyThreshold = $scope.user.currentTradingSession.autoTradingOptions.buyThreshold;
 			var sellThreshold = $scope.user.currentTradingSession.autoTradingOptions.sellThreshold;
-			var tradeChunk = $scope.user.currentTradingSession.autoTradingOptions.tradeChunk;
+			var buyChunk = $scope.user.currentTradingSession.autoTradingOptions.buyChunk;
+			var sellChunk = $scope.user.currentTradingSession.autoTradingOptions.sellChunk;
 			var buyCeiling = $scope.user.currentTradingSession.autoTradingOptions.buyCeiling;
 			var sellFloor = $scope.user.currentTradingSession.autoTradingOptions.sellFloor;
 			
-			console.log($scope.user.currentTradingSession.autoTradingOptions);
-			
-			if(buyThreshold == undefined || sellThreshold == undefined || tradeChunk == undefined || buyCeiling == undefined | sellFloor == undefined) {
+			if(buyThreshold == undefined || sellThreshold == undefined || buyChunk == undefined || sellChunk == undefined || 
+					buyCeiling == undefined | sellFloor == undefined) {
 				return;
 			}
 			
 			API.saveAutoTradingOptions(value, function(response) {
+				
+				console.log(response);
 				
 				$scope.checkResponse(response);
 				

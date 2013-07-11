@@ -325,7 +325,8 @@ public class TradingSessionService {
 		User user = userRepository.findByUsername(username);
 		user.setCurrentTradingSession(tradingSession);
 		userRepository.save(user);
-
+		
+		System.out.println("saveTradingOptions: "+autoTradingOptions.getBuyChunk()+"/"+autoTradingOptions.getSellChunk());
 		tradingSessionRepository.save(tradingSession);
 
 		response.setSuccess(1);

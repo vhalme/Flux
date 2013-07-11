@@ -83,7 +83,7 @@ function TxLogCtrl($scope, $routeParams, $http) {
 	}
 	
 	
-	$scope.buyProfit = function(buy) {
+	$scope.buyProfit = function(buy, profitFormat) {
 		
 		var brokerFeeFactor = 1-0.002;
 		var serviceFeeFactor = 1-0.002;
@@ -97,16 +97,16 @@ function TxLogCtrl($scope, $routeParams, $http) {
 		
 		var profitUsd = (sellPrice - buyPrice) - feeDeduction;
 		
-		if($scope.buyProfitFormat == "%") {
+		if(profitFormat == "%") {
 			return 100*(1-(buy.rate / ($scope.actualTradeRate("sell"))));
-		} else if($scope.buyProfitFormat == "$") {
+		} else if(profitFormat == "$") {
 			return profitUsd; 
 		}
 		
 	};
 	
 	
-	$scope.sellProfit = function(sell) {
+	$scope.sellProfit = function(sell, profitFormat) {
 		
 		var brokerFeeFactor = 1-0.002;
 		var serviceFeeFactor = 1-0.002;
@@ -120,9 +120,9 @@ function TxLogCtrl($scope, $routeParams, $http) {
 		
 		var profitUsd = (sellPrice - buyPrice) - feeDeduction;
 		
-		if($scope.sellProfitFormat == "%") {
+		if(profitFormat == "%") {
 			return 100*((sell.rate / ($scope.actualTradeRate("buy")))-1);
-		} else if($scope.sellProfitFormat == "$") {
+		} else if(profitFormat == "$") {
 			return profitUsd;
 		}
 		

@@ -171,7 +171,28 @@ public class OrderService {
 			response.setMessage("Rate not set");
 			return response;
 		}
-
+		
+		Double fundsLeft = tradingSession.getFundsLeft();
+		Double fundsRight = tradingSession.getFundsRight();
+		
+		if(cancel == null) {
+		
+			if(order.getType().equals("buy")) {
+				if(fundsLeft < order.getAmount()*order.getRate()) {
+					response.setSuccess(-5);
+					response.setMessage(tradingSession.getCurrencyLeft().toUpperCase()+" funds insufficient for this order.");
+					return response;
+				}
+			} else if(order.getType().equals("sell")) {
+				if(fundsRight < order.getAmount()) {
+					response.setSuccess(-5);
+					response.setMessage(tradingSession.getCurrencyRight().toUpperCase()+" funds insufficient for this order.");
+					return response;
+				}
+			}
+			
+		}
+		
 		TradingClient tradingClient = new TradingClient(tradingSession,
 				tradingSessionRepository, orderRepository, tradeRepository);
 		

@@ -26,9 +26,9 @@
 
 		<div class="row" ng-hide="sell.reversedOrder != null" style="margin-bottom: 0.1em;" ng-repeat="sell in transactions['sell'] | orderBy:sellSort:!sellSortReverse">
 
-			<div class="span4" ng-class="{ profitBorder: sellProfit(sell) >= 0, lossBorder: sellProfit(sell) < 0 }" style="position: relative; padding-right: 2.0em;">
+			<div class="span4" ng-class="{ profitBorder: sellProfit(sell, '$') >= 0, lossBorder: sellProfit(sell, '$') < 0 }" style="position: relative; padding-right: 2.0em;">
 
-				<div class="orderFill customstyle" ng-class="{ profitFill: sellProfit(sell) >= 0, lossFill: sellProfit(sell) < 0 }" my-width="sell.filledAmount / sell.brokerAmount"></div>
+				<div class="orderFill customstyle" ng-class="{ profitFill: sellProfit(sell, '$') >= 0, lossFill: sellProfit(sell, '$') < 0 }" my-width="sell.filledAmount / sell.brokerAmount"></div>
 
 				<div class="transparentCover" ng-hide="!sell.isReversed"></div>
 
@@ -43,7 +43,7 @@
 						{{sell.rate|truncate:6:""}}
 					</div>
 					<div class="span1">
-						{{sellProfit(sell)|truncate:6:""}}{{sellProfitFormat}}
+						{{sellProfit(sell, sellProfitFormat)|truncate:6:""}}{{sellProfitFormat}}
 					</div>
 				</div>
 
@@ -88,9 +88,9 @@
 
 		<div class="row" ng-hide="buy.reversedOrder != null" style="margin-bottom: 0.1em;" ng-repeat="buy in transactions['buy'] | orderBy:buySort:!buySortReverse">
 
-			<div class="span4" ng-class="{ profitBorder: buyProfit(buy) >= 0, lossBorder: buyProfit(buy) < 0 }" style="position: relative; padding-right: 2.0em;">
+			<div class="span4" ng-class="{ profitBorder: buyProfit(buy, '$') >= 0, lossBorder: buyProfit(buy, '$') < 0 }" style="position: relative; padding-right: 2.0em;">
 
-				<div class="orderFill customstyle" ng-class="{ profitFill: buyProfit(buy) >= 0, lossFill: buyProfit(buy) < 0 }" my-width="buy.filledAmount / buy.brokerAmount"></div>
+				<div class="orderFill customstyle" ng-class="{ profitFill: buyProfit(buy, '$') >= 0, lossFill: buyProfit(buy, '$') < 0 }" my-width="buy.filledAmount / buy.brokerAmount"></div>
 
 				<div class="transparentCover" ng-hide="!buy.isReversed"></div>
 
@@ -105,7 +105,7 @@
 						{{buy.rate|truncate:6:""}}
 					</div>
 					<div class="span1">
-						{{buyProfit(buy)|truncate:6:""}}{{buyProfitFormat}}
+						{{buyProfit(buy, buyProfitFormat)|truncate:6:""}}{{buyProfitFormat}}
 					</div>
 				</div>
 

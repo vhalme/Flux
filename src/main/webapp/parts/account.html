@@ -272,32 +272,84 @@
 				
 				</div>
 				
+				<div class="row" ng-show="btceTransferCurrency == 'ltc' && !btceAdd">
+					<div class="span5">
+						BTC-E imposes following fees and limitations on LTC withdrawals:<br/>
+						* Minimal withdrawal amount: 1 LTC<br/>
+						* Withdrawal fee: 0.5 LTC<br/>
+						* Maximum daily withdrawal amount: 5000 LTC
+					</div>
+				</div>
+				
+				<div class="row" ng-show="btceTransferCurrency == 'ltc' && btceAdd">
+					<div class="span5">
+						BTC-E imposes following fees and limitations on LTC deposits:<br/>
+						* Minimal deposit amount: 0.1 LTC<br/>
+						* 6 transaction confirmations required
+					</div>
+				</div>
+				
+				<div class="row" ng-show="btceTransferCurrency == 'btc' && !btceAdd">
+					<div class="span5">
+						BTC-E imposes following fees and limitations on BTC withdrawals:<br/>
+						* Minimal withdrawal amount: 0.1 BTC<br/>
+						* Withdrawal fee: 0.001 BTC<br/>
+						* Maximum daily withdrawal amount: 100 BTC
+					</div>
+				</div>
+				
+				<div class="row" ng-show="btceTransferCurrency == 'btc' && btceAdd">
+					<div class="span5">
+						BTC-E imposes following fees and limitations on BTC deposits:<br/>
+						* Minimal deposit amount: 0.0001 LTC<br/>
+						* 3 transaction confirmations required
+					</div>
+				</div>
+				
+				<div class="row" ng-show="btceTransferCurrency == 'usd' && !btceAdd">
+					<div class="span5">
+						Following OKPAY fees and limitations apply:<br/>
+						* Minimal withdrawal amount: 1 USD<br/>
+						* 2% transaction fee
+					</div>
+				</div>
+				
+				<div class="row" ng-show="btceTransferCurrency == 'usd' && btceAdd">
+					<div class="span5">
+						BTC-E imposes following fees and limitations on USD deposits:<br/>
+						* Deposit fee: 4%<br/>
+						Following OKPAY fees and limitations apply:<br/>
+						* Minimal withdrawal amount: 1 USD<br/>
+						* 2% transaction fee
+					</div>
+				</div>
+				
 				<div class="row"  style="margin-top: 1.0em;" ng-show="pendingTxBtce.length > 0">
-						<div class="span5">
-							<b>Pending BTC-E transfers</b>
-						</div>
+					<div class="span5">
+						<b>Pending BTC-E transfers</b>
 					</div>
-					
-					<div class="row" ng-repeat="transaction in pendingTxBtce" style="margin-top: 2px;">
-						<div class="span5" style="background: #d0d0d0;">
-							<div class="row">
-								<div class="span2">
-									{{transaction.dateStr}}
-								</div>
-								<div class="span1">
-									{{transaction.type}}
-								</div>
-								<div class="span2" style="text-align: right;">
-									{{transaction.amount|truncate:6:""}} {{transaction.currency|uppercase}}
-								</div>
+				</div>
+				
+				<div class="row" ng-repeat="transaction in pendingTxBtce" style="margin-top: 2px;">
+					<div class="span5" style="background: #d0d0d0;">
+						<div class="row">
+							<div class="span2">
+								{{transaction.dateStr}}
 							</div>
-							<div class="row">
-								<div class="span5">
-									{{transaction.stateInfo}}
-								</div>
+							<div class="span1">
+								{{transaction.type}}
+							</div>
+							<div class="span2" style="text-align: right;">
+								{{transaction.amount|truncate:6:""}} {{transaction.currency|uppercase}}
 							</div>
 						</div>
+						<div class="row">
+							<div class="span5">
+								{{transaction.stateInfo}}
+							</div>
+						</div>
 					</div>
+				</div>
 				
 				<div class="row" style="margin-bottom: 1.0em; margin-top: 2.0em;">
 			

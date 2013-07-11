@@ -32,7 +32,12 @@ myApp.directive('customstyle', function () {
 			
 			scope.$watch(attrs.myWidth, function(value) {     
 				//console.log("myWidth: "+value);
-				element.css('width', (value*100)+'%');            
+				var pctVal = value*100;
+				//console.log("pctVal="+pctVal);
+				if(100-pctVal < 0.1) {
+					pctVal = 100;
+				}
+				element.css('width', pctVal+'%');            
 			});
 			
 		}
