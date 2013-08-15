@@ -16,6 +16,7 @@ import javax.ws.rs.core.MediaType;
 
 import org.codehaus.jettison.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +24,7 @@ import com.lenin.project.AuthComponent;
 import com.lenin.project.util.PasswordHash;
 import com.lenin.tradingplatform.client.BitcoinApi;
 import com.lenin.tradingplatform.client.RequestResponse;
+import com.lenin.tradingplatform.data.entities.AccountFunds;
 import com.lenin.tradingplatform.data.entities.AutoTradingOptions;
 import com.lenin.tradingplatform.data.entities.FundTransaction;
 import com.lenin.tradingplatform.data.entities.Rate;
@@ -83,9 +85,10 @@ public class RootService {
 		BitcoinApi api = new BitcoinApi("127.0.0.1", 8332, "fluxltc1", "fLuxThuyu1eP");
 
 		if (method.equals("sendfrom")) {
-
-			Map<String, Double> funds = user.getFunds();
-			Double availableAmount = funds.get(params.get(0));
+			
+			AccountFunds accountFunds = user.getAccountFunds();
+			Map<String, Double> reserves = accountFunds.getReserves();
+			Double availableAmount = reserves.get(params.get(0));
 
 			String currency = (String)params.get(0);
 			String toAddress = (String)params.get(1);
@@ -93,7 +96,7 @@ public class RootService {
 			
 			if (availableAmount >= amount) {
 
-				String fromAccount = user.getAccountName();
+				String fromAccount = accountFunds.getAccountName();
 
 				clientParams.add(fromAccount);
 				clientParams.add(toAddress);
@@ -126,6 +129,8 @@ public class RootService {
 	@Produces({ MediaType.APPLICATION_JSON })
 	public RequestResponse login(@HeaderParam("Username") String username, @HeaderParam("Email") String email, @QueryParam("reg") String reg,
 			String password) {
+		
+		MongoOperations mongoOps = (MongoOperations)mongoTemplate;
 		
 		RequestResponse response = new RequestResponse();
 
@@ -195,27 +200,37 @@ public class RootService {
 			user.setLive(true);
 			user.setLastActivity(nowTime);
 			
-			Map<String, Double> funds = new HashMap<String, Double>();
-			funds.put("usd", 0.0);
-			funds.put("ltc", 0.0);
-			funds.put("btc", 0.0);
-			user.setFunds(funds);
+			AccountFunds accountFunds = new AccountFunds();
+			
+			Map<String, Double> reserves = new HashMap<String, Double>();
+			reserves.put("usd", 0.0);
+			reserves.put("ltc", 0.0);
+			reserves.put("btc", 0.0);
+			accountFunds.setReserves(reserves);
+			
 			Map<String, Map<String, Double>> activeFunds = new HashMap<String, Map<String, Double>>();
+			Map<String, Double> activeMtgoxFunds = new HashMap<String, Double>();
+			activeMtgoxFunds.put("usd", 0.0);
+			activeMtgoxFunds.put("ltc", 0.0);
+			activeMtgoxFunds.put("btc", 0.0);
+			activeFunds.put("mtgox", activeMtgoxFunds);
 			Map<String, Double> activeBtceFunds = new HashMap<String, Double>();
 			activeBtceFunds.put("usd", 0.0);
 			activeBtceFunds.put("ltc", 0.0);
 			activeBtceFunds.put("btc", 0.0);
 			activeFunds.put("btce", activeBtceFunds);
 			Map<String, Double> activeTestFunds = new HashMap<String, Double>();
-			activeBtceFunds.put("usd", 0.0);
-			activeBtceFunds.put("ltc", 0.0);
-			activeBtceFunds.put("btc", 0.0);
+			activeTestFunds.put("usd", 0.0);
+			activeTestFunds.put("ltc", 0.0);
+			activeTestFunds.put("btc", 0.0);
 			activeFunds.put("test", activeTestFunds);
-			user.setActiveFunds(activeFunds);
+			accountFunds.setActiveFunds(activeFunds);
 			
-			createAddress("btc", user);
-			createAddress("ltc", user);
-
+			user.setAccountFunds(accountFunds);
+			
+			createAddress("btc", accountFunds);
+			createAddress("ltc", accountFunds);
+			
 			AutoTradingOptions autoTradingOptions = new AutoTradingOptions();
 			TradingSession tradingSession = new TradingSession();
 			tradingSession.setCurrencyLeft("usd");
@@ -235,18 +250,7 @@ public class RootService {
 			testUser.setLastActivity(nowTime);
 			testUser.setUsername(email + " (test)");
 			testUser.setLive(false);
-			Map<String, Double> testFunds = new HashMap<String, Double>();
-			testFunds.put("usd", 100.0);
-			testFunds.put("ltc", 100.0);
-			testFunds.put("btc", 100.0);
-			testUser.setFunds(testFunds);
-			Map<String, Map<String, Double>> testUserActiveFunds = new HashMap<String, Map<String, Double>>();
-			Map<String, Double> testUserActiveTestFunds = new HashMap<String, Double>();
-			testUserActiveTestFunds.put("usd", 0.0);
-			testUserActiveTestFunds.put("ltc", 0.0);
-			testUserActiveTestFunds.put("btc", 0.0);
-			testUserActiveFunds.put("test", testUserActiveTestFunds);
-			testUser.setActiveFunds(testUserActiveFunds);
+			testUser.setAccountFunds(accountFunds);
 
 			AutoTradingOptions testAutoTradingOptions = new AutoTradingOptions();
 			testAutoTradingOptions.setBuyCeiling(1.0);
@@ -272,7 +276,8 @@ public class RootService {
 
 			user.setAuthToken(token);
 			testUser.setAuthToken(token);
-
+			
+			mongoOps.save(accountFunds);
 			userRepository.save(user);
 			userRepository.save(testUser);
 
@@ -286,7 +291,7 @@ public class RootService {
 
 	}
 
-	private void createAddress(String currency, User user) {
+	private void createAddress(String currency, AccountFunds accountFunds) {
 		
 		String ip = null;
 		int port = 0;
@@ -303,13 +308,13 @@ public class RootService {
 			return;
 		}
 		
-		String accountName = user.getAccountName();
+		String accountName = accountFunds.getAccountName();
 		if (accountName == null) {
 			accountName = randomString();
-			user.setAccountName(accountName);
+			accountFunds.setAccountName(accountName);
 		}
 
-		Map<String, String> addresses = user.getAddresses();
+		Map<String, String> addresses = accountFunds.getAddresses();
 		if (addresses == null) {
 			addresses = new HashMap<String, String>();
 		}
@@ -332,7 +337,7 @@ public class RootService {
 			e.printStackTrace();
 		}
 		
-		user.setAddresses(addresses);
+		accountFunds.setAddresses(addresses);
 
 	}
 

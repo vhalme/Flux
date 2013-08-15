@@ -68,8 +68,8 @@ function AccountCtrl($scope, $routeParams, $http) {
 			}
 			
 			
-			$scope.user.funds = result.reserveFunds;
-			$scope.user.activeFunds = result.activeFunds;
+			$scope.user.accountFunds.reserves = result.reserves;
+			$scope.user.accountFunds.activeFunds = result.activeFunds;
 			
 			
 		});

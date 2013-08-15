@@ -233,7 +233,7 @@ function TradingSessionCtrl($scope, $routeParams, $http) {
 			$scope.checkResponse(response);
 			
 			if(response.success == 1) {
-				$scope.user.activeFunds[$scope.user.currentTradingSession.service] = response.data;
+				$scope.user.accountFunds.activeFunds[$scope.user.currentTradingSession.service] = response.data;
 			} else {
 				var sFunds = response.data.split("_");
 				$scope.user.currentTradingSession.fundsLeft = parseFloat(sFunds[0]);
@@ -251,11 +251,11 @@ function TradingSessionCtrl($scope, $routeParams, $http) {
 			$scope.checkResponse(response);
 			
 			if(response.success == 1) {
-				$scope.user.activeFunds[$scope.user.currentTradingSession.service] = response.data;
+				$scope.user.accountFunds.activeFunds[$scope.user.currentTradingSession.service] = response.data;
 			} else {
 				var sFunds = response.data.split("_");
 				$scope.user.currentTradingSession.fundsRight = parseFloat(sFunds[1]);
-				$scope.user.activeFunds[$scope.user.currentTradingSession.service] = response.data;
+				$scope.user.accountFunds.activeFunds[$scope.user.currentTradingSession.service] = response.data;
 				alert(response.message);
 			}
 		});

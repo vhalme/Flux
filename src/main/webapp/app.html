@@ -56,7 +56,7 @@
 							<div ng-hide="user == null">
 								Signed in as: {{user.username}}
 								<div ng-hide="!user.live">
-									USD {{user.funds.usd}} LTC {{user.funds.ltc}} BTC {{user.funds.btc}}
+									USD {{user.accountFunds.reserves.usd}} LTC {{user.accountFunds.reserves.ltc}} BTC {{user.accountFunds.reserves.btc}}
 								</div>
 								<div ng-hide="user.live">
 									&nbsp;

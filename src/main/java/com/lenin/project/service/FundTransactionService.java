@@ -27,6 +27,7 @@ import org.springframework.stereotype.Service;
 
 import com.lenin.project.AuthComponent;
 import com.lenin.tradingplatform.client.RequestResponse;
+import com.lenin.tradingplatform.data.entities.AccountFunds;
 import com.lenin.tradingplatform.data.entities.BitcoinTransaction;
 import com.lenin.tradingplatform.data.entities.FundTransaction;
 import com.lenin.tradingplatform.data.entities.OkpayTransaction;
@@ -70,9 +71,11 @@ public class FundTransactionService {
 		if(username != null && !username.equals("null")) {
 			
 			user = userRepository.findByUsername(username);
-			Map<String, Double> reserveFunds = user.getFunds();
-			Map<String, Map<String, Double>> activeFunds = user.getActiveFunds();
-			resultObj.put("reserveFunds", reserveFunds);
+			
+			AccountFunds accountFunds = user.getAccountFunds();
+			Map<String, Double> reserves = accountFunds.getReserves();
+			Map<String, Map<String, Double>> activeFunds = accountFunds.getActiveFunds();
+			resultObj.put("reserves", reserves);
 			resultObj.put("activeFunds", activeFunds);
 			
 		}
@@ -313,14 +316,15 @@ public class FundTransactionService {
 		String nextState = null;
 		String nextStateInfo = null;
 		
-		Map<String, Map<String, Double>> activeFunds = user.getActiveFunds();
-		Map<String, Double> reserveFunds = user.getFunds();
+		AccountFunds accountFunds = user.getAccountFunds();
+		Map<String, Map<String, Double>> activeFunds = accountFunds.getActiveFunds();
+		Map<String, Double> reserves = accountFunds.getReserves();
 		
 		String receiverAddress = null;
 			
 		if(type.equals("addToBtce")) {
 				
-			Double availableFunds = reserveFunds.get(currency);
+			Double availableFunds = reserves.get(currency);
 				
 			if(availableFunds - amount < 0) {
 					
@@ -362,13 +366,13 @@ public class FundTransactionService {
 					nextStateInfo = "BTC-E fund transfer requested. BTC-E USD transfer may take up to 48 hours to complete.";
 				}
 				
-				receiverAddress = user.getAddresses().get(currency);
+				receiverAddress = accountFunds.getAddresses().get(currency);
 			
 			}
 				
 		} else if(type.equals("withdrawal")) {
 				
-			Double availableFunds = reserveFunds.get(currency);
+			Double availableFunds = reserves.get(currency);
 				
 			if(availableFunds - amount < 0) {
 					

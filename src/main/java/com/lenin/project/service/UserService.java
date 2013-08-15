@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import com.lenin.project.AuthComponent;
 import com.lenin.tradingplatform.client.RequestResponse;
+import com.lenin.tradingplatform.data.entities.AccountFunds;
 import com.lenin.tradingplatform.data.entities.TradingSession;
 import com.lenin.tradingplatform.data.entities.User;
 import com.lenin.tradingplatform.data.repositories.TradingSessionRepository;
@@ -57,9 +58,10 @@ public class UserService {
 
 		User user = userRepository.findByUsername(username);
 		
-		Map<String, Double> userFunds = user.getFunds();
-		userFunds.put(currency, userFunds.get(currency) + amount);
-		user.setFunds(userFunds);
+		AccountFunds accountFunds = user.getAccountFunds();
+		Map<String, Double> reserves = accountFunds.getReserves();
+		reserves.put(currency, reserves.get(currency) + amount);
+		accountFunds.setReserves(reserves);
 
 		user = userRepository.save(user);
 		

@@ -29,7 +29,7 @@
 					</div> 
 					<div class="span4">
 						<span ng-hide="!user.live">
-							{{user.activeFunds[user.currentTradingSession.service][user.currentTradingSession.currencyLeft]}}
+							{{user.accountFunds.activeFunds[user.currentTradingSession.service][user.currentTradingSession.currencyLeft]}}
 							{{user.currentTradingSession.currencyLeft|uppercase}}
 						</span>
 						<span ng-show="!user.live" style="color: red;">
@@ -38,7 +38,7 @@
 					</div>
 					<div class="span4">
 						<span ng-hide="!user.live">
-							{{user.activeFunds[user.currentTradingSession.service][user.currentTradingSession.currencyRight]}}
+							{{user.accountFunds.activeFunds[user.currentTradingSession.service][user.currentTradingSession.currencyRight]}}
 							{{user.currentTradingSession.currencyRight|uppercase}}
 						</span>
 						<span ng-show="!user.live" style="color: red;">

@@ -31,7 +31,7 @@
 					</div>
 			
 					<div class="span4" style="font-size: 1.8em;">
-						{{user.funds['btc']}} BTC
+						{{user.accountFunds.reserves['btc']}} BTC
 					</div>
 					
 				</div>
@@ -100,7 +100,7 @@
 					</div>
 			
 					<div class="span4" style="font-size: 1.8em;">
-						{{user.funds['ltc']|truncate:6:""}} LTC
+						{{user.accountFunds.reserves['ltc']|truncate:6:""}} LTC
 					</div>
 					
 				</div>
@@ -169,7 +169,7 @@
 					</div>
 			
 					<div class="span4" style="font-size: 1.8em;">
-						{{user.funds['usd']}} USD
+						{{user.accountFunds.reserves['usd']}} USD
 					</div>
 					
 				</div>
@@ -229,9 +229,9 @@
 				<div class="row" style="margin-bottom: 1.0em;">
 			
 					<div class="span5">
-						{{user.activeFunds["btce"]["usd"]}} USD &nbsp;&nbsp; 
-						{{user.activeFunds["btce"]["btc"]}} BTC &nbsp;&nbsp;
-						{{user.activeFunds["btce"]["ltc"]}} LTC
+						{{user.accountFunds.activeFunds["btce"]["usd"]}} USD &nbsp;&nbsp; 
+						{{user.accountFunds.activeFunds["btce"]["btc"]}} BTC &nbsp;&nbsp;
+						{{user.accountFunds.activeFunds["btce"]["ltc"]}} LTC
 					</div>
 					
 				</div>

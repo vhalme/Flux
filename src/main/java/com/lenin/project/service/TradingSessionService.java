@@ -16,10 +16,13 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoOperations;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 
 import com.lenin.project.AuthComponent;
 import com.lenin.tradingplatform.client.RequestResponse;
+import com.lenin.tradingplatform.data.entities.AccountFunds;
 import com.lenin.tradingplatform.data.entities.AutoTradingOptions;
 import com.lenin.tradingplatform.data.entities.Order;
 import com.lenin.tradingplatform.data.entities.Rate;
@@ -44,6 +47,10 @@ public class TradingSessionService {
 	
 	@Autowired
 	private AuthComponent authComponent;
+	
+	@Autowired
+	private MongoTemplate mongoTemplate;
+	
 	
 	public TradingSessionService() {
 	}
@@ -243,8 +250,11 @@ public class TradingSessionService {
 
 		User user = userRepository.findByUsername(username);
 		TradingSession tradingSession = tradingSessionRepository.findOne(tradingSessionId);
-
-		Map<String, Double> activeFundsMap = user.getActiveFunds().get(tradingSession.getService());
+		
+		MongoOperations mongoOps = (MongoOperations)mongoTemplate;
+		
+		AccountFunds accountFunds = user.getAccountFunds(); 
+		Map<String, Double> activeFundsMap = accountFunds.getActiveFunds().get(tradingSession.getService());
 		
 		if (left != null) {
 
@@ -254,13 +264,18 @@ public class TradingSessionService {
 			Double changeLeft = tsFundsLeft - left;
 
 			userFundsLeft = userFundsLeft + changeLeft;
-
+			
 			if (userFundsLeft >= 0 || user.getLive() == false) {
 				
 				tradingSession.setFundsLeft(left);
-				activeFundsMap.put(tsCurrencyLeft, userFundsLeft);
-				//user.setFunds(fundsMap);
-				userRepository.save(user);
+				
+				if(user.getLive() == true) {
+					activeFundsMap.put(tsCurrencyLeft, userFundsLeft);
+					//user.setFunds(fundsMap);
+					//userRepository.save(user);
+					mongoOps.save(accountFunds);
+				}
+				
 				tradingSessionRepository.save(tradingSession);
 				response.setSuccess(1);
 				response.setData(activeFundsMap);
