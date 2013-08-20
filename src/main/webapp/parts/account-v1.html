@@ -46,25 +46,6 @@
 					</div>
 				</div>
 				
-				<div class="row">
-					<div class="span2" style="text-align: right;">
-						<b>Withdrawal addr.</b>
-					</div>
-					<div class="span4">
-						<input type="text" style="height: 2.0em; margin-bottom: 0.3em" ng-model="withdrawAddressBtc"/>
-					</div>
-				</div>
-				
-				<div class="row" style="margin-bottom: 2.0em;">
-					<div class="span2" style="text-align: right;">
-						<b>Withdrawal amount</b>
-					</div>
-					<div class="span4">
-						<input type="text" style="height: 2.0em; width: 4.0em;" ng-model="btcWithdrawalAmount"/>
-						<button class="btn" style="margin-top: -0.8em;" ng-click="transfer('withdrawal', btcWithdrawalAmount, 'btc', withdrawAddressBtc)">Withdraw</button>
-					</div>
-				</div>
-				
 				<div class="row"  style="margin-top: 1.0em;" ng-show="pendingTxBtc.length > 0">
 					<div class="span6">
 						<b>Pending BTC transactions</b>
@@ -115,31 +96,11 @@
 					</div>
 				</div>
 				
-				<div class="row">
-					<div class="span2" style="text-align: right;">
-						<b>Withdrawal addr.</b>
-					</div>
-					<div class="span4">
-						<input type="text" style="height: 2.0em; margin-bottom: 0.3em" ng-model="withdrawAddressLtc"/>
-					</div>
-				</div>
-				
-				<div class="row">
-					<div class="span2" style="text-align: right;">
-						<b>Withdrawal amount</b>
-					</div>
-					<div class="span4">
-						<input type="text" style="height: 2.0em; width: 4.0em;" ng-model="ltcWithdrawalAmount"/>
-						<button class="btn" style="margin-top: -0.8em;" ng-click="transfer('withdrawal', ltcWithdrawalAmount, 'ltc', withdrawAddressLtc)">Withdraw</button>
-					</div>
-				</div>
-				
 				<div class="row"  style="margin-top: 1.0em;" ng-show="pendingTxLtc.length > 0">
 					<div class="span6">
 						<b>Pending LTC transactions</b>
 					</div>
 				</div>
-				
 				
 				<div class="row" ng-repeat="transaction in pendingTxLtc" style="margin-top: 2px;">
 					<div class="span6" style="background: #d0d0d0;">
@@ -187,25 +148,6 @@
 					</div>
 					
 				</div>
-				
-				<div class="row">
-					<div class="span2" style="text-align: right;">
-						<b>OKPAY Wallet ID</b>
-					</div>
-					<div class="span4">
-						<input type="text" style="height: 2.0em; margin-bottom: 0.3em" ng-model="usdWithdrawWalletId"/>
-					</div>
-				</div>
-				
-				<div class="row" style="">
-					<div class="span2" style="text-align: right;">
-						<b>Withdrawal amount</b>
-					</div>
-					<div class="span4">
-						<input type="text" style="height: 2.0em; width: 4.0em;" ng-model="usdWithdrawalAmount"/>
-						<button class="btn" style="margin-top: -0.8em;" ng-click="transfer('withdrawal', usdWithdrawalAmount, 'usd', usdWithdrawWalletId)">Withdraw</button>
-					</div>
-				</div>
 		
 			</div>
 
@@ -242,86 +184,17 @@
 						
 						<div class="row">
 							<div class="span5">
-								<ul class="nav nav-pills">
-  									<li ng-class="{ active: btceAdd }">
-    									<a href="" ng-click="btceAdd = true">Add to BTC-E</a>
-  									</li>
-  									<li ng-class="{ active: !btceAdd }">
-  										<a href="" ng-click="btceAdd = false">Return to reserve</a>
-  									</li>
-								</ul>
+								<input type="text" style="height: 2.0em; ng-model="btceApiKey"/>
 							</div>
 						</div>
 						<div class="row">
 							<div class="span5">
-								<input type="text" ng-model="btceTransferAmount" style="width: 6em; padding-top: 14px; padding-bottom: 14px; margin-bottom: 0px;"/>
-								<select ng-model="btceTransferCurrency" style="width: 12em; margin-bottom: 0px;">
-									<option value="btc" title="BTC">BTC</option>
-									<option value="ltc" title="LTC">LTC</option>
-									<option value="usd" title="USD">USD</option>
-								</select>
-								<button class="btn" ng-click="transfer('addToBtce', btceTransferAmount, btceTransferCurrency)" ng-show="btceAdd">
-									Add
-								</button>
-								<button class="btn" ng-click="transfer('returnFromBtce', btceTransferAmount, btceTransferCurrency)" ng-show="!btceAdd">
-									Return
-								</button>
+								<input type="text" style="height: 2.0em;" ng-model="btceSecret"/>
 							</div>
 						</div>
+							
 					</div>
 				
-				</div>
-				
-				<div class="row" ng-show="btceTransferCurrency == 'ltc' && !btceAdd">
-					<div class="span5">
-						BTC-E imposes following fees and limitations on LTC withdrawals:<br/>
-						* Minimal withdrawal amount: 1 LTC<br/>
-						* Withdrawal fee: 0.5 LTC<br/>
-						* Maximum daily withdrawal amount: 5000 LTC
-					</div>
-				</div>
-				
-				<div class="row" ng-show="btceTransferCurrency == 'ltc' && btceAdd">
-					<div class="span5">
-						BTC-E imposes following fees and limitations on LTC deposits:<br/>
-						* Minimal deposit amount: 0.1 LTC<br/>
-						* 6 transaction confirmations required
-					</div>
-				</div>
-				
-				<div class="row" ng-show="btceTransferCurrency == 'btc' && !btceAdd">
-					<div class="span5">
-						BTC-E imposes following fees and limitations on BTC withdrawals:<br/>
-						* Minimal withdrawal amount: 0.1 BTC<br/>
-						* Withdrawal fee: 0.001 BTC<br/>
-						* Maximum daily withdrawal amount: 100 BTC
-					</div>
-				</div>
-				
-				<div class="row" ng-show="btceTransferCurrency == 'btc' && btceAdd">
-					<div class="span5">
-						BTC-E imposes following fees and limitations on BTC deposits:<br/>
-						* Minimal deposit amount: 0.0001 LTC<br/>
-						* 3 transaction confirmations required
-					</div>
-				</div>
-				
-				<div class="row" ng-show="btceTransferCurrency == 'usd' && !btceAdd">
-					<div class="span5">
-						Following OKPAY fees and limitations apply:<br/>
-						* Minimal withdrawal amount: 1 USD<br/>
-						* 2% transaction fee
-					</div>
-				</div>
-				
-				<div class="row" ng-show="btceTransferCurrency == 'usd' && btceAdd">
-					<div class="span5">
-						BTC-E imposes following fees and limitations on USD deposits:<br/>
-						* Deposit fee: 4%<br/>
-						Following OKPAY fees and limitations apply:<br/>
-						* Minimal withdrawal amount: 1 USD<br/>
-						* 2% transaction fee
-					</div>
 				</div>
 				
 				<div class="row"  style="margin-top: 1.0em;" ng-show="pendingTxBtce.length > 0">
@@ -372,33 +245,6 @@
 					
 					<div class="span5">
 						
-						<div class="row">
-							<div class="span5">
-								<ul class="nav nav-pills">
-  									<li ng-class="{ active: mtgoxAdd }">
-    									<a href="" ng-click="mtgoxAdd = true">Add to Mt. Gox</a>
-  									</li>
-  									<li ng-class="{ active: !mtgoxAdd }">
-  										<a href="" ng-click="mtgoxAdd = false">Return to reserve</a>
-  									</li>
-								</ul>
-							</div>
-						</div>
-						<div class="row">
-							<div class="span5">
-								<input type="text" style="width: 6em; padding-top: 14px; padding-bottom: 14px; margin-bottom: 0px;" disabled />
-								<select ng-model="addToMtgox" style="width: 12em; margin-bottom: 0px;" disabled>
-									<option value="btc" title="BTC">BTC</option>
-									<option value="usd" title="USD">USD</option>
-								</select>
-								<button class="btn" ng-show="mtgoxAdd" disabled>
-									Add
-								</button>
-								<button class="btn" ng-show="!mtgoxAdd" disabled>
-									Return
-								</button>
-							</div>
-						</div>
 					</div>
 					
 				</div>

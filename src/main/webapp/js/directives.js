@@ -112,6 +112,7 @@ myApp.config(['$routeProvider', function($routeProvider) {
 	$routeProvider.
 		when('/front', { templateUrl: 'parts/front.html', controller: FrontCtrl }).
 		when('/account', { templateUrl: 'parts/account.html', controller: AccountCtrl }).
+		when('/account-v1', { templateUrl: 'parts/account-v1.html', controller: AccountCtrl }).
 		when('/login', { templateUrl: 'parts/login.html', controller: LoginCtrl }).
 		when('/logout', { templateUrl: 'parts/logout.html', controller: LogoutCtrl }).
     	when('/tradingSession/:tradingSessionId', { templateUrl: 'parts/tradeStats.html', controller: TradingSessionCtrl }).
