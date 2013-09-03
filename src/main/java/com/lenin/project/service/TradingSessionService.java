@@ -76,8 +76,13 @@ public class TradingSessionService {
 			TradingSession tradingSession = tradingSessionRepository.findOne(tradingSessionId); // user.getCurrentTradingSession();
 			List<Order> orders = orderRepository.findByTradingSession(tradingSession);
 			
+			User user = userRepository.findByUsername(username);
+			AccountFunds accountFunds = user.getAccountFunds(); 
+			Map<String, Double> activeFundsMap = accountFunds.getActiveFunds().get(tradingSession.getService());
+			
 			resultObj.put("session", tradingSession);
 			resultObj.put("orders", orders);
+			resultObj.put("activeFunds", activeFundsMap);
 			
 			response.setData(resultObj);
 			
@@ -115,7 +120,8 @@ public class TradingSessionService {
 			Long rateTime = dbTradingSession.getRate().getTime();
 			tradingSession.getRate().setTime(rateTime);
 		}
-
+		
+		
 		tradingSessionRepository.save(tradingSession);
 		
 		response.setData(tradingSession);
@@ -144,6 +150,7 @@ public class TradingSessionService {
 
 		String[] sessionValues = session.split("_");
 		TradingSession tradingSession = new TradingSession();
+		//tradingSession.setUser(user);
 		tradingSession.setAutoTradingOptions(new AutoTradingOptions());
 		tradingSession.setCurrencyRight(sessionValues[0]);
 		tradingSession.setCurrencyLeft(sessionValues[1]);
@@ -299,13 +306,20 @@ public class TradingSessionService {
 			userFundsRight = userFundsRight + changeRight;
 
 			if (userFundsRight >= 0 || user.getLive() == false) {
+				
 				tradingSession.setFundsRight(right);
-				activeFundsMap.put(tsCurrencyRight, userFundsRight);
-				//user.setFunds(activeFundsMap);
-				userRepository.save(user);
+				
+				if(user.getLive() == true) {
+					activeFundsMap.put(tsCurrencyRight, userFundsRight);
+					//user.setFunds(fundsMap);
+					//userRepository.save(user);
+					mongoOps.save(accountFunds);
+				}
+				
 				tradingSessionRepository.save(tradingSession);
 				response.setSuccess(1);
 				response.setData(activeFundsMap);
+				
 			} else {
 				
 				response.setMessage("Not enough funds");

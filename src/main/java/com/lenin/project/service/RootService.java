@@ -27,7 +27,9 @@ import com.lenin.tradingplatform.client.RequestResponse;
 import com.lenin.tradingplatform.data.entities.AccountFunds;
 import com.lenin.tradingplatform.data.entities.AutoTradingOptions;
 import com.lenin.tradingplatform.data.entities.FundTransaction;
+import com.lenin.tradingplatform.data.entities.PropertyMap;
 import com.lenin.tradingplatform.data.entities.Rate;
+import com.lenin.tradingplatform.data.entities.ServiceInfo;
 import com.lenin.tradingplatform.data.entities.Settings;
 import com.lenin.tradingplatform.data.entities.TradingSession;
 import com.lenin.tradingplatform.data.entities.User;
@@ -83,7 +85,7 @@ public class RootService {
 		List<String> clientParams = new ArrayList<String>();
 
 		BitcoinApi api = new BitcoinApi("127.0.0.1", 8332, "fluxltc1", "fLuxThuyu1eP");
-
+		
 		if (method.equals("sendfrom")) {
 			
 			AccountFunds accountFunds = user.getAccountFunds();
@@ -200,7 +202,38 @@ public class RootService {
 			user.setLive(true);
 			user.setLastActivity(nowTime);
 			
+			System.out.println("userId="+user.getId());
+			
 			AccountFunds accountFunds = new AccountFunds();
+			
+			PropertyMap btceServiceInfo = new PropertyMap();
+			btceServiceInfo.setName("BTC-E");
+			Map<String, Object> btceServiceStrings = new HashMap<String, Object>();
+			btceServiceStrings.put("apiKey", "");
+			btceServiceStrings.put("apiSecret", "");
+			btceServiceInfo.setProperties(btceServiceStrings);
+			//Map<String, Double> btceServiceDoubles = new HashMap<String, Double>();
+			//btceServiceDoubles.put("usd", 0.0);
+			//btceServiceDoubles.put("btc", 0.0);
+			//btceServiceDoubles.put("ltc", 0.0);
+			//btceServiceInfo.setDoubleProperties(btceServiceDoubles);
+			
+			PropertyMap mtgoxServiceInfo = new PropertyMap();
+			mtgoxServiceInfo.setName("Mt. Gox");
+			Map<String, Object> mtgoxServiceStrings = new HashMap<String, Object>();
+			mtgoxServiceStrings.put("apiKey", "");
+			mtgoxServiceStrings.put("apiSecret", "");
+			mtgoxServiceInfo.setProperties(mtgoxServiceStrings);
+			//Map<String, Double> mtgoxServiceDoubles = new HashMap<String, Double>();
+			//mtgoxServiceDoubles.put("usd", 0.0);
+			//mtgoxServiceDoubles.put("btc", 0.0);
+			//mtgoxServiceInfo.setDoubleProperties(mtgoxServiceDoubles);
+			
+			Map<String, PropertyMap> serviceInfos = new HashMap<String, PropertyMap>();
+			serviceInfos.put("btce", btceServiceInfo);
+			serviceInfos.put("mtgox", mtgoxServiceInfo);
+			
+			accountFunds.setServiceProperties(serviceInfos);
 			
 			Map<String, Double> reserves = new HashMap<String, Double>();
 			reserves.put("usd", 0.0);
@@ -233,6 +266,7 @@ public class RootService {
 			
 			AutoTradingOptions autoTradingOptions = new AutoTradingOptions();
 			TradingSession tradingSession = new TradingSession();
+			//tradingSession.setUser(user);
 			tradingSession.setCurrencyLeft("usd");
 			tradingSession.setCurrencyRight("ltc");
 			tradingSession.setService("btce");
@@ -242,20 +276,21 @@ public class RootService {
 			rate.setTime(System.currentTimeMillis() / 1000L);
 			rate.setPair("ltc_usd");
 			tradingSession.setRate(rate);
-			tradingSession = tradingSessionRepository.save(tradingSession);
-			user.addTradingSession(tradingSession);
-			user.setCurrentTradingSession(tradingSession);
 
 			User testUser = new User();
 			testUser.setLastActivity(nowTime);
 			testUser.setUsername(email + " (test)");
 			testUser.setLive(false);
+			
+			System.out.println("testUserId="+testUser.getId());
+			
 			testUser.setAccountFunds(accountFunds);
-
+			
 			AutoTradingOptions testAutoTradingOptions = new AutoTradingOptions();
 			testAutoTradingOptions.setBuyCeiling(1.0);
 			testAutoTradingOptions.setSellFloor(1.0);
 			TradingSession testTradingSession = new TradingSession();
+			//testTradingSession.setUser(testUser);
 			testTradingSession.setCurrencyLeft("usd");
 			testTradingSession.setCurrencyRight("ltc");
 			testTradingSession.setService("test");
@@ -268,9 +303,6 @@ public class RootService {
 			testRate.setTime(System.currentTimeMillis() / 1000L);
 			testRate.setPair("ltc_usd");
 			testTradingSession.setRate(rate);
-			testTradingSession = tradingSessionRepository.save(testTradingSession);
-			testUser.addTradingSession(testTradingSession);
-			testUser.setCurrentTradingSession(testTradingSession);
 
 			String token = "" + Math.random();
 
@@ -278,9 +310,19 @@ public class RootService {
 			testUser.setAuthToken(token);
 			
 			mongoOps.save(accountFunds);
+			
 			userRepository.save(user);
+			tradingSessionRepository.save(tradingSession);
+			user.addTradingSession(tradingSession);
+			user.setCurrentTradingSession(tradingSession);
+			userRepository.save(user);
+			
 			userRepository.save(testUser);
-
+			tradingSessionRepository.save(testTradingSession);
+			testUser.addTradingSession(testTradingSession);
+			testUser.setCurrentTradingSession(testTradingSession);
+			userRepository.save(testUser);
+			
 			response.setSuccess(3);
 
 		}
@@ -387,22 +429,22 @@ public class RootService {
 		RequestResponse response = new RequestResponse();
 
 		String accountName = randomString();
-
+		
 		BitcoinApi api = new BitcoinApi("127.0.0.1", 8332,  "fluxltc1", "fLuxThuyu1eP");
-
+		
 		List<Object> params = new ArrayList<Object>();
 		params.add(accountName);
-
+		
 		JSONObject result = api.exec("getnewaddress", params);
-
+		
 		try {
 			System.out.println(result.get("result"));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
+		
 		response.setData(result.toString());
-
+		
 		return response;
 
 	}

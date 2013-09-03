@@ -17,6 +17,9 @@ function AccountCtrl($scope, $routeParams, $http) {
 	
 	$scope.refreshIntervalId = 0;
 	
+	$scope.editBtceKey = false;
+	$scope.editBtceSecret = false;
+	
 	$scope.start = function() {
 		
 		$scope.refreshIntervalId = setInterval( function() { 
@@ -31,6 +34,7 @@ function AccountCtrl($scope, $routeParams, $http) {
 	$scope.refreshTransactions = function() {
 		
 		API.refreshTransactions($scope.user.accountName, "completed", function(response) {
+			
 			
 			$scope.pendingTxBtc = [];
 			$scope.pendingTxLtc = [];
@@ -131,6 +135,30 @@ function AccountCtrl($scope, $routeParams, $http) {
 			return ""+number;
 		}
 	}
+	
+	
+	$scope.setServiceProperty = function(service, key, value) {
+	
+		console.log("set "+key+"="+value+" for "+service);
+		
+		var propertyMap = {
+			properties : {}
+		};
+		
+		propertyMap.properties[key] = value;
+		
+		API.setServiceProperties(service, propertyMap, function(response) {
+			
+			console.log(response);
+			
+			if(response.success == 1) {
+				$scope.editBtceKey = false;
+				$scope.editBtceSecret = false;
+			}
+			
+		});
+		
+	};
 	
 	$scope.$on('$destroy', function() {
         console.log("destroying interval "+$scope.refreshIntervalId);

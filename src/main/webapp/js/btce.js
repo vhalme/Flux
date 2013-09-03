@@ -72,6 +72,16 @@ var API = {
 		},
 		
 		
+		setServiceProperties: function(service, propertyMap, callback) {
+		    
+			var url = "service/user/serviceproperties?service="+service;
+			
+			this.send("POST", url, undefined, angular.toJson(propertyMap), "json", "application/json", callback);
+			
+			
+		},
+		
+		
 		transferFunds: function(type, fromAccount, toAddress, amount, currency, callback) {
 		    
 			var url = "service/fundtransaction/transfer?type="+type+"&account="+fromAccount+

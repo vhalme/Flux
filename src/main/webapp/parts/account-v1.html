@@ -42,7 +42,7 @@
 						<b>Deposit addr.</b>
 					</div>
 					<div class="span4">
-						{{user.accountFunds.addresses["btc"]}}
+						{{user.accountFunds.addresses['btc']}}
 					</div>
 				</div>
 				
@@ -92,7 +92,7 @@
 						<b>Deposit addr.</b>
 					</div>
 					<div class="span4">
-						{{user.accountFunds.addresses["ltc"]}}
+						{{user.accountFunds.addresses['ltc']}}
 					</div>
 				</div>
 				
@@ -171,9 +171,9 @@
 				<div class="row" style="margin-bottom: 1.0em;">
 			
 					<div class="span5">
-						{{user.accountFunds.activeFunds["btce"]["usd"]}} USD &nbsp;&nbsp; 
-						{{user.accountFunds.activeFunds["btce"]["btc"]}} BTC &nbsp;&nbsp;
-						{{user.accountFunds.activeFunds["btce"]["ltc"]}} LTC
+						{{user.accountFunds.serviceInfos['btce'].doubleProperties['usd']}} USD &nbsp;&nbsp; 
+						{{user.accountFunds.serviceInfos['btce'].doubleProperties['btc']}} BTC &nbsp;&nbsp;
+						{{user.accountFunds.serviceInfos['btce'].doubleProperties['ltc']}} LTC
 					</div>
 					
 				</div>
@@ -182,14 +182,46 @@
 					
 					<div class="span5">
 						
-						<div class="row">
-							<div class="span5">
-								<input type="text" style="height: 2.0em; ng-model="btceApiKey"/>
+						<div class="row" style="height: 3.0em;">
+							<div class="span1">
+								<b>API key:</b>
+							</div>
+							<div class="span3" ng-show="editBtceKey">
+								<input type="text" style="height: 2.0em;" ng-model="user.accountFunds.serviceProperties['btce'].properties['apiKey']"/>
+							</div>
+							<div class="span1" ng-show="editBtceKey">
+								<a class="btn" style="margin-top: -0.3em;" ng-click="setServiceProperty('btce', 'apiKey', user.accountFunds.serviceProperties['btce'].properties['apiKey'])">
+									Set
+								</a>
+							</div>
+							<div class="span3" ng-show="!editBtceKey">
+								{{user.accountFunds.serviceProperties['btce'].properties['apiKey']}}
+							</div>
+							<div class="span1" ng-show="!editBtceKey">
+								<a class="btn" style="margin-top: -0.3em;" ng-click="editBtceKey = true">
+									Change
+								</a>
 							</div>
 						</div>
-						<div class="row">
-							<div class="span5">
-								<input type="text" style="height: 2.0em;" ng-model="btceSecret"/>
+						<div class="row" style="height: 3.0em;">
+							<div class="span1">
+								<b>Secret:</b>
+							</div>
+							<div class="span3" ng-show="editBtceSecret">
+								<input type="text" style="height: 2.0em;" ng-model="user.accountFunds.serviceProperties['btce'].properties['apiSecret']"/>
+							</div>
+							<div class="span1" ng-show="editBtceSecret">
+								<a class="btn" style="margin-top: -0.3em;" ng-click="setServiceProperty('btce', 'apiSecret', user.accountFunds.serviceProperties['btce'].properties['apiSecret'])">
+									Set
+								</a>
+							</div>
+							<div class="span3" ng-show="!editBtceSecret">
+								{{user.accountFunds.serviceProperties['btce'].properties['apiSecret']}}
+							</div>
+							<div class="span1" ng-show="!editBtceSecret">
+								<a class="btn" style="margin-top: -0.3em;" ng-click="editBtceSecret = true">
+									Change
+								</a>
 							</div>
 						</div>
 							

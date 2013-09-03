@@ -96,6 +96,8 @@ function TradingSessionCtrl($scope, $routeParams, $http) {
 				
 				$scope.setTransactions(response.data.orders);
 				
+				$scope.user.accountFunds.activeFunds[$scope.user.currentTradingSession.service] = response.data.activeFunds;
+				
 			} else {
 				
 				console.log(response);

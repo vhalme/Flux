@@ -3,6 +3,7 @@ package com.lenin.project.service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -14,11 +15,14 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoOperations;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 
 import com.lenin.project.AuthComponent;
 import com.lenin.tradingplatform.client.RequestResponse;
 import com.lenin.tradingplatform.data.entities.AccountFunds;
+import com.lenin.tradingplatform.data.entities.PropertyMap;
 import com.lenin.tradingplatform.data.entities.TradingSession;
 import com.lenin.tradingplatform.data.entities.User;
 import com.lenin.tradingplatform.data.repositories.TradingSessionRepository;
@@ -28,6 +32,9 @@ import com.lenin.tradingplatform.data.repositories.UserRepository;
 @Path("/user")
 public class UserService {
 
+	@Autowired
+	private MongoTemplate mongoTemplate;
+	
 	@Autowired
 	private UserRepository userRepository;
 
@@ -116,6 +123,46 @@ public class UserService {
 			
 		}
 
+	}
+	
+	
+	@POST
+	@Path("/serviceproperties")
+	@Consumes({ MediaType.APPLICATION_JSON })
+	@Produces({ MediaType.APPLICATION_JSON })
+	public RequestResponse setServiceProperties(@HeaderParam("Username") String username, @HeaderParam("Auth-Token") String authToken,
+			@QueryParam("service") String service, PropertyMap propertyMap) {
+
+		System.out.println("Set service properties for user "+username);
+		
+		RequestResponse response = authComponent.getInitialResponse(username, authToken);
+		
+		if(response.getSuccess() < 0) {
+			return response;
+		}
+
+		User user = userRepository.findByUsername(username);
+		
+		Map<String, Object> properties = propertyMap.getProperties();
+		Set<String> keys = properties.keySet();
+		
+		AccountFunds accountFunds = user.getAccountFunds();
+		Map<String, Object> dbProperties = 
+				accountFunds.getServiceProperties().get(service).getProperties();
+		
+		for(String key : keys) {
+			dbProperties.put(key, properties.get(key));
+		}
+		
+		
+		MongoOperations mongoOps = (MongoOperations)mongoTemplate;
+		mongoOps.save(accountFunds);
+		
+		response.setSuccess(1);
+		response.setData(accountFunds.getServiceProperties().get(service));
+		
+		return response;
+		
 	}
 
 }
