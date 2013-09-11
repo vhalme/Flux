@@ -273,6 +273,8 @@ function AppCtrl($scope, $routeParams, $location, $http) {
 	
 	}
 	
+	Holder.run({images:".img", nocss:true});
+	
 	//$scope.setUser();
 	
 	

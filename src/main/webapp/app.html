@@ -24,6 +24,7 @@
 		<script src="js/libs/canvasjs.min.js"></script>
 		<script src="js/libs/hmac-sha512.js"></script>
 		<script src="js/libs/bootstrap.js"></script>
+		<script src="holder.js"></script>
 
 		<script src="js/btce.js"></script>
 		<script src="js/app.js"></script>
@@ -55,19 +56,21 @@
 						<div class="span6" style="text-align: center;">
 							<div ng-hide="user == null">
 								Signed in as: {{user.username}}
+								<!-- 
 								<div ng-hide="!user.live">
 									USD {{user.accountFunds.reserves.usd}} LTC {{user.accountFunds.reserves.ltc}} BTC {{user.accountFunds.reserves.btc}}
 								</div>
 								<div ng-hide="user.live">
 									&nbsp;
 								</div>
+								-->
 							</div>
 						</div>
 
 						<div class="span3" style="text-align: right; padding-top: 0.3em;" 
 							ng-hide="user == null || user == undefined">
 							
-							<a ng-show="location.path() != '/account-v1'" style="text-decoration: underline; color: white;" href="#/account-v1">Account / Funds</a>
+							<a ng-show="location.path() != '/account-v1'" style="text-decoration: underline; color: white;" href="#/account-v1">Account</a>
 							<a ng-show="location.path() == '/account-v1'" style="text-decoration: underline; color: white;" href="#/front">Trade</a> |
 							<a style="color: white; text-decoration: underline;" href="#/logout">Log out</a>&nbsp;&nbsp;
 							

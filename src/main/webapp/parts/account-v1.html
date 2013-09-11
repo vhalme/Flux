@@ -13,18 +13,62 @@
 		
 		<div class="row">
 			
-			<div class="span6">
+			<div class="span6" style="margin-bottom: 2.0em;">
 				
 				<div class="row" style="margin-bottom: 2.0em;">
 			
 					<div class="span6">
-						<b>RESERVES</b>
+						<b>PAYMENT SETTINGS</b>
 					</div>
 						
 				</div>
 				
 				
 				<div class="row" style="margin-bottom: 1.0em;">
+					
+					<div class="span6" style="border: 1px">
+						
+						<div class="tabbable"> <!-- Only required for left/right tabs -->
+  							<ul class="nav nav-tabs" style="margin: 0px;">
+    							<li ng-class="{ active: showCurrency == 'btc' }">
+    							<a href="#tab1" data-toggle="tab" ng-click="showCurrency = 'btc'">
+    								BTC {{user.accountFunds.reserves['btc']}}
+    							</a>
+  							</li>
+  							
+  							<li ng-class="{ active: showCurrency == 'ltc' }">
+    							<a href="#tab2" data-toggle="tab" ng-click="showCurrency = 'ltc'">
+    								LTC {{user.accountFunds.reserves['ltc']}}
+    							</a>
+  							</li>
+  							
+  							<li ng-class="{ active: showCurrency == 'usd' }">
+    							<a href="#tab3" data-toggle="tab" ng-click="showCurrency = 'usd'">
+    								USD {{user.accountFunds.reserves['usd']}}
+    							</a>
+  							</li>
+  							</ul>
+  							<!-- 
+  							<div class="tab-content" style="border-bottom: 1px solid #ddd; border-right: 1px solid #ddd; border-left: 1px solid #ddd;">
+    							<div class="tab-pane active" id="tab1" style="margin: 10px;">
+      								<p>I'm in Section 1.</p>
+    							</div>
+    							<div class="tab-pane" id="tab2" style="margin: 10px;">
+      								<p>Howdy, I'm in Section 2.</p>
+    							</div>
+  							</div>
+  							-->
+						</div>
+						
+					</div>
+							
+				</div>
+				
+				
+				
+				<div ng-show="showCurrency == 'btc'">
+				
+				<div class="row" style="margin-bottom: 1.0em; margin-top: 2.0em;">
 			
 					<div class="span2" style="font-size: 1.8em; font-weight: bold;">
 						BTC
@@ -38,12 +82,84 @@
 				
 				<div class="row" style="margin-bottom: 0.8em;">
 					
-					<div class="span2" style="text-align: right;">
+					<div class="span2" style="">
 						<b>Deposit addr.</b>
 					</div>
-					<div class="span4">
+					
+					<div class="span4" style="">
+						<img src="http://blockchain.info/qr?data={{user.accountFunds.addresses['btc']}}&size=200" />
+					</div>
+					
+				</div>
+				
+				<div class="row">
+				
+					<div class="span6" style="text-align: center;">
 						{{user.accountFunds.addresses['btc']}}
 					</div>
+				
+				</div>
+				</div>
+				
+				<div ng-show="showCurrency == 'ltc'">
+				<div class="row"  style="margin-bottom: 1.0em; margin-top: 2.0em;">
+			
+					<div class="span2" style="font-size: 1.8em; font-weight: bold;">
+						LTC
+					</div>
+			
+					<div class="span4" style="font-size: 1.8em;">
+						{{user.accountFunds.reserves['ltc']|truncate:6:""}} LTC
+					</div>
+					
+				</div>
+				
+				<div class="row" style="margin-bottom: 0.8em;">
+					
+					<div class="span2" style="">
+						<b>Deposit addr.</b>
+					</div>
+					
+					<div class="span4" style="">
+						<img src="http://blockchain.info/qr?data={{user.accountFunds.addresses['ltc']}}&size=200" />
+					</div>
+					
+				</div>
+				
+				<div class="row">
+				
+					<div class="span6" style="text-align: center;">
+						{{user.accountFunds.addresses['ltc']}}
+					</div>
+				
+				</div>
+				</div>
+				
+				<div ng-show="showCurrency == 'usd'">
+				<div class="row" style="margin-bottom: 1.0em; margin-top: 2.0em;">
+			
+					<div class="span2" style="font-size: 1.8em; font-weight: bold;">
+						USD
+					</div>
+			
+					<div class="span4" style="font-size: 1.8em;">
+						{{user.accountFunds.reserves['usd']}} USD
+					</div>
+					
+				</div>
+				
+				<div class="row" style="margin-bottom: 0.8em;">
+					
+					<div class="span2" style="text-align: right;">
+						<b>Deposit</b>
+					</div>
+					<div class="span4">
+						<a class="btn" style="margin-top: -0.3em;" ng-click="gotoOkpayPayment()">
+								Make OKPAY payment
+						</a>
+					</div>
+					
+				</div>
 				</div>
 				
 				<div class="row"  style="margin-top: 1.0em;" ng-show="pendingTxBtc.length > 0">
@@ -51,7 +167,6 @@
 						<b>Pending BTC transactions</b>
 					</div>
 				</div>
-				
 				
 				<div class="row" ng-repeat="transaction in pendingTxBtc" style="margin-top: 2px;">
 					<div class="span6" style="background: #d0d0d0;">
@@ -71,28 +186,6 @@
 								{{transaction.stateInfo}}
 							</div>
 						</div>
-					</div>
-				</div>
-				
-				<div class="row"  style="margin-bottom: 1.0em; margin-top: 2.0em;">
-			
-					<div class="span2" style="font-size: 1.8em; font-weight: bold;">
-						LTC
-					</div>
-			
-					<div class="span4" style="font-size: 1.8em;">
-						{{user.accountFunds.reserves['ltc']|truncate:6:""}} LTC
-					</div>
-					
-				</div>
-				
-				<div class="row" style="margin-bottom: 0.8em;">
-					
-					<div class="span2" style="text-align: right;">
-						<b>Deposit addr.</b>
-					</div>
-					<div class="span4">
-						{{user.accountFunds.addresses['ltc']}}
 					</div>
 				</div>
 				
@@ -123,32 +216,113 @@
 					</div>
 				</div>
 				
-				<div class="row" style="margin-bottom: 1.0em; margin-top: 2.0em;">
-			
-					<div class="span2" style="font-size: 1.8em; font-weight: bold;">
-						USD
+				<div class="row" style="margin-top: 2.0em;">
+					<div class="span6">
+						<b>SET PAYMENT METHOD</b> (effective from the next billing period)
 					</div>
-			
-					<div class="span4" style="font-size: 1.8em;">
-						{{user.accountFunds.reserves['usd']}} USD
+				</div>
+				
+				<div class="row">
+					<div class="span4">
+						
+						<div style="margin: 1.0em;">
+						<ul class="nav nav-pills">
+  							
+  							<li ng-class="{ active: setNextMethod == 'monthly' }">
+    							<a href="" ng-click="setNextMethod = 'monthly'">
+    								Monthly
+    							</a>
+  							</li>
+  							
+  							<li ng-class="{ active: setNextMethod == 'profit' }">
+    							<a href="" ng-click="setNextMethod = 'profit'">
+    								Profit sharing
+    							</a>
+  							</li>
+  								
+						</ul>
+						</div>
+						
+					</div>
+					
+					<div class="span2">
+						<div style="margin: 1.2em;">
+						<select ng-model="setNextCurrency" style="width: 8em; margin-bottom: 0px;">
+							<option value="btc" title="BTC">BTC</option>
+							<option value="ltc" title="LTC">LTC</option>
+							<option value="usd" title="USD">USD</option>
+						</select>
+						</div>
 					</div>
 					
 				</div>
 				
-				<div class="row" style="margin-bottom: 0.8em;">
-					
-					<div class="span2" style="text-align: right;">
-						<b>Deposit</b>
+				<div ng-show="setNextMethod == 'monthly'">
+					<div class="row" style="margin-bottom: 1.0em;">
+						<div class="span6">
+							<div style="margin-left: 1.0em;">
+								Fixed monthly billing, 0.5 BTC/month<br/>
+								0.5 BTC will be deducted from your account 15th day of every month.
+							</div>
+						</div>
 					</div>
-					<div class="span4">
-						<a class="btn" style="margin-top: -0.3em;" 
-							href="https://www.okpay.com/process.html?ok_receiver=OK990732954&ok_item_1_name=Add+USD&ok_currency=USD&ok_item_1_type=service&ok_invoice={{getInvoice(user.accountName)}}">
-								Make OKPAY payment
+				</div>
+				
+				<div ng-show="setNextMethod == 'profit'">
+					<div class="row" style="margin-bottom: 1.0em;">
+						<div class="span6">
+							<div style="margin-left: 1.0em;">
+								Fixed monthly billing, 0.05 BTC/month + 10% of profits on automatic trades<br/><br/>
+								0.05 BTC will be deducted from your account 15th day of every month and amount equal to 10% of profit will be deducted on each automated profitable pair of transactions. Manual transactions are free.
+							</div>
+						</div>
+					</div>
+				</div>
+				
+				<div class="row">
+					<div class="span6" style="text-align: center;">
+						<a ng-show="user.accountFunds.serviceProperties['payment'].properties['method'] != ''" class="btn" style="margin-top: -0.3em;" ng-click="setNextPaymentMethod()">
+							Set payment method for the next billing period
+						</a>
+						<a ng-show="user.accountFunds.serviceProperties['payment'].properties['method'] == ''" class="btn" style="margin-top: -0.3em;" ng-click="setNextPaymentMethod()">
+							Set payment method
 						</a>
 					</div>
-					
 				</div>
-		
+				
+				<div class="row" ng-show="user.accountFunds.serviceProperties['payment'].properties['method'] == ''">
+					<div class="span6" style="text-align: center; margin-top: 0.5em; color: red;">
+						After the first payment method has been selected, you will only be able to change the payment method starting from the next period!
+					</div>
+				</div>
+				
+				<div class="row" style="margin-top: 2.0em;">
+					<div class="span6">
+					
+						<table class="table">
+							<tr>
+								<th>Billing period</th>
+								<th>Payment method</th>
+								<th>Fixed costs</th>
+								<th>Profit shared</th>
+							</tr>
+							<tr>
+								<td>2013/09/11 - 2013/10/10</td>
+								<td>{{user.accountFunds.serviceProperties['payment'].properties['method']}} ({{user.accountFunds.serviceProperties['payment'].properties['currency']}})</td>
+								<td>4.99 USD</td>
+								<td>1.23 USD</td>
+							</tr>
+							<tr>
+								<td>2013/10/11 - 2013/11/10</td>
+								<td>{{user.accountFunds.serviceProperties['payment'].properties['nextMethod']}} ({{user.accountFunds.serviceProperties['payment'].properties['nextCurrency']}})</td>
+								<td>4.99 USD</td>
+								<td>1.23 USD</td>
+							</tr>
+					</table>
+				
+					</div>
+				</div>
+				
 			</div>
 
 			
@@ -171,9 +345,9 @@
 				<div class="row" style="margin-bottom: 1.0em;">
 			
 					<div class="span5">
-						{{user.accountFunds.serviceInfos['btce'].doubleProperties['usd']}} USD &nbsp;&nbsp; 
-						{{user.accountFunds.serviceInfos['btce'].doubleProperties['btc']}} BTC &nbsp;&nbsp;
-						{{user.accountFunds.serviceInfos['btce'].doubleProperties['ltc']}} LTC
+						{{user.accountFunds.activeFunds['btce']['usd']|truncate:6:""}} USD &nbsp;&nbsp; 
+						{{user.accountFunds.activeFunds['btce']['btc']|truncate:6:""}} BTC &nbsp;&nbsp;
+						{{user.accountFunds.activeFunds['btce']['ltc']|truncate:6:""}} LTC
 					</div>
 					
 				</div>
@@ -182,7 +356,7 @@
 					
 					<div class="span5">
 						
-						<div class="row" style="height: 3.0em;">
+						<div class="row" style="min-height: 3.0em;">
 							<div class="span1">
 								<b>API key:</b>
 							</div>
@@ -194,7 +368,7 @@
 									Set
 								</a>
 							</div>
-							<div class="span3" ng-show="!editBtceKey">
+							<div class="span3" ng-show="!editBtceKey" style="white-space: nowrap; text-overflow: ellipsis; overflow: hidden;">
 								{{user.accountFunds.serviceProperties['btce'].properties['apiKey']}}
 							</div>
 							<div class="span1" ng-show="!editBtceKey">
@@ -203,7 +377,7 @@
 								</a>
 							</div>
 						</div>
-						<div class="row" style="height: 3.0em;">
+						<div class="row" style="min-height: 3.0em;">
 							<div class="span1">
 								<b>Secret:</b>
 							</div>
@@ -215,7 +389,7 @@
 									Set
 								</a>
 							</div>
-							<div class="span3" ng-show="!editBtceSecret">
+							<div class="span3" ng-show="!editBtceSecret" style="white-space: nowrap; text-overflow: ellipsis; overflow: hidden;">
 								{{user.accountFunds.serviceProperties['btce'].properties['apiSecret']}}
 							</div>
 							<div class="span1" ng-show="!editBtceSecret">

@@ -29,7 +29,6 @@ import com.lenin.tradingplatform.data.entities.AutoTradingOptions;
 import com.lenin.tradingplatform.data.entities.FundTransaction;
 import com.lenin.tradingplatform.data.entities.PropertyMap;
 import com.lenin.tradingplatform.data.entities.Rate;
-import com.lenin.tradingplatform.data.entities.ServiceInfo;
 import com.lenin.tradingplatform.data.entities.Settings;
 import com.lenin.tradingplatform.data.entities.TradingSession;
 import com.lenin.tradingplatform.data.entities.User;
@@ -229,9 +228,17 @@ public class RootService {
 			//mtgoxServiceDoubles.put("btc", 0.0);
 			//mtgoxServiceInfo.setDoubleProperties(mtgoxServiceDoubles);
 			
+			PropertyMap paymentMethodInfo = new PropertyMap();
+			paymentMethodInfo.setName("Payment method");
+			Map<String, Object> paymentMethodStrings = new HashMap<String, Object>();
+			paymentMethodStrings.put("currency", "btc");
+			paymentMethodStrings.put("method", "monthly");
+			paymentMethodInfo.setProperties(paymentMethodStrings);
+			
 			Map<String, PropertyMap> serviceInfos = new HashMap<String, PropertyMap>();
 			serviceInfos.put("btce", btceServiceInfo);
 			serviceInfos.put("mtgox", mtgoxServiceInfo);
+			serviceInfos.put("payment", paymentMethodInfo);
 			
 			accountFunds.setServiceProperties(serviceInfos);
 			

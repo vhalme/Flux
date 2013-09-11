@@ -20,6 +20,10 @@ function AccountCtrl($scope, $routeParams, $http) {
 	$scope.editBtceKey = false;
 	$scope.editBtceSecret = false;
 	
+	$scope.setNextMethod = $scope.user.accountFunds.serviceProperties["payment"].properties["nextMethod"];
+	$scope.setNextCurrency = $scope.user.accountFunds.serviceProperties["payment"].properties["nextCurrency"];
+	$scope.showCurrency = "btc";
+	
 	$scope.start = function() {
 		
 		$scope.refreshIntervalId = setInterval( function() { 
@@ -33,7 +37,7 @@ function AccountCtrl($scope, $routeParams, $http) {
 	
 	$scope.refreshTransactions = function() {
 		
-		API.refreshTransactions($scope.user.accountName, "completed", function(response) {
+		API.refreshTransactions($scope.user.accountFunds.accountName, "completed", function(response) {
 			
 			
 			$scope.pendingTxBtc = [];
@@ -104,13 +108,16 @@ function AccountCtrl($scope, $routeParams, $http) {
 		
 	};
 	
-	$scope.getInvoice = function(account) {
+	$scope.gotoOkpayPayment = function() {
 		
 		var date = new Date();
+		var invoice = date.getTime()+"_"+$scope.user.accountFunds.accountName;
+		var url = "https://www.okpay.com/process.html?ok_receiver=OK990732954&ok_item_1_name=Add+USD&ok_currency=USD&ok_item_1_type=service&ok_invoice="+invoice;
 		
-		return date.getTime()+"_"+account;
+		location.href = url;
 		
-	}
+	};
+	
 	
 	$scope.getDateString = function(time) {
 		
@@ -136,9 +143,29 @@ function AccountCtrl($scope, $routeParams, $http) {
 		}
 	}
 	
+	$scope.setServiceProperties = function(service, propertyMap) {
+		
+		API.setServiceProperties(service, propertyMap, function(response) {
+			
+			console.log(response);
+			
+			if(response.success > 0) {
+				
+				$scope.user.accountFunds.serviceProperties[service] = response.data;
+				
+				if(service == "btce") {
+					$scope.editBtceKey = false;
+					$scope.editBtceSecret = false;
+				}
+			
+			}
+			
+		});
+
+	};
 	
 	$scope.setServiceProperty = function(service, key, value) {
-	
+		
 		console.log("set "+key+"="+value+" for "+service);
 		
 		var propertyMap = {
@@ -147,16 +174,22 @@ function AccountCtrl($scope, $routeParams, $http) {
 		
 		propertyMap.properties[key] = value;
 		
-		API.setServiceProperties(service, propertyMap, function(response) {
-			
-			console.log(response);
-			
-			if(response.success == 1) {
-				$scope.editBtceKey = false;
-				$scope.editBtceSecret = false;
-			}
-			
-		});
+		$scope.setServiceProperties(service, propertyMap);
+		
+	};
+	
+	$scope.setNextPaymentMethod = function() {
+		
+		console.log("set next payment mehod: "+$scope.setNextMethod+"/"+$scope.setNextCurrency);
+		
+		var propertyMap = {
+			properties : {}
+		};
+		
+		propertyMap.properties["nextMethod"] = $scope.setNextMethod;
+		propertyMap.properties["nextCurrency"] = $scope.setNextCurrency;
+		
+		$scope.setServiceProperties("payment", propertyMap);
 		
 	};
 	
@@ -166,6 +199,8 @@ function AccountCtrl($scope, $routeParams, $http) {
     });
 	
 	$scope.start();
+	
+	Holder.run({images:".img", nocss:true});
 	
 	
 };

@@ -86,7 +86,7 @@ function TxLogCtrl($scope, $routeParams, $http) {
 	$scope.buyProfit = function(buy, profitFormat) {
 		
 		var brokerFeeFactor = 1-0.002;
-		var serviceFeeFactor = 1-0.002;
+		var serviceFeeFactor = 1-0.000;
 		
 		var totalFeeFactor = brokerFeeFactor*serviceFeeFactor;
 		
@@ -109,7 +109,7 @@ function TxLogCtrl($scope, $routeParams, $http) {
 	$scope.sellProfit = function(sell, profitFormat) {
 		
 		var brokerFeeFactor = 1-0.002;
-		var serviceFeeFactor = 1-0.002;
+		var serviceFeeFactor = 1-0.000;
 		
 		var totalFeeFactor = brokerFeeFactor*serviceFeeFactor;
 		

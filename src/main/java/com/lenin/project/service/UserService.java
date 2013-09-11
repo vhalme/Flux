@@ -140,7 +140,9 @@ public class UserService {
 		if(response.getSuccess() < 0) {
 			return response;
 		}
-
+		
+		int success = 1;
+		
 		User user = userRepository.findByUsername(username);
 		
 		Map<String, Object> properties = propertyMap.getProperties();
@@ -151,18 +153,29 @@ public class UserService {
 				accountFunds.getServiceProperties().get(service).getProperties();
 		
 		for(String key : keys) {
+			
 			dbProperties.put(key, properties.get(key));
+			
+			if(key.equals("nextMethod")) {
+				String currentMethod = (String)dbProperties.get("method");
+				if(currentMethod == null || currentMethod.length() == 0) {
+					dbProperties.put("method", properties.get("nextMethod"));
+					dbProperties.put("currency", properties.get("nextCurrency"));
+					success = 2;
+				}
+			}
+			
 		}
-		
 		
 		MongoOperations mongoOps = (MongoOperations)mongoTemplate;
 		mongoOps.save(accountFunds);
 		
-		response.setSuccess(1);
+		response.setSuccess(success);
 		response.setData(accountFunds.getServiceProperties().get(service));
 		
 		return response;
 		
 	}
-
+	
+	
 }
