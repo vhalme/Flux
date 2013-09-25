@@ -9,6 +9,12 @@ function AppCtrl($scope, $routeParams, $location, $http) {
 	
 	$scope.errors = [];
 	
+	$scope.missingReserves = 1;
+	$scope.paymentMethodSet = false;
+	$scope.okToTrade = false;
+	
+	$scope.serviceFees = {};
+	
 	$scope.setUser = function(user) {
 		
 		console.log("setUser called");

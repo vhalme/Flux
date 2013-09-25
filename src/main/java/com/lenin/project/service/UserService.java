@@ -156,6 +156,7 @@ public class UserService {
 			
 			dbProperties.put(key, properties.get(key));
 			
+			/*
 			if(key.equals("nextMethod")) {
 				String currentMethod = (String)dbProperties.get("method");
 				if(currentMethod == null || currentMethod.length() == 0) {
@@ -164,6 +165,7 @@ public class UserService {
 					success = 2;
 				}
 			}
+			*/
 			
 		}
 		

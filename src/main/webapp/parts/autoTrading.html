@@ -30,6 +30,8 @@
 		</div>
 
 		<div class="row" ng-class="{ hidden: !showAutoTrading }">
+			
+			<div ng-show="okToTrade">
 			<form name="form" class="css-form" novalidate>
 				<div class="span4" style="background: #ededed; margin-bottom: 0.7em;">
 					<div style="margin: 0.3em;">
@@ -138,6 +140,62 @@
 					</div>
 				</div>
 			</form>
+			</div>
+			
+			<div class="span12" style="margin-top: 1.0em; margin-bottom: 1.0em; text-align: center;" ng-show="sessionKeysSet && paymentMethodSet && missingReserves > 0">
+				
+				Automated trading is suspended because you don't have enough funds on your payment method
+				<br/><br/>
+				
+				Please, <b><a href="#/account-v1">deposit</a> at least 
+				{{missingReserves}} {{user.accountFunds.serviceProperties["payment"].properties["periods"][1]["currency"]|uppercase}}</b>
+				<span ng-show="user.accountFunds.serviceProperties['payment'].properties['method'] == 'profit'">
+				plus some more to cover for 10% of profit share expenses
+				</span>
+				<br/>
+				or
+				<br/>
+				<b><a href="#/account-v1">change</a> your payment method</b> to resume automated trading.
+				
+			</div>
+			
+			<div class="span12" style="margin-top: 1.0em; margin-bottom: 1.0em; text-align: center;" ng-show="sessionKeysSet && !paymentMethodSet">
+				
+				Automated trading will be available when you 
+				<b><a href="#/account-v1">set your payment method</a> and deposit appropriate funds</b>.
+				<br/><br/>
+				
+			</div>
+			
+			<div class="span12" style="margin-top: 1.0em; margin-bottom: 1.0em; text-align: center;" ng-show="!sessionKeysSet">
+				
+				<span ng-show="paymentMethodSet">
+					Automated trading will be available when you <b><a href="#/account-v1">set up the API keys</a> for
+					the {{user.currentSession.service|uppercase}} exchange service.</b>
+					<span ng-show="missingReserves > 0">
+						<br/><br/>
+						You also need to <b><a href="#/account-v1">deposit</a> at least 
+						{{missingReserves}} {{user.accountFunds.serviceProperties["payment"].properties["periods"][1]["currency"]|uppercase}}</b>
+						<span ng-show="user.accountFunds.serviceProperties['payment'].properties['method'] == 'profit'">
+							plus some more to cover for 10% of profit share expenses
+						</span>
+						<br/>
+						or
+						<br/>
+						<b><a href="#/account-v1">change</a> your payment method</b> to start automated trading.
+					</span>
+				</span>
+				
+				<span ng-show="!paymentMethodSet">
+					Automated trading will be available when you <b><a href="#/account-v1">set up the API keys</a> for
+					the {{user.currentSession.service|uppercase}} exchange service</b> and 
+					<b><a href="#/account-v1">set your payment method</a> and deposit appropriate funds</b>
+				</span>
+				
+				<br/><br/>
+				
+			</div>
+						
 		</div>
 
 	</div>

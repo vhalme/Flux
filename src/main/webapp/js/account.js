@@ -20,17 +20,41 @@ function AccountCtrl($scope, $routeParams, $http) {
 	$scope.editBtceKey = false;
 	$scope.editBtceSecret = false;
 	
-	$scope.setNextMethod = $scope.user.accountFunds.serviceProperties["payment"].properties["nextMethod"];
-	$scope.setNextCurrency = $scope.user.accountFunds.serviceProperties["payment"].properties["nextCurrency"];
 	$scope.showCurrency = "btc";
+	$scope.paymentProperties = {};
+	
+	$scope.paymentErrors = [];
+	//$scope.missingReserves = 0;
+	
+	$scope.sharedProfit = {
+		"btc" : 0.0,
+		"ltc" : 0.0,
+		"usd" : 0.0
+	};
 	
 	$scope.start = function() {
+	
+		$scope.paymentProperties = $scope.user.accountFunds.serviceProperties["payment"];
+		var periods = $scope.paymentProperties.properties["periods"];
+		
+		console.log(periods);
+		
+		if(periods[0]["method"] == undefined || periods[0]["method"] == "") {
+			$scope.setNextMethod = "monthly";
+			$scope.setNextCurrency = "btc";
+		} else {
+			$scope.setNextMethod = periods[0]["method"];
+			$scope.setNextCurrency = periods[0]["currency"];
+		}
+		
+		$scope.evaluatePaymentFunds();
 		
 		$scope.refreshIntervalId = setInterval( function() { 
 			$scope.$apply( function() {
 				$scope.refreshTransactions(); 
 			});
 		}, 2000);
+		
 		
 	};
 	
@@ -78,11 +102,65 @@ function AccountCtrl($scope, $routeParams, $http) {
 			
 			$scope.user.accountFunds.reserves = result.reserves;
 			$scope.user.accountFunds.activeFunds = result.activeFunds;
+			$scope.serviceFees = result.serviceFees;
+			$scope.paymentProperties = result.paymentProperties;
 			
+			$scope.evaluatePaymentFunds();
 			
 		});
 		
 	};
+	
+	$scope.evaluatePaymentFunds = function() {
+		
+		$scope.paymentProperties = $scope.user.accountFunds.serviceProperties["payment"];
+		var periods = $scope.paymentProperties.properties["periods"];
+		
+		$scope.paymentMethod = periods[1]["method"];
+		$scope.paymentCurrency = periods[1]["currency"];
+		
+		$scope.nextPaymentMethod = periods[0]["method"];
+		$scope.nextPaymentCurrency = periods[0]["currency"];
+		
+		$scope.sharedProfit = periods[1]["sharedProfit"];
+		
+		var dateStart = new Date(periods[1]["start"]);
+		$scope.dateStart = dateStart.getFullYear()+"/"+(dateStart.getMonth()+1)+"/"+dateStart.getDate();
+		var dateEnd = new Date(periods[1]["end"]);
+		$scope.dateEnd = dateEnd.getFullYear()+"/"+(dateEnd.getMonth()+1)+"/"+dateEnd.getDate();
+		var nextDateStart = new Date(periods[0]["start"]);
+		$scope.nextDateStart = nextDateStart.getFullYear()+"/"+(nextDateStart.getMonth()+1)+"/"+nextDateStart.getDate();
+		var nextDateEnd = new Date(periods[0]["end"]);
+		$scope.nextDateEnd = nextDateEnd.getFullYear()+"/"+(nextDateEnd.getMonth()+1)+"/"+nextDateEnd.getDate();
+		
+		var method = $scope.paymentMethod;
+		var currency = $scope.paymentCurrency;
+		var reserves = $scope.user.accountFunds.reserves[currency];
+		
+		var requiredReserves = 0;
+		
+		if(method == "monthly") {
+			if(currency == "btc") {
+				requiredReserves = 0.5;
+			} else if(currency == "ltc") {
+				requiredReserves = 20;
+			} else if(currency == "usd") {
+				requiredReserves = 49.90;
+			}
+		} else if(method == "profit") {
+			if(currency == "btc") {
+				requiredReserves = 0.05;
+			} else if(currency == "ltc") {
+				requiredReserves = 2;
+			} else if(currency == "usd") {
+				requiredReserves = 4.99;
+			}
+		}
+		
+		$scope.missingReserves = requiredReserves - reserves;
+		
+	};
+	
 	
 	$scope.transfer = function(type, amount, currency, toAddress) {
 		
@@ -157,7 +235,22 @@ function AccountCtrl($scope, $routeParams, $http) {
 					$scope.editBtceKey = false;
 					$scope.editBtceSecret = false;
 				}
-			
+				
+				$scope.evaluatePaymentFunds();
+				
+			} else {
+				
+				
+				/*
+				var errorText = 
+					"Insufficient funds for current payment method. Please, deposit at least "+
+					missingReserves+" "+toUpperCase(currency)+" or change the payment method.";
+					
+				if(response.success == -2) {
+					$scope.paymentErrors.push({ text: errorText });
+				}
+				*/
+				
 			}
 			
 		});
@@ -180,14 +273,36 @@ function AccountCtrl($scope, $routeParams, $http) {
 	
 	$scope.setNextPaymentMethod = function() {
 		
+		$scope.paymentErrors = [];
+		
 		console.log("set next payment mehod: "+$scope.setNextMethod+"/"+$scope.setNextCurrency);
 		
 		var propertyMap = {
 			properties : {}
 		};
 		
-		propertyMap.properties["nextMethod"] = $scope.setNextMethod;
-		propertyMap.properties["nextCurrency"] = $scope.setNextCurrency;
+		var periods = $scope.paymentProperties.properties["periods"];
+		console.log(periods);
+		var method = periods[1]["method"];
+		
+		if(method == undefined || method.length == 0 || $scope.missingReserves > 0) {
+			
+			periods[1]["method"] = $scope.setNextMethod;
+			periods[1]["currency"] = $scope.setNextCurrency;
+			
+			if(method == undefined || method.length == 0) {
+				periods[0]["method"] = $scope.setNextMethod;
+				periods[0]["currency"] = $scope.setNextCurrency;
+			}
+		
+		} else {
+			
+			periods[0]["method"] = $scope.setNextMethod;
+			periods[0]["currency"] = $scope.setNextCurrency;
+			
+		}
+		
+		propertyMap.properties["periods"] = periods;
 		
 		$scope.setServiceProperties("payment", propertyMap);
 		

@@ -40,6 +40,35 @@
 	
 </div>
 
+<div class="row" ng-repeat="error in errors['general']" style="margin-bottom: 1em; margin-top: 1em;">
+	<div class="span12" style="text-align: center; border: 1px red solid; background: #fffacd; padding-bottom: 1.0em;" ng-show="error.code == 3001">
+		<div style="width: 400px; display: inline; left: -200px; margin-left: 50%; text-align: center;">
+			<br/>
+			<b>API key or secret is not set.</b>
+			<br/><br/>
+			Please, <a href='#/account-v1'>go to account settings</a> and set the API key and secret for the {{error.service}} exchange service.
+		</div>
+	</div>
+	<div class="span12" style="text-align: center; border: 1px red solid; background: #fffacd; padding-bottom: 1.0em;" ng-show="error.code == 2001">
+		<div style="width: 400px; display: inline; left: -200px; margin-left: 50%; text-align: center;">
+			<br/>
+			<b>No payment method selected.</b>
+			<br/><br/>
+			Please, <a href='#/account-v1'>go to account settings</a>, select a payment method and
+			deposit appropriate payment funds if necessary.
+		</div>
+	</div>
+	<div class="span12" style="text-align: center; border: 1px red solid; background: #fffacd; padding-bottom: 1.0em;" ng-show="error.code == 2002">
+		<div style="width: 400px; display: inline; left: -200px; margin-left: 50%; text-align: center;">
+			<br/>
+			<b>Insufficient funds for current payment method.</b>
+			<br/><br/>
+			Please, <a href='#/account-v1'>go to account settings</a> and deposit at least 
+			{{error.missingFunds}} {{error.currency|uppercase}} or change the payment method.
+		</div>
+	</div>
+</div>
+			
 
 <div class="row" ng-hide="!user.currentTradingSession.uninitialized">
 	<div class="span12" style="text-align: center;">
@@ -107,6 +136,7 @@
 
 					<div class="row" ng-class="{ hidden: !showManualTrading }">
 						
+						<div ng-show="sessionKeysSet">
 						<form name="manualTrading" class="css-form" novalidate>
 							
 						<div class="span4">
@@ -193,6 +223,63 @@
 						</div>
 						
 						</form>
+						</div>
+						
+						<!-- 
+						<div class="span12" style="margin-top: 1.0em; margin-bottom: 1.0em; text-align: center;" ng-show="sessionKeysSet && paymentMethodSet && missingReserves > 0">
+				
+							Manual trading is suspended because you don't have enough funds on your payment method
+							<br/><br/>
+				
+							Please, <b><a href="#/account-v1">deposit</a> at least 
+							{{missingReserves}} {{user.accountFunds.serviceProperties["payment"].properties["periods"][1]["currency"]|uppercase}}</b>
+							<span ng-show="user.accountFunds.serviceProperties['payment'].properties['method'] == 'profit'">
+								plus some more to cover for 10% of profit share expenses
+							</span>
+							<br/>
+							or
+							<br/>
+							<b><a href="#/account-v1">change</a> your payment method</b> to resume manual trading.
+				
+						</div>
+			
+						<div class="span12" style="margin-top: 1.0em; margin-bottom: 1.0em; text-align: center;" ng-show="sessionKeysSet && !paymentMethodSet">
+				
+							Manual trading will be available when you 
+							<b><a href="#/account-v1">set your payment method</a> and deposit appropriate funds</b>.
+							<br/><br/>
+				
+						</div>
+						-->
+						
+						<div class="span12" style="margin-top: 1.0em; margin-bottom: 1.0em; text-align: center;" ng-show="!sessionKeysSet">
+				
+							<span ng-show="paymentMethodSet">
+								Manual trading will be available when you <b><a href="#/account-v1">set up the API keys</a> for
+								the {{user.currentSession.service|uppercase}} exchange service.</b>
+								<span ng-show="missingReserves > 0">
+									<br/><br/>
+									You also need to <b><a href="#/account-v1">deposit</a> at least 
+									{{missingReserves}} {{user.accountFunds.serviceProperties["payment"].properties["periods"][1]["currency"]|uppercase}}</b>
+									<span ng-show="user.accountFunds.serviceProperties['payment'].properties['method'] == 'profit'">
+										plus some more to cover for 10% of profit share expenses
+									</span>
+									<br/>
+									or
+									<br/>
+									<b><a href="#/account-v1">change</a> your payment method</b> to start manual trading.
+								</span>
+							</span>
+				
+							<span ng-show="!paymentMethodSet">
+								Manual trading will be available when you <b><a href="#/account-v1">set up the API keys</a> for
+								the {{user.currentSession.service|uppercase}} exchange service</b> and 
+								<b><a href="#/account-v1">set your payment method</a> and deposit appropriate funds</b>
+							</span>
+				
+							<br/><br/>
+					
+						</div>
 
 					</div>
 				
@@ -265,6 +352,7 @@
 			</div>
 		
 			<div ng-include src="'parts/txLog.html'"></div>
+			
 			
 			<div class="row" style="margin-top: 4.0em;">
 

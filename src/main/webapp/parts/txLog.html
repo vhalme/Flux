@@ -1,127 +1,319 @@
 <div class="row" ng-controller="TxLogCtrl" style="margin-top: 2.0em;">
 
-	<div class="span6">
+	<div class="span12">
+	
+		<div class="row" style="margin-bottom: 1.0em;">
+		
+			<div class="span12" style="border-top: 1px solid black; background: #ededed; text-align: center;">
+				MANUAL ORDERS
+			</div>
+			
+		</div>
 
 		<div class="row">
+
 			<div class="span6">
-				<b>MY SELLS</b>
-			</div>
-		</div>
-
-		<div class="row" style="margin-top: 0.7em;">
-			<div class="span1">
-				<a href="" ng-click="sellSort='amount'; sellSortReverse=!sellSortReverse">{{user.currentTradingSession.currencyRight|uppercase}}</a>
-			</div>
-			<div class="span1">
-				<a href="" ng-click="sellSort='amount'; sellSortReverse=!sellSortReverse">{{user.currentTradingSession.currencyLeft|uppercase}}</a>
-			</div>
-			<div class="span1">
-				<a href="" ng-click="sellSort='rate'; sellSortReverse=!sellSortReverse">RATE</a>
-			</div>
-			<div class="span2">
-				<a href="" ng-click="sellSort=sellProfit; sellSortReverse=!sellSortReverse">PROFIT</a>
-				(<a href="" ng-click="changeProfitFormat('sell')">{{otherProfitFormat('sell')}}</a>)
-			</div>
-		</div>
-
-		<div class="row" ng-hide="sell.reversedOrder != null" style="margin-bottom: 0.1em;" ng-repeat="sell in transactions['sell'] | orderBy:sellSort:!sellSortReverse">
-
-			<div class="span4" ng-class="{ profitBorder: sellProfit(sell, '$') >= 0, lossBorder: sellProfit(sell, '$') < 0 }" style="position: relative; padding-right: 2.0em;">
-
-				<div class="orderFill customstyle" ng-class="{ profitFill: sellProfit(sell, '$') >= 0, lossFill: sellProfit(sell, '$') < 0 }" my-width="sell.filledAmount / sell.brokerAmount"></div>
-
-				<div class="transparentCover" ng-hide="!sell.isReversed"></div>
 
 				<div class="row">
+					<div class="span6">
+						<b>MY SELLS</b>
+					</div>
+				</div>
+
+				<div class="row" style="margin-top: 0.7em;">
 					<div class="span1">
-						{{sell.amount|truncate:6:""}}
+						<a href=""
+							ng-click="sellSort='amount'; sellSortReverse=!sellSortReverse">{{user.currentTradingSession.currencyRight|uppercase}}</a>
 					</div>
 					<div class="span1">
-						{{(sell.rate*sell.amount)|truncate:6:""}}
+						<a href=""
+							ng-click="sellSort='amount'; sellSortReverse=!sellSortReverse">{{user.currentTradingSession.currencyLeft|uppercase}}</a>
 					</div>
 					<div class="span1">
-						{{sell.rate|truncate:6:""}}
+						<a href=""
+							ng-click="sellSort='rate'; sellSortReverse=!sellSortReverse">RATE</a>
 					</div>
-					<div class="span1">
-						{{sellProfit(sell, sellProfitFormat)|truncate:6:""}}{{sellProfitFormat}}
+					<div class="span2">
+						<a href=""
+							ng-click="sellSort=sellProfit; sellSortReverse=!sellSortReverse">PROFIT</a>
+						(<a href="" ng-click="changeProfitFormat('sell')">{{otherProfitFormat('sell')}}</a>)
 					</div>
+				</div>
+
+				<div class="row" ng-hide="sell.reversedOrder != null"
+					style="margin-bottom: 0.1em;"
+					ng-repeat="sell in transactions['sell']['manual'] | orderBy:sellSort:!sellSortReverse">
+
+					<div class="span4"
+						ng-class="{ profitBorder: sellProfit(sell, '$') >= 0, lossBorder: sellProfit(sell, '$') < 0 }"
+						style="position: relative; padding-right: 2.0em;">
+
+						<div class="orderFill customstyle"
+							ng-class="{ profitFill: sellProfit(sell, '$') >= 0, lossFill: sellProfit(sell, '$') < 0 }"
+							my-width="sell.filledAmount / sell.brokerAmount"></div>
+
+						<div class="transparentCover" ng-hide="!sell.isReversed"></div>
+
+						<div class="row">
+							<div class="span1">{{sell.amount|truncate:6:""}}</div>
+							<div class="span1">
+								{{(sell.rate*sell.amount)|truncate:6:""}}</div>
+							<div class="span1">{{sell.rate|truncate:6:""}}</div>
+							<div class="span1">{{sellProfit(sell,
+								sellProfitFormat)|truncate:6:""}}{{sellProfitFormat}}</div>
+						</div>
+
+					</div>
+
+					<div class="span2"
+						style="margin-left: 0px; width: 6em; padding-left: 0.5em;"
+						ng-hide="!sell.isFilled">
+						<a style="margin-left: 1.0em;" href=""
+							ng-click="reverseTrade(sell, true)">Buy</a> <a href=""
+							ng-click="removeTransaction(sell)">Forget</a>
+					</div>
+
+					<div class="span2"
+						style="margin-left: 0px; width: 6em; padding-left: 0.5em;"
+						ng-hide="sell.isFilled">
+						<a style="margin-left: 1.0em;" href=""
+							ng-click="cancelTrade(sell)">Cancel</a>
+					</div>
+
 				</div>
 
 			</div>
 
-			<div class="span2" style="margin-left: 0px; width: 6em; padding-left: 0.5em;" ng-hide="!sell.isFilled">
-				<a style="margin-left: 1.0em;" href="" ng-click="reverseTrade(sell, true)">Buy</a>
-				<a href="" ng-click="removeTransaction(sell)">Forget</a>
+			<div class="span6">
+
+				<div class="row">
+					<div class="span6">
+						<b>MY BUYS</b>
+					</div>
+				</div>
+
+				<div class="row" style="margin-top: 0.7em;">
+					<div class="span1">
+						<a href=""
+							ng-click="buySort='amount'; buySortReverse=!buySortReverse">{{user.currentTradingSession.currencyRight|uppercase}}</a>
+					</div>
+					<div class="span1">
+						<a href=""
+							ng-click="buySort='amount'; buySortReverse=!buySortReverse">{{user.currentTradingSession.currencyLeft|uppercase}}</a>
+					</div>
+					<div class="span1">
+						<a href=""
+							ng-click="buySort='rate'; buySortReverse=!buySortReverse">RATE</a>
+					</div>
+					<div class="span2">
+						<a href=""
+							ng-click="buySort=buyProfit; buySortReverse=!buySortReverse">PROFIT</a>
+						(<a href="" ng-click="changeProfitFormat('buy')">{{otherProfitFormat('buy')}}</a>)
+					</div>
+				</div>
+
+				<div class="row" ng-hide="buy.reversedOrder != null"
+					style="margin-bottom: 0.1em;"
+					ng-repeat="buy in transactions['buy']['manual'] | orderBy:buySort:!buySortReverse">
+
+					<div class="span4"
+						ng-class="{ profitBorder: buyProfit(buy, '$') >= 0, lossBorder: buyProfit(buy, '$') < 0 }"
+						style="position: relative; padding-right: 2.0em;">
+
+						<div class="orderFill customstyle"
+							ng-class="{ profitFill: buyProfit(buy, '$') >= 0, lossFill: buyProfit(buy, '$') < 0 }"
+							my-width="buy.filledAmount / buy.brokerAmount"></div>
+
+						<div class="transparentCover" ng-hide="!buy.isReversed"></div>
+
+						<div class="row">
+							<div class="span1">{{buy.amount|truncate:6:""}}</div>
+							<div class="span1">{{(buy.rate*buy.amount)|truncate:6:""}}
+							</div>
+							<div class="span1">{{buy.rate|truncate:6:""}}</div>
+							<div class="span1">{{buyProfit(buy,
+								buyProfitFormat)|truncate:6:""}}{{buyProfitFormat}}</div>
+						</div>
+
+					</div>
+
+					<div class="span2"
+						style="margin-left: 0px; width: 6em; padding-left: 0.5em;"
+						ng-hide="!buy.isFilled">
+						<a style="margin-left: 1.0em;" href=""
+							ng-click="reverseTrade(buy, true)">Sell</a> <a href=""
+							ng-click="removeTransaction(buy)">Forget</a>
+					</div>
+
+					<div class="span2"
+						style="margin-left: 0px; width: 6em; padding-left: 0.5em;"
+						ng-hide="buy.isFilled">
+						<a style="margin-left: 1.0em;" href="" ng-click="cancelTrade(buy)">Cancel</a>
+					</div>
+
+				</div>
+
 			</div>
 
-			<div class="span2" style="margin-left: 0px; width: 6em; padding-left: 0.5em;" ng-hide="sell.isFilled">
-				<a style="margin-left: 1.0em;" href="" ng-click="cancelTrade(sell)">Cancel</a>
+		</div>
+		
+		<div class="row" style="margin-bottom: 1.0em; margin-top: 2.0em;">
+		
+			<div class="span12" style="border-top: 1px solid black; background: #ededed; text-align: center;">
+				AUTO ORDERS
+			</div>
+			
+			
+		</div>
+
+		<div class="row">
+
+			<div class="span6">
+
+				<div class="row">
+					<div class="span6">
+						<b>MY SELLS</b>
+					</div>
+				</div>
+
+				<div class="row" style="margin-top: 0.7em;">
+					<div class="span1">
+						<a href=""
+							ng-click="sellSort='amount'; sellSortReverse=!sellSortReverse">{{user.currentTradingSession.currencyRight|uppercase}}</a>
+					</div>
+					<div class="span1">
+						<a href=""
+							ng-click="sellSort='amount'; sellSortReverse=!sellSortReverse">{{user.currentTradingSession.currencyLeft|uppercase}}</a>
+					</div>
+					<div class="span1">
+						<a href=""
+							ng-click="sellSort='rate'; sellSortReverse=!sellSortReverse">RATE</a>
+					</div>
+					<div class="span2">
+						<a href=""
+							ng-click="sellSort=sellProfit; sellSortReverse=!sellSortReverse">PROFIT</a>
+						(<a href="" ng-click="changeProfitFormat('sell')">{{otherProfitFormat('sell')}}</a>)
+					</div>
+				</div>
+
+				<div class="row" ng-hide="sell.reversedOrder != null"
+					style="margin-bottom: 0.1em;"
+					ng-repeat="sell in transactions['sell']['auto'] | orderBy:sellSort:!sellSortReverse">
+
+					<div class="span4"
+						ng-class="{ profitBorder: sellProfit(sell, '$') >= 0, lossBorder: sellProfit(sell, '$') < 0 }"
+						style="position: relative; padding-right: 2.0em;">
+
+						<div class="orderFill customstyle"
+							ng-class="{ profitFill: sellProfit(sell, '$') >= 0, lossFill: sellProfit(sell, '$') < 0 }"
+							my-width="sell.filledAmount / sell.brokerAmount"></div>
+
+						<div class="transparentCover" ng-hide="!sell.isReversed"></div>
+
+						<div class="row">
+							<div class="span1">{{sell.amount|truncate:6:""}}</div>
+							<div class="span1">
+								{{(sell.rate*sell.amount)|truncate:6:""}}</div>
+							<div class="span1">{{sell.rate|truncate:6:""}}</div>
+							<div class="span1">{{sellProfit(sell,
+								sellProfitFormat)|truncate:6:""}}{{sellProfitFormat}}</div>
+						</div>
+
+					</div>
+
+					<div class="span2"
+						style="margin-left: 0px; width: 6em; padding-left: 0.5em;"
+						ng-hide="!sell.isFilled">
+						<a style="margin-left: 1.0em;" href=""
+							ng-click="reverseTrade(sell, true)">Buy</a> <a href=""
+							ng-click="removeTransaction(sell)">Forget</a>
+					</div>
+
+					<div class="span2"
+						style="margin-left: 0px; width: 6em; padding-left: 0.5em;"
+						ng-hide="sell.isFilled">
+						<a style="margin-left: 1.0em;" href=""
+							ng-click="cancelTrade(sell)">Cancel</a>
+					</div>
+
+				</div>
+
+			</div>
+
+			<div class="span6">
+
+				<div class="row">
+					<div class="span6">
+						<b>MY BUYS</b>
+					</div>
+				</div>
+
+				<div class="row" style="margin-top: 0.7em;">
+					<div class="span1">
+						<a href=""
+							ng-click="buySort='amount'; buySortReverse=!buySortReverse">{{user.currentTradingSession.currencyRight|uppercase}}</a>
+					</div>
+					<div class="span1">
+						<a href=""
+							ng-click="buySort='amount'; buySortReverse=!buySortReverse">{{user.currentTradingSession.currencyLeft|uppercase}}</a>
+					</div>
+					<div class="span1">
+						<a href=""
+							ng-click="buySort='rate'; buySortReverse=!buySortReverse">RATE</a>
+					</div>
+					<div class="span2">
+						<a href=""
+							ng-click="buySort=buyProfit; buySortReverse=!buySortReverse">PROFIT</a>
+						(<a href="" ng-click="changeProfitFormat('buy')">{{otherProfitFormat('buy')}}</a>)
+					</div>
+				</div>
+
+				<div class="row" ng-hide="buy.reversedOrder != null"
+					style="margin-bottom: 0.1em;"
+					ng-repeat="buy in transactions['buy']['auto'] | orderBy:buySort:!buySortReverse">
+
+					<div class="span4"
+						ng-class="{ profitBorder: buyProfit(buy, '$') >= 0, lossBorder: buyProfit(buy, '$') < 0 }"
+						style="position: relative; padding-right: 2.0em;">
+
+						<div class="orderFill customstyle"
+							ng-class="{ profitFill: buyProfit(buy, '$') >= 0, lossFill: buyProfit(buy, '$') < 0 }"
+							my-width="buy.filledAmount / buy.brokerAmount"></div>
+
+						<div class="transparentCover" ng-hide="!buy.isReversed"></div>
+
+						<div class="row">
+							<div class="span1">{{buy.amount|truncate:6:""}}</div>
+							<div class="span1">{{(buy.rate*buy.amount)|truncate:6:""}}
+							</div>
+							<div class="span1">{{buy.rate|truncate:6:""}}</div>
+							<div class="span1">{{buyProfit(buy,
+								buyProfitFormat)|truncate:6:""}}{{buyProfitFormat}}</div>
+						</div>
+
+					</div>
+
+					<div class="span2"
+						style="margin-left: 0px; width: 6em; padding-left: 0.5em;"
+						ng-hide="!buy.isFilled">
+						<a style="margin-left: 1.0em;" href=""
+							ng-click="reverseTrade(buy, true)">Sell</a> <a href=""
+							ng-click="removeTransaction(buy)">Forget</a>
+					</div>
+
+					<div class="span2"
+						style="margin-left: 0px; width: 6em; padding-left: 0.5em;"
+						ng-hide="buy.isFilled">
+						<a style="margin-left: 1.0em;" href="" ng-click="cancelTrade(buy)">Cancel</a>
+					</div>
+
+				</div>
+
 			</div>
 
 		</div>
 
 	</div>
-
-	<div class="span6">
-
-		<div class="row">
-			<div class="span6">
-				<b>MY BUYS</b>
-			</div>
-		</div>
-
-		<div class="row" style="margin-top: 0.7em;">
-			<div class="span1">
-				<a href="" ng-click="buySort='amount'; buySortReverse=!buySortReverse">{{user.currentTradingSession.currencyRight|uppercase}}</a>
-			</div>
-			<div class="span1">
-				<a href="" ng-click="buySort='amount'; buySortReverse=!buySortReverse">{{user.currentTradingSession.currencyLeft|uppercase}}</a>
-			</div>
-			<div class="span1">
-				<a href="" ng-click="buySort='rate'; buySortReverse=!buySortReverse">RATE</a>
-			</div>
-			<div class="span2">
-				<a href="" ng-click="buySort=buyProfit; buySortReverse=!buySortReverse">PROFIT</a>
-				(<a href="" ng-click="changeProfitFormat('buy')">{{otherProfitFormat('buy')}}</a>)
-			</div>
-		</div>
-
-		<div class="row" ng-hide="buy.reversedOrder != null" style="margin-bottom: 0.1em;" ng-repeat="buy in transactions['buy'] | orderBy:buySort:!buySortReverse">
-
-			<div class="span4" ng-class="{ profitBorder: buyProfit(buy, '$') >= 0, lossBorder: buyProfit(buy, '$') < 0 }" style="position: relative; padding-right: 2.0em;">
-
-				<div class="orderFill customstyle" ng-class="{ profitFill: buyProfit(buy, '$') >= 0, lossFill: buyProfit(buy, '$') < 0 }" my-width="buy.filledAmount / buy.brokerAmount"></div>
-
-				<div class="transparentCover" ng-hide="!buy.isReversed"></div>
-
-				<div class="row">
-					<div class="span1">
-						{{buy.amount|truncate:6:""}}
-					</div>
-					<div class="span1">
-						{{(buy.rate*buy.amount)|truncate:6:""}}
-					</div>
-					<div class="span1">
-						{{buy.rate|truncate:6:""}}
-					</div>
-					<div class="span1">
-						{{buyProfit(buy, buyProfitFormat)|truncate:6:""}}{{buyProfitFormat}}
-					</div>
-				</div>
-
-			</div>
-
-			<div class="span2" style="margin-left: 0px; width: 6em; padding-left: 0.5em;" ng-hide="!buy.isFilled">
-				<a style="margin-left: 1.0em;" href="" ng-click="reverseTrade(buy, true)">Sell</a>
-				<a href="" ng-click="removeTransaction(buy)">Forget</a>
-			</div>
-
-			<div class="span2" style="margin-left: 0px; width: 6em; padding-left: 0.5em;" ng-hide="buy.isFilled">
-				<a style="margin-left: 1.0em;" href="" ng-click="cancelTrade(buy)">Cancel</a>
-			</div>
-
-		</div>
-
-	</div>
+	
 
 </div>

@@ -26,6 +26,7 @@ import com.lenin.tradingplatform.data.entities.AccountFunds;
 import com.lenin.tradingplatform.data.entities.AutoTradingOptions;
 import com.lenin.tradingplatform.data.entities.Order;
 import com.lenin.tradingplatform.data.entities.Rate;
+import com.lenin.tradingplatform.data.entities.Settings;
 import com.lenin.tradingplatform.data.entities.TradingSession;
 import com.lenin.tradingplatform.data.entities.User;
 import com.lenin.tradingplatform.data.repositories.OrderRepository;
@@ -73,6 +74,10 @@ public class TradingSessionService {
 
 		if (tradingSessionId != null) {
 			
+			MongoOperations mongoOps = (MongoOperations)mongoTemplate;
+			List<Settings> settingsResult = mongoOps.findAll(Settings.class);
+			Settings settings = settingsResult.get(0);
+			
 			TradingSession tradingSession = tradingSessionRepository.findOne(tradingSessionId); // user.getCurrentTradingSession();
 			List<Order> orders = orderRepository.findByTradingSession(tradingSession);
 			
@@ -82,7 +87,8 @@ public class TradingSessionService {
 			
 			resultObj.put("session", tradingSession);
 			resultObj.put("orders", orders);
-			resultObj.put("activeFunds", activeFundsMap);
+			resultObj.put("accountFunds", accountFunds);
+			resultObj.put("serviceFees", settings.getServiceFees());
 			
 			response.setData(resultObj);
 			

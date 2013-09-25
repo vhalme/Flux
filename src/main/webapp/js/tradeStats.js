@@ -36,7 +36,7 @@ function TradingSessionCtrl($scope, $routeParams, $http) {
 	$scope.newFundsLeft = undefined;
 	$scope.newFundsRight = undefined;
 	
-	
+	$scope.sessionKeysSet = false;
 	
 	$scope.start = function() {
 		
@@ -45,7 +45,7 @@ function TradingSessionCtrl($scope, $routeParams, $http) {
 		$scope.refreshInterval = 15;
 		$scope.refreshCounter = $scope.refreshInterval;
 		
-		//$scope.refresh();
+		$scope.refreshErrors();
 		
 		$scope.intervalIds.main = setInterval( function() { 
 			$scope.$apply( function() {
@@ -96,7 +96,10 @@ function TradingSessionCtrl($scope, $routeParams, $http) {
 				
 				$scope.setTransactions(response.data.orders);
 				
-				$scope.user.accountFunds.activeFunds[$scope.user.currentTradingSession.service] = response.data.activeFunds;
+				$scope.user.accountFunds = response.data.accountFunds; //.activeFunds[$scope.user.currentTradingSession.service] = response.data.activeFunds;
+				$scope.serviceFees = response.data.serviceFees;
+				
+				$scope.refreshErrors();
 				
 			} else {
 				
@@ -113,6 +116,95 @@ function TradingSessionCtrl($scope, $routeParams, $http) {
 	$scope.update = function() {
 		
 		$scope.rateChange = $scope.user.currentTradingSession.currentRate - $scope.user.currentTradingSession.oldRate;
+		
+	};
+	
+	$scope.refreshErrors = function() {
+		
+		var periods = $scope.user.accountFunds.serviceProperties["payment"].properties["periods"];
+		
+		var currency = periods[1]["currency"];
+		var method = periods[1]["method"];
+		
+		$scope.errors["general"] = [];
+		$scope.sessionKeysSet = true;
+		$scope.paymentMethodSet = true;
+		$scope.okToTrade = true;
+		
+		var service = $scope.user.currentTradingSession.service;
+		
+		var apiKey = $scope.user.accountFunds.serviceProperties[service].properties['apiKey'];
+		var apiSecret = $scope.user.accountFunds.serviceProperties[service].properties['apiSecret'];
+		
+		if(apiKey == undefined || apiKey.length == 0 || apiSecret == undefined || apiSecret.length == 0) {
+			
+			if(service == "btce") {
+				service = "BTC-e";
+			}
+			
+			var error = {	
+				code: 3001,
+				service: service
+			};
+			
+			$scope.errors["general"].push(error);
+			
+			$scope.sessionKeysSet = false;
+			$scope.okToTrade = false;
+			
+		}
+				
+		if(method == undefined || method.length == 0) {
+			
+			var error = {	
+				code: 2001
+			};
+			
+			$scope.errors["general"].push(error);
+			$scope.okToTrade = false;
+			$scope.paymentMethodSet = false;
+			
+		} else {
+			
+			var reserves = $scope.user.accountFunds.reserves[currency];
+			
+			var requiredReserves = 0;
+			
+			if(method == "monthly") {
+				if(currency == "btc") {
+					requiredReserves = 0.5;
+				} else if(currency == "ltc") {
+					requiredReserves = 20;
+				} else if(currency == "usd") {
+					requiredReserves = 49.90;
+				}
+			} else if(method == "profit") {
+				if(currency == "btc") {
+					requiredReserves = 0.05;
+				} else if(currency == "ltc") {
+					requiredReserves = 2;
+				} else if(currency == "usd") {
+					requiredReserves = 4.99;
+				}
+			}
+			
+			var missing = requiredReserves - reserves;
+			$scope.missingReserves = missing;
+			
+			if(missing > 0) {
+				
+				var error = {	
+					code: 2002,
+					currency: currency,
+					missingFunds: missing
+				}
+				
+				$scope.errors["general"].push(error);
+				$scope.okToTrade = false;
+			
+			}
+			
+		} 
 		
 	};
 	
@@ -143,10 +235,15 @@ function TradingSessionCtrl($scope, $routeParams, $http) {
 		
 		var updatedTransactions = [];
 		updatedTransactions["buy"] = [];
+		updatedTransactions["buy"]["manual"] = [];
+		updatedTransactions["buy"]["auto"] = [];
+		
 		updatedTransactions["sell"] = [];
+		updatedTransactions["sell"]["manual"] = [];
+		updatedTransactions["sell"]["auto"] = [];
 		
 		for(var i=0; i<transactions.length; i++) {
-			updatedTransactions[transactions[i].type].push(transactions[i]);
+			updatedTransactions[transactions[i].type][transactions[i].mode].push(transactions[i]);
 		}
 		
 		$scope.transactions = updatedTransactions;

@@ -5,7 +5,7 @@
 		<div class="row" style="margin-top: 2.0em; margin-bottom: 2.0em;">
 			
 			<div class="span12" style="text-align: center;">
-				<b>MANAGE FUNDS</b>
+				<b>ACCOUNT MANAGEMENT</b>
 				<br/><br/>
 			</div>
 			
@@ -18,7 +18,7 @@
 				<div class="row" style="margin-bottom: 2.0em;">
 			
 					<div class="span6">
-						<b>PAYMENT SETTINGS</b>
+						<b>PAYMENT FUNDS</b>
 					</div>
 						
 				</div>
@@ -261,8 +261,9 @@
 					<div class="row" style="margin-bottom: 1.0em;">
 						<div class="span6">
 							<div style="margin-left: 1.0em;">
-								Fixed monthly billing, 0.5 BTC/month<br/>
-								0.5 BTC will be deducted from your account 15th day of every month.
+								<b>Fixed monthly billing, {{serviceFees["monthly"][setNextCurrency]}} {{setNextCurrency|uppercase}}/month</b>
+								<br/><br/>
+								{{serviceFees["monthly"][setNextCurrency]}} {{setNextCurrency|uppercase}} will be deducted from your account 15th day of every month.
 							</div>
 						</div>
 					</div>
@@ -272,8 +273,9 @@
 					<div class="row" style="margin-bottom: 1.0em;">
 						<div class="span6">
 							<div style="margin-left: 1.0em;">
-								Fixed monthly billing, 0.05 BTC/month + 10% of profits on automatic trades<br/><br/>
-								0.05 BTC will be deducted from your account 15th day of every month and amount equal to 10% of profit will be deducted on each automated profitable pair of transactions. Manual transactions are free.
+								<b>Fixed monthly billing, {{serviceFees["profit"][setNextCurrency]}} {{setNextCurrency|uppercase}}/month + 10% of profits on automatic trades</b>
+								<br/><br/>
+								{{serviceFees["profit"][setNextCurrency]}} {{setNextCurrency|uppercase}} will be deducted from your account 15th day of every month and amount equal to 10% of profit will be deducted on each automated profitable pair of transactions. Manual transactions are free.
 							</div>
 						</div>
 					</div>
@@ -281,18 +283,24 @@
 				
 				<div class="row">
 					<div class="span6" style="text-align: center;">
-						<a ng-show="user.accountFunds.serviceProperties['payment'].properties['method'] != ''" class="btn" style="margin-top: -0.3em;" ng-click="setNextPaymentMethod()">
+						<a ng-show="paymentMethod != '' && missingReserves <= 0" class="btn" style="margin-top: -0.3em;" ng-click="setNextPaymentMethod()">
 							Set payment method for the next billing period
 						</a>
-						<a ng-show="user.accountFunds.serviceProperties['payment'].properties['method'] == ''" class="btn" style="margin-top: -0.3em;" ng-click="setNextPaymentMethod()">
+						<a ng-show="paymentMethod == '' || missingReserves > 0" class="btn" style="margin-top: -0.3em;" ng-click="setNextPaymentMethod()">
 							Set payment method
 						</a>
 					</div>
 				</div>
 				
-				<div class="row" ng-show="user.accountFunds.serviceProperties['payment'].properties['method'] == ''">
+				<div class="row" ng-show="paymentMethod == '' || missingReserves > 0">
+					<div class="span6" style="text-align: center; margin-top: 0.5em; color: green;">
+						After the payment method for the current billing period has been selected, you will only be able to change the payment method starting from the next billing period!
+					</div>
+				</div>
+				
+				<div class="row" ng-repeat="paymentError in paymentErrors">
 					<div class="span6" style="text-align: center; margin-top: 0.5em; color: red;">
-						After the first payment method has been selected, you will only be able to change the payment method starting from the next period!
+						{{paymentError.text}}
 					</div>
 				</div>
 				
@@ -306,18 +314,42 @@
 								<th>Fixed costs</th>
 								<th>Profit shared</th>
 							</tr>
-							<tr>
-								<td>2013/09/11 - 2013/10/10</td>
-								<td>{{user.accountFunds.serviceProperties['payment'].properties['method']}} ({{user.accountFunds.serviceProperties['payment'].properties['currency']}})</td>
-								<td>4.99 USD</td>
-								<td>1.23 USD</td>
+							
+							<tr ng-show="paymentMethod != ''">
+								<td>{{dateStart}} - {{dateEnd}}</td>
+								<td>{{paymentMethod}} ({{paymentCurrency|uppercase}})</td>
+								<td>{{serviceFees[paymentMethod][paymentCurrency]}} {{paymentCurrency|uppercase}}</td>
+								<td>
+								<span ng-show="{{sharedProfit['btc'] != '0.0'}}">{{sharedProfit["btc"]|truncate:6:""}} BTC<br/></span>
+								<span ng-show="{{sharedProfit['ltc'] != '0.0'}}">{{sharedProfit["ltc"]|truncate:6:""}} LTC<br/></span>
+								<span ng-show="{{sharedProfit['usd'] != '0.0'}}">{{sharedProfit["usd"]|truncate:6:""}} USD</span>
+								<span ng-show="{{sharedProfit['btc'] == '0.0' && sharedProfit['ltc'] == '0.0' && sharedProfit['usd'] == '0.0'}}">None</span>
+								</td>
 							</tr>
-							<tr>
-								<td>2013/10/11 - 2013/11/10</td>
-								<td>{{user.accountFunds.serviceProperties['payment'].properties['nextMethod']}} ({{user.accountFunds.serviceProperties['payment'].properties['nextCurrency']}})</td>
-								<td>4.99 USD</td>
-								<td>1.23 USD</td>
+							
+							<tr ng-show="paymentMethod == ''">
+								<td>{{dateStart}} - {{dateEnd}}</td>
+								<td colspan="3" style="text-align: center;">Not set</td>
 							</tr>
+							
+							<tr ng-show="missingReserves > 0">
+								<td colspan="4" style="border: none; color: red;">
+									Insufficient funds for the current billing period. Deposit funds or change the payment method.
+								</td>
+							</tr>
+							
+							<tr ng-show="nextPaymentMethod != ''">
+								<td>{{nextDateStart}} - {{nextDateEnd}}</td>
+								<td>{{nextPaymentMethod}} ({{nextPaymentCurrency|uppercase}})</td>
+								<td>{{serviceFees[nextPaymentMethod][nextPaymentCurrency]}} {{nextPaymentCurrency|uppercase}}</td>
+								<td>None</td>
+							</tr>
+							
+							<tr ng-show="nextPaymentMethod == ''">
+								<td>{{nextDateStart}} - {{nextDateEnd}}</td>
+								<td colspan="3" style="text-align: center;">Not set</td>
+							</tr>
+							
 					</table>
 				
 					</div>
@@ -337,7 +369,7 @@
 				<div class="row" style="margin-bottom: 1.0em;">
 			
 					<div class="span5" style="font-size: 1.8em; font-weight: bold;">
-						BTC-E
+						BTC-e
 					</div>
 			
 				</div>
@@ -368,8 +400,11 @@
 									Set
 								</a>
 							</div>
-							<div class="span3" ng-show="!editBtceKey" style="white-space: nowrap; text-overflow: ellipsis; overflow: hidden;">
+							<div class="span3" ng-show="!editBtceKey && user.accountFunds.serviceProperties['btce'].properties['apiKey'] != ''" style="white-space: nowrap; text-overflow: ellipsis; overflow: hidden;">
 								{{user.accountFunds.serviceProperties['btce'].properties['apiKey']}}
+							</div>
+							<div class="span3" ng-show="!editBtceKey && user.accountFunds.serviceProperties['btce'].properties['apiKey'] == ''" style="white-space: nowrap; text-overflow: ellipsis; overflow: hidden; text-align: center; color: red;">
+								Not set
 							</div>
 							<div class="span1" ng-show="!editBtceKey">
 								<a class="btn" style="margin-top: -0.3em;" ng-click="editBtceKey = true">
@@ -389,8 +424,11 @@
 									Set
 								</a>
 							</div>
-							<div class="span3" ng-show="!editBtceSecret" style="white-space: nowrap; text-overflow: ellipsis; overflow: hidden;">
+							<div class="span3" ng-show="!editBtceSecret && user.accountFunds.serviceProperties['btce'].properties['apiSecret'] != ''" style="white-space: nowrap; text-overflow: ellipsis; overflow: hidden;">
 								{{user.accountFunds.serviceProperties['btce'].properties['apiSecret']}}
+							</div>
+							<div class="span3" ng-show="!editBtceSecret && user.accountFunds.serviceProperties['btce'].properties['apiSecret'] == ''" style="white-space: nowrap; text-overflow: ellipsis; overflow: hidden; text-align: center; color: red;">
+								Not set
 							</div>
 							<div class="span1" ng-show="!editBtceSecret">
 								<a class="btn" style="margin-top: -0.3em;" ng-click="editBtceSecret = true">

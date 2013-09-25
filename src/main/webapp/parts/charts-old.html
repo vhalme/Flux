@@ -14,7 +14,7 @@
 			<div class="span12">
 				<div class="row">
 					<div class="span9">
-						<div style="margin-left: 4.6em; margin-top: 0.6em; margin-bottom: 1.0em;">
+						<div style="margin-left: 4.6em; margin-top: 0.6em;">
 							<div class="btn-group">
 								<button class="btn" ng-repeat="option in chartScaleOptions" ng-click="setChartScale(option.precision)" ng-class="{ active: option.precision == chartScale }">
 									{{option.period}}
@@ -41,13 +41,7 @@
 					</div>
 				</div>
 				<div class="row">
-					<div class="span12">
-						<div id="chartdiv" style="width:100%; height:340px;"></div>
-						<div style="float:right;margin-right:10px;">
-    						<input onChange="changeZoomDates()" style="width:100px; text-align:center" type="text" id="startDate">
-    						<input onChange="changeZoomDates()" style="width:100px; text-align:center" type="text" id="endDate">
-						</div>
-					</div>
+					<div id="chartContainer" class="span12" style="height: 320px;"></div>
 				</div>
 			</div>
 		</div>

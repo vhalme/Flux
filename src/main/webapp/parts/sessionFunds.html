@@ -20,6 +20,7 @@
 
 		<div class="row" ng-class="{ hidden: !showSessionFunds }" style="margin-bottom: 1em;">
 			
+			<div ng-show="sessionKeysSet">
 			<div class="span12">
 				
 				<div class="row" style="background: #ededed; margin-bottom: 0.2em; padding-top: 0.3em; padding-bottom: 0.3em;">
@@ -73,6 +74,14 @@
 					</form>
 					
 				</div>
+			</div>
+			</div>
+			
+			<div class="span12" style="margin-top: 1.0em; margin-bottom: 1.0em; text-align: center;" ng-show="!sessionKeysSet">
+				
+				Manual trading will be available when you <b><a href="#/account-v1">set up the API keys</a> for
+				the {{user.currentSession.service|uppercase}} exchange service.</b>
+					
 			</div>
 			
 		</div>

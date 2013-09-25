@@ -31,6 +31,8 @@ import com.lenin.tradingplatform.data.entities.AccountFunds;
 import com.lenin.tradingplatform.data.entities.BitcoinTransaction;
 import com.lenin.tradingplatform.data.entities.FundTransaction;
 import com.lenin.tradingplatform.data.entities.OkpayTransaction;
+import com.lenin.tradingplatform.data.entities.PropertyMap;
+import com.lenin.tradingplatform.data.entities.Settings;
 import com.lenin.tradingplatform.data.entities.User;
 import com.lenin.tradingplatform.data.repositories.OrderRepository;
 import com.lenin.tradingplatform.data.repositories.UserRepository;
@@ -70,13 +72,21 @@ public class FundTransactionService {
 		
 		if(username != null && !username.equals("null")) {
 			
+			MongoOperations mongoOps = (MongoOperations)mongoTemplate;
+			List<Settings> settingsResult = mongoOps.findAll(Settings.class);
+			Settings settings = settingsResult.get(0);
+			
 			user = userRepository.findByUsername(username);
 			
 			AccountFunds accountFunds = user.getAccountFunds();
 			Map<String, Double> reserves = accountFunds.getReserves();
 			Map<String, Map<String, Double>> activeFunds = accountFunds.getActiveFunds();
+			PropertyMap paymentProperties = accountFunds.getServiceProperties().get("payment");
+			
 			resultObj.put("reserves", reserves);
 			resultObj.put("activeFunds", activeFunds);
+			resultObj.put("serviceFees", settings.getServiceFees());
+			resultObj.put("paymentProperties", paymentProperties);
 			
 		}
 		

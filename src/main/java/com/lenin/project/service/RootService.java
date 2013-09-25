@@ -1,6 +1,8 @@
 package com.lenin.project.service;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -205,6 +207,13 @@ public class RootService {
 			
 			AccountFunds accountFunds = new AccountFunds();
 			
+			PropertyMap testServiceInfo = new PropertyMap();
+			testServiceInfo.setName("Test");
+			Map<String, Object> testServiceStrings = new HashMap<String, Object>();
+			testServiceStrings.put("apiKey", "ok");
+			testServiceStrings.put("apiSecret", "ok");
+			testServiceInfo.setProperties(testServiceStrings);
+			
 			PropertyMap btceServiceInfo = new PropertyMap();
 			btceServiceInfo.setName("BTC-E");
 			Map<String, Object> btceServiceStrings = new HashMap<String, Object>();
@@ -228,14 +237,47 @@ public class RootService {
 			//mtgoxServiceDoubles.put("btc", 0.0);
 			//mtgoxServiceInfo.setDoubleProperties(mtgoxServiceDoubles);
 			
+			Date dateStart = new Date();
+			Calendar calEnd = Calendar.getInstance(); 
+			calEnd.add(Calendar.MONTH, 1);
+			Date dateEnd = calEnd.getTime();
+			calEnd.add(Calendar.MONTH, 1);
+			Date nextDateEnd = calEnd.getTime();
+			
 			PropertyMap paymentMethodInfo = new PropertyMap();
 			paymentMethodInfo.setName("Payment method");
 			Map<String, Object> paymentMethodStrings = new HashMap<String, Object>();
-			paymentMethodStrings.put("currency", "btc");
-			paymentMethodStrings.put("method", "monthly");
+			List<Map<String, Object>> periods = new ArrayList<Map<String, Object>>();
+			Map<String, Object> lastPeriod = null;
+			Map<String, Object> currentPeriod = new HashMap<String, Object>();
+			currentPeriod.put("currency", "");
+			currentPeriod.put("method", "");
+			currentPeriod.put("start", dateStart);
+			currentPeriod.put("end", dateEnd);
+			Map<String, String> sharedProfit = new HashMap<String, String>();
+			sharedProfit.put("btc", "0.0");
+			sharedProfit.put("ltc", "0.0");
+			sharedProfit.put("usd", "0.0");
+			currentPeriod.put("sharedProfit", sharedProfit);
+			Map<String, Object> nextPeriod = new HashMap<String, Object>();
+			nextPeriod.put("currency", "");
+			nextPeriod.put("method", "");
+			nextPeriod.put("start", dateEnd);
+			nextPeriod.put("end", nextDateEnd);
+			Map<String, String> nextSharedProfit = new HashMap<String, String>();
+			nextSharedProfit.put("btc", "0.0");
+			nextSharedProfit.put("ltc", "0.0");
+			nextSharedProfit.put("usd", "0.0");
+			nextPeriod.put("sharedProfit", nextSharedProfit);
+			periods.add(0, lastPeriod);
+			periods.add(0, currentPeriod);
+			periods.add(0, nextPeriod);
+			
+			paymentMethodStrings.put("periods", periods);
 			paymentMethodInfo.setProperties(paymentMethodStrings);
 			
 			Map<String, PropertyMap> serviceInfos = new HashMap<String, PropertyMap>();
+			serviceInfos.put("test", testServiceInfo);
 			serviceInfos.put("btce", btceServiceInfo);
 			serviceInfos.put("mtgox", mtgoxServiceInfo);
 			serviceInfos.put("payment", paymentMethodInfo);
@@ -309,7 +351,7 @@ public class RootService {
 			testRate.setLast(1.0);
 			testRate.setTime(System.currentTimeMillis() / 1000L);
 			testRate.setPair("ltc_usd");
-			testTradingSession.setRate(rate);
+			testTradingSession.setRate(testRate);
 
 			String token = "" + Math.random();
 
@@ -319,12 +361,16 @@ public class RootService {
 			mongoOps.save(accountFunds);
 			
 			userRepository.save(user);
+			tradingSession.setUserId(user.getId());
+			tradingSession.setUsername(user.getUsername());
 			tradingSessionRepository.save(tradingSession);
 			user.addTradingSession(tradingSession);
 			user.setCurrentTradingSession(tradingSession);
 			userRepository.save(user);
 			
 			userRepository.save(testUser);
+			testTradingSession.setUserId(testUser.getId());
+			testTradingSession.setUsername(testUser.getUsername());
 			tradingSessionRepository.save(testTradingSession);
 			testUser.addTradingSession(testTradingSession);
 			testUser.setCurrentTradingSession(testTradingSession);

@@ -193,14 +193,14 @@ public class OrderService {
 			
 		}
 		
-		TradingClient tradingClient = new TradingClient(tradingSession,
-				tradingSessionRepository, orderRepository, tradeRepository);
+		TradingClient tradingClient = new TradingClient(null, tradingSession, userRepository, tradingSessionRepository, orderRepository, tradeRepository);
 		
 		tradingClient.setBtceApi(btceApi);
 		
 		RequestResponse tradeResponse = null;
 		
 		if(cancel == null) {
+			order.setMode("manual");
 			tradeResponse = tradingClient.trade(order);
 		} else {
 			tradeResponse = tradingClient.cancelOrder(order);
