@@ -1,5 +1,6 @@
 package com.lenin.project.service;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,11 +14,16 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
 import com.lenin.project.AuthComponent;
@@ -37,6 +43,9 @@ import com.lenin.tradingplatform.data.repositories.UserRepository;
 @Path("/tradingsession")
 public class TradingSessionService {
 
+	@Context
+    private org.apache.cxf.jaxrs.ext.MessageContext mc; 
+	
 	@Autowired
 	private UserRepository userRepository;
 
@@ -64,7 +73,7 @@ public class TradingSessionService {
 	public RequestResponse getTradingSession(@HeaderParam("Username") String username, @HeaderParam("Auth-Token") String authToken,
 			@HeaderParam("Trading-Session-Id") String tradingSessionId) {
 
-		RequestResponse response = authComponent.getInitialResponse(username, authToken, false);
+		RequestResponse response = authComponent.getInitialResponse(username, authToken, mc.getHttpServletRequest().getRemoteAddr(), false);
 		
 		if(response.getSuccess() < 0) {
 			return response;
@@ -113,7 +122,7 @@ public class TradingSessionService {
 			@HeaderParam("Trading-Session-Id") String tradingSessionId,
 			TradingSession tradingSession) {
 		
-		RequestResponse response = authComponent.getInitialResponse(username, authToken);
+		RequestResponse response = authComponent.getInitialResponse(username, mc, authToken);
 		
 		if(response.getSuccess() < 0) {
 			return response;
@@ -146,30 +155,57 @@ public class TradingSessionService {
 
 		System.out.println("new session: " + session);
 		
-		RequestResponse response = authComponent.getInitialResponse(username, authToken);
+		RequestResponse response = authComponent.getInitialResponse(username, mc, authToken);
 		
 		if(response.getSuccess() < 0) {
 			return response;
 		}
 
 		User user = userRepository.findByUsername(username);
-
+		
+		MongoOperations mongoOps = (MongoOperations)mongoTemplate;
+		Query searchRates = new Query(Criteria.where("setType").is("15s")).with(new Sort(Direction.DESC, "time")).limit(3);
+		List<Rate> rates = mongoOps.find(searchRates, Rate.class);
+		
+		HashMap<String, Rate> rateMap = new HashMap<String, Rate>();
+		for(Rate rate : rates) {
+			rateMap.put(rate.getPair(), rate);
+			System.out.println("Last rate: "+rate.getPair()+"="+rate.getLast()+", "+rate.getMovingAverages().size());
+		}
+		
 		String[] sessionValues = session.split("_");
 		TradingSession tradingSession = new TradingSession();
 		//tradingSession.setUser(user);
-		tradingSession.setAutoTradingOptions(new AutoTradingOptions());
+		
+		Double chunkSize = 0.0;
+		if(sessionValues[0].equals("ltc")) {
+			chunkSize = 10.0;
+		} else if(sessionValues[0].equals("btc")) {
+			chunkSize = 0.2;
+		}
+		
+		String currencyPair = sessionValues[0]+"_"+sessionValues[1];
+		Rate rate = rateMap.get(currencyPair);
+		
+		AutoTradingOptions autoTradingOptions = new AutoTradingOptions();
+		
+		autoTradingOptions.setBuyChunk(chunkSize);
+		autoTradingOptions.setSellChunk(chunkSize);
+		autoTradingOptions.setBuyThreshold(5.0);
+		autoTradingOptions.setSellThreshold(5.0);
+		autoTradingOptions.setBuyCeiling(rate.getLast());
+		autoTradingOptions.setSellFloor(rate.getLast());
+		
+		tradingSession.setAutoTradingOptions(autoTradingOptions);
 		tradingSession.setCurrencyRight(sessionValues[0]);
 		tradingSession.setCurrencyLeft(sessionValues[1]);
 		tradingSession.setLive(user.getLive());
 		tradingSession.setService(sessionValues[2]);
+		tradingSession.setProfitLeft(0.0);
+		tradingSession.setProfitLeftSince(new Date());
+		tradingSession.setProfitRight(0.0);
+		tradingSession.setProfitRightSince(new Date());
 		
-		Rate rate = new Rate();
-		if (user.getLive() == false) {
-			rate.setBuy(1.0);
-			rate.setSell(1.0);
-			rate.setLast(1.0);
-		}
-
 		tradingSession.setRate(rate);
 
 		System.out.println("Added new tradestats: "
@@ -196,7 +232,7 @@ public class TradingSessionService {
 			@HeaderParam("Trading-Session-Id") String tradingSessionId,
 			TradingSession tradingSession) {
 
-		RequestResponse response = authComponent.getInitialResponse(username, authToken);
+		RequestResponse response = authComponent.getInitialResponse(username, mc, authToken);
 		
 		if(response.getSuccess() < 0) {
 			return response;
@@ -255,7 +291,7 @@ public class TradingSessionService {
 			@HeaderParam("Trading-Session-Id") String tradingSessionId,
 			@QueryParam("left") Double left, @QueryParam("right") Double right) {
 
-		RequestResponse response = authComponent.getInitialResponse(username, authToken);
+		RequestResponse response = authComponent.getInitialResponse(username, mc, authToken);
 		
 		if(response.getSuccess() < 0) {
 			return response;
@@ -348,7 +384,7 @@ public class TradingSessionService {
 			@HeaderParam("Trading-Session-Id") String tradingSessionId,
 			AutoTradingOptions autoTradingOptions) {
 
-		RequestResponse response = authComponent.getInitialResponse(username, authToken);
+		RequestResponse response = authComponent.getInitialResponse(username, mc, authToken);
 		
 		if(response.getSuccess() < 0) {
 			return response;
@@ -367,6 +403,36 @@ public class TradingSessionService {
 		response.setSuccess(1);
 		response.setData(autoTradingOptions);
 
+		return response;
+
+	}
+	
+	
+	@GET
+	@Path("/resetprofit")
+	@Consumes({ MediaType.APPLICATION_JSON })
+	@Produces({ MediaType.APPLICATION_JSON })
+	public RequestResponse resetProfit(@HeaderParam("Username") String username, @HeaderParam("Auth-Token") String authToken,
+			@HeaderParam("Trading-Session-Id") String tradingSessionId, @QueryParam("profitSide") String profitSide) {
+
+		RequestResponse response = authComponent.getInitialResponse(username, mc, authToken);
+		
+		if(response.getSuccess() < 0) {
+			return response;
+		}
+		
+		TradingSession tradingSession = tradingSessionRepository.findOne(tradingSessionId);
+		if(profitSide.equals("right")) {
+			tradingSession.setProfitRight(0.0);
+			tradingSession.setProfitRightSince(new Date());
+		} else if(profitSide.equals("left")) {
+			tradingSession.setProfitLeft(0.0);
+			tradingSession.setProfitLeftSince(new Date());
+		} 
+		
+		tradingSessionRepository.save(tradingSession);
+		response.setSuccess(1);
+		
 		return response;
 
 	}

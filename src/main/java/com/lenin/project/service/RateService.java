@@ -10,6 +10,7 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +27,9 @@ import com.lenin.tradingplatform.data.repositories.TradingSessionRepository;
 @Path("/rate")
 public class RateService {
 
-
+	@Context
+    private org.apache.cxf.jaxrs.ext.MessageContext mc; 
+	
 	@Autowired
 	private TradingSessionRepository tradingSessionRepository;
 
@@ -46,15 +49,16 @@ public class RateService {
 	@Produces({ MediaType.APPLICATION_JSON })
 	public RequestResponse getRates(@QueryParam("pair") String pair,
 			@QueryParam("setType") String setType,
-			@QueryParam("from") Long from, @QueryParam("until") Long until) {
+			@QueryParam("from") Long from, @QueryParam("until") Long until, 
+			@QueryParam("testSessionId") String testSessionId, @QueryParam("service") String service) {
 
 		// System.out.println(pair+"/"+setType+"/"+from+"/"+until);
 
 		RequestResponse response = new RequestResponse();
 
 		List<Rate> rates = new ArrayList<Rate>();
-
-		if (pair != null && setType != null && from != null && until != null) {
+		
+		if(pair != null && setType != null && from != null && until != null) {
 			rates = rateRepository
 					.findByPairAndSetTypeAndTimeBetweenOrderByTimeAsc(pair,
 							setType, from, until);
@@ -86,20 +90,26 @@ public class RateService {
 	public RequestResponse setRate(@HeaderParam("Username") String username, @HeaderParam("Auth-Token") String authToken,
 			@HeaderParam("Trading-Session-Id") String tradingSessionId, Rate rate) {
 
-		RequestResponse response = authComponent.getInitialResponse(username, authToken);
+		RequestResponse response = authComponent.getInitialResponse(username, mc, authToken);
 		
 		if(response.getSuccess() < 0) {
 			return response;
 		}
 		
 		TradingSession tradingSession = tradingSessionRepository.findOne(tradingSessionId);
-
-		if (tradingSession.getLive() == false) {
-
+		
+		if(tradingSession.getLive() == false) {
+			
+			rate.setId(null);
+			rate.setService("test");
+			rate.setSetType(null);
 			rate.setTime(System.currentTimeMillis() / 1000L);
+			rate.setTestSessionId(tradingSession.getId());
+			//rateRepository.save(rate);
+			
 			tradingSession.setRate(rate);
 			tradingSessionRepository.save(tradingSession);
-
+			
 			response.setSuccess(1);
 			response.setData(rate);
 

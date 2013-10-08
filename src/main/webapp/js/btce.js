@@ -53,6 +53,21 @@ var API = {
 		},
 		
 		
+		verifyEmail: function(token, callback) {
+			
+			var url = "service/verifyemail?token="+token;
+			
+			this.send("GET", url, undefined, undefined, undefined, undefined, callback);
+			
+		},
+		
+		resetProfit: function(profitSide, callback) {
+			
+			var url = "service/tradingsession/resetprofit?profitSide="+profitSide;
+			
+			this.send("GET", url, undefined, undefined, undefined, undefined, callback);
+			
+		},
 		
 		refreshReqTransactions: function(type, state, callback) {
 			
@@ -251,12 +266,16 @@ var API = {
 		},
 		
 		
-		login: function(username, email, password, register, callback) {
+		login: function(username, email, password, register, captcha, callback) {
 			
 			var url = "service/login";
 			
 			if(register != undefined && register == true) {
 				url += "?reg=true";
+			}
+			
+			if(captcha != undefined) {
+				url += "&captcha="+captcha;
 			}
 			
 			this.userId = username;
@@ -271,6 +290,14 @@ var API = {
 			
 		},
 		
+		
+		checkCaptcha: function(captcha, callback) {
+			
+			var url = "service/checkcaptcha?captcha="+captcha;
+			
+			this.send("GET", url, undefined, undefined, undefined, undefined, callback);
+			
+		},
 		
 		addUserFunds: function(currency, amount, callback) {
 			
@@ -294,6 +321,31 @@ var API = {
 			
 			this.send("POST", url, undefined, angular.toJson(params), "json", "application/json", callback);
 			
+			
+		},
+		
+		removeAccount: function(userId, callback) {
+			
+			var url = "service/user/"+userId;
+			
+			this.send("DELETE", url, undefined, undefined, "json", "application/json", callback);
+			
+		},
+		
+		
+		resetPassword: function(password, recoveryToken, callback) {
+			
+			var url = "service/user/reset";
+			
+			var data = "";
+			
+			if(recoveryToken.indexOf("@") == -1) {
+				data = password+"\t"+recoveryToken;
+			} else {
+				data = recoveryToken;
+			}
+			
+			this.send("POST", url, undefined, data, "text", "text/plain", callback);
 			
 		}
 		

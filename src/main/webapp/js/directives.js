@@ -74,8 +74,14 @@ myApp.directive('smartFloat', function() {
     link: function(scope, elm, attrs, ctrl) {
       ctrl.$parsers.unshift(function(viewValue) {
         if (FLOAT_REGEXP.test(viewValue)) {
-          ctrl.$setValidity('float', true);
-          return parseFloat(viewValue.replace(',', '.'));
+          var val = parseFloat(viewValue.replace(',', '.'));
+          if(val >= 0) {
+        	  ctrl.$setValidity('float', true);
+        	  return val;
+          } else {
+        	  ctrl.$setValidity('float', false);
+              return undefined;
+          }
         } else {
           ctrl.$setValidity('float', false);
           return undefined;
@@ -110,10 +116,12 @@ myApp.directive('email', function() {
 myApp.config(['$routeProvider', function($routeProvider) {
 	
 	$routeProvider.
+		when('/verifyemail/:token', { templateUrl: 'parts/verifyemail.html', controller: VerifyEmailCtrl }).
 		when('/front', { templateUrl: 'parts/front.html', controller: FrontCtrl }).
 		when('/account', { templateUrl: 'parts/account.html', controller: AccountCtrl }).
 		when('/account-v1', { templateUrl: 'parts/account-v1.html', controller: AccountCtrl }).
 		when('/login', { templateUrl: 'parts/login.html', controller: LoginCtrl }).
+		when('/recover/:recoveryToken', { templateUrl: 'parts/front.html', controller: FrontCtrl }).
 		when('/logout', { templateUrl: 'parts/logout.html', controller: LogoutCtrl }).
     	when('/tradingSession/:tradingSessionId', { templateUrl: 'parts/tradeStats.html', controller: TradingSessionCtrl }).
     	otherwise( { redirectTo: '/front' } );

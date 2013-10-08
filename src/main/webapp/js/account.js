@@ -32,6 +32,8 @@ function AccountCtrl($scope, $routeParams, $http) {
 		"usd" : 0.0
 	};
 	
+	$scope.removalRequested = false;
+	
 	$scope.start = function() {
 	
 		$scope.paymentProperties = $scope.user.accountFunds.serviceProperties["payment"];
@@ -62,7 +64,8 @@ function AccountCtrl($scope, $routeParams, $http) {
 	$scope.refreshTransactions = function() {
 		
 		API.refreshTransactions($scope.user.accountFunds.accountName, "completed", function(response) {
-			
+
+			$scope.checkResponse(response);
 			
 			$scope.pendingTxBtc = [];
 			$scope.pendingTxLtc = [];
@@ -305,6 +308,29 @@ function AccountCtrl($scope, $routeParams, $http) {
 		propertyMap.properties["periods"] = periods;
 		
 		$scope.setServiceProperties("payment", propertyMap);
+		
+	};
+	
+	$scope.removeAccount = function() {
+		
+		if($scope.removalRequested) {
+			
+			API.removeAccount($scope.user.id, function(response) {
+				
+				console.log(response);
+				
+				if(response.success == 1) {
+					$scope.removalRequested = false;
+					$scope.go("/front");
+				}
+				
+			});
+			
+		} else {
+			
+			$scope.removalRequested = true;
+		
+		}
 		
 	};
 	

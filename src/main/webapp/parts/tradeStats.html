@@ -1,4 +1,4 @@
-<div class="row" style="margin-bottom: 2.0em;">
+<div class="row" style="margin-bottom: 1.0em; margin-top: 1.0em;">
 	
 	<div class="span12" style="background: #d00000; color: white; text-align: center;" ng-hide="user.live">
 		
@@ -40,7 +40,7 @@
 	
 </div>
 
-<div class="row" ng-repeat="error in errors['general']" style="margin-bottom: 1em; margin-top: 1em;">
+<div class="row" ng-repeat="error in errors['general']" style="margin-bottom: 1em;">
 	<div class="span12" style="text-align: center; border: 1px red solid; background: #fffacd; padding-bottom: 1.0em;" ng-show="error.code == 3001">
 		<div style="width: 400px; display: inline; left: -200px; margin-left: 50%; text-align: center;">
 			<br/>
@@ -121,7 +121,7 @@
 
 			<div ng-include src="'parts/charts.html'"></div>
 
-			<div class="row">
+			<div class="row" style="margin-top: 1.0em;">
 
 				<div class="span12" style="padding-bottom: 0.3em; margin-bottom: 2.0em;">
 
@@ -136,7 +136,7 @@
 
 					<div class="row" ng-class="{ hidden: !showManualTrading }">
 						
-						<div ng-show="sessionKeysSet">
+						<div ng-show="sessionKeysSet" style="margin-top: -20px;">
 						<form name="manualTrading" class="css-form" novalidate>
 							
 						<div class="span4">
@@ -318,6 +318,8 @@
 
 						<div class="span3">
 							<b>{{user.currentTradingSession.currencyLeft|uppercase}} PROFIT:</b> {{user.currentTradingSession.profitLeft|truncate:6:""}}
+							<br/>
+							Since {{user.currentTradingSession.profitLeftSince|date:'yyyy-MM-dd HH:mm:ss'}} <a href="" ng-click="resetProfit('left')">Reset</a>
 						</div>
 
 					</div>
@@ -334,6 +336,8 @@
 
 						<div class="span3" style="text-align: right;">
 							<b>{{user.currentTradingSession.currencyRight|uppercase}} PROFIT:</b> 0
+							<br/>
+							Since {{user.currentTradingSession.profitRightSince|date:'yyyy-MM-dd HH:mm:ss'}} <a href="">Reset</a>
 						</div>
 
 					</div>

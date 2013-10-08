@@ -16,7 +16,7 @@
 					<div class="span9">
 						<div style="margin-left: 4.6em; margin-top: 0.6em; margin-bottom: 1.0em;">
 							<div class="btn-group">
-								<button class="btn" ng-repeat="option in chartScaleOptions" ng-click="setChartScale(option.precision)" ng-class="{ active: option.precision == chartScale }">
+								<button class="btn" ng-repeat="option in chartScaleOptions" ng-hide="(option.period == '6m' || option.period == '12m') && user.live == false" ng-click="setChartScale(option.precision)" ng-class="{ active: option.precision == chartScale }">
 									{{option.period}}
 								</button>
 							</div>
@@ -40,14 +40,31 @@
 						
 					</div>
 				</div>
-				<div class="row">
+				<div class="row" style="margin-bottom: 1.0em;">
 					<div class="span12">
 						<div id="chartdiv" style="width:100%; height:340px;"></div>
-						<div style="float:right;margin-right:10px;">
-    						<input onChange="changeZoomDates()" style="width:100px; text-align:center" type="text" id="startDate">
-    						<input onChange="changeZoomDates()" style="width:100px; text-align:center" type="text" id="endDate">
-						</div>
 					</div>
+				</div>
+				<div class="row" ng-show="user.live">
+					<div class="span4">
+						<select ng-disabled="!ma1visible" ng-model="ma1type" style="background: #5fb503; width: 12em; margin-left: 4.2em; margin-top: 0.5em;" ng-hide="!user.live">
+							<option ng-repeat="maType in maOptions" value="{{maType}}" title="{{maType}}" ng-selected="maType == ma1type">{{maTitles[maType]}}</option>
+						</select>&nbsp;
+						<input type="checkbox" ng-model="ma1visible" style="margin-top: 0px;"/>
+					</div>
+					<div class="span4">
+						<select ng-disabled="!ma2visible" ng-model="ma2type" style="background: #ff9933; width: 12em; margin-top: 0.5em;" ng-hide="!user.live">
+							<option ng-repeat="maType in maOptions" value="{{maType}}" title="{{maType}}" ng-selected="maType == ma2type">{{maTitles[maType]}}</option>
+						</select>&nbsp;
+						<input type="checkbox" ng-model="ma2visible" style="margin-top: 0px;"/>
+					</div>
+					<div class="span4" style="text-align: right;">
+						
+    					<input onChange="changeZoomDates()" style="display: none; width:100px; text-align:center" type="text" id="startDate">
+    					<input onChange="changeZoomDates()" style="display: none; width:100px; text-align:center" type="text" id="endDate">
+    					
+					</div>
+				</div>
 				</div>
 			</div>
 		</div>

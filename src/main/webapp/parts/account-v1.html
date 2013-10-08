@@ -32,19 +32,19 @@
   							<ul class="nav nav-tabs" style="margin: 0px;">
     							<li ng-class="{ active: showCurrency == 'btc' }">
     							<a href="#tab1" data-toggle="tab" ng-click="showCurrency = 'btc'">
-    								BTC {{user.accountFunds.reserves['btc']}}
+    								BTC {{user.accountFunds.reserves['btc']|truncate:6:""}}
     							</a>
   							</li>
   							
   							<li ng-class="{ active: showCurrency == 'ltc' }">
     							<a href="#tab2" data-toggle="tab" ng-click="showCurrency = 'ltc'">
-    								LTC {{user.accountFunds.reserves['ltc']}}
+    								LTC {{user.accountFunds.reserves['ltc']|truncate:6:""}}
     							</a>
   							</li>
   							
   							<li ng-class="{ active: showCurrency == 'usd' }">
     							<a href="#tab3" data-toggle="tab" ng-click="showCurrency = 'usd'">
-    								USD {{user.accountFunds.reserves['usd']}}
+    								USD {{user.accountFunds.reserves['usd']|truncate:6:""}}
     							</a>
   							</li>
   							</ul>
@@ -75,7 +75,7 @@
 					</div>
 			
 					<div class="span4" style="font-size: 1.8em;">
-						{{user.accountFunds.reserves['btc']}} BTC
+						{{user.accountFunds.reserves['btc']|truncate:6:""}} BTC
 					</div>
 					
 				</div>
@@ -143,7 +143,7 @@
 					</div>
 			
 					<div class="span4" style="font-size: 1.8em;">
-						{{user.accountFunds.reserves['usd']}} USD
+						{{user.accountFunds.reserves['usd']|truncate:6:""}} USD
 					</div>
 					
 				</div>
@@ -216,7 +216,7 @@
 					</div>
 				</div>
 				
-				<div class="row" style="margin-top: 2.0em;">
+				<div class="row" style="margin-top: 6.0em;">
 					<div class="span6">
 						<b>SET PAYMENT METHOD</b> (effective from the next billing period)
 					</div>
@@ -304,7 +304,13 @@
 					</div>
 				</div>
 				
-				<div class="row" style="margin-top: 2.0em;">
+				<div class="row" style="margin-top: 6.0em;">
+					<div class="span6">
+						<b>BILLING</b>
+					</div>
+				</div>
+				
+				<div class="row" style="margin-top: 1.0em;">
 					<div class="span6">
 					
 						<table class="table">
@@ -488,6 +494,26 @@
 				<div class="row" style="margin-bottom: 2.0em;">
 					
 					<div class="span5">
+						
+					</div>
+					
+				</div>
+				
+				<div class="row" style="margin-top: 6.0em;">
+					
+					<div class="span5" style="padding-top: 1.0em; padding-bottom: 1.0em; text-align: center; border-top: 1px solid black; border-bottom: 1px solid black;">
+						
+						<span ng-show="!removalRequested">
+							<a href="" ng-click="removeAccount()">Remove account</a>
+						</span>
+						
+						<span ng-show="removalRequested">
+							You have requested to remove your account. If you proceed you will lose ALL 
+							personal data associated with your account and any service fee deposits you have made.
+							<br/><br/>
+							<a href="" ng-click="removeAccount()">Yes, I want to proceed</a>
+						</span>
+						
 						
 					</div>
 					

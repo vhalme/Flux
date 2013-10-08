@@ -1,6 +1,7 @@
 function AppCtrl($scope, $routeParams, $location, $http) {
 	
 	$scope.currentView = "app";
+	$scope.tooltipsLoaded = false;
 	
 	$scope.refreshCounter = 0;
 	$scope.currentTradingSessionId = 0;
@@ -8,6 +9,7 @@ function AppCtrl($scope, $routeParams, $location, $http) {
 	$scope.user = null;
 	
 	$scope.errors = [];
+	$scope.infos = [];
 	
 	$scope.missingReserves = 1;
 	$scope.paymentMethodSet = false;
@@ -266,16 +268,23 @@ function AppCtrl($scope, $routeParams, $location, $http) {
 	
 	console.log("cookie user: "+cookieUserId+" / cookie token: "+cookieToken);
 	
-	if(cookieUserId != null && cookieToken != null) {
-		
-		API.userId = cookieUserId;
-		API.authToken = cookieToken;
-		
-		$scope.setUser();
+	var url = $location.url();
+	console.log("URL: "+url);
 	
-	} else {
+	if(url.substring(1, 12) != "verifyemail" && url.substring(1, 8) != "recover") {
 		
-		$scope.go("/front");
+		if(cookieUserId != null && cookieToken != null) {
+		
+			API.userId = cookieUserId;
+			API.authToken = cookieToken;
+		
+			$scope.setUser();
+	
+		} else {
+		
+			$scope.go("/front");
+	
+		}
 	
 	}
 	

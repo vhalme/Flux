@@ -3,11 +3,11 @@
 	<head>
 
 		<meta charset="utf-8">
-		<title>FLUX</title>
+		<title>BTC machines</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<meta name="description" content="">
 		<meta name="author" content="">
-
+		
 		<!-- Le styles -->
 		<link href="css/bootstrap.css" rel="stylesheet">
 		<style>
@@ -23,6 +23,7 @@
 		<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.1.4/angular.min.js"></script>
 		<script src="js/libs/canvasjs.min.js"></script>
 		<script src="js/libs/amcharts.js"></script>
+		<script src="js/libs/serial.js"></script>
 		<script src="js/libs/hmac-sha512.js"></script>
 		<script src="js/libs/bootstrap.js"></script>
 		<script src="holder.js"></script>
@@ -36,6 +37,7 @@
 		<script src="js/tradeStats.js"></script>
 		<script src="js/charts.js"></script>
 		<script src="js/txLog.js"></script>
+		<script src="js/verifyemail.js"></script>
 		<script src="js/directives.js"></script>
 
 	</head>
@@ -46,12 +48,12 @@
 
 			<div class="row" style="margin-bottom: 0.3em;">
 				
-				<div class="span12" style="background: #808080; color: white; height: 4.2em;">
+				<div class="span12" style="height: 4.2em;">
 					
 					<div class="row">
 						
-						<div class="span3" style="font-size: 1.6em; padding-top: 0.4em;">
-							<span style="margin-left: 0.3em; top: 50%; margin-top: 0.8em;">[COINS4ALL]</span>
+						<div class="span3" style="font-size: 1.6em;">
+							<img src="img/logo1.png" style="width: 165px; height: 70px;">
 						</div>
 
 						<div class="span6" style="text-align: center;">
@@ -68,12 +70,16 @@
 							</div>
 						</div>
 
-						<div class="span3" style="text-align: right; padding-top: 0.3em;" 
-							ng-hide="user == null || user == undefined">
+						<div class="span3" style="text-align: right; padding-top: 0.3em;">
 							
-							<a ng-show="location.path() != '/account-v1'" style="text-decoration: underline; color: white;" href="#/account-v1">Account</a>
-							<a ng-show="location.path() == '/account-v1'" style="text-decoration: underline; color: white;" href="#/front">Trade</a> |
-							<a style="color: white; text-decoration: underline;" href="#/logout">Log out</a>&nbsp;&nbsp;
+							<a href="#" style="color: black; text-decoration: underline;">User guide</a>
+							| <a href="#" style="color: black; text-decoration: underline;">Contact</a>
+							&nbsp;&nbsp;&nbsp;
+							<span ng-hide="user == null || user == undefined">
+								<a ng-show="location.path() != '/account-v1'" style="text-decoration: underline; color: black;" href="#/account-v1">Account</a>
+								<a ng-show="location.path() == '/account-v1'" style="text-decoration: underline; color: black;" href="#/front">Trade</a>
+								| <a style="color: black; text-decoration: underline;" href="#/logout">Log out</a>&nbsp;&nbsp;
+							</span>
 							
 						</div>
 				

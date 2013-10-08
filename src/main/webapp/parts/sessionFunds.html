@@ -33,7 +33,7 @@
 							{{user.accountFunds.activeFunds[user.currentTradingSession.service][user.currentTradingSession.currencyLeft]}}
 							{{user.currentTradingSession.currencyLeft|uppercase}}
 						</span>
-						<span ng-show="!user.live" style="color: red;">
+						<span ng-show="!user.live" style="color: green;">
 							Unlimited
 						</span>
 					</div>
@@ -42,7 +42,7 @@
 							{{user.accountFunds.activeFunds[user.currentTradingSession.service][user.currentTradingSession.currencyRight]}}
 							{{user.currentTradingSession.currencyRight|uppercase}}
 						</span>
-						<span ng-show="!user.live" style="color: red;">
+						<span ng-show="!user.live" style="color: green;">
 							Unlimited
 						</span>
 					</div>
@@ -59,6 +59,7 @@
 						
 						<div class="span4">
 							<div class="control-group" ng-class="{ error: user.currentTradingSession.fundsLeft == undefined }" style="margin-bottom: 0px;">
+								<i ng-class="icon-question-sign" class="icon-question-sign" rel="tooltip" title="Change this value to define the amount of {{user.currentTradingSession.currencyLeft|uppercase}} funds for this session. The amount will be subtracted from your total available {{user.currentTradingSession.currencyLeft|uppercase}} funds in the exchange service."></i>
 								<input style="margin-bottom: 0px; width: 4.0em;" type="text" name="fundsLeft" ng-model="user.currentTradingSession.fundsLeft" smart-float />
 								{{user.currentTradingSession.currencyLeft|uppercase}}
 							</div>
@@ -66,6 +67,7 @@
 					
 						<div class="span4">
 							<div class="control-group" ng-class="{ error: user.currentTradingSession.fundsRight == undefined }" style="margin-bottom: 0px;">
+								<i ng-class="icon-question-sign" class="icon-question-sign" rel="tooltip" title="Change this value to define the amount of {{user.currentTradingSession.currencyRight|uppercase}} funds for this session. The amount will be subtracted from your total available {{user.currentTradingSession.currencyRight|uppercase}} funds in the exchange service."></i>
 								<input style="margin-bottom: 0px; width: 4.0em;" type="text" name="fundsRight" ng-model="user.currentTradingSession.fundsRight" smart-float />
 								{{user.currentTradingSession.currencyRight|uppercase}}
 							</div>
@@ -79,7 +81,7 @@
 			
 			<div class="span12" style="margin-top: 1.0em; margin-bottom: 1.0em; text-align: center;" ng-show="!sessionKeysSet">
 				
-				Manual trading will be available when you <b><a href="#/account-v1">set up the API keys</a> for
+				Session control will be available when you <b><a href="#/account-v1">set up the API keys</a> for
 				the {{user.currentSession.service|uppercase}} exchange service.</b>
 					
 			</div>

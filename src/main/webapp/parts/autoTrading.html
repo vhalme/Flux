@@ -31,114 +31,36 @@
 
 		<div class="row" ng-class="{ hidden: !showAutoTrading }">
 			
-			<div ng-show="okToTrade">
+			<div ng-show="okToTrade" style="margin-top: -20px;">
 			<form name="form" class="css-form" novalidate>
+				
 				<div class="span4" style="background: #ededed; margin-bottom: 0.7em;">
 					<div style="margin: 0.3em;">
 						<input type="checkbox" style="margin-top: -2px;" ng-model="user.currentTradingSession.autoTradingOptions.tradeAuto" />
 						Trade automatically
 						<br/>
-						<select ng-model="user.currentTradingSession.autoTradingOptions.autoTradingModel" ng-disabled="!user.currentTradingSession.autoTradingOptions.tradeAuto" style="margin-top: 0.5em;">
-							<option ng-repeat="model in autoTradingOptions" value="{{model.value}}" title="{{model.name}}" ng-selected="model.value == user.currentTradingSession.autoTradingOptions.autoTradingModel">{{model.name}}</option>
+						<select ng-show="user.live" ng-model="user.currentTradingSession.autoTradingOptions.autoTradingModel" style="margin-top: 0.5em;">
+							<option value="simpleDelta" title="simpleDelta" ng-selected="'simpleDelta' == user.currentTradingSession.autoTradingOptions.autoTradingModel">Linear Delta</option>
+							<option disabled style="color: #adadad" value="movingAvg" title="movingAvg" ng-selected="'movingAvg' == user.currentTradingSession.autoTradingOptions.autoTradingModel">Moving Average (coming)</option>
+						</select>
+						<select ng-show="!user.live" ng-model="user.currentTradingSession.autoTradingOptions.autoTradingModel" style="margin-top: 0.5em;">
+							<option value="simpleDelta" title="simpleDelta" ng-selected="'simpleDelta' == user.currentTradingSession.autoTradingOptions.autoTradingModel">Linear Delta</option>
 						</select>
 					</div>
 				</div>
-				<div class="span4" style="background: #ededed; margin-bottom: 0.7em;">
-					<div style="margin-top: 0.3em; margin-bottom: 0.3em;">
-						<div class="row">
-							<div class="span2" style="text-align: right;">
-								Buy threshold
-							</div>
-							<div class="span2">
-								<div class="control-group" ng-class="{ error: user.currentTradingSession.autoTradingOptions.buyThreshold == undefined }">
-									<input style="margin-bottom: 0px; width: 4.0em;" type="text" name="buyThreshold" ng-model="user.currentTradingSession.autoTradingOptions.buyThreshold" smart-float />
-									{{user.currentTradingSession.currencyLeft|uppercase}}
-								</div>
-							</div>
-						</div>
-						<div class="row">
-							<div class="span2" style="text-align: right;">
-								Sell threshold
-							</div>
-							<div class="span2">
-								<div class="control-group" ng-class="{ error: user.currentTradingSession.autoTradingOptions.sellThreshold == undefined }">
-									<input style="margin-bottom: 0px; width: 4.0em;" type="text" name="sellThreshold" ng-model="user.currentTradingSession.autoTradingOptions.sellThreshold" smart-float />
-									{{user.currentTradingSession.currencyLeft|uppercase}}
-								</div>
-							</div>
-						</div>
-						<div class="row">
-							<div class="span2">
-								<div class="row">
-									<div class="span2" style="text-align: center;">
-										Buy chunk
-									</div>
-								</div>
-								<div class="row">
-									<div class="span2" style="text-align: center;">
-										<div class="control-group" ng-class="{ error: user.currentTradingSession.autoTradingOptions.buyChunk == undefined }">
-											<input style="margin-bottom: 0px; width: 4.0em;" type="text" name="buyChunk" ng-model="user.currentTradingSession.autoTradingOptions.buyChunk" smart-float />
-											{{user.currentTradingSession.currencyRight|uppercase}}
-										</div>
-									</div>
-								</div>
-							</div>
-							<div class="span2">
-								<div class="row">
-									<div class="span2" style="text-align: center;">
-										Sell chunk
-									</div>
-								</div>
-								<div class="row">
-									<div class="span2" style="text-align: center;">
-										<div class="control-group" ng-class="{ error: user.currentTradingSession.autoTradingOptions.sellChunk == undefined }">
-											<input style="margin-bottom: 0px; width: 4.0em;" type="text" name="sellChunk" ng-model="user.currentTradingSession.autoTradingOptions.sellChunk" smart-float />
-											{{user.currentTradingSession.currencyRight|uppercase}}
-										</div>
-									</div>
-								</div>
-							</div>
-						</div>
-						
+				
+				<div class="span8">
+				
+					<div ng-show="user.currentTradingSession.autoTradingOptions.autoTradingModel == 'simpleDelta'">
+						<div ng-include src="'parts/autoTrading_simpleDelta.html'"></div>
 					</div>
-				</div>
-				<div class="span4" style="background: #ededed; margin-bottom: 0.7em;">
-					<div style="margin-top: 0.3em; margin-bottom: 0.3em;">
-						<div class="row">
-							<div class="span2" style="text-align: right;">
-								Buy ceiling
-							</div>
-							<div class="span2">
-								<div class="control-group" ng-class="{ error: user.currentTradingSession.autoTradingOptions.buyCeiling == undefined }">
-									<input style="margin-bottom: 0px; width: 4.0em;" type="text" name="buyCeiling" ng-model="user.currentTradingSession.autoTradingOptions.buyCeiling" smart-float />
-									{{user.currentTradingSession.currencyLeft|uppercase}}
-								</div>
-							</div>
-						</div>
-						<div class="row">
-							<div class="span2" style="text-align: right;">
-								Sell floor
-							</div>
-							<div class="span2">
-								<div class="control-group" ng-class="{ error: user.currentTradingSession.autoTradingOptions.sellFloor == undefined }">
-									<input style="margin-bottom: 0px; width: 4.0em;" type="text" name="sellFloor" ng-model="user.currentTradingSession.autoTradingOptions.sellFloor" smart-float />
-									{{user.currentTradingSession.currencyLeft|uppercase}}
-								</div>
-							</div>
-						</div>
-						<div class="row">
-							<div class="span2" style="text-align: right;">
-								Rate buffer
-							</div>
-							<div class="span2">
-								<div class="control-group" ng-class="{ error: user.currentTradingSession.autoTradingOptions.rateBuffer == undefined }">
-									<input style="margin-bottom: 0px; width: 4.0em;" type="text" name="rateBuffer" ng-model="user.currentTradingSession.autoTradingOptions.rateBuffer" smart-float />
-									{{user.currentTradingSession.currencyLeft|uppercase}}
-								</div>
-							</div>
-						</div>
+				
+					<div ng-show="user.currentTradingSession.autoTradingOptions.autoTradingModel == 'movingAvg'">
+						<div ng-include src="'parts/autoTrading_movingAverage.html'"></div>
 					</div>
+					
 				</div>
+				
 			</form>
 			</div>
 			

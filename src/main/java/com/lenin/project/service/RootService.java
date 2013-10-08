@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
@@ -14,12 +15,17 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
 import org.codehaus.jettison.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
 import com.lenin.project.AuthComponent;
@@ -38,11 +44,15 @@ import com.lenin.tradingplatform.data.repositories.OrderRepository;
 import com.lenin.tradingplatform.data.repositories.TradeRepository;
 import com.lenin.tradingplatform.data.repositories.TradingSessionRepository;
 import com.lenin.tradingplatform.data.repositories.UserRepository;
+import com.octo.captcha.module.servlet.image.SimpleImageCaptchaServlet;
 
 @Service
 @Path("/")
 public class RootService {
-
+	
+	@Context
+    private org.apache.cxf.jaxrs.ext.MessageContext mc; 
+	
 	@Autowired
 	private MongoTemplate mongoTemplate;
 
@@ -75,7 +85,7 @@ public class RootService {
 
 		System.out.println(method + ": " + params + "/" + params.size());
 
-		RequestResponse response = authComponent.getInitialResponse(username, authToken);
+		RequestResponse response = authComponent.getInitialResponse(username, mc, authToken);
 		
 		if(response.getSuccess() < 0) {
 			return response;
@@ -130,7 +140,10 @@ public class RootService {
 	@Path("/login")
 	@Consumes({ MediaType.TEXT_PLAIN })
 	@Produces({ MediaType.APPLICATION_JSON })
-	public RequestResponse login(@HeaderParam("Username") String username, @HeaderParam("Email") String email, @QueryParam("reg") String reg,
+	public RequestResponse login(@HeaderParam("Username") String username, 
+			@HeaderParam("Email") String email, 
+			@QueryParam("reg") String reg,
+			@QueryParam("captcha") String captcha,
 			String password) {
 		
 		MongoOperations mongoOps = (MongoOperations)mongoTemplate;
@@ -141,9 +154,18 @@ public class RootService {
 		
 		Long nowTime = System.currentTimeMillis();
 		
-		if (user != null) {
+		HttpServletRequest request = mc.getHttpServletRequest();
+		String remoteIp = request.getRemoteAddr();
+		
+		if(user != null) {
 			
 			Boolean pwdOk = false;
+			
+			if(reg != null) {
+				response.setSuccess(-3);
+				response.setMessage("Username already exists.");
+				return response;
+			}
 			
 			try {
 			
@@ -153,17 +175,19 @@ public class RootService {
 				e.printStackTrace();
 			}
 			
-			if(pwdOk == true) {
+			if(pwdOk == true && user.getDeleted() == false) {
 				
 				User testUser = userRepository.findByUsername(email + " (test)");
-			
+				
 				String token = "" + Math.random();
 
 				user.setAuthToken(token);
 				user.setLastActivity(nowTime);
+				user.setLastIp(remoteIp);
 				
 				testUser.setAuthToken(token);
 				testUser.setLastActivity(nowTime);
+				testUser.setLastIp(remoteIp);
 				
 				userRepository.save(user);
 				userRepository.save(testUser);
@@ -174,7 +198,7 @@ public class RootService {
 			} else {
 				
 				System.out.println("Incorrect password " + password+"/"+user.getPassword());
-				response.setMessage("Wrong password.");
+				response.setMessage("Wrong username or password.");
 				response.setSuccess(0);
 				
 			}
@@ -186,22 +210,47 @@ public class RootService {
 				return response;
 			}
 			
+			String captchaResult = checkCaptcha(captcha);
+			if(!captchaResult.equals("P")) {
+				response.setSuccess(-2);
+				return response;
+			}
+			
 			System.out.println("Creating user " + email);
 			
-			user = new User();
-			user.setUsername(email);
+			Query searchRates = new Query(Criteria.where("setType").is("15s")).with(new Sort(Direction.DESC, "time")).limit(10);
+			List<Rate> rates = mongoOps.find(searchRates, Rate.class);
+			
+			HashMap<String, Rate> rateMap = new HashMap<String, Rate>();
+			for(Rate rate : rates) {
+				rateMap.put(rate.getPair(), rate);
+				System.out.println("Last rate: "+rate.getPair()+"="+rate.getLast()+", "+rate.getMovingAverages().size());
+				if(rateMap.get("ltc_usd") != null && rateMap.get("ltc_btc") != null && rateMap.get("btc_usd") != null) {
+					break;
+				}
+			}
+			
+			
+			String pwdHash = "";
 			
 			try {
 				
-				String pwdHash = PasswordHash.createHash(password);
-				user.setPassword(pwdHash);
+				pwdHash = PasswordHash.createHash(password);
 				
 			} catch(Exception e) {
 				e.printStackTrace();
+				response.setSuccess(-1);
+				return response;
 			}
+			
+			user = new User();
+			user.setUsername(email);
+			user.setEmail(email);
+			user.setPassword(pwdHash);
 			
 			user.setLive(true);
 			user.setLastActivity(nowTime);
+			user.setLastIp(remoteIp);
 			
 			System.out.println("userId="+user.getId());
 			
@@ -310,25 +359,55 @@ public class RootService {
 			
 			user.setAccountFunds(accountFunds);
 			
-			createAddress("btc", accountFunds);
-			createAddress("ltc", accountFunds);
+			Integer btcResult = createAddress("btc", accountFunds);
+			Integer ltcResult = createAddress("ltc", accountFunds);
 			
+			if(btcResult != 1 || ltcResult != 1) {
+				
+				response.setSuccess(-1);
+				
+				String message = "";
+				
+				if(btcResult != 1) {
+					message += "(1) Failed to create a BTC wallet. ";
+				}
+				
+				if(ltcResult != 1) {
+					message += "(2) Failed to create an LTC wallet.";
+				}
+				
+				response.setMessage(message);
+				return response;
+				
+			}
+			
+			
+			Rate ltc_usd = rateMap.get("ltc_usd");
 			AutoTradingOptions autoTradingOptions = new AutoTradingOptions();
+			autoTradingOptions.setBuyChunk(10.0);
+			autoTradingOptions.setSellChunk(10.0);
+			autoTradingOptions.setBuyThreshold(5.0);
+			autoTradingOptions.setSellThreshold(5.0);
+			autoTradingOptions.setBuyCeiling(ltc_usd.getLast());
+			autoTradingOptions.setSellFloor(ltc_usd.getLast());
 			TradingSession tradingSession = new TradingSession();
 			//tradingSession.setUser(user);
 			tradingSession.setCurrencyLeft("usd");
 			tradingSession.setCurrencyRight("ltc");
 			tradingSession.setService("btce");
 			tradingSession.setLive(true);
+			tradingSession.setProfitLeft(0.0);
+			tradingSession.setProfitLeftSince(new Date());
+			tradingSession.setProfitRight(0.0);
+			tradingSession.setProfitRightSince(new Date());
 			tradingSession.setAutoTradingOptions(autoTradingOptions);
-			Rate rate = new Rate();
-			rate.setTime(System.currentTimeMillis() / 1000L);
-			rate.setPair("ltc_usd");
-			tradingSession.setRate(rate);
-
+			tradingSession.setRate(ltc_usd);
+			
 			User testUser = new User();
 			testUser.setLastActivity(nowTime);
+			testUser.setLastIp(remoteIp);
 			testUser.setUsername(email + " (test)");
+			testUser.setEmail(email);
 			testUser.setLive(false);
 			
 			System.out.println("testUserId="+testUser.getId());
@@ -336,8 +415,12 @@ public class RootService {
 			testUser.setAccountFunds(accountFunds);
 			
 			AutoTradingOptions testAutoTradingOptions = new AutoTradingOptions();
-			testAutoTradingOptions.setBuyCeiling(1.0);
-			testAutoTradingOptions.setSellFloor(1.0);
+			testAutoTradingOptions.setBuyChunk(10.0);
+			testAutoTradingOptions.setSellChunk(10.0);
+			testAutoTradingOptions.setBuyThreshold(5.0);
+			testAutoTradingOptions.setSellThreshold(5.0);
+			testAutoTradingOptions.setBuyCeiling(ltc_usd.getLast());
+			testAutoTradingOptions.setSellFloor(ltc_usd.getLast());
 			TradingSession testTradingSession = new TradingSession();
 			//testTradingSession.setUser(testUser);
 			testTradingSession.setCurrencyLeft("usd");
@@ -345,13 +428,7 @@ public class RootService {
 			testTradingSession.setService("test");
 			testTradingSession.setLive(false);
 			testTradingSession.setAutoTradingOptions(testAutoTradingOptions);
-			Rate testRate = new Rate();
-			testRate.setBuy(1.0);
-			testRate.setSell(1.0);
-			testRate.setLast(1.0);
-			testRate.setTime(System.currentTimeMillis() / 1000L);
-			testRate.setPair("ltc_usd");
-			testTradingSession.setRate(testRate);
+			testTradingSession.setRate(ltc_usd);
 
 			String token = "" + Math.random();
 
@@ -381,26 +458,28 @@ public class RootService {
 		}
 
 		response.setData(user);
-
+		
 		return response;
 
 	}
 
-	private void createAddress(String currency, AccountFunds accountFunds) {
+	private Integer createAddress(String currency, AccountFunds accountFunds) {
+		
+		Integer result = 1;
 		
 		String ip = null;
 		int port = 0;
 		
 		if(currency.equals("btc")) {
-			ip = "82.196.8.147";
+			ip = "162.243.18.105";
 			port = 9332;
 		} else if(currency.equals("ltc")) {
-			ip = "82.196.14.26";
-			port = 8332;
+			ip = "192.241.166.79";
+			port = 9332;
 		}
 		
 		if(port == 0) {
-			return;
+			return 0;
 		}
 		
 		String accountName = accountFunds.getAccountName();
@@ -422,17 +501,25 @@ public class RootService {
 		try {
 
 			JSONObject addrResult = api.exec("getnewaddress", params);
+			
+			if(addrResult == null) {
+				return 0;
+			}
+			
 			String addrStr = addrResult.getString("result");
 			System.out.println("New address/account: " + addrStr + "/"
 					+ accountName);
 
 			addresses.put(currency, addrStr);
-
+			accountFunds.setAddresses(addresses);
+			
+			return 1;
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		
-		accountFunds.setAddresses(addresses);
+		return 0;
 
 	}
 
@@ -502,6 +589,52 @@ public class RootService {
 
 	}
 	
+	
+	@GET
+	@Path("/verifyemail")
+	@Produces({ MediaType.APPLICATION_JSON })
+	public RequestResponse verifyEmail(@QueryParam("token") String userId) {
+		
+		RequestResponse response = new RequestResponse();
+		response.setSuccess(0);
+		
+		User user = userRepository.findOne(userId);
+		
+		if(user != null) {
+			
+			response.setSuccess(1);
+			
+			if(user.getEmailVerified() == false) {
+				user.setEmailVerified(true);
+				userRepository.save(user);
+			} else {
+				response.setSuccess(2);
+			}
+			
+		}
+		
+		return response;
+		
+	}
+	
+	
+	
+	@GET
+	@Path("/checkcaptcha")
+	@Consumes({ MediaType.TEXT_PLAIN })
+	@Produces({ MediaType.TEXT_PLAIN })
+	public String checkCaptcha(@QueryParam("captcha") String captcha) {
+		
+		HttpServletRequest request = mc.getHttpServletRequest();
+		System.out.println("check captcha: "+captcha);
+		
+		if(SimpleImageCaptchaServlet.validateResponse(request, captcha)) {
+			return "P";
+		} else {
+			return "F";
+		}
+	
+	}
 	
 	/*
 	@GET

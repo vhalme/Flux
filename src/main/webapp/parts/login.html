@@ -2,7 +2,7 @@
 
 	<div class="span6" style="padding-bottom: 0.3em;">
 		
-		<div class="row">
+		<div class="row" ng-show="viewState == 'login' || viewState == 'register'">
 			
 			<div class="span6" style="text-align: center;">
 				<b>LOGIN/REGISTER</b>
@@ -14,13 +14,30 @@
 			
 		</div>
 		
+		<div class="row" ng-show="viewState == 'recover'">
+			
+			<div class="span6" style="text-align: center;">
+				<b>RECOVER PASSWORD</b>
+				<br/><br/>
+				Submit your e-mail address and follow e-mail instructions to reset your password.
+				<br/><br/>
+			</div>
+			
+		</div>
+		
 		<div class="row" ng-hide="errors['login'] == undefined" style="margin-bottom: 1em;">
 			<div class="span6" style="text-align: center; border: 1px red solid; background: #fffacd;">
 				{{errors['login'].message}}
 			</div>
 		</div>
 		
-		<form name="form" ng-hide="registration == true" class="css-form" novalidate>
+		<div class="row" ng-hide="infos['login'] == undefined" style="margin-bottom: 1em;">
+			<div class="span6" style="text-align: center; border: 1px green solid; background: #ffffff;">
+				{{infos['login'].message}}
+			</div>
+		</div>
+		
+		<form name="form" ng-show="viewState == 'login'" class="css-form" novalidate>
 			
 		<div class="row">
 			<div class="span2" style="text-align: right;">
@@ -49,22 +66,14 @@
 			<div class="span4">
 				<input type="checkbox" ng-model="passwordHidden" style="margin-top: -1px;"/>
 				Hide password
-			</div>
-		</div>
-		
-		<div class="row">
-			<div class="span2" style="text-align: right;">
-				
-			</div>
-			<div class="span4">
-				<button class="btn" ng-hide="username == undefined || username.length == 0" ng-click="login(false)">Go</button>
-				<button class="btn" disabled ng-show="username == undefined || username.length == 0">Go</button>
+				<button style="margin-left: 3.6em;" class="btn" ng-hide="username == undefined || username.length == 0" ng-click="login(false)">Go</button>
+				<button style="margin-left: 3.6em;" class="btn" disabled ng-show="username == undefined || username.length == 0">Go</button>
 			</div>
 		</div>
 		
 		</form>
 		
-		<form name="form" ng-show="registration == true" class="css-form" novalidate>
+		<form name="form" ng-show="viewState == 'register'" class="css-form" novalidate>
 			
 		<div class="row">
 			<div class="span6" style="text-align: center;">
@@ -79,15 +88,82 @@
 		</div>
 		
 		<div class="row" style="margin-top: 1em;">
-			<div class="span6" style="text-align: center; font-weight: bold;">
-				<button class="btn" ng-click="registration = false">Cancel</button>
-				<button class="btn" ng-click="login(true)">Register</button>
+			<div class="span3" style="text-align: right">
+				<img id="captcha" src="jcaptcha.jpg" style="margin-top: -14px;"/>
+				<br/>
+				<input type="text" ng-model="captchaValue" placeholder="Enter text above" style="width: 100%"/>
+			</div>
+			<div class="span3">
+				<button class="btn" ng-disabled="captchaAccepted" ng-click="login(true, captchaValue)" style="width: 100%; margin-top: 0.4em; margin-bottom: 1.0em;">Register</button>
+				<br/>
+				<button class="btn" ng-click="reloadCaptcha()" style="width: 49%">Reload</button>
+				<button class="btn" ng-click="viewState = 'login'" style="width: 49%">Cancel</button>
 			</div>
 		</div>
 		
 		</form>
 		
+		<form name="form" ng-show="viewState == 'recover'" class="css-form" novalidate>
+			
+		<div class="row">
+			<div class="span2" style="text-align: right;">
+				E-mail
+			</div>
+			<div class="span4">
+				<div class="control-group" ng-class="{ error: username == undefined }" style="margin-bottom: 0px;">
+					<input type="text" style="height: 2.0em;" name="username" ng-model="username" email/>
+				</div>
+			</div>
+		</div>
 		
+		<div class="row" style="margin-bottom: 1em;">
+			<div class="span2"></div>
+			<div class="span4">
+				<button class="btn" ng-disabled="username == undefined || username.length == 0" ng-click="resetPassword()">
+					Request password reset
+				</button>
+				&nbsp;
+				<button class="btn" ng-click="viewState = 'login'">
+					Cancel
+				</button>
+			</div>
+		</div>
+		
+		</form>
+		
+		<div class="row" ng-show="viewState == 'reset'" style="margin-top: 2.0em;">
+			
+			<div class="span6">
+				
+				<div class="row">
+					<div class="span2" style="text-align: right;">
+						New password
+					</div>
+					<div class="span4">
+						<input type="text" style="height: 2.0em;" ng-model="password" ng-hide="passwordHidden"/>
+						<input type="password" style="height: 2.0em;" ng-model="password" ng-hide="!passwordHidden"/>
+					</div>
+				</div>
+				
+				<div class="row" style="margin-bottom: 1em;">
+					<div class="span2" style="text-align: right;">
+					</div>
+					<div class="span4">
+						<input type="checkbox" ng-model="passwordHidden" style="margin-top: -1px;"/>
+						Hide password
+						<button style="margin-left: 3.6em;" class="btn" ng-disabled="password.length == 0" ng-click="resetPassword()">Go</button>
+					</div>
+				</div>
+			
+			</div>
+		
+		</div>
+		
+		<div class="row" ng-show="viewState == 'login'" style="margin-top: 2.0em;">
+			<div class="span6" style="text-align: center;">
+				<a href="" ng-click="resetPassword()">Recover password</a>
+			</div>
+		</div>
 		
 	</div>
 

@@ -13,6 +13,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.PathParam;
 
@@ -41,6 +42,9 @@ import com.lenin.tradingplatform.data.repositories.UserRepository;
 @Path("/fundtransaction")
 public class FundTransactionService {
 
+	@Context
+    private org.apache.cxf.jaxrs.ext.MessageContext mc; 
+	
 	@Autowired
 	private MongoTemplate mongoTemplate;
 	
@@ -301,7 +305,7 @@ public class FundTransactionService {
 		
 		System.out.println("request transfer for user with token "+authToken);
 		
-		RequestResponse response = authComponent.getInitialResponse(username, authToken);
+		RequestResponse response = authComponent.getInitialResponse(username, mc, authToken);
 		
 		if(response.getSuccess() < 0) {
 			return response;

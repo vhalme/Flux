@@ -19,8 +19,12 @@
     <import resource="classpath:META-INF/cxf/osgi/cxf-extension-osgi.xml" />
 	
 	<!-- MONGO DB -->
+	<!-- 
+	<mongo:mongo host="162.243.18.23" port="27017"/>
+	-->
 	
 	<mongo:mongo host="127.0.0.1" port="27017"/>
+	
 	
 	<mongo:repositories base-package="com.lenin.tradingplatform.data.repositories">
 		<mongo:repository id="orderRepository" mongo-template-ref="mongoTemplate" />

@@ -1,0 +1,189 @@
+<div class="row">
+<div class="span4" style="background: #ededed; margin-bottom: 0.7em;">
+	<div style="margin-top: 0.3em; margin-bottom: 0.3em;">
+		<div class="row">
+			<div class="span2" style="text-align: right;">
+				<i ng-class="icon-question-sign" class="icon-question-sign" rel="tooltip" title="This value defines how much the rate needs to go down, so that another chunk of funds would be bough at lower rate."></i>
+				Buy threshold
+			</div>
+			<div class="span2">
+				<div class="control-group"
+					ng-class="{ error: user.currentTradingSession.autoTradingOptions.buyThreshold == undefined }">
+					<input style="margin-bottom: 0px; width: 4.0em;" type="text"
+						name="buyThreshold"
+						ng-model="user.currentTradingSession.autoTradingOptions.buyThreshold"
+						smart-float />
+					% ({{user.currentTradingSession.rate.buy*(user.currentTradingSession.autoTradingOptions.buyThreshold/100)|truncate:6:""}} {{user.currentTradingSession.currencyLeft|uppercase}})
+				</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="span2" style="text-align: right;">
+				<i ng-class="icon-question-sign" class="icon-question-sign" rel="tooltip" title="This value defines how much the rate needs to go up, so that another chunk of funds would be sold at higher rate."></i>
+				Sell threshold
+			</div>
+			<div class="span2">
+				<div class="control-group"
+					ng-class="{ error: user.currentTradingSession.autoTradingOptions.sellThreshold == undefined }">
+					<input style="margin-bottom: 0px; width: 4.0em;" type="text"
+						name="sellThreshold"
+						ng-model="user.currentTradingSession.autoTradingOptions.sellThreshold"
+						smart-float />
+					% ({{user.currentTradingSession.rate.sell*(user.currentTradingSession.autoTradingOptions.sellThreshold/100)|truncate:6:""}} {{user.currentTradingSession.currencyLeft|uppercase}})
+				</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="span2">
+				<div class="row">
+					<div class="span2" style="text-align: center;">
+						<i ng-class="icon-question-sign" class="icon-question-sign" rel="tooltip" title="This value defines how much funds will be bought each time the rate goes below the 'Buy threshold' level."></i>
+						Buy chunk
+					</div>
+				</div>
+				<div class="row">
+					<div class="span2" style="text-align: center;">
+						<div class="control-group"
+							ng-class="{ error: user.currentTradingSession.autoTradingOptions.buyChunk == undefined }">
+							<input style="margin-bottom: 0px; width: 4.0em;" type="text"
+								name="buyChunk"
+								ng-model="user.currentTradingSession.autoTradingOptions.buyChunk"
+								smart-float />
+							{{user.currentTradingSession.currencyRight|uppercase}}
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="span2">
+				<div class="row">
+					<div class="span2" style="text-align: center;">
+						<i ng-class="icon-question-sign" class="icon-question-sign" rel="tooltip" title="This value defines how much funds will be sold each time the rate goes above the 'Sell threshold' level."></i>
+						Sell chunk
+					</div>
+				</div>
+				<div class="row">
+					<div class="span2" style="text-align: center;">
+						<div class="control-group"
+							ng-class="{ error: user.currentTradingSession.autoTradingOptions.sellChunk == undefined }">
+							<input style="margin-bottom: 0px; width: 4.0em;" type="text"
+								name="sellChunk"
+								ng-model="user.currentTradingSession.autoTradingOptions.sellChunk"
+								smart-float />
+							{{user.currentTradingSession.currencyRight|uppercase}}
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+	</div>
+</div>
+<div class="span4" style="background: #ededed; margin-bottom: 0.7em;">
+	<div style="margin-top: 0.3em; margin-bottom: 0.3em;">
+		<div class="row">
+			<div class="span2" style="text-align: right;">
+				<i ng-class="icon-question-sign" class="icon-question-sign" rel="tooltip" title="This value defines the maximum price at which new buys are allowed."></i>
+				Buy ceiling
+			</div>
+			<div class="span2">
+				<div class="control-group"
+					ng-class="{ error: user.currentTradingSession.autoTradingOptions.buyCeiling == undefined }">
+					<input style="margin-bottom: 0px; width: 4.0em;" type="text"
+						name="buyCeiling"
+						ng-model="user.currentTradingSession.autoTradingOptions.buyCeiling"
+						smart-float />
+					{{user.currentTradingSession.currencyLeft|uppercase}}
+				</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="span2" style="text-align: right;">
+				<i ng-class="icon-question-sign" class="icon-question-sign" rel="tooltip" title="This value defines the minimum price at which new sells are allowed."></i>
+				Sell floor
+			</div>
+			<div class="span2">
+				<div class="control-group"
+					ng-class="{ error: user.currentTradingSession.autoTradingOptions.sellFloor == undefined }">
+					<input style="margin-bottom: 0px; width: 4.0em;" type="text"
+						name="sellFloor"
+						ng-model="user.currentTradingSession.autoTradingOptions.sellFloor"
+						smart-float />
+					{{user.currentTradingSession.currencyLeft|uppercase}}
+				</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="span2" style="text-align: right;">
+				<i ng-class="icon-question-sign" class="icon-question-sign" rel="tooltip" title="When rate buffer is other than 0, it will be added to buy order rates and subtracted from sell order rates. This way trading is less profitable but orders are more likely to get filled fast."></i>
+				Rate buffer
+			</div>
+			<div class="span2">
+				<div class="control-group"
+					ng-class="{ error: user.currentTradingSession.autoTradingOptions.rateBuffer == undefined }">
+					<input style="margin-bottom: 0px; width: 4.0em;" type="text"
+						name="rateBuffer"
+						ng-model="user.currentTradingSession.autoTradingOptions.rateBuffer"
+						smart-float />
+					{{user.currentTradingSession.currencyLeft|uppercase}}
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+</div>
+
+<div class="row" style="background: #ededed; margin-left: 0px;">
+
+	<div class="span4" style="margin-left: 0px;">
+		<div class="row">
+			<div class="span4">
+				&nbsp;&nbsp;<b>Projected profits</b>
+			</div>
+		</div>
+		<div class="row">
+			<div class="span4">
+				&nbsp;&nbsp;BUY/SELL pair: 
+				<span ng-show="buySellProfit > 0" style="color: green;">
+					{{buySellProfit|truncate:6:""}} {{user.currentTradingSession.currencyLeft|uppercase}}
+				</span>
+				<span ng-show="buySellProfit <= 0" style="color: red;">
+					{{buySellProfit|truncate:6:""}} {{user.currentTradingSession.currencyLeft|uppercase}}
+				</span>
+				<br/>
+				&nbsp;&nbsp;SELL/BUY pair: 
+				<span ng-show="sellBuyProfit > 0" style="color: green;">
+					{{sellBuyProfit|truncate:6:""}} {{user.currentTradingSession.currencyLeft|uppercase}}
+				</span>
+				<span ng-show="sellBuyProfit <= 0" style="color: red;">
+					{{sellBuyProfit|truncate:6:""}} {{user.currentTradingSession.currencyLeft|uppercase}}
+				</span>
+				<span ng-show="buySellProfit <= 0 || sellBuyProfit <= 0" style="color: red;">
+					<br/>
+					&nbsp;&nbsp;WARNING! You will trade at loss with these settings!
+				</span>
+			</div>
+		</div>
+	</div>
+	
+	<div class="span4">
+		<div class="row">
+			<div class="span4">
+				<b>Projected trading range</b>
+			</div>
+		</div>
+		<div class="row">
+			<div class="span4">
+				{{rangeLeft|truncate:6:""}} {{user.currentTradingSession.currencyLeft|uppercase}} - {{rangeRight|truncate:6:""}} {{user.currentTradingSession.currencyLeft|uppercase}}
+				<span ng-show="user.currentTradingSession.fundsLeft/user.currentTradingSession.rate.buy < user.currentTradingSession.autoTradingOptions.buyChunk" style="color: red;">
+					<br/>
+					&nbsp;&nbsp;WARNING! You don't have enough {{user.currentTradingSession.currencyLeft|uppercase}} to trade.
+				</span>
+				<span ng-show="user.currentTradingSession.fundsRight < user.currentTradingSession.autoTradingOptions.sellChunk" style="color: red;">
+					<br/>
+					&nbsp;&nbsp;WARNING! You don't have enough {{user.currentTradingSession.currencyRight|uppercase}} to trade.
+				</span>
+			</div>
+		</div>
+	</div>
+
+</div>

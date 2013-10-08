@@ -3,13 +3,14 @@ function TradingSessionCtrl($scope, $routeParams, $http) {
 	if($routeParams.tradingSessionId != 0) {
 		$scope.currentTradingSessionId = $routeParams.tradingSessionId;
 		API.tradingSessionId = $scope.currentTradingSessionId;
+		$scope.sessionLoaded = false;
 	}
 	
 	$scope.intervalIds = { main: 0, loop: 0 };
 	
 	$scope.refreshInterval = 15;
 	
-	console.log("tradingSessionId="+$scope.currenTradingSessionId);
+	console.log("tradingSessionId="+$scope.currentTradingSessionId);
 	
 	$scope.transactions = [];
 	
@@ -17,11 +18,11 @@ function TradingSessionCtrl($scope, $routeParams, $http) {
 	
 	$scope.autoTradingOptions = 
 		[
-		 	{ name: "Accumulate USD", value: "accumulateUsd" }
+		 	{ name: "Simple Delta", value: "simpleDelta" },
+		 	{ name: "Moving Average", value: "movingAvg" }
 	    ];
 	
 	$scope.rateChange = 0;
-	
 	$scope.trackManualTransactions = true;
 	$scope.rateAuto = true;
 	$scope.rateBuffered = true;
@@ -35,6 +36,11 @@ function TradingSessionCtrl($scope, $routeParams, $http) {
 	
 	$scope.newFundsLeft = undefined;
 	$scope.newFundsRight = undefined;
+	
+	$scope.buySellProfit = 0;
+	$scope.sellBuyProfit = 0;
+	$scope.rangeLeft = 0;
+	$scope.rangeRight = 0;
 	
 	$scope.sessionKeysSet = false;
 	
@@ -82,9 +88,12 @@ function TradingSessionCtrl($scope, $routeParams, $http) {
 			
 			if(response.success == 1) {
 				
+				$("[rel=tooltip]").tooltip({ placement: 'bottom'});
+				
 				console.log(response);
 				
 				$scope.user.currentTradingSession = response.data.session;
+				$scope.sessionLoaded = true;
 				
 				/*
 				$scope.user.currentTradingSession.fundsLeft = response.data.fundsLeft;
@@ -383,6 +392,74 @@ function TradingSessionCtrl($scope, $routeParams, $http) {
 	};
 	
 	
+	$scope.updateProjections = function() {
+		
+		var buyThreshold = $scope.user.currentTradingSession.autoTradingOptions.buyThreshold;
+		var sellThreshold = $scope.user.currentTradingSession.autoTradingOptions.sellThreshold;
+		var buyChunk = $scope.user.currentTradingSession.autoTradingOptions.buyChunk;
+		var sellChunk = $scope.user.currentTradingSession.autoTradingOptions.sellChunk;
+		var buyCeiling = $scope.user.currentTradingSession.autoTradingOptions.buyCeiling;
+		var sellFloor = $scope.user.currentTradingSession.autoTradingOptions.sellFloor;
+		
+		console.log("updating projections");
+		
+		if(buyThreshold == undefined || sellThreshold == undefined || buyChunk == undefined || sellChunk == undefined || 
+				buyCeiling == undefined | sellFloor == undefined) {
+			console.log("insufficient data for projections");
+			return;
+		}
+		
+		var currentLastRate = $scope.user.currentTradingSession.rate.last;
+		var currentBuyRate = $scope.user.currentTradingSession.rate.buy;
+		var currentSellRate = $scope.user.currentTradingSession.rate.sell;
+		var buyRate = currentBuyRate * (1-(buyThreshold/100));
+		var sellRate = currentSellRate * (1+(sellThreshold/100));
+		$scope.buySellProfit = (buyChunk*currentBuyRate)-(buyChunk*buyRate)-(0.02*2*currentBuyRate);
+		$scope.sellBuyProfit = (sellChunk*sellRate)-(sellChunk*currentSellRate)-(0.02*2*currentSellRate);
+		console.log("buySellP: "+$scope.buySellProfit+", sellBuyP: "+$scope.sellBuyProfit);
+		
+		var chunksRight = $scope.user.currentTradingSession.fundsRight/sellChunk;
+		$scope.rangeRight = Math.pow(1+(sellThreshold/100), chunksRight) * currentSellRate;
+		
+		var rangeLeft = currentBuyRate;
+		var fundsLeft = $scope.user.currentTradingSession.fundsLeft;
+		
+		var decr = 1-(buyThreshold/100);
+		
+		var minRate = currentBuyRate/100;
+		
+		while(fundsLeft > 0 && rangeLeft > minRate) {
+			fundsLeft = fundsLeft - (buyChunk*rangeLeft);
+			rangeLeft = rangeLeft*decr;
+		}
+		
+		$scope.rangeLeft = rangeLeft;
+		
+		console.log("projections updated");
+		
+	};
+	
+	$scope.resetProfit = function(profitSide) {
+	
+		API.resetProfit(profitSide, function(response) {
+			
+			console.log(response);
+			$scope.checkResponse(response);
+			
+			if(response.success == 1) {
+				if(profitSide == "left") {
+					$scope.user.currentTradingSession.profitLeft = 0;
+					$scope.user.currentTradingSession.profitLeftSince = new Date();
+				} else {
+					$scope.user.currentTradingSession.profitRight = 0;
+					$scope.user.currentTradingSession.profitRightSince = new Date();
+				}
+			}
+			
+		});
+		
+	};
+	
 	/* Variable properties */
 	
 	$scope.showSessionFunds = true;
@@ -464,6 +541,7 @@ function TradingSessionCtrl($scope, $routeParams, $http) {
 		
 		if(value != null && $scope.rateAuto) {
 	    	$scope.manualBuyRate = $scope.truncate($scope.user.currentTradingSession.rate.buy, 6);
+	    	$scope.updateProjections();
 	    }
 		
 	}, true);
@@ -472,6 +550,7 @@ function TradingSessionCtrl($scope, $routeParams, $http) {
 		
 		if(value != null && $scope.rateAuto) {
 	    	$scope.manualSellRate = $scope.truncate($scope.user.currentTradingSession.rate.sell, 6);
+	    	$scope.updateProjections();
 	    }
 		
 	}, true);
@@ -479,7 +558,9 @@ function TradingSessionCtrl($scope, $routeParams, $http) {
 	
 	$scope.$watch('user.currentTradingSession.autoTradingOptions', function(value) {
 		
-		if(value != null) {
+		console.log("sessionLoaded="+$scope.sessionLoaded);
+		
+		if(value != null && $scope.sessionLoaded) {
 			
 			console.log("autotrading options changed");
 			
@@ -494,6 +575,8 @@ function TradingSessionCtrl($scope, $routeParams, $http) {
 					buyCeiling == undefined | sellFloor == undefined) {
 				return;
 			}
+			
+			$scope.updateProjections();
 			
 			API.saveAutoTradingOptions(value, function(response) {
 				
@@ -524,10 +607,12 @@ function TradingSessionCtrl($scope, $routeParams, $http) {
 			if(response.success == 1) {
 				console.log(response.data);
 				$scope.user.currentTradingSession = response.data;
+				$scope.sessionLoaded = true;
 				$scope.refresh();
 			} else {
-				console.log(response);		
+				console.log(response);
 			}
+			
 			
 		});
 		
@@ -536,16 +621,16 @@ function TradingSessionCtrl($scope, $routeParams, $http) {
 	$scope.$watch('user.currentTradingSession.fundsLeft', function(value) {
 		
 		console.log("fundsLeft set: "+value);
-		
 		$scope.setFundsLeft();
+		$scope.updateProjections();
 		
 	}, true);
 	
 	$scope.$watch('user.currentTradingSession.fundsRight', function(value) {
 		
 		console.log("fundsRight set: "+value);
-		
 		$scope.setFundsRight();
+		$scope.updateProjections();
 		
 	}, true);
 	

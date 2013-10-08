@@ -1,6 +1,7 @@
 package com.lenin.project.service;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -10,6 +11,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +23,9 @@ import com.lenin.project.AuthComponent;
 import com.lenin.tradingplatform.client.BtceApi;
 import com.lenin.tradingplatform.client.RequestResponse;
 import com.lenin.tradingplatform.client.TradingClient;
+import com.lenin.tradingplatform.data.entities.AccountFunds;
 import com.lenin.tradingplatform.data.entities.Order;
+import com.lenin.tradingplatform.data.entities.PropertyMap;
 import com.lenin.tradingplatform.data.entities.Settings;
 import com.lenin.tradingplatform.data.entities.TradingSession;
 import com.lenin.tradingplatform.data.entities.User;
@@ -34,6 +38,9 @@ import com.lenin.tradingplatform.data.repositories.UserRepository;
 @Path("/order")
 public class OrderService {
 
+	@Context
+    private org.apache.cxf.jaxrs.ext.MessageContext mc; 
+	
 	@Autowired
 	private UserRepository userRepository;
 
@@ -63,7 +70,7 @@ public class OrderService {
 			@HeaderParam("Trading-Session-Id") String tradingSessionId,
 			@QueryParam("type") String type) {
 
-		RequestResponse response = authComponent.getInitialResponse(username, authToken);
+		RequestResponse response = authComponent.getInitialResponse(username, mc, authToken);
 		
 		if(response.getSuccess() < 0) {
 			return response;
@@ -116,7 +123,7 @@ public class OrderService {
 	public RequestResponse deleteOrder(@HeaderParam("Username") String username, @HeaderParam("Auth-Token") String authToken,
 			@HeaderParam("Trading-Session-Id") String tradingSessionId, Order order) {
 		
-		RequestResponse response = authComponent.getInitialResponse(username, authToken);
+		RequestResponse response = authComponent.getInitialResponse(username, mc, authToken);
 		
 		if(response.getSuccess() < 0) {
 			return response;
@@ -145,7 +152,7 @@ public class OrderService {
 			@HeaderParam("Trading-Session-Id") String tradingSessionId,
 			Order order, @QueryParam("cancel") String cancel) {
 		
-		RequestResponse response = authComponent.getInitialResponse(username, authToken);
+		RequestResponse response = authComponent.getInitialResponse(username, mc, authToken);
 		
 		if(response.getSuccess() < 0) {
 			return response;
@@ -163,14 +170,23 @@ public class OrderService {
 			response.setMessage("Could not read user data.");
 			return response;
 		}
-
+		
 		TradingSession tradingSession = tradingSessionRepository.findOne(tradingSessionId); // user.getCurrentTradingSession();
 		user.setCurrentTradingSession(tradingSession);
-
+		
 		if (tradingSession.getRate().getLast() == 0.0) {
 			response.setMessage("Rate not set");
 			return response;
 		}
+		
+		AccountFunds accountFunds = user.getAccountFunds();
+		Map<String, PropertyMap> propertyMaps = accountFunds.getServiceProperties();
+		PropertyMap servicePropertyMap = propertyMaps.get(tradingSession.getService());
+		Map<String, Object> serviceProperties = servicePropertyMap.getProperties();
+		String apiKey = (String)serviceProperties.get("apiKey");
+		String apiSecret = (String)serviceProperties.get("apiSecret");
+		btceApi.setKey(apiKey);
+		btceApi.setSecret(apiSecret);
 		
 		Double fundsLeft = tradingSession.getFundsLeft();
 		Double fundsRight = tradingSession.getFundsRight();

@@ -2,6 +2,8 @@ function ChartsCtrl($scope, $routeParams, $http) {
 	
 	console.log("INIT CHART!!");
 	
+	$scope.firstLoad = true;
+	
 	$scope.chartScaleOptions = 
 		[
 		 	{ period: "6h", precision: "15s" },
@@ -13,13 +15,44 @@ function ChartsCtrl($scope, $routeParams, $http) {
 		 	
 		];
 	
+	
+	$scope.ma1type = "sma1h";
+	$scope.ma2type = "sma10min";
+	$scope.ma1visible = true;
+	$scope.ma2visible = true;
+	
+	$scope.maOptions = [ 
+	        "sma10min", "sma30min", "sma1h", "sma2h", "sma4h", "sma6h", "sma12h", "sma1d",
+	        "ema10min", "ema30min", "ema1h", "ema2h", "ema4h", "ema6h", "ema12h", "ema1d"
+	    ];
+	
+	$scope.maTitles = [];
+	$scope.maTitles["sma10min"] = "SMA 10 min";
+	$scope.maTitles["sma30min"] = "SMA 30 min";
+	$scope.maTitles["sma1h"] = "SMA 1 hour";
+	$scope.maTitles["sma2h"] = "SMA 2 hours";
+	$scope.maTitles["sma4h"] = "SMA 4 hours";
+	$scope.maTitles["sma6h"] = "SMA 6 hours";
+	$scope.maTitles["sma12h"] = "SMA 12 hours";
+	$scope.maTitles["sma1d"] = "SMA 1 day";
+	$scope.maTitles["ema10min"] = "EMA 10 min";
+	$scope.maTitles["ema30min"] = "EMA 30 min";
+	$scope.maTitles["ema1h"] = "EMA 1 hour";
+	$scope.maTitles["ema2h"] = "EMA 2 hours";
+	$scope.maTitles["ema4h"] = "EMA 4 hours";
+	$scope.maTitles["ema6h"] = "EMA 6 hours";
+	$scope.maTitles["ema12h"] = "EMA 12 hours";
+	$scope.maTitles["ema1d"] = "EMA 1 day";
+	
 	$scope.chartScale = "1min";
 	$scope.chartFrom = 0;
 	$scope.chartUntil = Math.round((new Date()).getTime()/1000);
 	$scope.chart;
 	$scope.graph;
+	$scope.maGraph1;
+	$scope.maGraph2;
 	$scope.graphType = "candlestick";
-	$scope.maxCandlesticks = 100;
+	$scope.maxCandlesticks = 200;
 	$scope.chartData = [];
 	
 	$scope.testRates = {
@@ -51,10 +84,12 @@ function ChartsCtrl($scope, $routeParams, $http) {
 	
 	
 	$scope.setChartScale = function(precision) {
+		
 		$scope.chartScale = precision;
 		console.log("new chart scale = "+$scope.chartScale);
+		//$scope.chart.validateNow();
+		//$scope.setupChart();
 		$scope.parseData();
-		$scope.setupChart();
 		
 	};
 	
@@ -157,9 +192,9 @@ function ChartsCtrl($scope, $routeParams, $http) {
 			}
 		
 			var until = unixTime;
-		
+			
 			API.getRates($scope.user.currentTradingSession.pair, $scope.chartScale, from, until, function(response) {
-	    	
+				
 				var rates = response.data;
 		    
 				$scope.chartData = [];
@@ -195,10 +230,29 @@ function ChartsCtrl($scope, $routeParams, $http) {
 			            low: low,
 			            close: close
 			        });
-		        
+					
+					//console.log(rate.movingAverages);
+					
+					if(rate.movingAverages[$scope.ma1type] != undefined) {
+						$scope.chartData.push({
+							date: date,
+							ma1: rate.movingAverages[$scope.ma1type]
+						});
+					}
+					
+					if(rate.movingAverages[$scope.ma2type] != undefined) {
+						$scope.chartData.push({
+							date: date,
+							ma2: rate.movingAverages[$scope.ma2type]
+						});
+					}
+		        	
 		        
 				}
-			
+				
+				$scope.setupChart();
+				
+				
 			});
 			
 			
@@ -211,6 +265,8 @@ function ChartsCtrl($scope, $routeParams, $http) {
 				$scope.chartData = rates[$scope.user.currentTradingSession.pair][$scope.chartScale];
 			
 			}
+			
+			$scope.setupChart();
 			
 		}
 	    
@@ -228,21 +284,21 @@ function ChartsCtrl($scope, $routeParams, $http) {
 	    $scope.chart.zoomToDates(startDate, endDate);
 	    
 	}
-
-	// create chart
-	//AmCharts.ready(function() {
-		
-		//console.log("CHART READY!");
-		
-	    
-	    
+	
+	/*
+	AmCharts.ready(function() {
+		console.log("CHARTS READY!");
+		$scope.setupChart();
+	});
+	*/
+	
 	$scope.setupChart = function() {
 	    
 		
 	    // SERIAL CHART
 	    var chart = new AmCharts.AmSerialChart();
 	    
-	    chart.pathToImages = "https://localhost/Flux/js/libs/images/";
+	    chart.pathToImages = "js/libs/images/";
 	    chart.dataProvider = $scope.chartData;
 	    chart.categoryField = "date";
 	    chart.marginTop = 0;
@@ -285,7 +341,7 @@ function ChartsCtrl($scope, $routeParams, $http) {
 	    var graph = new AmCharts.AmGraph();
 	    graph.title = "Price:";
 	    // as candlestick graph looks bad when there are a lot of candlesticks, we set initial type to "line"
-	    graph.type = "line";
+	    graph.type = "candlestick";
 	    // graph colors
 	    graph.lineColor = "#7f8da9";
 	    graph.fillColors = "#7f8da9";
@@ -304,7 +360,24 @@ function ChartsCtrl($scope, $routeParams, $http) {
 	    		"\nL: [[low]] H: [[high]]"
 
 	    chart.addGraph(graph);
-
+	    
+	    
+	    var maGraph1 = new AmCharts.AmGraph();
+	    maGraph1.title = "SMA 1";
+	    maGraph1.valueField = "ma1";
+	    maGraph1.lineThickness = 2;
+	    maGraph1.lineColor = "#5fb503";
+	    maGraph1.balloonText = "[[title]]: [[value]]";
+	    
+	    var maGraph2 = new AmCharts.AmGraph();
+	    maGraph2.title = "SMA 2";
+	    maGraph2.valueField = "ma2";
+	    maGraph2.lineThickness = 2;
+	    maGraph2.lineColor = "#ff9933";
+	    maGraph2.balloonText = "[[title]]: [[value]]";
+	    
+		
+	    
 	    // CURSOR                
 	    var chartCursor = new AmCharts.ChartCursor();
 	    //chart.addChartCursor(chartCursor);
@@ -320,6 +393,16 @@ function ChartsCtrl($scope, $routeParams, $http) {
 	    
 	    $scope.chart = chart;
 	    $scope.graph = graph;
+	    $scope.maGraph1 = maGraph1;
+	    $scope.maGraph2 = maGraph2;
+	    
+	    if($scope.ma1visible) {
+	    	$scope.chart.addGraph($scope.maGraph1);
+	    }
+	    
+	    if($scope.ma2visible) {
+	    	$scope.chart.addGraph($scope.maGraph2);
+	    }
 	    
 	    // WRITE
 	    $scope.chart.write("chartdiv");
@@ -327,21 +410,33 @@ function ChartsCtrl($scope, $routeParams, $http) {
 	    //});
 	
 	}
-	
+	    
+	// create chart
+	//AmCharts.ready(function() {
+		
+	$scope.parseData();
+		//$scope.setupChart();
+		//console.log("CHART READY!");
+		
+	//
+	//});
 	
 	// first parse data string      
-    $scope.parseData();
-    $scope.setupChart();
+    //$scope.parseData();
+    //$scope.setupChart();
     
 	$scope.updateTestChart = function(scale, time) {
 		
 		var rate = $scope.user.currentTradingSession.rate;
+		
+		//console.log(rate);
 		
 		if(rate.setType != undefined && $scope.user.currentTradingSession.service == "test") {
 			return false;
 		}
 		
 		var testRate = $scope.testRates[scale];
+		//console.log(testRate);
 		
 		if(testRate == null) {
 			return false;
@@ -377,12 +472,13 @@ function ChartsCtrl($scope, $routeParams, $http) {
 	$scope.addTestRate = function(scale) {
 		
 		var rate = $scope.user.currentTradingSession.rate;
+		var date = new Date(rate.time*1000);
 		
 		$scope.testRates[scale]["lastRate"] = rate;
 		
 		var chartRate = {
 			time: rate.time,
-            date: new Date(rate.time*1000),
+            date: date,
             open: $scope.testRates[scale]["open"],
             close: rate.last,
             high: $scope.testRates[scale]["high"],
@@ -434,9 +530,30 @@ function ChartsCtrl($scope, $routeParams, $http) {
 			
 		}
 		
+		console.log(rate);
+		console.log(scale+"/"+$scope.chartScale+"/"+rate.movingAverages[$scope.ma1type]+"/"+rate.movingAverages[$scope.ma2type]);
+		
 		if(scale == $scope.chartScale) {
+			
 			$scope.chartData.push(chartRate);
+			
+			if(rate.movingAverages[$scope.ma1type] != undefined) {
+				$scope.chartData.push({
+					date: date,
+					ma1: rate.movingAverages[$scope.ma1type]
+				});
+			}
+			
+			if(rate.movingAverages[$scope.ma2type] != undefined) {
+				$scope.chartData.push({
+					date: date,
+					ma2: rate.movingAverages[$scope.ma2type]
+				});
+			}
+			
+			//$scope.chart.validateNow();
 			$scope.setupChart();
+			
 		}
 		
 		return chartRate;
@@ -493,8 +610,65 @@ function ChartsCtrl($scope, $routeParams, $http) {
 		console.log("chart tradestats changed");
 		
 		console.log("init chart");
-		$scope.parseData();
-		$scope.setupChart();
+		
+		if($scope.firstLoad == false) {
+			$scope.parseData();
+		}
+		
+	}, true);
+	
+	$scope.$watch('ma1type', function(value) {
+		
+		console.log("ma1type changed to "+value);
+		
+		if($scope.firstLoad == false) {
+			$scope.parseData();
+		}
+		
+	}, true);
+	
+	$scope.$watch('ma2type', function(value) {
+		
+		console.log("ma1type changed to "+value);
+		
+		if($scope.firstLoad == false) {
+			$scope.parseData();
+		}
+		
+	}, true);
+	
+	$scope.$watch('ma1visible', function(value) {
+		
+		console.log("TOGGLE GRAPH 1: "+value);
+		
+		if($scope.firstLoad == true) {
+			return;
+		}
+		
+		if(value == true) {
+			$scope.chart.addGraph($scope.maGraph1);
+		} else {
+			$scope.chart.removeGraph($scope.maGraph1);
+		}
+			
+		
+	}, true);
+	
+	$scope.$watch('ma2visible', function(value) {
+		
+		console.log("TOGGLE GRAPH 2: "+value);
+		
+		if($scope.firstLoad == true) {
+			$scope.firstLoad = false;
+			return;
+		}
+		
+		if(value == true) {
+			$scope.chart.addGraph($scope.maGraph2);
+		} else {
+			$scope.chart.removeGraph($scope.maGraph2);
+		}
+		
 		
 	}, true);
 	

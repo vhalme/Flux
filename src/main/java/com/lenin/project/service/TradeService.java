@@ -7,6 +7,7 @@ import javax.ws.rs.HeaderParam;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,9 @@ import com.lenin.tradingplatform.data.repositories.TradeRepository;
 @Path("/trade")
 public class TradeService {
 
+	@Context
+    private org.apache.cxf.jaxrs.ext.MessageContext mc; 
+	
 	@Autowired
 	private TradeRepository tradeRepository;
 	
@@ -37,7 +41,7 @@ public class TradeService {
 	public RequestResponse getTrades(@HeaderParam("Username") String username, @HeaderParam("Auth-Token") String authToken,
 			@QueryParam("orderId") String orderId) {
 		
-		RequestResponse response = authComponent.getInitialResponse(username, authToken);
+		RequestResponse response = authComponent.getInitialResponse(username, mc, authToken);
 		
 		if(response.getSuccess() < 0) {
 			return response;
