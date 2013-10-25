@@ -20,7 +20,7 @@
 						</div>
 						<div ng-hide="user.currentTradingSession.autoTradingOptions.tradeAuto" style="display: inline-block; float: right;">
 							Stopped
-							<button ng-click="user.currentTradingSession.autoTradingOptions.tradeAuto = true">
+							<button ng-show="okToTrade" ng-click="user.currentTradingSession.autoTradingOptions.tradeAuto = true">
 								Start
 							</button>
 						</div>
@@ -116,6 +116,13 @@
 				
 				<br/><br/>
 				
+			</div>
+			
+			<div class="span12" style="margin-top: 1.0em; margin-bottom: 1.0em; text-align: center;" ng-show="sessionKeysSet && user.errors != undefined && user.errors.length > 0">
+				
+				Automated trading is not available due to the issues displayed on the top of the page.
+				Please address these problems to resume automated trading.
+
 			</div>
 						
 		</div>

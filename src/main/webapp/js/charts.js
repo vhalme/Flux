@@ -3,6 +3,8 @@ function ChartsCtrl($scope, $routeParams, $http) {
 	console.log("INIT CHART!!");
 	
 	$scope.firstLoad = true;
+	$scope.loadingData = false;
+	$scope.chartStatus = "";
 	
 	$scope.chartScaleOptions = 
 		[
@@ -44,7 +46,7 @@ function ChartsCtrl($scope, $routeParams, $http) {
 	$scope.maTitles["ema12h"] = "EMA 12 hours";
 	$scope.maTitles["ema1d"] = "EMA 1 day";
 	
-	$scope.chartScale = "1min";
+	$scope.chartScale = "10min";
 	$scope.chartFrom = 0;
 	$scope.chartUntil = Math.round((new Date()).getTime()/1000);
 	$scope.chart;
@@ -173,6 +175,8 @@ function ChartsCtrl($scope, $routeParams, $http) {
 	// Parse data
 	$scope.parseData = function() {
 	    
+		$scope.loadingData = true;
+		$scope.chartStatus = "Loading chart data...";
 		
 		if($scope.user.currentTradingSession.live == true) {
 		
@@ -192,6 +196,8 @@ function ChartsCtrl($scope, $routeParams, $http) {
 			}
 		
 			var until = unixTime;
+			
+			$scope.chartStatus = "Getting chart history from server...";
 			
 			API.getRates($scope.user.currentTradingSession.pair, $scope.chartScale, from, until, function(response) {
 				
@@ -250,13 +256,21 @@ function ChartsCtrl($scope, $routeParams, $http) {
 		        
 				}
 				
+				$scope.chartStatus = "Plotting charts...";
+				
 				$scope.setupChart();
+				
+				$scope.chartStatus = "Loaded.";
+				
+				$scope.loadingData = false;
 				
 				
 			});
 			
 			
 		} else {
+			
+			$scope.chartStatus = "Getting chart data from local storage...";
 			
 			if(localStorage.rates != undefined) {
 				
@@ -266,7 +280,14 @@ function ChartsCtrl($scope, $routeParams, $http) {
 			
 			}
 			
+			$scope.chartStatus = "Plotting charts...";
+			
 			$scope.setupChart();
+			
+			$scope.chartStatus = "Loaded.";
+			
+			$scope.loadingData = false;
+			
 			
 		}
 	    
@@ -396,11 +417,11 @@ function ChartsCtrl($scope, $routeParams, $http) {
 	    $scope.maGraph1 = maGraph1;
 	    $scope.maGraph2 = maGraph2;
 	    
-	    if($scope.ma1visible) {
+	    if($scope.ma1visible && $scope.user.live) {
 	    	$scope.chart.addGraph($scope.maGraph1);
 	    }
 	    
-	    if($scope.ma2visible) {
+	    if($scope.ma2visible && $scope.user.live) {
 	    	$scope.chart.addGraph($scope.maGraph2);
 	    }
 	    
@@ -597,7 +618,7 @@ function ChartsCtrl($scope, $routeParams, $http) {
 	
 	$scope.$watch('user.currentTradingSession.rate', function(value) {
 		
-		if($scope.chart != null) {
+		if($scope.chart != null && value != undefined) {
 			console.log("update chart: "+value.last);
 			$scope.updateChart();
 		}
@@ -605,13 +626,13 @@ function ChartsCtrl($scope, $routeParams, $http) {
 	}, true);
 	
 	
-	$scope.$watch('currentTradingSessionId', function(value) {
+	$scope.$watch('sessionLoaded', function(value) {
 		
-		console.log("chart tradestats changed");
+		console.log("chart tradestats changed > "+value);
 		
 		console.log("init chart");
 		
-		if($scope.firstLoad == false) {
+		if(value == true && $scope.firstLoad == false) {
 			$scope.parseData();
 		}
 		

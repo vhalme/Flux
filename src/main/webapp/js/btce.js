@@ -1,5 +1,7 @@
 var API = {
 		
+		http: null,
+		
 		loopInterval: 0,
 		
 		userId: null,
@@ -47,8 +49,21 @@ var API = {
 				request.contentType = contentType;
 			}
 			
-			$.ajax(request);
+			if(method == "GET") {
+				
+				headerData["Content-Type"] = contentType;
+				
+				var getParams = {
+						headers: headerData
+				};
+				
+				this.http.get(url, getParams).success(callback);
+				
+			} else {
 			
+				$.ajax(request);
+			
+			}
 			
 		},
 		

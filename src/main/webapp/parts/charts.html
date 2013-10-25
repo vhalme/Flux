@@ -41,8 +41,12 @@
 					</div>
 				</div>
 				<div class="row" style="margin-bottom: 1.0em;">
-					<div class="span12">
-						<div id="chartdiv" style="width:100%; height:340px;"></div>
+					<div class="span12" style="position: relative;">
+						<div id="loadingCharts" ng-show="loadingData" style="text-align: center; width:50%; height:90px; position: absolute; top: 120px; left: 50%; padding-top: 55px; margin-left: -25%; background: #ffffff; border: 1px solid black; z-index: 2;">
+							{{chartStatus}}
+						</div>
+						<div id="chartdiv" style="width:100%; height:340px;">
+						</div>
 					</div>
 				</div>
 				<div class="row" ng-show="user.live">

@@ -273,8 +273,8 @@ public class UserService {
 						"Hi!<br/><br/>"+
 						"You have requested password reset for your BTC machines Trade account.<br/><br/>"+
 						"Please, follow this link to set a new password:<br/>"+
-						"<a href=\"http://localhost/Flux/app.html#/recover/"+user.getPassword()+"\">"+
-						"http://localhost/Flux/app.html#/recover/"+user.getPassword()+"</a><br/><br/><br/>"+
+						"<a href=\""+EmailSender.hostName+"/#/recover/"+user.getPassword()+"\">"+
+						EmailSender.hostName+"/#/recover/"+user.getPassword()+"</a><br/><br/><br/>"+
 						"Best regards,<br/>"+
 						"BTC machines";
 				

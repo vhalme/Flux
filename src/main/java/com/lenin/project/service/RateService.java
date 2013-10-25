@@ -75,6 +75,12 @@ public class RateService {
 			rates = rateRepository.findAll();
 		}
 		
+		/*
+		for(int i=0; i<10000; i++) {
+			rates.add(new Rate());
+		}
+		*/
+		
 		response.setSuccess(1);
 		response.setData(rates);
 

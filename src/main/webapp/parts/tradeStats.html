@@ -1,6 +1,6 @@
 <div class="row" style="margin-bottom: 1.0em; margin-top: 1.0em;">
 	
-	<div class="span12" style="background: #d00000; color: white; text-align: center;" ng-hide="user.live">
+	<div class="span12" style="background: #d00000; color: white; text-align: center;" ng-hide="user.live || !sessionLoaded">
 		
 		<div class="row">
 			<div class="span9" style="background: #d00000; color: white; text-align: center;">
@@ -19,7 +19,7 @@
 		
 	</div>
 	
-	<div class="span12" style="background: #00b000; color: white; text-align: center;" ng-hide="!user.live">
+	<div class="span12" style="background: #00b000; color: white; text-align: center;" ng-hide="!user.live || !sessionLoaded">
 		
 		<div class="row">
 			<div class="span9">
@@ -38,6 +38,40 @@
 		
 	</div>
 	
+</div>
+
+<div class="row" ng-repeat="error in user.errors" ng-show="sessionKeysSet" style="margin-bottom: 1em;">
+	<div class="span12" style="text-align: center; border: 1px red solid; background: #fffacd; padding-bottom: 1.0em;">
+		<div style="width: 400px; display: inline; left: -200px; margin-left: 50%; text-align: center;">
+			<span ng-show="error.code == 0">
+				<br/>
+				<b>BTC-e settings incomplete</b>
+				<br/><br/>
+				<span ng-show="error.message == 'invalid api key'">
+					The BTC-e API key you have provided is incorrect. Please go to BTC-e settings and create a new key or copy an existing correct key from there.
+				</span>
+				<span ng-show="error.message == 'invalid sign'">
+					The BTC-e API secret you have provided is incorrect. Please go to BTC-e settings and create a new key and secret or copy an existing correct secret from there.
+				</span>
+				<span ng-show="error.message == 'api key dont have info permission'">
+					Your BTC-e API key and secret are correct but you have not granted info permission for your key. Please go to BTC-e API key settings, check both 'info' and 'trade' 
+					checkboxes next to the key and click 'Save'.
+				</span>
+				<span ng-show="error.message == 'api key dont have trade permission'">
+					Your BTC-e API key and secret are correct but you have not granted trade permission for your key. Please go to BTC-e API key settings, check both 'info' and 'trade' 
+					checkboxes next to the key and click 'Save'.
+				</span>
+				
+				<span ng-show="error.message != 'invalid api key' && error.message != 'invalid sign' && error.message != 'api key dont have info permission' && error.message != 'api key dont have trade permission'">
+					{{error.message}}
+				</span>
+				
+				<br/><br/>
+				Note that it may take a minute or so for changes to take effect.
+				
+			</span>
+		</div>
+	</div>
 </div>
 
 <div class="row" ng-repeat="error in errors['general']" style="margin-bottom: 1em;">
@@ -107,7 +141,7 @@
 			
 		</div>
 		<div class="span2" style="text-align: right; border-bottom: 1px solid #ddd; margin-left: 0px; padding-top: 8px; padding-bottom: 9px;">
-			<span>&nbsp;</span><a href="" ng-hide="user.tradingSessions.length <= 1" ng-click="deleteCurrentTab()">Delete tab</a>
+			<span>&nbsp;</span><a href="" ng-hide="user.tradingSessions.length <= 1" ng-click="deleteCurrentTab()">Delete session</a>
 		</div>
 	</div>
 	
@@ -136,7 +170,7 @@
 
 					<div class="row" ng-class="{ hidden: !showManualTrading }">
 						
-						<div ng-show="sessionKeysSet" style="margin-top: -20px;">
+						<div ng-show="sessionKeysSet && !(user.errors != undefined && user.errors.length > 0)" style="margin-top: -20px;">
 						<form name="manualTrading" class="css-form" novalidate>
 							
 						<div class="span4">
@@ -280,8 +314,16 @@
 							<br/><br/>
 					
 						</div>
+						
+						<div class="span12" style="margin-top: 1.0em; margin-bottom: 1.0em; text-align: center;" ng-show="sessionKeysSet && user.errors != undefined && user.errors.length > 0">
+				
+							Manual trading is not available due to the issues displayed on the top of the page. 
+							Please address these problems to resume manual trading.
+
+						</div>
 
 					</div>
+					
 				
 				</div>
 

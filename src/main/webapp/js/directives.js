@@ -91,7 +91,8 @@ myApp.directive('smartFloat', function() {
   };
 });
 
-var EMAIL_REGEXP = /^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/;
+
+var EMAIL_REGEXP = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
 myApp.directive('email', function() {
 	  return {
 	    require: 'ngModel',
@@ -123,6 +124,8 @@ myApp.config(['$routeProvider', function($routeProvider) {
 		when('/login', { templateUrl: 'parts/login.html', controller: LoginCtrl }).
 		when('/recover/:recoveryToken', { templateUrl: 'parts/front.html', controller: FrontCtrl }).
 		when('/logout', { templateUrl: 'parts/logout.html', controller: LogoutCtrl }).
+		when('/support', { templateUrl: 'parts/support.html' }).
+		when('/tos', { templateUrl: 'parts/tos.html' }).
     	when('/tradingSession/:tradingSessionId', { templateUrl: 'parts/tradeStats.html', controller: TradingSessionCtrl }).
     	otherwise( { redirectTo: '/front' } );
 	}]

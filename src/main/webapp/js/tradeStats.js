@@ -51,7 +51,9 @@ function TradingSessionCtrl($scope, $routeParams, $http) {
 		$scope.refreshInterval = 15;
 		$scope.refreshCounter = $scope.refreshInterval;
 		
-		$scope.refreshErrors();
+		if($scope.user != undefined) {
+			$scope.refreshErrors();
+		}
 		
 		$scope.intervalIds.main = setInterval( function() { 
 			$scope.$apply( function() {
@@ -107,6 +109,7 @@ function TradingSessionCtrl($scope, $routeParams, $http) {
 				
 				$scope.user.accountFunds = response.data.accountFunds; //.activeFunds[$scope.user.currentTradingSession.service] = response.data.activeFunds;
 				$scope.serviceFees = response.data.serviceFees;
+				$scope.user.errors = response.data.userErrors;
 				
 				$scope.refreshErrors();
 				
@@ -181,19 +184,19 @@ function TradingSessionCtrl($scope, $routeParams, $http) {
 			
 			if(method == "monthly") {
 				if(currency == "btc") {
-					requiredReserves = 0.5;
+					requiredReserves = 0;
 				} else if(currency == "ltc") {
-					requiredReserves = 20;
+					requiredReserves = 0;
 				} else if(currency == "usd") {
-					requiredReserves = 49.90;
+					requiredReserves = 0;
 				}
 			} else if(method == "profit") {
 				if(currency == "btc") {
-					requiredReserves = 0.05;
+					requiredReserves = 0;
 				} else if(currency == "ltc") {
-					requiredReserves = 2;
+					requiredReserves = 0;
 				} else if(currency == "usd") {
-					requiredReserves = 4.99;
+					requiredReserves = 0;
 				}
 			}
 			
@@ -213,7 +216,11 @@ function TradingSessionCtrl($scope, $routeParams, $http) {
 			
 			}
 			
-		} 
+		}
+		
+		if($scope.user.errors != undefined && $scope.user.errors.length > 0) {
+			$scope.okToTrade = false;
+		}
 		
 	};
 	
@@ -335,6 +342,10 @@ function TradingSessionCtrl($scope, $routeParams, $http) {
 	
 	$scope.setFundsLeft = function() {
 		
+		if($scope.user.currentTradingSession.fundsLeft == undefined) {
+			return;
+		}
+		
 		API.setFunds($scope.user.currentTradingSession.fundsLeft, null, function(response) {
 			
 			console.log(response);
@@ -352,6 +363,10 @@ function TradingSessionCtrl($scope, $routeParams, $http) {
 	};
 	
 	$scope.setFundsRight = function() {
+		
+		if($scope.user.currentTradingSession.fundsRight == undefined) {
+			return;
+		}
 		
 		API.setFunds(null, $scope.user.currentTradingSession.fundsRight, function(response) {
 			
@@ -384,11 +399,19 @@ function TradingSessionCtrl($scope, $routeParams, $http) {
 	
 	
 	$scope.currencyRightCashout = function() {
-		return $scope.user.currentTradingSession.fundsRight + ($scope.user.currentTradingSession.fundsLeft / $scope.user.currentTradingSession.rate.buy);
+		if($scope.user == undefined || $scope.user.currentTradingSession.fundsRight == undefined) {
+			return 0;
+		} else {
+			return $scope.user.currentTradingSession.fundsRight + ($scope.user.currentTradingSession.fundsLeft / $scope.user.currentTradingSession.rate.buy);
+		}
 	};
 	
 	$scope.currencyLeftCashout = function() {
-		return $scope.user.currentTradingSession.fundsLeft + ($scope.user.currentTradingSession.fundsRight * $scope.user.currentTradingSession.rate.sell);
+		if($scope.user == undefined || $scope.user.currentTradingSession.fundsLeft == undefined) {
+			return 0;
+		} else {
+			return $scope.user.currentTradingSession.fundsLeft + ($scope.user.currentTradingSession.fundsRight * $scope.user.currentTradingSession.rate.sell);
+		}
 	};
 	
 	
@@ -414,9 +437,16 @@ function TradingSessionCtrl($scope, $routeParams, $http) {
 		var currentSellRate = $scope.user.currentTradingSession.rate.sell;
 		var buyRate = currentBuyRate * (1-(buyThreshold/100));
 		var sellRate = currentSellRate * (1+(sellThreshold/100));
-		$scope.buySellProfit = (buyChunk*currentBuyRate)-(buyChunk*buyRate)-(0.02*2*currentBuyRate);
-		$scope.sellBuyProfit = (sellChunk*sellRate)-(sellChunk*currentSellRate)-(0.02*2*currentSellRate);
+		$scope.buySellProfit = (buyChunk*currentBuyRate)-(buyChunk*buyRate)-(0.002*2*buyChunk*currentBuyRate);
+		$scope.sellBuyProfit = (sellChunk*sellRate)-(sellChunk*currentSellRate)-(0.002*2*sellChunk*currentSellRate);
 		console.log("buySellP: "+$scope.buySellProfit+", sellBuyP: "+$scope.sellBuyProfit);
+		if((""+$scope.buySellProfit).indexOf("e-") != -1) {
+			$scope.buySellProfit = 0;
+		}
+		
+		if((""+$scope.sellBuyProfit).indexOf("e-") != -1) {
+			$scope.sellBuyProfit = 0;
+		}
 		
 		var chunksRight = $scope.user.currentTradingSession.fundsRight/sellChunk;
 		$scope.rangeRight = Math.pow(1+(sellThreshold/100), chunksRight) * currentSellRate;
@@ -600,6 +630,10 @@ function TradingSessionCtrl($scope, $routeParams, $http) {
 		
 		console.log("currentTradingSessionId set: "+value);
 		
+		$scope.sessionLoaded = false;
+		$scope.refresh();
+		
+		/*
 		API.getTradingSession(function(response) {
 			
 			$scope.checkResponse(response);
@@ -607,7 +641,6 @@ function TradingSessionCtrl($scope, $routeParams, $http) {
 			if(response.success == 1) {
 				console.log(response.data);
 				$scope.user.currentTradingSession = response.data;
-				$scope.sessionLoaded = true;
 				$scope.refresh();
 			} else {
 				console.log(response);
@@ -615,22 +648,27 @@ function TradingSessionCtrl($scope, $routeParams, $http) {
 			
 			
 		});
+		*/
 		
 	}, true);
 	
 	$scope.$watch('user.currentTradingSession.fundsLeft', function(value) {
 		
-		console.log("fundsLeft set: "+value);
-		$scope.setFundsLeft();
-		$scope.updateProjections();
+		if(value != undefined && $scope.sessionLoaded) {
+			console.log("fundsLeft set: "+value);
+			$scope.setFundsLeft();
+			$scope.updateProjections();
+		}
 		
 	}, true);
 	
 	$scope.$watch('user.currentTradingSession.fundsRight', function(value) {
 		
-		console.log("fundsRight set: "+value);
-		$scope.setFundsRight();
-		$scope.updateProjections();
+		if(value != undefined && $scope.sessionLoaded) {
+			console.log("fundsRight set: "+value);
+			$scope.setFundsRight();
+			$scope.updateProjections();
+		}
 		
 	}, true);
 	

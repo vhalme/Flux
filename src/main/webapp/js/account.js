@@ -55,7 +55,7 @@ function AccountCtrl($scope, $routeParams, $http) {
 			$scope.$apply( function() {
 				$scope.refreshTransactions(); 
 			});
-		}, 2000);
+		}, 15000);
 		
 		
 	};
@@ -144,19 +144,19 @@ function AccountCtrl($scope, $routeParams, $http) {
 		
 		if(method == "monthly") {
 			if(currency == "btc") {
-				requiredReserves = 0.5;
+				requiredReserves = 0;
 			} else if(currency == "ltc") {
-				requiredReserves = 20;
+				requiredReserves = 0;
 			} else if(currency == "usd") {
-				requiredReserves = 49.90;
+				requiredReserves = 0;
 			}
 		} else if(method == "profit") {
 			if(currency == "btc") {
-				requiredReserves = 0.05;
+				requiredReserves = 0;
 			} else if(currency == "ltc") {
-				requiredReserves = 2;
+				requiredReserves = 0;
 			} else if(currency == "usd") {
-				requiredReserves = 4.99;
+				requiredReserves = 0;
 			}
 		}
 		
@@ -339,7 +339,19 @@ function AccountCtrl($scope, $routeParams, $http) {
         clearInterval($scope.refreshIntervalId);
     });
 	
-	$scope.start();
+	
+	if($scope.user != undefined) {
+		$scope.start();
+	}
+	
+	$scope.$watch('userLoaded', function(value) {
+		
+		if(value == true) {
+			$scope.start();
+		}
+		
+	});
+	
 	
 	Holder.run({images:".img", nocss:true});
 	

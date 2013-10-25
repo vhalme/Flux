@@ -98,6 +98,7 @@ public class TradingSessionService {
 			resultObj.put("orders", orders);
 			resultObj.put("accountFunds", accountFunds);
 			resultObj.put("serviceFees", settings.getServiceFees());
+			resultObj.put("userErrors", user.getErrors());
 			
 			response.setData(resultObj);
 			

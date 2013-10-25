@@ -273,7 +273,7 @@
 					<div class="row" style="margin-bottom: 1.0em;">
 						<div class="span6">
 							<div style="margin-left: 1.0em;">
-								<b>Fixed monthly billing, {{serviceFees["profit"][setNextCurrency]}} {{setNextCurrency|uppercase}}/month + 10% of profits on automatic trades</b>
+								<b>Fixed monthly billing, {{serviceFees["profit"][setNextCurrency]}} {{setNextCurrency|uppercase}}/month + {{serviceFees["profit"]["share"]}}% of profits on automatic trades</b>
 								<br/><br/>
 								{{serviceFees["profit"][setNextCurrency]}} {{setNextCurrency|uppercase}} will be deducted from your account 15th day of every month and amount equal to 10% of profit will be deducted on each automated profitable pair of transactions. Manual transactions are free.
 							</div>
@@ -512,6 +512,7 @@
 							personal data associated with your account and any service fee deposits you have made.
 							<br/><br/>
 							<a href="" ng-click="removeAccount()">Yes, I want to proceed</a>
+							| <a href="" ng-click="removalRequested = false">Cancel</a>
 						</span>
 						
 						

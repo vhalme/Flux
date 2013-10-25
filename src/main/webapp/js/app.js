@@ -1,4 +1,17 @@
+
+console.log = function(obj) {
+	// Do nothing
+	// this("log output");
+};
+
+
 function AppCtrl($scope, $routeParams, $location, $http) {
+	
+	API.http = $http;
+	
+	console.log($http);
+	
+	$scope.userLoaded = false;
 	
 	$scope.currentView = "app";
 	$scope.tooltipsLoaded = false;
@@ -32,6 +45,7 @@ function AppCtrl($scope, $routeParams, $location, $http) {
 			$scope.setCookie("fluxUser", user.username, 15);
 			
 			$scope.user = user;
+			$scope.userLoaded = true;
 			
 			var tradingSessions = $scope.user.tradingSessions;
 			var tradingSessionId = tradingSessions[0].id
@@ -43,10 +57,19 @@ function AppCtrl($scope, $routeParams, $location, $http) {
 				$scope.newSession = "ltc_usd_test";
 			}
 			
-			$scope.go("/tradingSession/"+tradingSessionId);
+			var path = $location.path();
+			
+			if(path.substring(0, 15) != "/tradingSession" && path != "/front") {
+				$scope.go(path);
+			} else {
+				$scope.go("/tradingSession/"+tradingSessionId);
+			}
+			
 			
 		} else {
-		
+			
+			$scope.userLoaded = false;
+			
 			API.getUser(function(response) {
 				
 				$scope.checkResponse(response);
@@ -55,7 +78,8 @@ function AppCtrl($scope, $routeParams, $location, $http) {
 				
 				$scope.user = users[0];
 				console.log($scope.user);
-			
+				$scope.userLoaded = true;
+				
 				var tradingSessions = $scope.user.tradingSessions;
 				var tradingSessionId = tradingSessions[0].id
 				API.tradingSessionId = tradingSessionId;
@@ -66,8 +90,28 @@ function AppCtrl($scope, $routeParams, $location, $http) {
 					$scope.newSession = "ltc_usd_test";
 				}
 				
-				$scope.go("/tradingSession/"+tradingSessionId);
-			
+				var path = $location.path();
+				
+				if(path.substring(0, 15) == "/tradingSession") {
+					
+					var sessionId = path.substring(16);
+					
+					for(var i=0; i<tradingSessions.length; i++) {
+						if(tradingSessions[i].id == sessionId) {
+							tradingSessionId = sessionId;
+							break;
+						}
+					}
+					
+				}
+				
+				if(path.substring(0, 15) != "/tradingSession" && path != "/front") {
+					$scope.go(path);
+				} else {
+					$scope.go("/tradingSession/"+tradingSessionId);
+				}
+				
+				
 			});
 			
 		}
@@ -281,8 +325,12 @@ function AppCtrl($scope, $routeParams, $location, $http) {
 			$scope.setUser();
 	
 		} else {
-		
-			$scope.go("/front");
+			
+			var path = $location.path();
+			
+			if(path != "/support") {
+				$scope.go("/front");
+			}
 	
 		}
 	

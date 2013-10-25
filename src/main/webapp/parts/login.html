@@ -66,8 +66,7 @@
 			<div class="span4">
 				<input type="checkbox" ng-model="passwordHidden" style="margin-top: -1px;"/>
 				Hide password
-				<button style="margin-left: 3.6em;" class="btn" ng-hide="username == undefined || username.length == 0" ng-click="login(false)">Go</button>
-				<button style="margin-left: 3.6em;" class="btn" disabled ng-show="username == undefined || username.length == 0">Go</button>
+				<button style="margin-left: 3.6em;" class="btn" ng-click="login(false)" ng-disabled="username == undefined || username.length == 0 || password.length == 0 || password == undefined">Go</button>
 			</div>
 		</div>
 		
@@ -77,7 +76,7 @@
 			
 		<div class="row">
 			<div class="span6" style="text-align: center;">
-				Register new user:
+				I have read <a href="#/tos">terms of service</a> and want to register a new user:
 			</div>
 		</div>
 		
@@ -151,7 +150,7 @@
 					<div class="span4">
 						<input type="checkbox" ng-model="passwordHidden" style="margin-top: -1px;"/>
 						Hide password
-						<button style="margin-left: 3.6em;" class="btn" ng-disabled="password.length == 0" ng-click="resetPassword()">Go</button>
+						<button style="margin-left: 3.6em;" class="btn" ng-disabled="password.length == 0 || password == undefined" ng-click="resetPassword()">Go</button>
 					</div>
 				</div>
 			
