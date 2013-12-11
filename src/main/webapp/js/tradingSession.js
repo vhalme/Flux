@@ -100,11 +100,6 @@ controllers.controller('TradingSessionCtrl', ['$scope', '$routeParams', '$http',
 	$scope.manualSellRate = 0;
 	$scope.manualBuyRate = 0;
 	
-	$scope.buySellProfit = 0;
-	$scope.sellBuyProfit = 0;
-	$scope.rangeLeft = 0;
-	$scope.rangeRight = 0;
-	
 	$scope.sessionKeysSet = false;
 	
 	$scope.maDurationCaption = "...";
@@ -168,6 +163,7 @@ controllers.controller('TradingSessionCtrl', ['$scope', '$routeParams', '$http',
 				response.data.session.noChange = false;
 				response.data.session.change = false;
 				
+				/*
 				if($scope.user.currentTradingSession != undefined && $scope.user.currentTradingSession.autoTradingOptions != undefined
 						&& $scope.sessionLoaded == true && $scope.initialLoad == false) {
 					
@@ -200,6 +196,12 @@ controllers.controller('TradingSessionCtrl', ['$scope', '$routeParams', '$http',
 						console.log("TRADING RANGE SET: "+rangeBottom+"/"+rangeTop);
 					}
 					
+				}
+				*/
+				
+				if($scope.sessionLoaded == true) {
+					var autoTradingOptions = $scope.user.currentTradingSession.autoTradingOptions;
+					response.data.session.autoTradingOptions = autoTradingOptions;
 				}
 				
 				$scope.user.currentTradingSession = response.data.session;
@@ -349,6 +351,21 @@ controllers.controller('TradingSessionCtrl', ['$scope', '$routeParams', '$http',
 		
 	};
 	
+	$scope.clearSessionErrors = function(errorClass) {
+		
+		API.resetSessionErrors(errorClass, function(response) {
+			
+			console.log(response);
+			
+			if(response.success == 1) {
+				
+				$scope.user.currentTradingSession.errors[errorClass] = [];
+			
+			}
+		
+		});
+
+	};
 	
 	$scope.setTransactions = function(transactions) {
 		

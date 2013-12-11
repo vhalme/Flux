@@ -4,6 +4,11 @@ controllers.controller('AutoTradingCtrl', ['$scope', '$routeParams', '$http', fu
 	$scope.autoTradingCtrl.tradeDuration = 0;
 	$scope.autoTradingCtrl.tradeFrequency = 100;
 	
+	$scope.autoTradingCtrl.buySellProfit = 0;
+	$scope.autoTradingCtrl.sellBuyProfit = 0;
+	$scope.autoTradingCtrl.rangeLeft = 0;
+	$scope.autoTradingCtrl.rangeRight = 0;
+	
 	$scope.autoTradingCtrl.saveAutoSettings = function() {
 		
 		console.log("Saving auto trading options...");
@@ -279,19 +284,20 @@ controllers.controller('AutoTradingCtrl', ['$scope', '$routeParams', '$http', fu
 		var currentSellRate = $scope.user.currentTradingSession.rate.sell;
 		var buyRate = currentBuyRate * (1-(buyThreshold/100));
 		var sellRate = currentSellRate * (1+(sellThreshold/100));
-		$scope.buySellProfit = (buyChunk*currentBuyRate)-(buyChunk*buyRate)-(0.002*2*buyChunk*currentBuyRate);
-		$scope.sellBuyProfit = (sellChunk*sellRate)-(sellChunk*currentSellRate)-(0.002*2*sellChunk*currentSellRate);
+		$scope.autoTradingCtrl.buySellProfit = (buyChunk*currentBuyRate)-(buyChunk*buyRate)-(0.002*2*buyChunk*currentBuyRate);
+		$scope.autoTradingCtrl.sellBuyProfit = (sellChunk*sellRate)-(sellChunk*currentSellRate)-(0.002*2*sellChunk*currentSellRate);
 		console.log("buySellP: "+$scope.buySellProfit+", sellBuyP: "+$scope.sellBuyProfit);
+		
 		if((""+$scope.buySellProfit).indexOf("e-") != -1) {
-			$scope.buySellProfit = 0;
+			$scope.autoTradingCtrl.buySellProfit = 0;
 		}
 		
 		if((""+$scope.sellBuyProfit).indexOf("e-") != -1) {
-			$scope.sellBuyProfit = 0;
+			$scope.autoTradingCtrl.sellBuyProfit = 0;
 		}
 		
 		var chunksRight = $scope.user.currentTradingSession.fundsRight/sellChunk;
-		$scope.rangeRight = Math.pow(1+(sellThreshold/100), chunksRight) * currentSellRate;
+		$scope.autoTradingCtrl.rangeRight = Math.pow(1+(sellThreshold/100), chunksRight) * currentSellRate;
 		
 		var rangeLeft = currentBuyRate;
 		var fundsLeft = $scope.user.currentTradingSession.fundsLeft;
@@ -305,7 +311,7 @@ controllers.controller('AutoTradingCtrl', ['$scope', '$routeParams', '$http', fu
 			rangeLeft = rangeLeft*decr;
 		}
 		
-		$scope.rangeLeft = rangeLeft;
+		$scope.autoTradingCtrl.rangeLeft = rangeLeft;
 		
 		console.log("projections updated");
 		
@@ -325,8 +331,10 @@ controllers.controller('AutoTradingCtrl', ['$scope', '$routeParams', '$http', fu
 		
 		console.log("sessionLoaded="+$scope.sessionLoaded);
 		
-		if((value != undefined && $scope.sessionLoaded) && 
-				((!$scope.user.currentTradingSession.noChange) || $scope.user.currentTradingSession.change)) {
+		if(value != null && $scope.sessionLoaded == true) {
+			
+			//if((value != undefined && $scope.sessionLoaded) && 
+			//		((!$scope.user.currentTradingSession.noChange) || $scope.user.currentTradingSession.change)) {
 			
 			console.log("autotrading options changed");
 			
@@ -335,10 +343,12 @@ controllers.controller('AutoTradingCtrl', ['$scope', '$routeParams', '$http', fu
 				return;
 			}
 			
+			
 			if($scope.user.currentTradingSession.autoChange == true) {
 				$scope.user.currentTradingSession.autoChange = false;
 				return;
 			}
+			
 			
 			$scope.autoTradingCtrl.autoSettingsChanged = true;
 			

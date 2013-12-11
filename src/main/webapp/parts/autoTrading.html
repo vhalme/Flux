@@ -66,15 +66,12 @@
 					<div class="row">
 						<div class="col-md-12">
 							
-							<input type="hidden" id="tradeDuration" ng-model="user.currentTradingSession.autoTradingOptions.autoDuration" />
-							<input type="hidden" id="tradeFrequency" ng-model="user.currentTradingSession.autoTradingOptions.autoFrequency" />
-							
 							<div class="row">
 							
 								<div class="col-md-6">
 									<div class="row" style="margin-bottom: 4px;">
 										<div class="col-md-12" style="text-align: center;">
-											Trading rate frame ({{tradeDuration|truncate:2:""}})
+											Trading rate frame ({{autoTradingCtrl.tradeDuration|truncate:2:""}})
 										</div>
 									</div>
 									<div class="row">
@@ -89,7 +86,7 @@
 											<div class="row" ng-show="user.currentTradingSession.autoTradingOptions.autoTradingModel == 'simpleDelta'">
 												<div class="col-md-12">
 													<br/>
-													{{rangeLeft|truncate:6:""}} {{user.currentTradingSession.currencyLeft|uppercase}} - {{rangeRight|truncate:6:""}} {{user.currentTradingSession.currencyLeft|uppercase}}
+													{{autoTradingCtrl.rangeLeft|truncate:6:""}} {{user.currentTradingSession.currencyLeft|uppercase}} - {{autoTradingCtrl.rangeRight|truncate:6:""}} {{user.currentTradingSession.currencyLeft|uppercase}}
 													<span ng-show="user.currentTradingSession.fundsLeft/user.currentTradingSession.rate.buy < user.currentTradingSession.autoTradingOptions.buyChunk" style="color: red;">
 														<br/>
 														Not enough {{user.currentTradingSession.currencyLeft|uppercase}} to trade.
@@ -113,7 +110,7 @@
 								<div class="col-md-6">
 									<div class="row" style="margin-bottom: 4px;">
 										<div class="col-md-12" style="text-align: center;">
-											Trading frequency ({{tradeFrequency|truncate:2:""}})
+											Trading frequency ({{autoTradingCtrl.tradeFrequency|truncate:2:""}})
 										</div>
 									</div>
 									<div class="row">
@@ -130,21 +127,21 @@
 												<div class="col-md-12">
 													<br/>
 													BUY/SELL profit:
-													<span ng-show="buySellProfit > 0" style="color: green;">
-														{{buySellProfit|truncate:6:""}} {{user.currentTradingSession.currencyLeft|uppercase}}
+													<span ng-show="autoTradingCtrl.buySellProfit > 0" style="color: green;">
+														{{autoTradingCtrl.buySellProfit|truncate:6:""}} {{user.currentTradingSession.currencyLeft|uppercase}}
 													</span>
-													<span ng-show="buySellProfit <= 0" style="color: red;">
-														{{buySellProfit|truncate:6:""}} {{user.currentTradingSession.currencyLeft|uppercase}}
+													<span ng-show="autoTradingCtrl.buySellProfit <= 0" style="color: red;">
+														{{autoTradingCtrl.buySellProfit|truncate:6:""}} {{user.currentTradingSession.currencyLeft|uppercase}}
 													</span>
 													<br/>
 													SELL/BUY profit: 
-													<span ng-show="sellBuyProfit > 0" style="color: green;">
-														{{sellBuyProfit|truncate:6:""}} {{user.currentTradingSession.currencyLeft|uppercase}}
+													<span ng-show="autoTradingCtrl.sellBuyProfit > 0" style="color: green;">
+														{{autoTradingCtrl.sellBuyProfit|truncate:6:""}} {{user.currentTradingSession.currencyLeft|uppercase}}
 													</span>
-													<span ng-show="sellBuyProfit <= 0" style="color: red;">
-														{{sellBuyProfit|truncate:6:""}} {{user.currentTradingSession.currencyLeft|uppercase}}
+													<span ng-show="autoTradingCtrl.sellBuyProfit <= 0" style="color: red;">
+														{{autoTradingCtrl.sellBuyProfit|truncate:6:""}} {{user.currentTradingSession.currencyLeft|uppercase}}
 													</span>
-													<span ng-show="buySellProfit <= 0 || sellBuyProfit <= 0" style="color: red;">
+													<span ng-show="autoTradingCtrl.buySellProfit <= 0 || autoTradingCtrl.sellBuyProfit <= 0" style="color: red;">
 														<br/>
 														&nbsp;&nbsp;WARNING! You will trade at loss with these settings!
 													</span>

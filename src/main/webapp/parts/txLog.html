@@ -172,7 +172,21 @@
 			
 			
 		</div>
-
+		
+		<div class="row" ng-show="user.currentTradingSession.errors['auto'].length > 0" style="margin-bottom: 1em; margin-top: 1em;">
+		
+			<div class="col-md-11" style="text-align: center; border: 1px red solid; background: #fffacd;">
+				An error occured in auto trading. It may be caused by your auto trading settings or {{serviceName}} malfunction.
+				<br/><br/>
+				Error message: <b>{{user.currentTradingSession.errors['auto'][0].message}}</b>
+			</div>
+			<div class="col-md-1" style="text-align: right; margin-left: 0px;">
+				<br/>
+				<a href="" ng-click="clearSessionErrors('auto')">Close</a>
+			</div>
+			
+		</div>
+			
 		<div class="row">
 
 			<div class="col-md-6">

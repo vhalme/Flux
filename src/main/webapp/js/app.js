@@ -22,8 +22,9 @@ myApp.run(function($rootScope, $location) {
 	$rootScope.location = $location;
 });
 
+/*
 console.log = function(obj) {
 	// Do nothing
 	// this("log output");
 };
-	
+*/

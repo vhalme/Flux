@@ -18,11 +18,12 @@
 	<import resource="classpath:META-INF/cxf/cxf.xml" />
     <import resource="classpath:META-INF/cxf/osgi/cxf-extension-osgi.xml" />
 	
-	<!-- 
+	 
 	<mongo:mongo host="10.128.41.159" port="27017"/>
-	-->
 	
+	<!--
 	<mongo:mongo host="127.0.0.1" port="27017"/>
+	-->
 	
 	<mongo:repositories base-package="com.lenin.tradingplatform.data.repositories">
 		<mongo:repository id="orderRepository" mongo-template-ref="mongoTemplate" />
@@ -39,7 +40,7 @@
 	
 	<bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
 		<property name="location">
-			<value>pokemon.properties</value>
+			<value>classpath:/pokemon.properties</value>
 		</property>
 	</bean>
 	

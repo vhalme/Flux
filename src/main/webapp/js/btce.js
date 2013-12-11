@@ -382,6 +382,15 @@ var API = {
 			
 			this.send("POST", url, undefined, data, "text", "text/plain", callback);
 			
+		},
+		
+		
+		resetSessionErrors: function(errorClass, callback) {
+			
+			var url = "service/tradingsession/errors?errorClass="+errorClass;
+			
+			this.send("DELETE", url, undefined, undefined, "json", "application/json", callback);
+			
 		}
 		
 

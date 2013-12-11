@@ -1,5 +1,6 @@
 package com.lenin.project.service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -32,6 +33,7 @@ import com.lenin.project.AuthComponent;
 import com.lenin.tradingplatform.client.RequestResponse;
 import com.lenin.tradingplatform.data.entities.AccountFunds;
 import com.lenin.tradingplatform.data.entities.AutoTradingOptions;
+import com.lenin.tradingplatform.data.entities.ErrorMessage;
 import com.lenin.tradingplatform.data.entities.Order;
 import com.lenin.tradingplatform.data.entities.Rate;
 import com.lenin.tradingplatform.data.entities.Settings;
@@ -483,6 +485,36 @@ public class TradingSessionService {
 		
 		//tradingSessionRepository.save(tradingSession);
 		response.setSuccess(1);
+		
+		return response;
+
+	}
+	
+	
+	@DELETE
+	@Path("/errors")
+	@Consumes({ MediaType.APPLICATION_JSON })
+	@Produces({ MediaType.APPLICATION_JSON })
+	public RequestResponse resetSessionErrors(@HeaderParam("Username") String username, @HeaderParam("Auth-Token") String authToken,
+			@HeaderParam("Trading-Session-Id") String tradingSessionId, @QueryParam("errorClass") String errorClass) {
+
+		RequestResponse response = authComponent.getInitialResponse(username, mc, authToken);
+		
+		if(response.getSuccess() < 0) {
+			return response;
+		}
+		
+		TradingSession tradingSession = tradingSessionRepository.findOne(tradingSessionId);
+		
+		if(tradingSession != null) {
+		
+			mongoTemplate.updateFirst(new Query(Criteria.where("_id").is(new ObjectId(tradingSession.getId()))),
+					new Update().set("errors."+errorClass, new ArrayList<ErrorMessage>()), TradingSession.class);
+		
+			response.setSuccess(1);
+			
+		}
+		
 		
 		return response;
 

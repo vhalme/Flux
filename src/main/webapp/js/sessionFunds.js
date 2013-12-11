@@ -22,9 +22,9 @@ controllers.controller('SessionFundsCtrl', ['$scope', '$routeParams', '$http', f
 				$scope.user.currentTradingSession.fundsLeft = $scope.sessionFundsCtrl.newFundsLeft;
 				$scope.user.currentTradingSession.fundsRight = $scope.sessionFundsCtrl.newFundsRight;
 				$scope.sessionFundsCtrl.fundsSettingsChanged = false;
-				$scope.updateProjections();
+				$scope.autoTradingCtrl.updateProjections();
 				$scope.user.currentTradingSession.autoChange = true;
-				$scope.updateAutoSettings();
+				$scope.autoTradingCtrl.updateAutoSettings();
 			
 			} else {
 				
