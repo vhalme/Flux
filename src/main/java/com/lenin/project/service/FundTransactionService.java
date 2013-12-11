@@ -196,7 +196,7 @@ public class FundTransactionService {
 		List<String> states = new ArrayList<String>();
 		List<String> types = new ArrayList<String>();
 		
-		System.out.println("List bitcoin transactions, account="+account+" / type="+type+" / state="+state+" / stateNot="+stateNot);
+		//System.out.println("List bitcoin transactions, account="+account+" / type="+type+" / state="+state+" / stateNot="+stateNot);
 		
 		MongoOperations mongoOps = (MongoOperations)mongoTemplate;
 		

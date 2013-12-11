@@ -59,14 +59,34 @@ var API = {
 				
 				this.http.get(url, getParams).success(callback);
 				
+			} else if(method == "POST") {
+				
+				headerData["Content-Type"] = contentType;
+				
+				var postParams = {
+						headers: headerData,
+						responseType: dataType
+				};
+				
+				this.http.post(url, data, postParams).success(callback);
+				
 			} else {
 			
+				
 				$.ajax(request);
 			
 			}
 			
 		},
 		
+		
+		getPostUrl: function(callback) {
+			
+			var url = "service/gplusposturl";
+			
+			this.send("GET", url, undefined, undefined, undefined, undefined, callback);
+			
+		},
 		
 		verifyEmail: function(token, callback) {
 			
@@ -168,11 +188,11 @@ var API = {
 			
 		},
 		
-		deleteTradingSession: function(tradingSession, callback) {
+		deleteTradingSession: function(tradingSessionId, callback) {
 			
 			var url = "service/tradingsession";
 			
-			this.send("DELETE", url, undefined, angular.toJson(tradingSession), "json", "application/json", callback);
+			this.send("DELETE", url, undefined, tradingSessionId, "text", "text/plain", callback);
 			
 		},
 		
@@ -248,9 +268,9 @@ var API = {
 		},
 		
 		
-		getRates: function(pair, setType, from, until, callback) {
+		getRates: function(service, pair, setType, from, until, callback) {
 			
-			var url = "service/rate?pair="+pair+"&setType="+setType+"&from="+from+"&until="+until;
+			var url = "service/rate?service="+service+"&pair="+pair+"&setType="+setType+"&from="+from+"&until="+until;
 			console.log(url);
 			
 			this.send("GET", url, undefined, undefined, undefined, undefined, callback);

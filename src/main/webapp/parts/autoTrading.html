@@ -1,17 +1,24 @@
 <div class="row">
 
-	<div class="span12" style="padding-bottom: 0.3em;">
+	<div class="col-md-12" style="padding-bottom: 0.3em;">
 
 		<div class="row">
-			<div class="span12" style="border-top: 1px solid black; border-bottom: 1px solid black; height: 1.85em;">
+			<div class="col-md-12" style="border-top: 1px solid black; border-bottom: 1px solid black; height: 27px; padding-top: 2px;">
 				<div class="row">
-					<div class="span6">
-						<div style="padding-top: 0.2em;">
-							<a href="" ng-click="showAutoTrading = !showAutoTrading"><i ng-class="{ 'icon-chevron-down': showAutoTrading, 'icon-chevron-right': !showAutoTrading }"></i></a>
-							Automatic trading
+					<div class="col-md-6">
+						<div style="padding-top: 0.15em; display: inline;">
+							<a href="" style="color: black; margin-left: -8px; margin-right: 4px;" ng-click="showAutoTrading = !showAutoTrading">
+								<span class="glyphicon" ng-class="{ 'glyphicon-chevron-down': showAutoTrading, 'glyphicon-chevron-right': !showAutoTrading }"></span>
+							</a>
+							Auto trading
+						</div>
+						<div style="display: inline-block; position: relative;" ng-show="autoTradingCtrl.autoSettingsChanged">
+							<a href="" ng-click="autoTradingCtrl.saveAutoSettings()" style="position: absolute; top: -10px; left: 3px;">
+								<span class="label label-primary" style="margin-left: 6px;">Save settings</span>
+							</a>
 						</div>
 					</div>
-					<div class="span6">
+					<div class="col-md-6" style="padding-right: 0px;">
 						<div ng-hide="!user.currentTradingSession.autoTradingOptions.tradeAuto" style="display: inline-block; float: right;">
 							Working <img src="img/chasingarrows.gif" style="width: 1.4em; height: 1.4em;"/>
 							<button ng-click="user.currentTradingSession.autoTradingOptions.tradeAuto = false">
@@ -29,47 +36,145 @@
 			</div>
 		</div>
 
-		<div class="row" ng-class="{ hidden: !showAutoTrading }">
+		<div class="row" ng-class="{ hidden: !showAutoTrading }" style="border-bottom: 1px solid black;">
 			
-			<div ng-show="okToTrade" style="margin-top: -20px;">
-			<form name="form" class="css-form" novalidate>
-				
-				<div class="span4" style="background: #ededed; margin-bottom: 0.7em;">
+			<div ng-show="okToTrade">
+			<form name="form" class="css-form" style="margin-bottom: 0px;" novalidate>
+				<div class="col-md-12" style="background: #ededed;">
+				<div class="row">
+				<div class="col-md-3" style="background: #ededed; margin-bottom: 0.7em;">
 					<div style="margin: 0.3em;">
 						<input type="checkbox" style="margin-top: -2px;" ng-model="user.currentTradingSession.autoTradingOptions.tradeAuto" />
 						Trade automatically
 						<br/>
-						<select ng-show="user.live" ng-model="user.currentTradingSession.autoTradingOptions.autoTradingModel" style="margin-top: 0.5em;">
+						<select ng-model="user.currentTradingSession.autoTradingOptions.autoTradingModel" style="padding: 5px; margin-top: 0.5em;">
 							<option value="simpleDelta" title="simpleDelta" ng-selected="'simpleDelta' == user.currentTradingSession.autoTradingOptions.autoTradingModel">Linear Delta</option>
-							<option disabled style="color: #adadad" value="movingAvg" title="movingAvg" ng-selected="'movingAvg' == user.currentTradingSession.autoTradingOptions.autoTradingModel">Moving Average (coming)</option>
+							<option value="movingAvg" title="movingAvg" ng-selected="'movingAvg' == user.currentTradingSession.autoTradingOptions.autoTradingModel">Moving Average</option>
 						</select>
-						<select ng-show="!user.live" ng-model="user.currentTradingSession.autoTradingOptions.autoTradingModel" style="margin-top: 0.5em;">
-							<option value="simpleDelta" title="simpleDelta" ng-selected="'simpleDelta' == user.currentTradingSession.autoTradingOptions.autoTradingModel">Linear Delta</option>
-						</select>
+					</div>
+					<div class="onoffswitch2" style="display: inline; margin-left: 12px; float: left;">
+    					<input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="myonoffswitch2" ng-model="user.currentTradingSession.autoTradingOptions.manualSettings" ng-click="toggleManualSettings()">
+    					<label class="onoffswitch-label" style="margin-top: 6px;" for="myonoffswitch2">
+        					<div class="onoffswitch-inner sw2"></div>
+        					<div class="onoffswitch-switch t2" style="height: 32px; margin-top: 4px;"></div>
+    					</label>
 					</div>
 				</div>
 				
-				<div class="span8">
-				
-					<div ng-show="user.currentTradingSession.autoTradingOptions.autoTradingModel == 'simpleDelta'">
-						<div ng-include src="'parts/autoTrading_simpleDelta.html'"></div>
-					</div>
-				
-					<div ng-show="user.currentTradingSession.autoTradingOptions.autoTradingModel == 'movingAvg'">
-						<div ng-include src="'parts/autoTrading_movingAverage.html'"></div>
+				<div class="col-md-9">
+					
+					<div class="row">
+						<div class="col-md-12">
+							
+							<input type="hidden" id="tradeDuration" ng-model="user.currentTradingSession.autoTradingOptions.autoDuration" />
+							<input type="hidden" id="tradeFrequency" ng-model="user.currentTradingSession.autoTradingOptions.autoFrequency" />
+							
+							<div class="row">
+							
+								<div class="col-md-6">
+									<div class="row" style="margin-bottom: 4px;">
+										<div class="col-md-12" style="text-align: center;">
+											Trading rate frame ({{tradeDuration|truncate:2:""}})
+										</div>
+									</div>
+									<div class="row">
+										<div class="col-md-3" style="text-align: right; height: 70px;">
+											<div>WIDE</div>
+											<div style="margin-top: 42px; margin-left: -24px;">NARROW</div>
+										</div>
+										<div class="col-md-1">
+											<div id="slider-vertical1" style="height: 70px; display: inline-block; margin-top: 6px; margin-right: 4px;"></div>
+										</div>
+										<div class="col-md-8">
+											<div class="row" ng-show="user.currentTradingSession.autoTradingOptions.autoTradingModel == 'simpleDelta'">
+												<div class="col-md-12">
+													<br/>
+													{{rangeLeft|truncate:6:""}} {{user.currentTradingSession.currencyLeft|uppercase}} - {{rangeRight|truncate:6:""}} {{user.currentTradingSession.currencyLeft|uppercase}}
+													<span ng-show="user.currentTradingSession.fundsLeft/user.currentTradingSession.rate.buy < user.currentTradingSession.autoTradingOptions.buyChunk" style="color: red;">
+														<br/>
+														Not enough {{user.currentTradingSession.currencyLeft|uppercase}} to trade.
+													</span>
+													<span ng-show="user.currentTradingSession.fundsRight < user.currentTradingSession.autoTradingOptions.sellChunk" style="color: red;">
+														<br/>
+														Not enough {{user.currentTradingSession.currencyRight|uppercase}} to trade.
+													</span>
+												</div>
+											</div>
+											<div class="row" ng-show="user.currentTradingSession.autoTradingOptions.autoTradingModel == 'movingAvg'">
+												<div class="col-md-12">
+													<br/>
+													{{maDurationCaption}}
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							
+								<div class="col-md-6">
+									<div class="row" style="margin-bottom: 4px;">
+										<div class="col-md-12" style="text-align: center;">
+											Trading frequency ({{tradeFrequency|truncate:2:""}})
+										</div>
+									</div>
+									<div class="row">
+										<div class="col-md-3" style="text-align: right; height: 70px;">
+											<div>HIGH</div>
+											<div style="margin-top: 42px;">LOW</div>
+										</div>
+										<div class="col-md-1">
+											<div id="slider-vertical2" style="height: 70px; display: inline-block; margin-top: 6px; margin-right: 4px;"></div>
+										</div>
+										<div class="col-md-8">
+											
+											<div class="row">
+												<div class="col-md-12">
+													<br/>
+													BUY/SELL profit:
+													<span ng-show="buySellProfit > 0" style="color: green;">
+														{{buySellProfit|truncate:6:""}} {{user.currentTradingSession.currencyLeft|uppercase}}
+													</span>
+													<span ng-show="buySellProfit <= 0" style="color: red;">
+														{{buySellProfit|truncate:6:""}} {{user.currentTradingSession.currencyLeft|uppercase}}
+													</span>
+													<br/>
+													SELL/BUY profit: 
+													<span ng-show="sellBuyProfit > 0" style="color: green;">
+														{{sellBuyProfit|truncate:6:""}} {{user.currentTradingSession.currencyLeft|uppercase}}
+													</span>
+													<span ng-show="sellBuyProfit <= 0" style="color: red;">
+														{{sellBuyProfit|truncate:6:""}} {{user.currentTradingSession.currencyLeft|uppercase}}
+													</span>
+													<span ng-show="buySellProfit <= 0 || sellBuyProfit <= 0" style="color: red;">
+														<br/>
+														&nbsp;&nbsp;WARNING! You will trade at loss with these settings!
+													</span>
+												</div>
+											</div>	
+											
+										</div>
+									</div>
+								</div>
+								
+							</div>
+
+						</div>
 					</div>
 					
+					
 				</div>
+				</div>
+				</div>
+				
 				
 			</form>
 			</div>
 			
-			<div class="span12" style="margin-top: 1.0em; margin-bottom: 1.0em; text-align: center;" ng-show="sessionKeysSet && paymentMethodSet && missingReserves > 0">
+			<div class="col-md-12" style="margin-top: 1.0em; margin-bottom: 1.0em; text-align: center;" ng-show="sessionKeysSet && paymentMethodSet && missingReserves > 0">
 				
 				Automated trading is suspended because you don't have enough funds on your payment method
 				<br/><br/>
 				
-				Please, <b><a href="#/account-v1">deposit</a> at least 
+				Please, <b><a href="#/account">deposit</a> at least 
 				{{missingReserves}} {{user.accountFunds.serviceProperties["payment"].properties["periods"][1]["currency"]|uppercase}}</b>
 				<span ng-show="user.accountFunds.serviceProperties['payment'].properties['method'] == 'profit'">
 				plus some more to cover for 10% of profit share expenses
@@ -77,26 +182,26 @@
 				<br/>
 				or
 				<br/>
-				<b><a href="#/account-v1">change</a> your payment method</b> to resume automated trading.
+				<b><a href="#/account">change</a> your payment method</b> to resume automated trading.
 				
 			</div>
 			
-			<div class="span12" style="margin-top: 1.0em; margin-bottom: 1.0em; text-align: center;" ng-show="sessionKeysSet && !paymentMethodSet">
+			<div class="col-md-12" style="margin-top: 1.0em; margin-bottom: 1.0em; text-align: center;" ng-show="sessionKeysSet && !paymentMethodSet">
 				
 				Automated trading will be available when you 
-				<b><a href="#/account-v1">set your payment method</a> and deposit appropriate funds</b>.
+				<b><a href="#/account">set your payment method</a> and deposit appropriate funds</b>.
 				<br/><br/>
 				
 			</div>
 			
-			<div class="span12" style="margin-top: 1.0em; margin-bottom: 1.0em; text-align: center;" ng-show="!sessionKeysSet">
+			<div class="col-md-12" style="margin-top: 1.0em; margin-bottom: 1.0em; text-align: center;" ng-show="!sessionKeysSet">
 				
 				<span ng-show="paymentMethodSet">
-					Automated trading will be available when you <b><a href="#/account-v1">set up the API keys</a> for
+					Automated trading will be available when you <b><a href="#/account">set up the API keys</a> for
 					the {{user.currentSession.service|uppercase}} exchange service.</b>
 					<span ng-show="missingReserves > 0">
 						<br/><br/>
-						You also need to <b><a href="#/account-v1">deposit</a> at least 
+						You also need to <b><a href="#/account">deposit</a> at least 
 						{{missingReserves}} {{user.accountFunds.serviceProperties["payment"].properties["periods"][1]["currency"]|uppercase}}</b>
 						<span ng-show="user.accountFunds.serviceProperties['payment'].properties['method'] == 'profit'">
 							plus some more to cover for 10% of profit share expenses
@@ -104,21 +209,21 @@
 						<br/>
 						or
 						<br/>
-						<b><a href="#/account-v1">change</a> your payment method</b> to start automated trading.
+						<b><a href="#/account">change</a> your payment method</b> to start automated trading.
 					</span>
 				</span>
 				
 				<span ng-show="!paymentMethodSet">
-					Automated trading will be available when you <b><a href="#/account-v1">set up the API keys</a> for
+					Automated trading will be available when you <b><a href="#/account">set up the API keys</a> for
 					the {{user.currentSession.service|uppercase}} exchange service</b> and 
-					<b><a href="#/account-v1">set your payment method</a> and deposit appropriate funds</b>
+					<b><a href="#/account">set your payment method</a> and deposit appropriate funds</b>
 				</span>
 				
 				<br/><br/>
 				
 			</div>
 			
-			<div class="span12" style="margin-top: 1.0em; margin-bottom: 1.0em; text-align: center;" ng-show="sessionKeysSet && user.errors != undefined && user.errors.length > 0">
+			<div class="col-md-12" style="margin-top: 1.0em; margin-bottom: 1.0em; text-align: center;" ng-show="sessionKeysSet && user.errors != undefined && user.errors.length > 0">
 				
 				Automated trading is not available due to the issues displayed on the top of the page.
 				Please address these problems to resume automated trading.
@@ -126,6 +231,20 @@
 			</div>
 						
 		</div>
+		
+		<div class="row" ng-show="showAutoTrading && okToTrade">
+			<div class="col-md-12">
+			<div ng-show="user.currentTradingSession.autoTradingOptions.autoTradingModel == 'simpleDelta'">
+						<div ng-include src="'parts/autoTrading_simpleDelta.html'"></div>
+					</div>
+				
+					<div ng-show="user.currentTradingSession.autoTradingOptions.autoTradingModel == 'movingAvg'">
+						<div ng-include src="'parts/autoTrading_movingAverage.html'"></div>
+					</div>
+			</div>
+		</div>
+		
+		
 
 	</div>
 

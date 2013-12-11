@@ -1,5 +1,6 @@
 package com.lenin.project.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -14,14 +15,25 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
+import org.bson.types.ObjectId;
+import org.codehaus.jettison.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 
+import com.lenin.project.ApiFactory;
 import com.lenin.project.AuthComponent;
 import com.lenin.tradingplatform.client.BtceApi;
+import com.lenin.tradingplatform.client.BtceTradingClient;
+import com.lenin.tradingplatform.client.ExchangeApi;
+import com.lenin.tradingplatform.client.MtgoxApi;
+import com.lenin.tradingplatform.client.MtgoxTradingClient;
 import com.lenin.tradingplatform.client.RequestResponse;
+import com.lenin.tradingplatform.client.TestTradingClient;
 import com.lenin.tradingplatform.client.TradingClient;
 import com.lenin.tradingplatform.data.entities.AccountFunds;
 import com.lenin.tradingplatform.data.entities.Order;
@@ -30,6 +42,7 @@ import com.lenin.tradingplatform.data.entities.Settings;
 import com.lenin.tradingplatform.data.entities.TradingSession;
 import com.lenin.tradingplatform.data.entities.User;
 import com.lenin.tradingplatform.data.repositories.OrderRepository;
+import com.lenin.tradingplatform.data.repositories.RateRepository;
 import com.lenin.tradingplatform.data.repositories.TradeRepository;
 import com.lenin.tradingplatform.data.repositories.TradingSessionRepository;
 import com.lenin.tradingplatform.data.repositories.UserRepository;
@@ -54,10 +67,14 @@ public class OrderService {
 	private TradeRepository tradeRepository;
 	
 	@Autowired
+	private RateRepository rateRepository;
+	
+	@Autowired
 	private MongoTemplate mongoTemplate;
 	
 	@Autowired
 	private AuthComponent authComponent;
+	
 	
 	public OrderService() {
 	}
@@ -77,6 +94,7 @@ public class OrderService {
 		}
 		
 		List<Order> orders = queryOrders(username, tradingSessionId, type);
+		
 		response.setData(orders);
 		response.setSuccess(1);
 		
@@ -92,7 +110,7 @@ public class OrderService {
 			
 			User user = userRepository.findByUsername(username);
 			TradingSession tradingSession = tradingSessionRepository.findOne(tradingSessionId); // user.getCurrentTradingSession();
-			user.setCurrentTradingSession(tradingSession);
+			//user.setCurrentTradingSession(tradingSession);
 			
 			List<Order> orders = orderRepository.findByTradingSessionAndType(tradingSession, type);
 			return orders;
@@ -101,7 +119,7 @@ public class OrderService {
 			
 			User user = userRepository.findByUsername(username);
 			TradingSession tradingSession = tradingSessionRepository.findOne(tradingSessionId); // user.getCurrentTradingSession();
-			user.setCurrentTradingSession(tradingSession);
+			//user.setCurrentTradingSession(tradingSession);
 			
 			List<Order> orders = orderRepository.findByTradingSession(tradingSession);
 			return orders;
@@ -142,7 +160,7 @@ public class OrderService {
 		return response;
 
 	}
-
+	
 	
 	@POST
 	@Path("/")
@@ -159,12 +177,7 @@ public class OrderService {
 		}
 		
 		MongoOperations mongoOps = (MongoOperations)mongoTemplate;
-		List<Settings> settingsResult = mongoOps.findAll(Settings.class);
 		
-		Settings settings = settingsResult.get(0);
-		BtceApi btceApi = new BtceApi(settings.getBtceApiKey(), settings.getBtceApiSecret());
-		btceApi.setOrderFee(0.002);
-
 		User user = userRepository.findByUsername(username);
 		if (user == null) {
 			response.setMessage("Could not read user data.");
@@ -172,7 +185,7 @@ public class OrderService {
 		}
 		
 		TradingSession tradingSession = tradingSessionRepository.findOne(tradingSessionId); // user.getCurrentTradingSession();
-		user.setCurrentTradingSession(tradingSession);
+		//user.setCurrentTradingSession(tradingSession);
 		
 		if (tradingSession.getRate().getLast() == 0.0) {
 			response.setMessage("Rate not set");
@@ -185,8 +198,6 @@ public class OrderService {
 		Map<String, Object> serviceProperties = servicePropertyMap.getProperties();
 		String apiKey = (String)serviceProperties.get("apiKey");
 		String apiSecret = (String)serviceProperties.get("apiSecret");
-		btceApi.setKey(apiKey);
-		btceApi.setSecret(apiSecret);
 		
 		Double fundsLeft = tradingSession.getFundsLeft();
 		Double fundsRight = tradingSession.getFundsRight();
@@ -209,9 +220,34 @@ public class OrderService {
 			
 		}
 		
-		TradingClient tradingClient = new TradingClient(null, tradingSession, userRepository, tradingSessionRepository, orderRepository, tradeRepository);
+		order.setService(tradingSession.getService());
 		
-		tradingClient.setBtceApi(btceApi);
+		ExchangeApi exchangeApi = null;
+		TradingClient tradingClient = null;
+		
+		
+		ApiFactory apiFactory = new ApiFactory();
+		apiFactory.setMongoTemplate(mongoTemplate);
+		
+		if(tradingSession.getService().equals("btce")) {
+			
+			tradingClient = new BtceTradingClient(tradingSession, mongoTemplate);
+			BtceApi btceApi = apiFactory.createBtceApi(user);
+			exchangeApi = btceApi;
+			
+		} else if(tradingSession.getService().equals("mtgox")) {
+			
+			tradingClient = new MtgoxTradingClient(tradingSession, mongoTemplate);
+			MtgoxApi mtgoxApi = apiFactory.createMtgoxApi(user);
+			exchangeApi = mtgoxApi;
+			
+		} else {
+			
+			tradingClient = new TestTradingClient(tradingSession, mongoTemplate);
+			
+		}
+			
+		tradingClient.setExchangeApi(exchangeApi);
 		
 		RequestResponse tradeResponse = null;
 		
@@ -225,6 +261,7 @@ public class OrderService {
 		if(tradeResponse != null && tradeResponse.getSuccess() > 0) {
 			
 			List<Order> orders = queryOrders(username, tradingSessionId, null);
+			
 			response.setData(orders);
 			response.setSuccess(1);
 			
@@ -240,5 +277,40 @@ public class OrderService {
 
 	}
 	
+	@GET
+	@Path("/test")
+	@Produces({ MediaType.APPLICATION_JSON })
+	public List<String> test(@QueryParam("user") String username, @QueryParam("from") String from, @QueryParam("from") String to) {
+		
+		List<String> result = new ArrayList<String>();
+		
+		MongoOperations mongoOps = (MongoOperations)mongoTemplate;
+		List<Settings> settingsResult = mongoOps.findAll(Settings.class);
+		
+		Settings settings = settingsResult.get(0);
+		BtceApi btceApi = new BtceApi(settings.getBtceApiKey(), settings.getBtceApiSecret(), mongoOps);
+		btceApi.setOrderFee(0.002);
 
+		User user = userRepository.findByUsername(username);
+		
+		AccountFunds accountFunds = user.getAccountFunds();
+		Map<String, PropertyMap> propertyMaps = accountFunds.getServiceProperties();
+		PropertyMap servicePropertyMap = propertyMaps.get("btce");
+		Map<String, Object> serviceProperties = servicePropertyMap.getProperties();
+		String apiKey = (String)serviceProperties.get("apiKey");
+		String apiSecret = (String)serviceProperties.get("apiSecret");
+		btceApi.setKey(apiKey);
+		btceApi.setSecret(apiSecret);
+		
+		
+		JSONObject resultJson = btceApi.getTradeList(new Long(from));
+		
+		if(resultJson != null) {
+			String str = resultJson.toString();
+			result.add(str);
+		}
+		
+		return result;
+		
+	}
 }

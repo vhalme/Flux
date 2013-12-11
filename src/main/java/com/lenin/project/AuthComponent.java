@@ -6,11 +6,13 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.cxf.jaxrs.ext.MessageContext;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Component;
 
 import com.lenin.tradingplatform.client.RequestResponse;
@@ -43,14 +45,12 @@ public class AuthComponent {
 		RequestResponse response = new RequestResponse();
 		
 		User user = null;
+		User otherUser = null;
 		List<User> usersResult = null;
 		
 		MongoOperations mongoOps = (MongoOperations)mongoTemplate;
 		
-		Query query = new Query(Criteria.where("username").is(username).andOperator(
-				Criteria.where("authToken").is(authToken),
-				Criteria.where("lastIp").is(remoteIp)
-			));
+		Query query = new Query(Criteria.where("username").is(username));
 		
 		usersResult = mongoOps.find(query, User.class);
 		
@@ -66,35 +66,62 @@ public class AuthComponent {
 			
 			Query otherUserQuery = new Query(Criteria.where("username").is(otherUsername));
 			List<User> otherUsersResult = mongoOps.find(otherUserQuery, User.class);
-			User otherUser = otherUsersResult.get(0);
+			otherUser = otherUsersResult.get(0);
 			
-			Long lastActivityTime = user.getLastActivity();
-			Long nowTime = System.currentTimeMillis();
 			
-			Long timeSinceLastActivity = nowTime - lastActivityTime;
-			
-			if(timeSinceLastActivity > expirationTime) {
+			if(user.getAuthToken().equals(authToken) && user.getLastIp().equals(remoteIp)) {
 				
-				response.setSuccess(-1);
+				Long lastActivityTime = user.getLastActivity();
+				Long nowTime = System.currentTimeMillis();
 				
+				Long timeSinceLastActivity = nowTime - lastActivityTime;
+				
+				if(timeSinceLastActivity > expirationTime) {
+					
+					response.setSuccess(-1);
+					
+				} else {
+					
+					if(resetSessionTime) {
+						
+						user.setLastActivity(nowTime);
+						otherUser.setLastActivity(nowTime);
+						
+						mongoOps.updateFirst(new Query(Criteria.where("_id").is(new ObjectId(user.getId()))),
+								new Update().set("lastActivity", nowTime), User.class);
+						mongoOps.updateFirst(new Query(Criteria.where("_id").is(new ObjectId(otherUser.getId()))),
+								new Update().set("lastActivity", nowTime), User.class);
+						
+						//mongoOps.save(user);
+						//mongoOps.save(otherUser);
+					
+					}
+					
+					response.setSuccess(0);
+				
+				}
+			
 			} else {
 				
-				if(resetSessionTime) {
-					user.setLastActivity(nowTime);
-					otherUser.setLastActivity(nowTime);
-					mongoOps.save(user);
-					mongoOps.save(otherUser);
-				}
+				response.setSuccess(-2);
 				
-				response.setSuccess(0);
-			
 			}
 			
+			if(response.getSuccess() < 0 && user.getLoggedIn() != false) {
+			
+				mongoOps.updateFirst(new Query(Criteria.where("_id").is(new ObjectId(user.getId()))),
+						new Update().set("loggedIn", false), User.class);
+				mongoOps.updateFirst(new Query(Criteria.where("_id").is(new ObjectId(otherUser.getId()))),
+						new Update().set("loggedIn", false), User.class);
+			
+			}
+		
 		} else {
 			
-			response.setSuccess(-2);
+			response.setSuccess(-3);
 			
 		}
+		
 		
 		return response;
 		

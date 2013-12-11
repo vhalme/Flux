@@ -1,10 +1,10 @@
 <div class="row" ng-controller="LoginCtrl">
 
-	<div class="span6" style="padding-bottom: 0.3em;">
+	<div class="col-md-12" style="padding-bottom: 0.3em;">
 		
 		<div class="row" ng-show="viewState == 'login' || viewState == 'register'">
 			
-			<div class="span6" style="text-align: center;">
+			<div class="col-md-12" style="text-align: center;">
 				<b>LOGIN/REGISTER</b>
 				<br/><br/>
 				If you don't have an account, it will be created on the first log-in.<br/>
@@ -16,7 +16,7 @@
 		
 		<div class="row" ng-show="viewState == 'recover'">
 			
-			<div class="span6" style="text-align: center;">
+			<div class="col-md-12" style="text-align: center;">
 				<b>RECOVER PASSWORD</b>
 				<br/><br/>
 				Submit your e-mail address and follow e-mail instructions to reset your password.
@@ -26,13 +26,13 @@
 		</div>
 		
 		<div class="row" ng-hide="errors['login'] == undefined" style="margin-bottom: 1em;">
-			<div class="span6" style="text-align: center; border: 1px red solid; background: #fffacd;">
+			<div class="col-md-12" style="text-align: center; border: 1px red solid; background: #fffacd;">
 				{{errors['login'].message}}
 			</div>
 		</div>
 		
 		<div class="row" ng-hide="infos['login'] == undefined" style="margin-bottom: 1em;">
-			<div class="span6" style="text-align: center; border: 1px green solid; background: #ffffff;">
+			<div class="col-md-12" style="text-align: center; border: 1px green solid; background: #ffffff;">
 				{{infos['login'].message}}
 			</div>
 		</div>
@@ -40,59 +40,61 @@
 		<form name="form" ng-show="viewState == 'login'" class="css-form" novalidate>
 			
 		<div class="row">
-			<div class="span2" style="text-align: right;">
+			<div class="col-md-4" style="text-align: right;">
 				E-mail
 			</div>
-			<div class="span4">
+			<div class="col-md-8">
 				<div class="control-group" ng-class="{ error: username == undefined }" style="margin-bottom: 0px;">
-					<input type="text" style="height: 2.0em;" name="username" ng-model="username" email/>
+					<input id="login" type="text" style="height: 2.0em; width: 14em;" name="username" ng-model="username" email/>
 				</div>
 			</div>
 		</div>
 		
-		<div class="row">
-			<div class="span2" style="text-align: right;">
+		<div class="row" style="margin-top: 6px;">
+			<div class="col-md-4" style="text-align: right;">
 				Password
 			</div>
-			<div class="span4">
-				<input type="text" style="height: 2.0em;" ng-model="password" ng-hide="passwordHidden"/>
-				<input type="password" style="height: 2.0em;" ng-model="password" ng-hide="!passwordHidden"/>
-			</div>
-		</div>
-		
-		<div class="row" style="margin-bottom: 1em;">
-			<div class="span2" style="text-align: right;">
-			</div>
-			<div class="span4">
-				<input type="checkbox" ng-model="passwordHidden" style="margin-top: -1px;"/>
-				Hide password
-				<button style="margin-left: 3.6em;" class="btn" ng-click="login(false)" ng-disabled="username == undefined || username.length == 0 || password.length == 0 || password == undefined">Go</button>
+			<div class="col-md-8">
+				<input id="password" type="text" style="height: 2.0em; width: 14em;" ng-model="password" ng-hide="passwordHidden"/>
+				<input id="password" type="password" style="height: 2.0em; width: 14em;" ng-model="password" ng-hide="!passwordHidden"/>
 			</div>
 		</div>
 		
 		</form>
 		
+		<div class="row" ng-show="viewState == 'login'" style="margin-bottom: 1em; margin-top: 6px;">
+			<div class="col-md-4" style="text-align: right;">
+			</div>
+			<div class="col-md-8">
+				<input type="checkbox" ng-model="passwordHidden" style="margin-top: -1px;"/>
+				Hide password
+				<button style="margin-left: 3.0em;" class="btn" ng-click="login(false)" ng-disabled="username == undefined || username.length == 0 || password.length == 0 || password == undefined">Go</button>
+			</div>
+		</div>
+		
+		
+		
 		<form name="form" ng-show="viewState == 'register'" class="css-form" novalidate>
 			
 		<div class="row">
-			<div class="span6" style="text-align: center;">
+			<div class="col-md-12" style="text-align: center;">
 				I have read <a href="#/tos">terms of service</a> and want to register a new user:
 			</div>
 		</div>
 		
 		<div class="row">
-			<div class="span6" style="text-align: center; font-weight: bold;">
+			<div class="col-md-12" style="text-align: center; font-weight: bold;">
 				{{username}}
 			</div>
 		</div>
 		
 		<div class="row" style="margin-top: 1em;">
-			<div class="span3" style="text-align: right">
+			<div class="col-md-6" style="text-align: right">
 				<img id="captcha" src="jcaptcha.jpg" style="margin-top: -14px;"/>
 				<br/>
 				<input type="text" ng-model="captchaValue" placeholder="Enter text above" style="width: 100%"/>
 			</div>
-			<div class="span3">
+			<div class="col-md-6">
 				<button class="btn" ng-disabled="captchaAccepted" ng-click="login(true, captchaValue)" style="width: 100%; margin-top: 0.4em; margin-bottom: 1.0em;">Register</button>
 				<br/>
 				<button class="btn" ng-click="reloadCaptcha()" style="width: 49%">Reload</button>
@@ -105,19 +107,19 @@
 		<form name="form" ng-show="viewState == 'recover'" class="css-form" novalidate>
 			
 		<div class="row">
-			<div class="span2" style="text-align: right;">
+			<div class="col-md-4" style="text-align: right;">
 				E-mail
 			</div>
-			<div class="span4">
+			<div class="col-md-8">
 				<div class="control-group" ng-class="{ error: username == undefined }" style="margin-bottom: 0px;">
-					<input type="text" style="height: 2.0em;" name="username" ng-model="username" email/>
+					<input id="login" type="text" style="height: 2.0em; width: 14em;" name="username" ng-model="username" email/>
 				</div>
 			</div>
 		</div>
 		
-		<div class="row" style="margin-bottom: 1em;">
-			<div class="span2"></div>
-			<div class="span4">
+		<div class="row" style="margin-bottom: 1em; margin-top: 6px;">
+			<div class="col-md-4"></div>
+			<div class="col-md-8">
 				<button class="btn" ng-disabled="username == undefined || username.length == 0" ng-click="resetPassword()">
 					Request password reset
 				</button>
@@ -132,25 +134,25 @@
 		
 		<div class="row" ng-show="viewState == 'reset'" style="margin-top: 2.0em;">
 			
-			<div class="span6">
+			<div class="col-md-12">
 				
 				<div class="row">
-					<div class="span2" style="text-align: right;">
+					<div class="col-md-4" style="text-align: right;">
 						New password
 					</div>
-					<div class="span4">
-						<input type="text" style="height: 2.0em;" ng-model="password" ng-hide="passwordHidden"/>
-						<input type="password" style="height: 2.0em;" ng-model="password" ng-hide="!passwordHidden"/>
+					<div class="col-md-8">
+						<input id="password" type="text" style="height: 2.0em; width: 14em;" ng-model="password" ng-hide="passwordHidden"/>
+						<input id="password" type="password" style="height: 2.0em; width: 14em;" ng-model="password" ng-hide="!passwordHidden"/>
 					</div>
 				</div>
 				
-				<div class="row" style="margin-bottom: 1em;">
-					<div class="span2" style="text-align: right;">
+				<div class="row" style="margin-bottom: 1em; margin-top: 6px;">
+					<div class="col-md-4" style="text-align: right;">
 					</div>
-					<div class="span4">
+					<div class="col-md-8">
 						<input type="checkbox" ng-model="passwordHidden" style="margin-top: -1px;"/>
 						Hide password
-						<button style="margin-left: 3.6em;" class="btn" ng-disabled="password.length == 0 || password == undefined" ng-click="resetPassword()">Go</button>
+						<button style="margin-left: 3.0em;" class="btn" ng-disabled="password.length == 0 || password == undefined" ng-click="resetPassword()">Go</button>
 					</div>
 				</div>
 			
@@ -159,7 +161,7 @@
 		</div>
 		
 		<div class="row" ng-show="viewState == 'login'" style="margin-top: 2.0em;">
-			<div class="span6" style="text-align: center;">
+			<div class="col-md-12" style="text-align: center;">
 				<a href="" ng-click="resetPassword()">Recover password</a>
 			</div>
 		</div>

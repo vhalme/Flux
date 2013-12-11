@@ -17,11 +17,13 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 
 import com.lenin.project.AuthComponent;
@@ -69,6 +71,8 @@ public class UserService {
 
 		RequestResponse response = authComponent.getInitialResponse(username, mc, authToken);
 		
+		MongoOperations mongoOps = (MongoOperations)mongoTemplate;
+		
 		if(response.getSuccess() < 0) {
 			return response;
 		}
@@ -79,8 +83,11 @@ public class UserService {
 		Map<String, Double> reserves = accountFunds.getReserves();
 		reserves.put(currency, reserves.get(currency) + amount);
 		accountFunds.setReserves(reserves);
-
-		user = userRepository.save(user);
+		
+		mongoOps.updateFirst(new Query(Criteria.where("_id").is(new ObjectId(accountFunds.getId()))),
+				new Update().set("reserves."+currency, reserves.get(currency) + amount), AccountFunds.class);
+		
+		//user = userRepository.save(user);
 		
 		response.setData(user);
 		response.setSuccess(1);
@@ -262,8 +269,12 @@ public class UserService {
 			
 			String email = recoveryToken;
 			
-			Criteria criteria = Criteria.where("email").is(email);
+			System.out.println("password reset requested for "+email);
+			
+			Criteria criteria = Criteria.where("username").is(email);
 			List<User> users = mongoOps.find(new Query(criteria), User.class);
+			
+			System.out.println(users.size()+" matching users");
 			
 			if(users.size() == 1) {
 				
@@ -323,7 +334,11 @@ public class UserService {
 				}
 			
 				user.setPassword(pwdHash);
-				userRepository.save(user);
+				
+				mongoOps.updateFirst(new Query(Criteria.where("_id").is(new ObjectId(user.getId()))),
+						new Update().set("password", pwdHash), User.class);
+				
+				//userRepository.save(user);
 			
 				response.setSuccess(1);
 				response.setMessage("Password reset successfully.");

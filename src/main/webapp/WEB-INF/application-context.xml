@@ -18,12 +18,11 @@
 	<import resource="classpath:META-INF/cxf/cxf.xml" />
     <import resource="classpath:META-INF/cxf/osgi/cxf-extension-osgi.xml" />
 	
-	
-	<mongo:mongo host="162.243.18.23" port="27017"/>
-	
-	<!-- MONGO DB
-	<mongo:mongo host="127.0.0.1" port="27017"/>
+	<!-- 
+	<mongo:mongo host="10.128.41.159" port="27017"/>
 	-->
+	
+	<mongo:mongo host="127.0.0.1" port="27017"/>
 	
 	<mongo:repositories base-package="com.lenin.tradingplatform.data.repositories">
 		<mongo:repository id="orderRepository" mongo-template-ref="mongoTemplate" />
@@ -38,8 +37,17 @@
 		<constructor-arg name="databaseName" value="tradedb" />
 	</bean>
 	
+	<bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="location">
+			<value>pokemon.properties</value>
+		</property>
+	</bean>
+	
 	<!-- Service -->
-	<bean id="rootServiceImpl" class="com.lenin.project.service.RootService" />
+	<bean id="rootServiceImpl" class="com.lenin.project.service.RootService">
+		<property name="pikachu" value="${pokemon.pikachu}" />
+	</bean>
+	
     <bean id="orderServiceImpl" class="com.lenin.project.service.OrderService" />
     <bean id="rateServiceImpl" class="com.lenin.project.service.RateService" />
     <bean id="tradeServiceImpl" class="com.lenin.project.service.TradeService" />
@@ -68,7 +76,7 @@
 			<ref bean='jacksonProvider' />
 		</jaxrs:providers>
 	</jaxrs:server>
-      
+    
     <context:annotation-config />
     <context:component-scan base-package="com.lenin.project"/>
     

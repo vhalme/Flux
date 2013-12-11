@@ -1,19 +1,21 @@
 <div class="row" ng-controller="ChartsCtrl">
 
-	<div class="span12" style="padding-bottom: 0.3em;">
+	<div class="col-md-12" style="padding-bottom: 0.3em;">
 
 		<div class="row">
-			<div class="span12" style="border-top: 1px solid black; border-bottom: 1px solid black; height: 1.85em;">
-				<div style="padding-top: 0.2em;">
-					<a href="" ng-click="showGraphs = !showGraphs"><i ng-class="{ 'icon-chevron-down': showGraphs, 'icon-chevron-right': !showGraphs }"></i></a>
+			<div class="col-md-12" style="border-top: 1px solid black; border-bottom: 1px solid black; height: 1.85em;">
+				<div style="padding-top: 0.15em;">
+					<a href="" style="margin-left: -8px; margin-right: 4px; color: black; text-decoration: none;" ng-click="showGraphs = !showGraphs">
+						<span class="glyphicon" ng-class="{ 'glyphicon-chevron-down': showGraphs, 'glyphicon-chevron-right': !showGraphs }"></span>
+					</a>
 					Chart
 				</div>
 			</div>
 		</div>
 		<div class="row" ng-class="{ hidden: !showGraphs }">
-			<div class="span12">
+			<div class="col-md-12">
 				<div class="row">
-					<div class="span9">
+					<div class="col-md-9" ng-show="user.live || (!user.live && user.currentTradingSession.autoTradingOptions.autoTradingModel == 'simpleDelta')">
 						<div style="margin-left: 4.6em; margin-top: 0.6em; margin-bottom: 1.0em;">
 							<div class="btn-group">
 								<button class="btn" ng-repeat="option in chartScaleOptions" ng-hide="(option.period == '6m' || option.period == '12m') && user.live == false" ng-click="setChartScale(option.precision)" ng-class="{ active: option.precision == chartScale }">
@@ -23,9 +25,42 @@
 							<span style="margin-left: 1.0em;">Max. precision: {{chartScale}}</span>
 						</div>
 					</div>
-					<div class="span3" ng-hide="user.live">
+					<div class="col-md-6" ng-show="!user.live && user.currentTradingSession.autoTradingOptions.autoTradingModel == 'movingAvg'">
+						
+					</div>
+					
+					<div class="col-md-6" ng-show="!user.live && user.currentTradingSession.autoTradingOptions.autoTradingModel == 'movingAvg'">
+						<div class="row" style="margin-bottom: 6px;">
+							<div class="col-md-6">
+								<div class="btn-group" style="float: right; margin-top: 6px; border: 4px solid red; border-radius: 6px;">
+							
+									<button ng-click="changeMa('testLong', 'down')" class="btn">
+										LONG -
+									</button>
+									<button ng-click="changeMa('testShort', 'down')" class="btn">
+										SHORT -
+									</button>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="btn-group" style="float: right; margin-top: 6px; border: 4px solid red; border-radius: 6px;">
+								
+								<button ng-click="changeMa('testLong', 'up')" class="btn">
+								LONG +
+							</button>
+								<button ng-click="changeMa('testShort', 'up')" class="btn">
+									SHORT +
+								</button>
+								
+							</div>
+							</div>
+						</div>
+					</div>
+					
+					<div class="col-md-3" ng-show="!user.live && user.currentTradingSession.autoTradingOptions.autoTradingModel == 'simpleDelta'">
 						
 						<div style="margin-top: 0.6em;">
+						
 							<div class="btn-group" style="border: 4px solid red; border-radius: 6px;">
 							
 								<button ng-click="lowerPrice()" class="btn">
@@ -38,11 +73,12 @@
 							</div>
 						</div>
 						
+						
 					</div>
 				</div>
-				<div class="row" style="margin-bottom: 1.0em;">
-					<div class="span12" style="position: relative;">
-						<div id="loadingCharts" ng-show="loadingData" style="text-align: center; width:50%; height:90px; position: absolute; top: 120px; left: 50%; padding-top: 55px; margin-left: -25%; background: #ffffff; border: 1px solid black; z-index: 2;">
+				<div class="row">
+					<div class="col-md-12" style="position: relative;">
+						<div id="loadingCharts" ng-show="loadingData" style="text-align: center; width:50%; height:90px; position: absolute; top: 120px; left: 50%; padding-top: 35px; margin-left: -25%; background: #ffffff; border: 1px solid black; z-index: 2;">
 							{{chartStatus}}
 						</div>
 						<div id="chartdiv" style="width:100%; height:340px;">
@@ -50,19 +86,19 @@
 					</div>
 				</div>
 				<div class="row" ng-show="user.live">
-					<div class="span4">
-						<select ng-disabled="!ma1visible" ng-model="ma1type" style="background: #5fb503; width: 12em; margin-left: 4.2em; margin-top: 0.5em;" ng-hide="!user.live">
+					<div class="col-md-4">
+						<select ng-disabled="!ma1visible" ng-model="ma1type" style="padding: 3px; background: #5fb503; width: 12em; margin-left: 4.2em; margin-top: 0.5em;" ng-hide="!user.live">
 							<option ng-repeat="maType in maOptions" value="{{maType}}" title="{{maType}}" ng-selected="maType == ma1type">{{maTitles[maType]}}</option>
 						</select>&nbsp;
 						<input type="checkbox" ng-model="ma1visible" style="margin-top: 0px;"/>
 					</div>
-					<div class="span4">
-						<select ng-disabled="!ma2visible" ng-model="ma2type" style="background: #ff9933; width: 12em; margin-top: 0.5em;" ng-hide="!user.live">
+					<div class="col-md-4">
+						<select ng-disabled="!ma2visible" ng-model="ma2type" style="padding: 3px; background: #ff9933; width: 12em; margin-top: 0.5em;" ng-hide="!user.live">
 							<option ng-repeat="maType in maOptions" value="{{maType}}" title="{{maType}}" ng-selected="maType == ma2type">{{maTitles[maType]}}</option>
 						</select>&nbsp;
 						<input type="checkbox" ng-model="ma2visible" style="margin-top: 0px;"/>
 					</div>
-					<div class="span4" style="text-align: right;">
+					<div class="col-md-4" style="text-align: right;">
 						
     					<input onChange="changeZoomDates()" style="display: none; width:100px; text-align:center" type="text" id="startDate">
     					<input onChange="changeZoomDates()" style="display: none; width:100px; text-align:center" type="text" id="endDate">

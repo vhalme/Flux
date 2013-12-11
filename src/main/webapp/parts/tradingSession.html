@@ -1,57 +1,15 @@
-<div class="row" style="margin-bottom: 1.0em; margin-top: 1.0em;">
-	
-	<div class="span12" style="background: #d00000; color: white; text-align: center;" ng-hide="user.live || !sessionLoaded">
-		
-		<div class="row">
-			<div class="span9" style="background: #d00000; color: white; text-align: center;">
-				<b>RUNNING IN TEST MODE</b>
-				<br/>
-				<i>1. Use 'Up' and 'Down' buttons above the chart to simulate rate changes</i>
-				<br/>
-				<i>2. You are free to set any amount of funds for any tab</i>
-			</div>
-			<div class="span3" style="height: 4.2em; position: relative;">
-				<button ng-click="changeToLiveUser()" class="btn" style="top: 50%; margin-top: -1.0em; margin-left: -50%; height: 2.0em; width: 10em; position: absolute;">
-					Go to LIVE mode
-				</button>
-			</div>
-		</div>
-		
-	</div>
-	
-	<div class="span12" style="background: #00b000; color: white; text-align: center;" ng-hide="!user.live || !sessionLoaded">
-		
-		<div class="row">
-			<div class="span9">
-				<b>RUNNING IN LIVE MODE</b>
-				<br/>
-				<i>1. You have read and accepted the EULA. Use at your own risk.</i>
-				<br/>
-				<i>2. Read the documentation and practice in TEST mode first.</i>
-			</div>
-			<div class="span3" style="height: 4.2em; position: relative;">
-				<button ng-click="changeToTestUser()" class="btn" style="top: 50%; margin-top: -1.0em; margin-left: -50%; height: 2.0em; width: 10em; position: absolute;">
-		 			Go to TEST mode
-				</button>
-			</div>
-		</div>
-		
-	</div>
-	
-</div>
-
-<div class="row" ng-repeat="error in user.errors" ng-show="sessionKeysSet" style="margin-bottom: 1em;">
-	<div class="span12" style="text-align: center; border: 1px red solid; background: #fffacd; padding-bottom: 1.0em;">
+<div class="row" ng-repeat="error in user.sessionErrors[user.currentTradingSession.service]" ng-show="sessionKeysSet" style="margin-bottom: 1em;">
+	<div class="col-md-12" style="text-align: center; border: 1px red solid; background: #fffacd; padding-bottom: 1.0em;">
 		<div style="width: 400px; display: inline; left: -200px; margin-left: 50%; text-align: center;">
 			<span ng-show="error.code == 0">
 				<br/>
-				<b>BTC-e settings incomplete</b>
+				<b>{{serviceName}} settings incomplete</b>
 				<br/><br/>
 				<span ng-show="error.message == 'invalid api key'">
-					The BTC-e API key you have provided is incorrect. Please go to BTC-e settings and create a new key or copy an existing correct key from there.
+					The {{serviceName}} API key you have provided is incorrect. Please go to {{serviceName}} settings and create a new key or copy an existing correct key from there.
 				</span>
 				<span ng-show="error.message == 'invalid sign'">
-					The BTC-e API secret you have provided is incorrect. Please go to BTC-e settings and create a new key and secret or copy an existing correct secret from there.
+					The {{serviceName}} API secret you have provided is incorrect. Please go to {{serviceName}} settings and create a new key and secret or copy an existing correct secret from there.
 				</span>
 				<span ng-show="error.message == 'api key dont have info permission'">
 					Your BTC-e API key and secret are correct but you have not granted info permission for your key. Please go to BTC-e API key settings, check both 'info' and 'trade' 
@@ -75,29 +33,29 @@
 </div>
 
 <div class="row" ng-repeat="error in errors['general']" style="margin-bottom: 1em;">
-	<div class="span12" style="text-align: center; border: 1px red solid; background: #fffacd; padding-bottom: 1.0em;" ng-show="error.code == 3001">
+	<div class="col-md-12" style="text-align: center; border: 1px red solid; background: #fffacd; padding-bottom: 1.0em;" ng-show="error.code == 3001">
 		<div style="width: 400px; display: inline; left: -200px; margin-left: 50%; text-align: center;">
 			<br/>
 			<b>API key or secret is not set.</b>
 			<br/><br/>
-			Please, <a href='#/account-v1'>go to account settings</a> and set the API key and secret for the {{error.service}} exchange service.
+			Please, <a href='#/account'>go to account settings</a> and set the API key and secret for the {{error.service}} exchange service.
 		</div>
 	</div>
-	<div class="span12" style="text-align: center; border: 1px red solid; background: #fffacd; padding-bottom: 1.0em;" ng-show="error.code == 2001">
+	<div class="col-md-12" style="text-align: center; border: 1px red solid; background: #fffacd; padding-bottom: 1.0em;" ng-show="error.code == 2001">
 		<div style="width: 400px; display: inline; left: -200px; margin-left: 50%; text-align: center;">
 			<br/>
 			<b>No payment method selected.</b>
 			<br/><br/>
-			Please, <a href='#/account-v1'>go to account settings</a>, select a payment method and
+			Please, <a href='#/account'>go to account settings</a>, select a payment method and
 			deposit appropriate payment funds if necessary.
 		</div>
 	</div>
-	<div class="span12" style="text-align: center; border: 1px red solid; background: #fffacd; padding-bottom: 1.0em;" ng-show="error.code == 2002">
+	<div class="col-md-12" style="text-align: center; border: 1px red solid; background: #fffacd; padding-bottom: 1.0em;" ng-show="error.code == 2002">
 		<div style="width: 400px; display: inline; left: -200px; margin-left: 50%; text-align: center;">
 			<br/>
 			<b>Insufficient funds for current payment method.</b>
 			<br/><br/>
-			Please, <a href='#/account-v1'>go to account settings</a> and deposit at least 
+			Please, <a href='#/account'>go to account settings</a> and deposit at least 
 			{{error.missingFunds}} {{error.currency|uppercase}} or change the payment method.
 		</div>
 	</div>
@@ -105,32 +63,34 @@
 			
 
 <div class="row" ng-hide="!user.currentTradingSession.uninitialized">
-	<div class="span12" style="text-align: center;">
+	<div class="col-md-12" style="text-align: center;">
 		Loading
 	</div>
 </div>
 
 <div class="tabbable" ng-hide="user.currentTradingSession.uninitialized">
 	
-	<div class="row">
-		<div class="span10">
+	<div class="row" style="margin-bottom: 1.0em;">
+	
+		<div class="col-md-10" style="padding-left: 0px; padding-right: 0px;">
 			
 			<ul class="nav nav-tabs">
 
 				<li ng-repeat="session in user.tradingSessions" ng-class="{ active: user.currentTradingSession.id == session.id }">
-					<a href="" ng-click="go('/tradingSession/{{session.id}}')" data-toggle="tab">{{session.currencyLeft|uppercase}}-{{session.currencyRight|uppercase}} @ {{session.service|uppercase}}</a>
+					<a href="" ng-click="go('/tradingSession/'+session.id)" data-toggle="tab">{{session.currencyLeft|uppercase}}-{{session.currencyRight|uppercase}} @ {{session.service|uppercase}}</a>
 				</li>
 
 				<li style="padding-top: 4px; padding-left: 1.0em;">
-					<button ng-click="addTab()" class="btn" href="" style="display: inline-block;">
+					<button ng-click="addTab()" class="btn" href="" style="display: inline-block; height: 32px; margin-top: -2px;">
 						Add session
 					</button>
-					<select ng-model="newSession" style="width: 12em; margin-bottom: 0px;" ng-hide="!user.live">
+					<select ng-model="newSession" style="width: 12em; margin-bottom: 0px; padding: 5px;" ng-hide="!user.live">
 						<option value="ltc_usd_btce" title="LTC-USD">USD-LTC @ BTC-E</option>
 						<option value="ltc_btc_btce" title="LTC-BTC">BTC-LTC @ BTC-E</option>
 						<option value="btc_usd_btce" title="BTC-USD">USD-BTC @ BTC-E</option>
+						<option value="btc_usd_mtgox" title="BTC-USD">USD-BTC @ MT.GOX</option>
 					</select>
-					<select ng-model="newSession" style="width: 12em; margin-bottom: 0px;" ng-hide="user.live">
+					<select ng-model="newSession" style="width: 12em; margin-bottom: 0px; padding: 5px;" ng-hide="user.live">
 						<option value="ltc_usd_test" title="LTC-USD">USD-LTC @ TEST</option>
 						<option value="ltc_btc_test" title="LTC-BTC">BTC-LTC @ TEST</option>
 						<option value="btc_usd_test" title="BTC-USD">USD-BTC @ TEST</option>
@@ -140,7 +100,7 @@
 			</ul>
 			
 		</div>
-		<div class="span2" style="text-align: right; border-bottom: 1px solid #ddd; margin-left: 0px; padding-top: 8px; padding-bottom: 9px;">
+		<div class="col-md-2" style="text-align: right; border-bottom: 1px solid #ddd; margin-left: 0px; padding-right: 0px; padding-left: 0px; padding-top: 12px; padding-bottom: 9px;">
 			<span>&nbsp;</span><a href="" ng-hide="user.tradingSessions.length <= 1" ng-click="deleteCurrentTab()">Delete session</a>
 		</div>
 	</div>
@@ -149,40 +109,42 @@
 
 		<div class="tab-pane active" id="tab1">
 			
-			<div ng-include src="'parts/sessionFunds.html'"></div>
+			<div ng-include src="'parts/sessionFunds.html'" ng-controller="SessionFundsCtrl"></div>
 			
-			<div ng-include src="'parts/autoTrading.html'"></div>
+			<div ng-include src="'parts/autoTrading.html'" ng-controller="AutoTradingCtrl"></div>
 
 			<div ng-include src="'parts/charts.html'"></div>
 
 			<div class="row" style="margin-top: 1.0em;">
 
-				<div class="span12" style="padding-bottom: 0.3em; margin-bottom: 2.0em;">
+				<div class="col-md-12" style="padding-bottom: 0.3em; margin-bottom: 2.0em;">
 
 					<div class="row">
-						<div class="span12" style="border-top: 1px solid black; border-bottom: 1px solid black; height: 1.85em;">
-							<div style="padding-top: 0.2em;">
-								<a href="" ng-click="showManualTrading = !showManualTrading"><i ng-class="{ 'icon-chevron-down': showManualTrading, 'icon-chevron-right': !showManualTrading }"></i></a>
+						<div class="col-md-12" style="border-top: 1px solid black; border-bottom: 1px solid black; height: 1.85em;">
+							<div style="padding-top: 0.15em;">
+								<a href="" style="text-decoration: none; margin-right: 4px; margin-left: -8px; "ng-click="showManualTrading = !showManualTrading">
+									<span style="color: black;" class="glyphicon" ng-class="{ 'glyphicon-chevron-down': showManualTrading, 'glyphicon-chevron-right': !showManualTrading }"></span>
+								</a>
 								Manual trading
 							</div>
 						</div>
 					</div>
 
-					<div class="row" ng-class="{ hidden: !showManualTrading }">
+					<div class="row" ng-class="{ hidden: !showManualTrading }" style="margin-top: -1em;">
 						
-						<div ng-show="sessionKeysSet && !(user.errors != undefined && user.errors.length > 0)" style="margin-top: -20px;">
+						<div ng-show="sessionKeysSet && !(user.errors != undefined && user.errors.length > 0)">
 						<form name="manualTrading" class="css-form" novalidate>
 							
-						<div class="span4">
+						<div class="col-md-4">
 							<div class="row">
-								<div class="span2" style="background: #ededed; margin-bottom: 0.2em;">
+								<div class="col-md-6" style="background: #ededed; margin-bottom: 0.2em;">
 									<div style="margin: 0.3em;" class="control-group" ng-class="{ error: manualBuyCurrencyLeft == undefined }">
 										{{user.currentTradingSession.currencyLeft|uppercase}} [<a href="" ng-click="manualBuyCurrencyLeft = user.currentTradingSession.fundsLeft">All</a>] [<a href="" ng-click="manualBuyCurrencyLeft = user.currentTradingSession.fundsLeft/2">1/2</a>]
 										<br/>
 										<input style="width: 100%; margin-bottom: 0px; margin-top: 0.15em;" type="text" name="buyCurrencyLeft" ng-model="manualBuyCurrencyLeft" smart-float />
 									</div>
 								</div>
-								<div class="span2" style="background: #ededed; margin-bottom: 0.2em;">
+								<div class="col-md-6" style="background: #ededed; margin-bottom: 0.2em;">
 									<div style="margin: 0.3em;" class="control-group" ng-class="{ error: manualBuyCurrencyRight == undefined }">
 										{{user.currentTradingSession.currencyRight|uppercase}} [<a href="" ng-click="manualBuyCurrencyRight = user.currentTradingSession.fundsRight">All</a>] [<a href="" ng-click="manualBuyCurrencyRight = user.currentTradingSession.fundsRight/2">1/2</a>]
 										<br/>
@@ -191,7 +153,7 @@
 								</div>
 							</div>
 							<div class="row">
-								<div class="span4" style="margin-bottom: 0.7em;">
+								<div class="col-md-12" style="margin-bottom: 0.7em;">
 									<button style="width: 100%; margin-top: 0.15em;" ng-click="manualTransaction('buy')">
 										Buy
 									</button>
@@ -199,7 +161,7 @@
 							</div>
 						</div>
 
-						<div class="span4" style="background: #ededed; margin-bottom: 0.7em;">
+						<div class="col-md-4" style="background: #ededed; margin-bottom: 0.7em;">
 							<div style="margin: 0.3em;">
 								<div style="width: 100%">
 									<div style="display: inline-block; width: 38%;" class="control-group" ng-class="{ error: manualBuyRate == undefined }">
@@ -230,16 +192,16 @@
 							</div>
 						</div>
 
-						<div class="span4">
+						<div class="col-md-4">
 							<div class="row">
-								<div class="span2" style="background: #ededed; margin-bottom: 0.2em;">
+								<div class="col-md-6" style="background: #ededed; margin-bottom: 0.2em;">
 									<div style="margin: 0.3em;" class="control-group" ng-class="{ error: manualSellCurrencyRight == undefined }">
 										{{user.currentTradingSession.currencyRight|uppercase}} [<a href="" ng-click="manualSellCurrencyRight = user.currentTradingSession.fundsRight">All</a>] [<a href="" ng-click="manualSellCurrencyRight = user.currentTradingSession.fundsRight/2">1/2</a>]
 										<br/>
 										<input style="width: 100%; margin-bottom: 0px; margin-top: 0.15em;" type="text" name="sellCurrencyRight" ng-model="manualSellCurrencyRight" smart-float />
 									</div>
 								</div>
-								<div class="span2" style="background: #ededed; margin-bottom: 0.2em;">
+								<div class="col-md-6" style="background: #ededed; margin-bottom: 0.2em;">
 									<div style="margin: 0.3em;" class="control-group" ng-class="{ error: manualSellCurrencyLeft == undefined }">
 										{{user.currentTradingSession.currencyLeft|uppercase}} [<a href="" ng-click="manualSellCurrencyLeft = user.currentTradingSession.fundsLeft">All</a>] [<a href="" ng-click="manualSellCurrencyLeft = user.currentTradingSession.fundsLeft/2">1/2</a>]
 										<br/>
@@ -248,7 +210,7 @@
 								</div>
 							</div>
 							<div class="row">
-								<div class="span4" style="margin-bottom: 0.7em;">
+								<div class="col-md-12" style="margin-bottom: 0.7em;">
 									<button style="width: 100%; margin-top: 0.15em;" ng-click="manualTransaction('sell')">
 										Sell
 									</button>
@@ -260,12 +222,12 @@
 						</div>
 						
 						<!-- 
-						<div class="span12" style="margin-top: 1.0em; margin-bottom: 1.0em; text-align: center;" ng-show="sessionKeysSet && paymentMethodSet && missingReserves > 0">
+						<div class="col-md-12" style="margin-top: 1.0em; margin-bottom: 1.0em; text-align: center;" ng-show="sessionKeysSet && paymentMethodSet && missingReserves > 0">
 				
 							Manual trading is suspended because you don't have enough funds on your payment method
 							<br/><br/>
 				
-							Please, <b><a href="#/account-v1">deposit</a> at least 
+							Please, <b><a href="#/account">deposit</a> at least 
 							{{missingReserves}} {{user.accountFunds.serviceProperties["payment"].properties["periods"][1]["currency"]|uppercase}}</b>
 							<span ng-show="user.accountFunds.serviceProperties['payment'].properties['method'] == 'profit'">
 								plus some more to cover for 10% of profit share expenses
@@ -273,27 +235,27 @@
 							<br/>
 							or
 							<br/>
-							<b><a href="#/account-v1">change</a> your payment method</b> to resume manual trading.
+							<b><a href="#/account">change</a> your payment method</b> to resume manual trading.
 				
 						</div>
 			
-						<div class="span12" style="margin-top: 1.0em; margin-bottom: 1.0em; text-align: center;" ng-show="sessionKeysSet && !paymentMethodSet">
+						<div class="col-md-12" style="margin-top: 1.0em; margin-bottom: 1.0em; text-align: center;" ng-show="sessionKeysSet && !paymentMethodSet">
 				
 							Manual trading will be available when you 
-							<b><a href="#/account-v1">set your payment method</a> and deposit appropriate funds</b>.
+							<b><a href="#/account">set your payment method</a> and deposit appropriate funds</b>.
 							<br/><br/>
 				
 						</div>
 						-->
 						
-						<div class="span12" style="margin-top: 1.0em; margin-bottom: 1.0em; text-align: center;" ng-show="!sessionKeysSet">
+						<div class="col-md-12" style="margin-top: 2.0em; margin-bottom: 1.0em; text-align: center;" ng-show="!sessionKeysSet">
 				
 							<span ng-show="paymentMethodSet">
-								Manual trading will be available when you <b><a href="#/account-v1">set up the API keys</a> for
+								Manual trading will be available when you <b><a href="#/account">set up the API keys</a> for
 								the {{user.currentSession.service|uppercase}} exchange service.</b>
 								<span ng-show="missingReserves > 0">
 									<br/><br/>
-									You also need to <b><a href="#/account-v1">deposit</a> at least 
+									You also need to <b><a href="#/account">deposit</a> at least 
 									{{missingReserves}} {{user.accountFunds.serviceProperties["payment"].properties["periods"][1]["currency"]|uppercase}}</b>
 									<span ng-show="user.accountFunds.serviceProperties['payment'].properties['method'] == 'profit'">
 										plus some more to cover for 10% of profit share expenses
@@ -301,21 +263,21 @@
 									<br/>
 									or
 									<br/>
-									<b><a href="#/account-v1">change</a> your payment method</b> to start manual trading.
+									<b><a href="#/account">change</a> your payment method</b> to start manual trading.
 								</span>
 							</span>
 				
 							<span ng-show="!paymentMethodSet">
-								Manual trading will be available when you <b><a href="#/account-v1">set up the API keys</a> for
+								Manual trading will be available when you <b><a href="#/account">set up the API keys</a> for
 								the {{user.currentSession.service|uppercase}} exchange service</b> and 
-								<b><a href="#/account-v1">set your payment method</a> and deposit appropriate funds</b>
+								<b><a href="#/account">set your payment method</a> and deposit appropriate funds</b>
 							</span>
 				
 							<br/><br/>
 					
 						</div>
 						
-						<div class="span12" style="margin-top: 1.0em; margin-bottom: 1.0em; text-align: center;" ng-show="sessionKeysSet && user.errors != undefined && user.errors.length > 0">
+						<div class="col-md-12" style="margin-top: 2.0em; margin-bottom: 1.0em; text-align: center;" ng-show="sessionKeysSet && user.errors != undefined && user.errors.length > 0">
 				
 							Manual trading is not available due to the issues displayed on the top of the page. 
 							Please address these problems to resume manual trading.
@@ -330,18 +292,18 @@
 			</div>
 
 			<div class="row">
-				<div class="span4" style="font-size: 2.0em;">
+				<div class="col-md-4" style="font-size: 2.0em;">
 					<b>{{user.currentTradingSession.currencyLeft|uppercase}}</b>
 					{{user.currentTradingSession.fundsLeft|truncate:6:""}}
 				</div>
-				<div class="span4" style="text-align: center;">
+				<div class="col-md-4" style="text-align: center;">
 					<b>HI</b> {{user.currentTradingSession.rate.buy|truncate:6:""}}
 					<div style="display: inline; font-size: 2.0em;">
 						{{user.currentTradingSession.rate.last|truncate:6:""}}
 					</div>
 					{{user.currentTradingSession.rate.sell|truncate:6:""}} <b>LO</b>
 				</div>
-				<div class="span4" style="font-size: 2.0em; text-align: right;">
+				<div class="col-md-4" style="font-size: 2.0em; text-align: right;">
 					<b>{{user.currentTradingSession.currencyRight|uppercase}}</b>
 					{{user.currentTradingSession.fundsRight|truncate:6:""}}
 				</div>
@@ -350,15 +312,15 @@
 
 			<div class="row">
 
-				<div class="span6">
+				<div class="col-md-6">
 
 					<div class="row" style="margin-top: 1.0em;">
 
-						<div class="span3">
+						<div class="col-md-6">
 							<b>{{user.currentTradingSession.currencyLeft|uppercase}} CASHOUT:</b> {{currencyLeftCashout()|truncate:6:""}}
 						</div>
 
-						<div class="span3">
+						<div class="col-md-6">
 							<b>{{user.currentTradingSession.currencyLeft|uppercase}} PROFIT:</b> {{user.currentTradingSession.profitLeft|truncate:6:""}}
 							<br/>
 							Since {{user.currentTradingSession.profitLeftSince|date:'yyyy-MM-dd HH:mm:ss'}} <a href="" ng-click="resetProfit('left')">Reset</a>
@@ -368,15 +330,15 @@
 
 				</div>
 
-				<div class="span6">
+				<div class="col-md-6">
 
 					<div class="row" style="margin-top: 1.0em;">
 
-						<div class="span3" style="text-align: right;">
+						<div class="col-md-6" style="text-align: right;">
 							<b>{{user.currentTradingSession.currencyRight|uppercase}} CASHOUT:</b> {{currencyRightCashout()|truncate:6:""}}
 						</div>
 
-						<div class="span3" style="text-align: right;">
+						<div class="col-md-6" style="text-align: right;">
 							<b>{{user.currentTradingSession.currencyRight|uppercase}} PROFIT:</b> 0
 							<br/>
 							Since {{user.currentTradingSession.profitRightSince|date:'yyyy-MM-dd HH:mm:ss'}} <a href="">Reset</a>
@@ -389,10 +351,10 @@
 			</div>
 			
 			<div class="row" ng-hide="errors['orders'] == undefined" style="margin-bottom: 1em; margin-top: 1em;">
-				<div class="span11" style="text-align: center; border: 1px red solid; background: #fffacd;">
+				<div class="col-md-11" style="text-align: center; border: 1px red solid; background: #fffacd;">
 					{{errors['orders'].message}}
 				</div>
-				<div class="span1" style="text-align: right; margin-left: 0px;">
+				<div class="col-md-1" style="text-align: right; margin-left: 0px;">
 					<a href="" ng-click="errors['orders'] = undefined">Close</a>
 				</div>
 			</div>
@@ -402,7 +364,7 @@
 			
 			<div class="row" style="margin-top: 4.0em;">
 
-				<div class="span12" styl="text-align: center;">
+				<div class="col-md-12" styl="text-align: center;">
 
 					Refresh in {{refreshCounter}} seconds.
 

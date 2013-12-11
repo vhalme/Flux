@@ -1,5 +1,5 @@
-function AccountCtrl($scope, $routeParams, $http) {
-	
+controllers.controller("AccountCtrl", ["$scope", "$routeParams", "$http", function($scope, $routeParams, $http) {
+
 	$scope.btceTransferAmount;
 	$scope.btceTransferCurrency = "ltc";
 	
@@ -19,12 +19,13 @@ function AccountCtrl($scope, $routeParams, $http) {
 	
 	$scope.editBtceKey = false;
 	$scope.editBtceSecret = false;
+	$scope.editMtgoxKey = false;
+	$scope.editMtgoxSecret = false;
 	
 	$scope.showCurrency = "btc";
 	$scope.paymentProperties = {};
 	
 	$scope.paymentErrors = [];
-	//$scope.missingReserves = 0;
 	
 	$scope.sharedProfit = {
 		"btc" : 0.0,
@@ -50,6 +51,7 @@ function AccountCtrl($scope, $routeParams, $http) {
 		}
 		
 		$scope.evaluatePaymentFunds();
+		$scope.refreshTransactions();
 		
 		$scope.refreshIntervalId = setInterval( function() { 
 			$scope.$apply( function() {
@@ -237,6 +239,9 @@ function AccountCtrl($scope, $routeParams, $http) {
 				if(service == "btce") {
 					$scope.editBtceKey = false;
 					$scope.editBtceSecret = false;
+				} else if(service == "mtgox") {
+					$scope.editMtgoxKey = false;
+					$scope.editMtgoxSecret = false;
 				}
 				
 				$scope.evaluatePaymentFunds();
@@ -353,7 +358,7 @@ function AccountCtrl($scope, $routeParams, $http) {
 	});
 	
 	
-	Holder.run({images:".img", nocss:true});
+	//Holder.run({images:".img", nocss:true});
 	
 	
-};
+}]);

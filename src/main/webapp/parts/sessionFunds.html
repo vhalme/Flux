@@ -1,17 +1,24 @@
 <div class="row">
 
-	<div class="span12" style="padding-bottom: 0.3em;">
+	<div class="col-md-12" style="padding-bottom: 0.3em;">
 
 		<div class="row">
-			<div class="span12" style="border-top: 1px solid black; border-bottom: 1px solid black; height: 1.85em;">
+			<div class="col-md-12" style="border-top: 1px solid black; border-bottom: 1px solid black; height: 1.85em;">
 				<div class="row">
-					<div class="span6">
-						<div style="padding-top: 0.2em;">
-							<a href="" ng-click="showSessionFunds = !showSessionFunds"><i ng-class="{ 'icon-chevron-down': showSessionFunds, 'icon-chevron-right': !showSessionFunds }"></i></a>
+					<div class="col-md-6">
+						<div style="padding-top: 0.15em; display: inline;">
+							<a href="" style="color: black; margin-left: -8px; margin-right: 4px;" ng-click="showSessionFunds = !showSessionFunds">
+								<span class="glyphicon" ng-class="{ 'glyphicon-chevron-down': showSessionFunds, 'glyphicon-chevron-right': !showSessionFunds }"></span>
+							</a>
 							Session funds
 						</div>
+						<div style="display: inline-block; position: relative;" ng-show="sessionFundsCtrl.fundsSettingsChanged">
+							<a href="" ng-click="sessionFundsCtrl.saveSessionFundsSettings()" style="position: absolute; top: -10px; left: 3px;">
+								<span class="label label-primary" style="margin-left: 6px;">Save settings</span>
+							</a>
+						</div>
 					</div>
-					<div class="span6">
+					<div class="col-md-6">
 						
 					</div>
 				</div>
@@ -21,14 +28,14 @@
 		<div class="row" ng-class="{ hidden: !showSessionFunds }" style="margin-bottom: 1em;">
 			
 			<div ng-show="sessionKeysSet && !(user.errors != undefined && user.errors.length > 0)">
-			<div class="span12">
+			<div class="col-md-12">
 				
 				<div class="row" style="background: #ededed; margin-bottom: 0.2em; padding-top: 0.3em; padding-bottom: 0.3em;">
 					
-					<div class="span4">
+					<div class="col-md-4">
 						Unassigned (available) funds @ {{user.currentTradingSession.service|uppercase}}
 					</div> 
-					<div class="span4">
+					<div class="col-md-4">
 						<span ng-hide="!user.live">
 							{{user.accountFunds.activeFunds[user.currentTradingSession.service][user.currentTradingSession.currencyLeft]}}
 							{{user.currentTradingSession.currencyLeft|uppercase}}
@@ -37,7 +44,7 @@
 							Unlimited
 						</span>
 					</div>
-					<div class="span4">
+					<div class="col-md-4">
 						<span ng-hide="!user.live">
 							{{user.accountFunds.activeFunds[user.currentTradingSession.service][user.currentTradingSession.currencyRight]}}
 							{{user.currentTradingSession.currencyRight|uppercase}}
@@ -53,22 +60,22 @@
 					
 					<form name="form" class="css-form" novalidate>
 					
-						<div class="span4" style="background: #ededed;">
+						<div class="col-md-4" style="background: #ededed;">
 							Assigned (active) funds in this session
 						</div>
 						
-						<div class="span4">
+						<div class="col-md-4">
 							<div class="control-group" ng-class="{ error: user.currentTradingSession.fundsLeft == undefined }" style="margin-bottom: 0px;">
 								<i ng-class="icon-question-sign" class="icon-question-sign" rel="tooltip" title="Change this value to define the amount of {{user.currentTradingSession.currencyLeft|uppercase}} funds for this session. The amount will be subtracted from your total available {{user.currentTradingSession.currencyLeft|uppercase}} funds in the exchange service."></i>
-								<input style="margin-bottom: 0px; width: 4.0em;" type="text" name="fundsLeft" ng-model="user.currentTradingSession.fundsLeft" smart-float />
+								<input style="margin-bottom: 0px; width: 6.0em;" type="text" name="fundsLeft" ng-model="sessionFundsCtrl.newFundsLeft" smart-float />
 								{{user.currentTradingSession.currencyLeft|uppercase}}
 							</div>
 						</div>
 					
-						<div class="span4">
+						<div class="col-md-4">
 							<div class="control-group" ng-class="{ error: user.currentTradingSession.fundsRight == undefined }" style="margin-bottom: 0px;">
 								<i ng-class="icon-question-sign" class="icon-question-sign" rel="tooltip" title="Change this value to define the amount of {{user.currentTradingSession.currencyRight|uppercase}} funds for this session. The amount will be subtracted from your total available {{user.currentTradingSession.currencyRight|uppercase}} funds in the exchange service."></i>
-								<input style="margin-bottom: 0px; width: 4.0em;" type="text" name="fundsRight" ng-model="user.currentTradingSession.fundsRight" smart-float />
+								<input style="margin-bottom: 0px; width: 6.0em;" type="text" name="fundsLeft" ng-model="sessionFundsCtrl.newFundsRight" smart-float />
 								{{user.currentTradingSession.currencyRight|uppercase}}
 							</div>
 						</div>
@@ -79,14 +86,14 @@
 			</div>
 			</div>
 			
-			<div class="span12" style="margin-top: 1.0em; margin-bottom: 1.0em; text-align: center;" ng-show="!sessionKeysSet">
+			<div class="col-md-12" style="margin-top: 1.0em; margin-bottom: 1.0em; text-align: center;" ng-show="!sessionKeysSet">
 				
-				Session funds control will be available when you <b><a href="#/account-v1">set up the API keys</a> for
+				Session funds control will be available when you <b><a href="#/account">set up the API keys</a> for
 				the {{user.currentSession.service|uppercase}} exchange service.</b>
 					
 			</div>
 			
-			<div class="span12" style="margin-top: 1.0em; margin-bottom: 1.0em; text-align: center;" ng-show="sessionKeysSet && user.errors != undefined && user.errors.length > 0">
+			<div class="col-md-12" style="margin-top: 1.0em; margin-bottom: 1.0em; text-align: center;" ng-show="sessionKeysSet && user.errors != undefined && user.errors.length > 0">
 				
 				Session funds control is not available due to the issues displayed on the top of the page. 
 				Please address these problems to regain session funds control.

@@ -1,4 +1,4 @@
-function TxLogCtrl($scope, $routeParams, $http) {
+controllers.controller('TxLogCtrl', ['$scope', '$routeParams', '$http', function($scope, $routeParams, $http) {
 	
 	$scope.buySort = $scope.buyProfit;
 	$scope.buySortReverse = true;
@@ -157,4 +157,4 @@ function TxLogCtrl($scope, $routeParams, $http) {
 	
 		
 	
-};
+}]);

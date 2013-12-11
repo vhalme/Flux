@@ -1,5 +1,120 @@
-<div class="row">
-<div class="span4" style="background: #ededed; margin-bottom: 0.7em; text-align: center;">
-	Coming soon!
+<div class="row" style="padding-top: 0.5em; background: #ededed; margin-bottom: 1.0em;">
+<div class="col-md-6" style="background: #ededed; margin-bottom: 0.7em; text-align: center;">
+	<div style="margin-top: 0.3em; margin-bottom: 0.3em;">
+		<div class="row" style="margin-bottom: 1em;">
+			<div class="col-md-6">
+				Long&nbsp;
+				<select ng-disabled="!user.currentTradingSession.autoTradingOptions.manualSettings" ng-show="user.live" ng-model="user.currentTradingSession.autoTradingOptions.maLong" style="padding: 3px; background: #5fb503; width: 10em;  margin-top: 0.5em;">
+					<option ng-disabled="maLengths[maType] <= 2" ng-repeat="maType in maOptions" value="{{maType}}" title="{{maType}}" ng-selected="maType == user.currentTradingSession.autoTradingOptions.maLong">{{maTitles[maType]}}</option>
+				</select>
+				<select ng-disabled="!user.currentTradingSession.autoTradingOptions.manualSettings" ng-show="!user.live" ng-model="user.currentTradingSession.autoTradingOptions.maLong" style="padding: 3px; background: #5fb503; width: 10em;  margin-top: 0.5em;">
+					<option value="testLong" title="testLong" ng-selected="true">{{maTitles["testLong"]}}</option>
+				</select>
+			</div>
+			<div class="col-md-6">
+				Short&nbsp;
+				<select ng-disabled="!user.currentTradingSession.autoTradingOptions.manualSettings" ng-show="user.live" ng-model="user.currentTradingSession.autoTradingOptions.maShort" style="padding: 3px; background: #ff9933; width: 10em; margin-top: 0.5em;">
+					<option ng-disabled="maLengths[maType] >= maLengths[user.currentTradingSession.autoTradingOptions.maLong]" ng-repeat="maType in maOptions" value="{{maType}}" title="{{maType}}" ng-selected="maType == user.currentTradingSession.autoTradingOptions.maShort">{{maTitles[maType]}}</option>
+				</select>
+				<select ng-disabled="!user.currentTradingSession.autoTradingOptions.manualSettings" ng-show="!user.live" ng-model="user.currentTradingSession.autoTradingOptions.maShort" style="padding: 3px; background: #ff9933; width: 10em;  margin-top: 0.5em;">
+					<option value="testShort" title="testShort" ng-selected="true">{{maTitles["testShort"]}}</option>
+				</select>
+			</div>
+		</div>
+		<div class="row" style="margin-bottom: 4px;">
+			<div class="col-md-4" style="text-align: right;">
+				<i ng-class="icon-question-sign" class="icon-question-sign" rel="tooltip" title="Minimum change of long average after last transaction required for a new BUY transaction at crossover."></i>
+				Buy threshold
+			</div>
+			<div class="col-md-8">
+				<div class="control-group"
+					ng-class="{ error: user.currentTradingSession.autoTradingOptions.buyThreshold == undefined }">
+					<input ng-disabled="!user.currentTradingSession.autoTradingOptions.manualSettings" style="margin-bottom: 0px; width: 4.0em;" type="text"
+						name="buyThreshold"
+						ng-model="user.currentTradingSession.autoTradingOptions.buyThreshold"
+						smart-float />
+					% ({{user.currentTradingSession.rate.buy*(user.currentTradingSession.autoTradingOptions.buyThreshold/100)|truncate:6:""}} {{user.currentTradingSession.currencyLeft|uppercase}})
+				</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-4" style="text-align: right;">
+				<i ng-class="icon-question-sign" class="icon-question-sign" rel="tooltip" title="Minimum change of long average after last transaction required for a new SELL transaction at crossover."></i>
+				Sell threshold
+			</div>
+			<div class="col-md-8">
+				<div class="control-group"
+					ng-class="{ error: user.currentTradingSession.autoTradingOptions.sellThreshold == undefined }">
+					<input ng-disabled="!user.currentTradingSession.autoTradingOptions.manualSettings" style="margin-bottom: 0px; width: 4.0em;" type="text"
+						name="sellThreshold"
+						ng-model="user.currentTradingSession.autoTradingOptions.sellThreshold"
+						smart-float />
+					% ({{user.currentTradingSession.rate.sell*(user.currentTradingSession.autoTradingOptions.sellThreshold/100)|truncate:6:""}} {{user.currentTradingSession.currencyLeft|uppercase}})
+				</div>
+			</div>
+		</div>
+		
+
+	</div>
+</div>
+<div class="col-md-6" style="background: #ededed; margin-bottom: 0.7em;">
+	<div style="margin-top: 0.3em; margin-bottom: 0.3em;">
+		
+		<div class="row">
+			<div class="col-md-4" style="text-align: right;">
+				Operable range
+				<input type="radio" name="maAllIn" ng-checked="user.currentTradingSession.autoTradingOptions.allIn == false" ng-click="autoTradingCtrl.toggleAllIn(false)"/>
+			</div>
+			<div class="col-md-4">
+				<div class="row">
+					<div class="col-md-12" style="text-align: center;">
+						<div class="control-group"
+							ng-class="{ error: user.currentTradingSession.autoTradingOptions.tradingRangeBottom == undefined }">
+							<i ng-class="icon-question-sign" class="icon-question-sign" rel="tooltip" title="Minimum (bottom) rate at which this trading session will work."></i>
+							Min
+							<input ng-disabled="!user.currentTradingSession.autoTradingOptions.manualSettings" style="margin-bottom: 0px; width: 4.0em;" type="text"
+								name="tradingRangeBottom"
+								ng-model="user.currentTradingSession.autoTradingOptions.tradingRangeBottom"
+								smart-float />
+							{{user.currentTradingSession.currencyLeft|uppercase}}
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="col-md-4">
+				<div class="row">
+					<div class="col-md-12" style="text-align: center;">
+						<div class="control-group"
+							ng-class="{ error: user.currentTradingSession.autoTradingOptions.tradingRangeTop == undefined }">
+							<i ng-class="icon-question-sign" class="icon-question-sign" rel="tooltip" title="Maximum (top) rate at which this trading session will work."></i>
+							Max
+							<input ng-disabled="!user.currentTradingSession.autoTradingOptions.manualSettings" style="margin-bottom: 0px; width: 4.0em;" type="text"
+								name="tradingRangeTop"
+								ng-model="user.currentTradingSession.autoTradingOptions.tradingRangeTop"
+								smart-float />
+							{{user.currentTradingSession.currencyLeft|uppercase}}
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="row" style="margin-top: 14px;">
+			<div class="col-md-4" style="text-align: right;">
+				All in
+				<input type="radio" name="maAllIn" ng-checked="user.currentTradingSession.autoTradingOptions.allIn == true" ng-click="autoTradingCtrl.toggleAllIn(true)"/>
+			</div>
+			<div class="col-md-8">
+				<span>
+					All funds are changed from one side to another when the trend changes.
+					This strategy maximizes the wins but is based on
+				</span>
+				<span style="color: red;">
+					<b>RISKY ASSUMPTIONS</b>
+				</span>.
+				
+			</div>
+		</div>
+		
+	</div>
 </div>
 </div>

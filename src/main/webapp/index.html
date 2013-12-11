@@ -2,95 +2,161 @@
 
 	<head>
 
+		<title>BTC machines Trade - Real time BTC/LTC/USD trading Web App</title>
+		
 		<meta charset="utf-8">
-		<title>BTC machines</title>
-		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<meta name="description" content="">
-		<meta name="author" content="">
+    	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+    	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="description" content="Advanced web-based trading tool for crypto currencies. Automated EMA/SMA crossover or linear trading, trading sessions, rich graphs, trading simulator. Trades in BTC/LTC/USD.">
+		<meta name="author" content="Refactory Ltd">
 		
 		<!-- Le styles -->
 		<link href="css/bootstrap.css" rel="stylesheet">
-		<style>
-			body {
-				padding-top: 60px;
-				/* 60px to make the container go all the way to the bottom of the topbar */
-			}
-		</style>
-		<link href="css/bootstrap-responsive.css" rel="stylesheet">
+		<link href="css/jquery-ui-1.10.3.custom.css" rel="stylesheet">
+		
+		<!-- <link href="css/bootstrap-responsive.css" rel="stylesheet"> -->
 		<link href="css/flux.css" rel="stylesheet">
+		
+		
+		<style>
+			
+			.dockBody { margin-left: auto; margin-right: auto; -webkit-text-size-adjust: 100%; }
+			
+			.dockRow { overflow: hidden; position: absolute; }
+			.dockRow { left: 0; right: 0; }
+			.scroll-x { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+			.scroll-y { overflow-y: auto; -webkit-overflow-scrolling: touch; }
+
+            .dockHeader.dockRow { height: 85px; }
+            .dockBody.dockRow { top: 71px; bottom: 0px; padding: 1em; }
+            .dockFooter.dockRow { height: 50px; bottom: 0; background: #333; }
+            
+            .dockHeader, .dockFooter { padding: 0 1em; }
+        
+		
+		</style>
 
 		<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>
-		<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.1.4/angular.min.js"></script>
+		<!-- <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.1.4/angular.min.js"></script>  -->
+		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.0/angular.min.js"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.0/angular-route.min.js"></script>
+		
 		<script src="js/libs/canvasjs.min.js"></script>
 		<script src="js/libs/amcharts.js"></script>
 		<script src="js/libs/serial.js"></script>
 		<script src="js/libs/hmac-sha512.js"></script>
 		<script src="js/libs/bootstrap.js"></script>
+		<script src="js/libs/jquery.slides.min.js"></script>
+		<script src="js/libs/jquery-ui-1.10.3.custom.min.js"></script>
+		
 		<script src="holder.js"></script>
-
-		<script src="js/btce.js"></script>
+		
 		<script src="js/app.js"></script>
+		<script src="js/directives.js"></script>
+		
+		<script src="js/btce.js"></script>
+		
+		<script src="js/main.js"></script>
 		<script src="js/front.js"></script>
 		<script src="js/login.js"></script>
 		<script src="js/logout.js"></script>
 		<script src="js/account.js"></script>
-		<script src="js/tradeStats.js"></script>
+		<script src="js/sessionFunds.js"></script>
+		<script src="js/tradingSession.js"></script>
+		<script src="js/autoTrading.js"></script>
 		<script src="js/charts.js"></script>
 		<script src="js/txLog.js"></script>
 		<script src="js/verifyemail.js"></script>
-		<script src="js/directives.js"></script>
+		
+		
+			
 
 	</head>
 
-	<body ng-controller="AppCtrl">
-
-		<div class="container">
-
+	<body ng-controller="AppCtrl" style="overflow-y: hidden;">
+		
+		<div id="fb-root"></div>
+		
+			<div class="dockHeader dockRow">
+			<div class="container">
 			<div class="row" style="margin-bottom: 0.3em;">
 				
-				<div class="span12" style="height: 4.2em;">
+				<div class="col-md-13" style="height: 4.2em; margin-left: -14px;">
 					
-					<div class="row">
+					<div class="row" style="box-shadow: 0px 10px 15px -10px rgba(0,0,0,0.5);">
 						
-						<div class="span4" style="font-size: 1.6em;">
-							<a href="app.html">
-								<img src="img/logo1.png" style="width: 165px; height: 70px;">
-							</a>
-						</div>
-
-						<div class="span4" style="text-align: center;">
-							<div ng-hide="user == null">
-								Signed in as: {{user.username}}
-								<!-- 
-								<div ng-hide="!user.live">
-									USD {{user.accountFunds.reserves.usd}} LTC {{user.accountFunds.reserves.ltc}} BTC {{user.accountFunds.reserves.btc}}
-								</div>
-								<div ng-hide="user.live">
-									&nbsp;
-								</div>
-								-->
+						<div class="col-md-12">
+						
+							<div style="display: inline; float: left; margin-left: -10px;">
+								<a href="/">
+									<img src="img/logo1.png" style="width: 165px; height: 70px;">
+								</a>
 							</div>
-						</div>
 
-						<div class="span4" style="text-align: right; padding-top: 0.3em;">
-							
-							<div class="row">
-							
-								<div class="span2">
-							
-									<span ng-show="location.path() != '/tos'">
-										<a href="#/tos" style="color: black; text-decoration: underline;">Terms of service</a>
-										<br/>
-									</span>
-							
-									<span ng-show="location.path() != '/support'">
-										<a href="#/support" style="color: black; text-decoration: underline;">Support</a>
-										<br/>
-									</span>		
-							
+							<div style="display: inline; float: left; margin-top: 8px; height: 57px; padding-left: 10px; border-left: 1px solid #cccccc;">
+								<div ng-hide="user == null">
+									Signed in as: {{user.username}}
+									<br/>
+									<button type="button" ng-click="go('front')" style="margin-right: 4px; display: inline; float: left; padding: 6px; margin-top: 4px;" class="btn btn-default btn-lg" ng-class="{ 'active': location.path().substring(0, 15) == '/tradingSession' }">
+  										<span class="glyphicon glyphicon-stats"></span>
+									</button>
+									<button type="button" ng-click="go('account')" style="margin-right: 4px; display: inline; float: left; padding: 6px; margin-top: 4px;" class="btn btn-default btn-lg" ng-class="{ 'active': location.path() == '/account' }">
+  										<span class="glyphicon glyphicon-cog"></span>
+									</button>
+									<button type="button" ng-click="go('logout')" style="margin-right: 12px; display: inline; float: left; padding: 6px; margin-top: 4px;" class="btn btn-default btn-lg">
+  										<span class="glyphicon glyphicon-off"></span>
+									</button>
+									<div class="onoffswitch1" style="display: inline; float: left;">
+    <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="myonoffswitch1" ng-click="toggleUser()" ng-checked="user.live">
+    <label class="onoffswitch-label" style="margin-top: 6px;" for="myonoffswitch1">
+        <div class="onoffswitch-inner sw1"></div>
+        <div class="onoffswitch-switch t1" style="height: 32px; margin-top: 4px;"></div>
+    </label>
+</div>
+									
+									<!-- 
+										<div ng-hide="!user.live">
+										USD {{user.accountFunds.reserves.usd}} LTC {{user.accountFunds.reserves.ltc}} BTC {{user.accountFunds.reserves.btc}}
+										</div>
+										<div ng-hide="user.live">
+										&nbsp;
+										</div>
+									-->
 								</div>
 								
-								<div class="span2">
+								<!-- 
+								<div style="display: inline; float: left; margin-top: 1.0em;" ng-show="user == null">
+									
+									<div class="g-plusone"></div>
+								
+									<div class="fb-like" style="top: -3px; margin-right: 30px;" data-href="https://btcmachin.es" data-layout="button_count" data-action="like" data-show-faces="true" data-share="false"></div>
+								
+									<div style="display: inline;" id="redditShareTop">
+										<script type="text/javascript">
+											reddit_url="https://btcmachin.es";
+											reddit_title = "http://btcmachin.es (BTC machines Trade) is an advanced web-based trading tool for cryptocurrency exchange";
+										</script>
+										<script type="text/javascript" src="js/libs/button1.js"></script>
+									</div>
+								 
+								</div>
+								 -->
+								 
+							</div>
+
+							<div style="display: inline; float: right; text-align: right; margin-right: -10px; margin-top: 3px;">
+							
+									<a href="#/tos" style="color: black; text-decoration: underline;">Terms of service</a>
+									<br/>
+									<a href="#/support" style="color: black; text-decoration: underline;">Support</a>
+									<br/>
+									<a href="#/faq" style="color: black; text-decoration: underline;">FAQ</a>
+									<br/>
+									
+							</div>
+								
+								<!-- 
+								<div class="col-md-2">
 									
 									<span ng-show="location.path() != '/front' && user == undefined">
 										<a href="#/front"  style="color: black; text-decoration: underline;">Log In</a>
@@ -99,8 +165,8 @@
 									
 									<span ng-hide="user == null || user == undefined">
 										
-										<span ng-show="location.path() != '/account-v1'">
-											<a style="text-decoration: underline; color: black;" href="#/account-v1">Account</a> | 
+										<span ng-show="location.path() != '/account'">
+											<a style="text-decoration: underline; color: black;" href="#/account">Account</a> | 
 										</span>
 										
 										<span ng-show="location.path().substring(0, 15) != '/tradingSession'">
@@ -111,35 +177,44 @@
 									
 									</span>
 								</div>
-							
+								 -->
+								 
 							</div>
 						
 						</div>
 				
 					</div>
 					
-				</div>
-
 			</div>
-		
-			<div ng-view></div>
+			</div>
+			</div>
 			
-		</div>
+			<!-- 
+			<div class="row" style="box-shadow: 0px 6px 6px -5px #888888;">
+				<span class="col-md-12"></span>
+			</div>
+			 -->
+			
+			<div class="dockBody dockRow scroll-y">
+				<div class="container">
+					<div ng-view></div>
+				</div>
+			</div>
+			
+			<script>
+			
+				var _gaq = _gaq || [];
+				_gaq.push(['_setAccount', 'UA-45110305-1']);
+				_gaq.push(['_trackPageview']);
+
+				(function() {
+					var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+					ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+					var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+				})();
+				
+			</script>
 		
-		<script type="text/javascript">
-
-  			var _gaq = _gaq || [];
-  			_gaq.push(['_setAccount', 'UA-45110305-1']);
-  			_gaq.push(['_trackPageview']);
-
-  			(function() {
-    			var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-    			ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-    			var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-  			})();
-
-		</script>
-
 	</body>
 
 </html>

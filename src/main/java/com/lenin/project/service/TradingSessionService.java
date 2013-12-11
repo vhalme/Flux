@@ -17,6 +17,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
@@ -24,6 +25,7 @@ import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 
 import com.lenin.project.AuthComponent;
@@ -87,7 +89,7 @@ public class TradingSessionService {
 			List<Settings> settingsResult = mongoOps.findAll(Settings.class);
 			Settings settings = settingsResult.get(0);
 			
-			TradingSession tradingSession = tradingSessionRepository.findOne(tradingSessionId); // user.getCurrentTradingSession();
+			TradingSession tradingSession = tradingSessionRepository.findOne(tradingSessionId);
 			List<Order> orders = orderRepository.findByTradingSession(tradingSession);
 			
 			User user = userRepository.findByUsername(username);
@@ -99,6 +101,7 @@ public class TradingSessionService {
 			resultObj.put("accountFunds", accountFunds);
 			resultObj.put("serviceFees", settings.getServiceFees());
 			resultObj.put("userErrors", user.getErrors());
+			resultObj.put("sessionErrors", user.getSessionErrors());
 			
 			response.setData(resultObj);
 			
@@ -192,10 +195,18 @@ public class TradingSessionService {
 		
 		autoTradingOptions.setBuyChunk(chunkSize);
 		autoTradingOptions.setSellChunk(chunkSize);
-		autoTradingOptions.setBuyThreshold(5.0);
-		autoTradingOptions.setSellThreshold(5.0);
+		autoTradingOptions.setBuyThreshold(2.5);
+		autoTradingOptions.setSellThreshold(2.5);
 		autoTradingOptions.setBuyCeiling(rate.getLast());
 		autoTradingOptions.setSellFloor(rate.getLast());
+		autoTradingOptions.setTradingRangeBottom(rate.getLast()*0.5);
+		autoTradingOptions.setTradingRangeTop(rate.getLast()*1.5);
+		autoTradingOptions.setManualSettings(false);
+		
+		if(user.getLive() == false) {
+			autoTradingOptions.setMaLong("testLong");
+			autoTradingOptions.setMaShort("testShort");
+		}
 		
 		tradingSession.setAutoTradingOptions(autoTradingOptions);
 		tradingSession.setCurrencyRight(sessionValues[0]);
@@ -207,6 +218,8 @@ public class TradingSessionService {
 		tradingSession.setProfitRight(0.0);
 		tradingSession.setProfitRightSince(new Date());
 		
+		rate.getMovingAverages().put("testLong", rate.getBuy());
+		rate.getMovingAverages().put("testShort", rate.getSell());
 		tradingSession.setRate(rate);
 
 		System.out.println("Added new tradestats: "
@@ -216,8 +229,12 @@ public class TradingSessionService {
 		tradingSession = tradingSessionRepository.save(tradingSession);
 
 		user.addTradingSession(tradingSession);
-		userRepository.save(user);
-
+		
+		mongoOps.updateFirst(new Query(Criteria.where("_id").is(new ObjectId(user.getId()))),
+				new Update().set("tradingSessions", user.getTradingSessions()), User.class);
+		
+		//userRepository.save(user);
+		
 		response.setData(tradingSession);
 		response.setSuccess(1);
 		return response;
@@ -227,13 +244,14 @@ public class TradingSessionService {
 	
 	@DELETE
 	@Path("/")
-	@Consumes({ MediaType.APPLICATION_JSON })
+	@Consumes({ MediaType.TEXT_PLAIN })
 	@Produces({ MediaType.APPLICATION_JSON })
 	public RequestResponse deleteTradingSession(@HeaderParam("Username") String username, @HeaderParam("Auth-Token") String authToken,
-			@HeaderParam("Trading-Session-Id") String tradingSessionId,
-			TradingSession tradingSession) {
+			@HeaderParam("Trading-Session-Id") String tradingSessionId, String sessionId) {
 
 		RequestResponse response = authComponent.getInitialResponse(username, mc, authToken);
+		
+		MongoOperations mongoOps = (MongoOperations)mongoTemplate;
 		
 		if(response.getSuccess() < 0) {
 			return response;
@@ -241,7 +259,7 @@ public class TradingSessionService {
 		
 		if (tradingSessionId != null) {
 
-			tradingSession = tradingSessionRepository.findOne(tradingSessionId); // user.getCurrentTradingSession();
+			TradingSession tradingSession = tradingSessionRepository.findOne(sessionId); // user.getCurrentTradingSession();
 
 			User user = userRepository.findByUsername(username);
 			List<TradingSession> tradingSessionList = user.getTradingSessions();
@@ -266,11 +284,18 @@ public class TradingSessionService {
 					+ tradingSessionList.size() + " ... ");
 			user.setTradingSessions(tradingSessionList);
 			
+			
 			if (tradingSessionList.size() > 0) {
 				user.setCurrentTradingSession(tradingSessionList.get(0));
+				mongoOps.updateFirst(new Query(Criteria.where("_id").is(new ObjectId(user.getId()))),
+						new Update().set("currentTradingSession", tradingSessionList.get(0)), User.class);
 			}
-
-			user = userRepository.save(user);
+			
+			
+			mongoOps.updateFirst(new Query(Criteria.where("_id").is(new ObjectId(user.getId()))),
+					new Update().set("tradingSessions", user.getTradingSessions()), User.class);
+			
+			//user = userRepository.save(user);
 			System.out.println(user.getTradingSessions().size());
 
 			tradingSessionRepository.delete(tradingSession);
@@ -294,10 +319,12 @@ public class TradingSessionService {
 
 		RequestResponse response = authComponent.getInitialResponse(username, mc, authToken);
 		
+		System.out.println("left="+left+", right="+right);
+		
 		if(response.getSuccess() < 0) {
 			return response;
 		}
-
+		
 		User user = userRepository.findByUsername(username);
 		TradingSession tradingSession = tradingSessionRepository.findOne(tradingSessionId);
 		
@@ -306,40 +333,37 @@ public class TradingSessionService {
 		AccountFunds accountFunds = user.getAccountFunds(); 
 		Map<String, Double> activeFundsMap = accountFunds.getActiveFunds().get(tradingSession.getService());
 		
-		if (left != null) {
+		Boolean leftChanged = false;
+		Boolean rightChanged = false;
+		
+		if(left != null) {
 
 			Double tsFundsLeft = tradingSession.getFundsLeft();
 			String tsCurrencyLeft = tradingSession.getCurrencyLeft();
 			Double userFundsLeft = activeFundsMap.get(tsCurrencyLeft);
 			Double changeLeft = tsFundsLeft - left;
-
+			
 			userFundsLeft = userFundsLeft + changeLeft;
 			
 			if (userFundsLeft >= 0 || user.getLive() == false) {
 				
 				tradingSession.setFundsLeft(left);
+				mongoOps.updateFirst(new Query(Criteria.where("_id").is(new ObjectId(tradingSession.getId()))),
+						new Update().set("fundsLeft", tradingSession.getFundsLeft()), TradingSession.class);
 				
 				if(user.getLive() == true) {
 					activeFundsMap.put(tsCurrencyLeft, userFundsLeft);
-					//user.setFunds(fundsMap);
-					//userRepository.save(user);
-					mongoOps.save(accountFunds);
+					mongoOps.updateFirst(new Query(Criteria.where("_id").is(new ObjectId(accountFunds.getId()))),
+							new Update().set("activeFunds."+tradingSession.getService()+"."+tsCurrencyLeft, userFundsLeft), AccountFunds.class);
 				}
 				
-				tradingSessionRepository.save(tradingSession);
-				response.setSuccess(1);
-				response.setData(activeFundsMap);
+				leftChanged = true;
 				
-			} else {
-				
-				response.setMessage("Not enough funds");
-				response.setData(tradingSession.getFundsLeft()+"_"+tradingSession.getFundsRight());
-			
 			}
 
 		}
 
-		if (right != null) {
+		if(right != null) {
 
 			Double tsFundsRight = tradingSession.getFundsRight();
 			String tsCurrencyRight = tradingSession.getCurrencyRight();
@@ -348,30 +372,37 @@ public class TradingSessionService {
 
 			userFundsRight = userFundsRight + changeRight;
 
-			if (userFundsRight >= 0 || user.getLive() == false) {
+			if(userFundsRight >= 0 || user.getLive() == false) {
 				
 				tradingSession.setFundsRight(right);
+				mongoOps.updateFirst(new Query(Criteria.where("_id").is(new ObjectId(tradingSession.getId()))),
+						new Update().set("fundsRight", tradingSession.getFundsRight()), TradingSession.class);
 				
 				if(user.getLive() == true) {
 					activeFundsMap.put(tsCurrencyRight, userFundsRight);
-					//user.setFunds(fundsMap);
-					//userRepository.save(user);
-					mongoOps.save(accountFunds);
+					mongoOps.updateFirst(new Query(Criteria.where("_id").is(new ObjectId(accountFunds.getId()))),
+							new Update().set("activeFunds."+tradingSession.getService()+"."+tsCurrencyRight, userFundsRight), AccountFunds.class);
+					
 				}
 				
-				tradingSessionRepository.save(tradingSession);
-				response.setSuccess(1);
-				response.setData(activeFundsMap);
+				rightChanged = true;
 				
-			} else {
-				
-				response.setMessage("Not enough funds");
-				response.setData(tradingSession.getFundsLeft()+"_"+tradingSession.getFundsRight());
-			
-			}
+			} 
 
 		}
-
+		
+		if(!leftChanged && !rightChanged) {
+			response.setSuccess(-3);
+		} else if(!leftChanged) {
+			response.setSuccess(-1);
+		} else if(!rightChanged) {
+			response.setSuccess(-2);
+		} else {
+			response.setSuccess(1);
+		}
+		
+		response.setData(activeFundsMap);
+		
 		return response;
 
 	}
@@ -387,20 +418,29 @@ public class TradingSessionService {
 
 		RequestResponse response = authComponent.getInitialResponse(username, mc, authToken);
 		
+		MongoOperations mongoOps = (MongoOperations)mongoTemplate;
+		
 		if(response.getSuccess() < 0) {
 			return response;
 		}
 
 		TradingSession tradingSession = tradingSessionRepository.findOne(tradingSessionId);
-		tradingSession.setAutoTradingOptions(autoTradingOptions);
+		tradingSession.setAutoTradingOptions(autoTradingOptions);	
+		mongoOps.updateFirst(new Query(Criteria.where("_id").is(new ObjectId(tradingSession.getId()))),
+				new Update().set("autoTradingOptions", autoTradingOptions), TradingSession.class);
 		
-		User user = userRepository.findByUsername(username);
-		user.setCurrentTradingSession(tradingSession);
-		userRepository.save(user);
+		//tradingSession = tradingSessionRepository.save(tradingSession);
 		
-		System.out.println("saveTradingOptions: "+autoTradingOptions.getBuyChunk()+"/"+autoTradingOptions.getSellChunk());
-		tradingSessionRepository.save(tradingSession);
-
+		//User user = userRepository.findByUsername(username);
+		//user.setCurrentTradingSession(tradingSession);
+		
+		//mongoOps.updateFirst(new Query(Criteria.where("_id").is(new ObjectId(user.getId()))),
+		//		new Update().set("currentTradingSession", tradingSession), User.class);
+		
+		//userRepository.save(user);
+		
+		System.out.println("saveTradingOptions for "+tradingSessionId+": "+tradingSession.getAutoTradingOptions().getBuyChunk()+"/"+tradingSession.getAutoTradingOptions().getSellChunk()+"/"+tradingSession.getAutoTradingOptions().getTradingRangeBottom());
+		
 		response.setSuccess(1);
 		response.setData(autoTradingOptions);
 
@@ -418,6 +458,8 @@ public class TradingSessionService {
 
 		RequestResponse response = authComponent.getInitialResponse(username, mc, authToken);
 		
+		MongoOperations mongoOps = (MongoOperations)mongoTemplate;
+		
 		if(response.getSuccess() < 0) {
 			return response;
 		}
@@ -426,12 +468,20 @@ public class TradingSessionService {
 		if(profitSide.equals("right")) {
 			tradingSession.setProfitRight(0.0);
 			tradingSession.setProfitRightSince(new Date());
+			mongoOps.updateFirst(new Query(Criteria.where("_id").is(new ObjectId(tradingSession.getId()))),
+					new Update().set("profitRight", 0.0), TradingSession.class);
+			mongoOps.updateFirst(new Query(Criteria.where("_id").is(new ObjectId(tradingSession.getId()))),
+					new Update().set("profitRightSince", tradingSession.getProfitRightSince()), TradingSession.class);
 		} else if(profitSide.equals("left")) {
 			tradingSession.setProfitLeft(0.0);
 			tradingSession.setProfitLeftSince(new Date());
+			mongoOps.updateFirst(new Query(Criteria.where("_id").is(new ObjectId(tradingSession.getId()))),
+					new Update().set("profitLeft", 0.0), TradingSession.class);
+			mongoOps.updateFirst(new Query(Criteria.where("_id").is(new ObjectId(tradingSession.getId()))),
+					new Update().set("profitLeftSince", tradingSession.getProfitLeftSince()), TradingSession.class);
 		} 
 		
-		tradingSessionRepository.save(tradingSession);
+		//tradingSessionRepository.save(tradingSession);
 		response.setSuccess(1);
 		
 		return response;

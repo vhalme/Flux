@@ -1,11 +1,11 @@
 <div class="row">
 
-	<div class="span12" style="padding-bottom: 0.3em;">
+	<div class="col-md-12" style="padding-bottom: 0.3em;">
 		
 		<div class="row" style="margin-top: 2.0em; margin-bottom: 2.0em;">
 			
-			<div class="span12" style="text-align: center;">
-				<b>MANAGE FUNDS</b>
+			<div class="col-md-12" style="text-align: center;">
+				<b>ACCOUNT MANAGEMENT</b>
 				<br/><br/>
 			</div>
 			
@@ -13,93 +13,92 @@
 		
 		<div class="row">
 			
-			<div class="span6">
+			<div class="col-md-6" style="margin-bottom: 2.0em;">
 				
 				<div class="row" style="margin-bottom: 2.0em;">
 			
-					<div class="span6">
-						<b>RESERVES</b>
+					<div class="col-md-12">
+						<b>PAYMENT FUNDS</b>
 					</div>
 						
 				</div>
 				
 				
 				<div class="row" style="margin-bottom: 1.0em;">
+					
+					<div class="col-md-12" style="border: 1px">
+						
+						<div class="tabbable"> <!-- Only required for left/right tabs -->
+  							<ul class="nav nav-tabs" style="margin: 0px;">
+    							<li ng-class="{ active: showCurrency == 'btc' }">
+    							<a href="" data-toggle="tab" ng-click="showCurrency = 'btc'">
+    								BTC {{user.accountFunds.reserves['btc']|truncate:6:""}}
+    							</a>
+  							</li>
+  							
+  							<li ng-class="{ active: showCurrency == 'ltc' }">
+    							<a href="" data-toggle="tab" ng-click="showCurrency = 'ltc'">
+    								LTC {{user.accountFunds.reserves['ltc']|truncate:6:""}}
+    							</a>
+  							</li>
+  							
+  							<li ng-class="{ active: showCurrency == 'usd' }">
+    							<a href="" data-toggle="tab" ng-click="showCurrency = 'usd'">
+    								USD {{user.accountFunds.reserves['usd']|truncate:6:""}}
+    							</a>
+  							</li>
+  							</ul>
+						</div>
+						
+					</div>
+							
+				</div>
+				
+				
+				
+				<div ng-show="showCurrency == 'btc'">
+				
+				<div class="row" style="margin-bottom: 1.0em; margin-top: 2.0em;">
 			
-					<div class="span2" style="font-size: 1.8em; font-weight: bold;">
+					<div class="col-md-4" style="font-size: 1.8em; font-weight: bold;">
 						BTC
 					</div>
 			
-					<div class="span4" style="font-size: 1.8em;">
-						{{user.accountFunds.reserves['btc']}} BTC
+					<div class="col-md-8" style="font-size: 1.8em;">
+						{{user.accountFunds.reserves['btc']|truncate:6:""}} BTC
 					</div>
 					
 				</div>
 				
 				<div class="row" style="margin-bottom: 0.8em;">
 					
-					<div class="span2" style="text-align: right;">
+					<div class="col-md-4" style="">
 						<b>Deposit addr.</b>
 					</div>
-					<div class="span4">
-						{{user.accountFunds.addresses["btc"]}}
+					
+					<div class="col-md-8" style="">
+						<img src="http://blockchain.info/qr?data={{user.accountFunds.addresses['btc']}}&size=200" />
 					</div>
+					
 				</div>
 				
 				<div class="row">
-					<div class="span2" style="text-align: right;">
-						<b>Withdrawal addr.</b>
+				
+					<div class="col-md-12" style="text-align: center;">
+						{{user.accountFunds.addresses['btc']}}
 					</div>
-					<div class="span4">
-						<input type="text" style="height: 2.0em; margin-bottom: 0.3em" ng-model="withdrawAddressBtc"/>
-					</div>
+				
+				</div>
 				</div>
 				
-				<div class="row" style="margin-bottom: 2.0em;">
-					<div class="span2" style="text-align: right;">
-						<b>Withdrawal amount</b>
-					</div>
-					<div class="span4">
-						<input type="text" style="height: 2.0em; width: 4.0em;" ng-model="btcWithdrawalAmount"/>
-						<button class="btn" style="margin-top: -0.8em;" ng-click="transfer('withdrawal', btcWithdrawalAmount, 'btc', withdrawAddressBtc)">Withdraw</button>
-					</div>
-				</div>
-				
-				<div class="row"  style="margin-top: 1.0em;" ng-show="pendingTxBtc.length > 0">
-					<div class="span6">
-						<b>Pending BTC transactions</b>
-					</div>
-				</div>
-				
-				
-				<div class="row" ng-repeat="transaction in pendingTxBtc" style="margin-top: 2px;">
-					<div class="span6" style="background: #d0d0d0;">
-						<div class="row">
-							<div class="span2">
-								{{transaction.dateStr}}
-							</div>
-							<div class="span1">
-								{{transaction.type}}
-							</div>
-							<div class="span2" style="text-align: right;">
-								{{transaction.amount|truncate:6:""}} BTC
-							</div>
-						</div>
-						<div class="row">
-							<div class="span6">
-								{{transaction.stateInfo}}
-							</div>
-						</div>
-					</div>
-				</div>
-				
+				<div ng-show="showCurrency == 'ltc'">
 				<div class="row"  style="margin-bottom: 1.0em; margin-top: 2.0em;">
 			
-					<div class="span2" style="font-size: 1.8em; font-weight: bold;">
+					<div class="col-md-4" style="font-size: 1.8em; font-weight: bold;">
 						LTC
 					</div>
 			
-					<div class="span4" style="font-size: 1.8em;">
+					<div class="col-md-8" style="font-size: 1.8em;">
 						{{user.accountFunds.reserves['ltc']|truncate:6:""}} LTC
 					</div>
 					
@@ -107,298 +106,457 @@
 				
 				<div class="row" style="margin-bottom: 0.8em;">
 					
-					<div class="span2" style="text-align: right;">
+					<div class="col-md-4" style="">
 						<b>Deposit addr.</b>
 					</div>
-					<div class="span4">
-						{{user.accountFunds.addresses["ltc"]}}
+					
+					<div class="col-md-8" style="">
+						<img src="http://blockchain.info/qr?data={{user.accountFunds.addresses['ltc']}}&size=200" />
 					</div>
+					
 				</div>
 				
 				<div class="row">
-					<div class="span2" style="text-align: right;">
-						<b>Withdrawal addr.</b>
+				
+					<div class="col-md-12" style="text-align: center;">
+						{{user.accountFunds.addresses['ltc']}}
 					</div>
-					<div class="span4">
-						<input type="text" style="height: 2.0em; margin-bottom: 0.3em" ng-model="withdrawAddressLtc"/>
-					</div>
+				
+				</div>
 				</div>
 				
-				<div class="row">
-					<div class="span2" style="text-align: right;">
-						<b>Withdrawal amount</b>
-					</div>
-					<div class="span4">
-						<input type="text" style="height: 2.0em; width: 4.0em;" ng-model="ltcWithdrawalAmount"/>
-						<button class="btn" style="margin-top: -0.8em;" ng-click="transfer('withdrawal', ltcWithdrawalAmount, 'ltc', withdrawAddressLtc)">Withdraw</button>
-					</div>
-				</div>
-				
-				<div class="row"  style="margin-top: 1.0em;" ng-show="pendingTxLtc.length > 0">
-					<div class="span6">
-						<b>Pending LTC transactions</b>
-					</div>
-				</div>
-				
-				
-				<div class="row" ng-repeat="transaction in pendingTxLtc" style="margin-top: 2px;">
-					<div class="span6" style="background: #d0d0d0;">
-						<div class="row">
-							<div class="span2">
-								{{transaction.dateStr}}
-							</div>
-							<div class="span1">
-								{{transaction.type}}
-							</div>
-							<div class="span2" style="text-align: right;">
-								{{transaction.amount|truncate:6:""}} LTC
-							</div>
-						</div>
-						<div class="row">
-							<div class="span6">
-								{{transaction.stateInfo}}
-							</div>
-						</div>
-					</div>
-				</div>
-				
+				<div ng-show="showCurrency == 'usd'">
 				<div class="row" style="margin-bottom: 1.0em; margin-top: 2.0em;">
 			
-					<div class="span2" style="font-size: 1.8em; font-weight: bold;">
+					<div class="col-md-4" style="font-size: 1.8em; font-weight: bold;">
 						USD
 					</div>
 			
-					<div class="span4" style="font-size: 1.8em;">
-						{{user.accountFunds.reserves['usd']}} USD
+					<div class="col-md-8" style="font-size: 1.8em;">
+						{{user.accountFunds.reserves['usd']|truncate:6:""}} USD
 					</div>
 					
 				</div>
 				
 				<div class="row" style="margin-bottom: 0.8em;">
 					
-					<div class="span2" style="text-align: right;">
+					<div class="col-md-4" style="text-align: right;">
 						<b>Deposit</b>
 					</div>
-					<div class="span4">
-						<a class="btn" style="margin-top: -0.3em;" 
-							href="https://www.okpay.com/process.html?ok_receiver=OK990732954&ok_item_1_name=Add+USD&ok_currency=USD&ok_item_1_type=service&ok_invoice={{getInvoice(user.accountName)}}">
+					<div class="col-md-8">
+						<a class="btn" style="margin-top: -0.3em;" ng-click="gotoOkpayPayment()">
 								Make OKPAY payment
 						</a>
 					</div>
 					
 				</div>
+				</div>
 				
-				<div class="row">
-					<div class="span2" style="text-align: right;">
-						<b>OKPAY Wallet ID</b>
-					</div>
-					<div class="span4">
-						<input type="text" style="height: 2.0em; margin-bottom: 0.3em" ng-model="usdWithdrawWalletId"/>
+				<div class="row"  style="margin-top: 1.0em;" ng-show="pendingTxBtc.length > 0">
+					<div class="col-md-12">
+						<b>Pending BTC transactions</b>
 					</div>
 				</div>
 				
-				<div class="row" style="">
-					<div class="span2" style="text-align: right;">
-						<b>Withdrawal amount</b>
-					</div>
-					<div class="span4">
-						<input type="text" style="height: 2.0em; width: 4.0em;" ng-model="usdWithdrawalAmount"/>
-						<button class="btn" style="margin-top: -0.8em;" ng-click="transfer('withdrawal', usdWithdrawalAmount, 'usd', usdWithdrawWalletId)">Withdraw</button>
-					</div>
-				</div>
-		
-			</div>
-
-			
-			<div class="span5">
-				
-				<div class="row" style="margin-bottom: 2.0em;">
-					<div class="span5">
-						<b>EXCHANGE ACCOUNTS</b>
-					</div>
-				</div>
-				
-				<div class="row" style="margin-bottom: 1.0em;">
-			
-					<div class="span5" style="font-size: 1.8em; font-weight: bold;">
-						BTC-E
-					</div>
-			
-				</div>
-				
-				<div class="row" style="margin-bottom: 1.0em;">
-			
-					<div class="span5">
-						{{user.accountFunds.activeFunds["btce"]["usd"]}} USD &nbsp;&nbsp; 
-						{{user.accountFunds.activeFunds["btce"]["btc"]}} BTC &nbsp;&nbsp;
-						{{user.accountFunds.activeFunds["btce"]["ltc"]}} LTC
-					</div>
-					
-				</div>
-				
-				<div class="row" style="margin-bottom: 2.0em;">
-					
-					<div class="span5">
-						
+				<div class="row" ng-repeat="transaction in pendingTxBtc" style="margin-top: 2px;">
+					<div class="col-md-12" style="background: #d0d0d0;">
 						<div class="row">
-							<div class="span5">
-								<ul class="nav nav-pills">
-  									<li ng-class="{ active: btceAdd }">
-    									<a href="" ng-click="btceAdd = true">Add to BTC-E</a>
-  									</li>
-  									<li ng-class="{ active: !btceAdd }">
-  										<a href="" ng-click="btceAdd = false">Return to reserve</a>
-  									</li>
-								</ul>
-							</div>
-						</div>
-						<div class="row">
-							<div class="span5">
-								<input type="text" ng-model="btceTransferAmount" style="width: 6em; padding-top: 14px; padding-bottom: 14px; margin-bottom: 0px;"/>
-								<select ng-model="btceTransferCurrency" style="width: 12em; margin-bottom: 0px;">
-									<option value="btc" title="BTC">BTC</option>
-									<option value="ltc" title="LTC">LTC</option>
-									<option value="usd" title="USD">USD</option>
-								</select>
-								<button class="btn" ng-click="transfer('addToBtce', btceTransferAmount, btceTransferCurrency)" ng-show="btceAdd">
-									Add
-								</button>
-								<button class="btn" ng-click="transfer('returnFromBtce', btceTransferAmount, btceTransferCurrency)" ng-show="!btceAdd">
-									Return
-								</button>
-							</div>
-						</div>
-					</div>
-				
-				</div>
-				
-				<div class="row" ng-show="btceTransferCurrency == 'ltc' && !btceAdd">
-					<div class="span5">
-						BTC-E imposes following fees and limitations on LTC withdrawals:<br/>
-						* Minimal withdrawal amount: 1 LTC<br/>
-						* Withdrawal fee: 0.5 LTC<br/>
-						* Maximum daily withdrawal amount: 5000 LTC
-					</div>
-				</div>
-				
-				<div class="row" ng-show="btceTransferCurrency == 'ltc' && btceAdd">
-					<div class="span5">
-						BTC-E imposes following fees and limitations on LTC deposits:<br/>
-						* Minimal deposit amount: 0.1 LTC<br/>
-						* 6 transaction confirmations required
-					</div>
-				</div>
-				
-				<div class="row" ng-show="btceTransferCurrency == 'btc' && !btceAdd">
-					<div class="span5">
-						BTC-E imposes following fees and limitations on BTC withdrawals:<br/>
-						* Minimal withdrawal amount: 0.1 BTC<br/>
-						* Withdrawal fee: 0.001 BTC<br/>
-						* Maximum daily withdrawal amount: 100 BTC
-					</div>
-				</div>
-				
-				<div class="row" ng-show="btceTransferCurrency == 'btc' && btceAdd">
-					<div class="span5">
-						BTC-E imposes following fees and limitations on BTC deposits:<br/>
-						* Minimal deposit amount: 0.0001 LTC<br/>
-						* 3 transaction confirmations required
-					</div>
-				</div>
-				
-				<div class="row" ng-show="btceTransferCurrency == 'usd' && !btceAdd">
-					<div class="span5">
-						Following OKPAY fees and limitations apply:<br/>
-						* Minimal withdrawal amount: 1 USD<br/>
-						* 2% transaction fee
-					</div>
-				</div>
-				
-				<div class="row" ng-show="btceTransferCurrency == 'usd' && btceAdd">
-					<div class="span5">
-						BTC-E imposes following fees and limitations on USD deposits:<br/>
-						* Deposit fee: 4%<br/>
-						Following OKPAY fees and limitations apply:<br/>
-						* Minimal withdrawal amount: 1 USD<br/>
-						* 2% transaction fee
-					</div>
-				</div>
-				
-				<div class="row"  style="margin-top: 1.0em;" ng-show="pendingTxBtce.length > 0">
-					<div class="span5">
-						<b>Pending BTC-E transfers</b>
-					</div>
-				</div>
-				
-				<div class="row" ng-repeat="transaction in pendingTxBtce" style="margin-top: 2px;">
-					<div class="span5" style="background: #d0d0d0;">
-						<div class="row">
-							<div class="span2">
+							<div class="col-md-4">
 								{{transaction.dateStr}}
 							</div>
-							<div class="span1">
+							<div class="col-md-2">
 								{{transaction.type}}
 							</div>
-							<div class="span2" style="text-align: right;">
-								{{transaction.amount|truncate:6:""}} {{transaction.currency|uppercase}}
+							<div class="col-md-4" style="text-align: right;">
+								{{transaction.amount|truncate:6:""}} BTC
 							</div>
 						</div>
 						<div class="row">
-							<div class="span5">
+							<div class="col-md-12">
 								{{transaction.stateInfo}}
 							</div>
 						</div>
 					</div>
 				</div>
 				
-				<div class="row" style="margin-bottom: 1.0em; margin-top: 2.0em;">
+				<div class="row"  style="margin-top: 1.0em;" ng-show="pendingTxLtc.length > 0">
+					<div class="col-md-12">
+						<b>Pending LTC transactions</b>
+					</div>
+				</div>
+				
+				<div class="row" ng-repeat="transaction in pendingTxLtc" style="margin-top: 2px;">
+					<div class="col-md-12" style="background: #d0d0d0;">
+						<div class="row">
+							<div class="col-md-4">
+								{{transaction.dateStr}}
+							</div>
+							<div class="col-md-2">
+								{{transaction.type}}
+							</div>
+							<div class="col-md-4" style="text-align: right;">
+								{{transaction.amount|truncate:6:""}} LTC
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-md-12">
+								{{transaction.stateInfo}}
+							</div>
+						</div>
+					</div>
+				</div>
+				
+				<div class="row" style="margin-top: 6.0em;">
+					<div class="col-md-12">
+						<b>SET PAYMENT METHOD</b> (effective from the next billing period)
+					</div>
+				</div>
+				
+				<div class="row">
+					<div class="col-md-8">
+						
+						<div style="margin: 1.0em;">
+						<ul class="nav nav-pills">
+  							
+  							<li ng-class="{ active: setNextMethod == 'monthly' }">
+    							<a href="" ng-click="setNextMethod = 'monthly'">
+    								Monthly
+    							</a>
+  							</li>
+  							
+  							<li ng-class="{ active: setNextMethod == 'profit' }">
+    							<a href="" ng-click="setNextMethod = 'profit'">
+    								Profit sharing
+    							</a>
+  							</li>
+  								
+						</ul>
+						</div>
+						
+					</div>
+					
+					<div class="col-md-4">
+						<div style="margin: 1.2em;">
+						<select ng-model="setNextCurrency" style="padding: 5px; width: 8em; margin-bottom: 0px;">
+							<option value="btc" title="BTC">BTC</option>
+							<option value="ltc" title="LTC">LTC</option>
+							<option value="usd" title="USD">USD</option>
+						</select>
+						</div>
+					</div>
+					
+				</div>
+				
+				<div ng-show="setNextMethod == 'monthly'">
+					<div class="row" style="margin-bottom: 1.0em;">
+						<div class="col-md-12">
+							<div style="margin-left: 1.0em;">
+								<b>Fixed monthly billing, {{serviceFees["monthly"][setNextCurrency]}} {{setNextCurrency|uppercase}}/month</b>
+								<br/><br/>
+								{{serviceFees["monthly"][setNextCurrency]}} {{setNextCurrency|uppercase}} will be deducted from your account 15th day of every month.
+							</div>
+						</div>
+					</div>
+				</div>
+				
+				<div ng-show="setNextMethod == 'profit'">
+					<div class="row" style="margin-bottom: 1.0em;">
+						<div class="col-md-12">
+							<div style="margin-left: 1.0em;">
+								<b>Fixed monthly billing, {{serviceFees["profit"][setNextCurrency]}} {{setNextCurrency|uppercase}}/month + {{serviceFees["profit"]["share"]}}% of profits on automatic trades</b>
+								<br/><br/>
+								{{serviceFees["profit"][setNextCurrency]}} {{setNextCurrency|uppercase}} will be deducted from your account 15th day of every month and amount equal to 10% of profit will be deducted on each automated profitable pair of transactions. Manual transactions are free.
+							</div>
+						</div>
+					</div>
+				</div>
+				
+				<div class="row">
+					<div class="col-md-12" style="text-align: center;">
+						<a ng-show="paymentMethod != '' && missingReserves <= 0" class="btn" style="margin-top: -0.3em;" ng-click="setNextPaymentMethod()">
+							Set payment method for the next billing period
+						</a>
+						<a ng-show="paymentMethod == '' || missingReserves > 0" class="btn" style="margin-top: -0.3em;" ng-click="setNextPaymentMethod()">
+							Set payment method
+						</a>
+					</div>
+				</div>
+				
+				<div class="row" ng-show="paymentMethod == '' || missingReserves > 0">
+					<div class="col-md-12" style="text-align: center; margin-top: 0.5em; color: green;">
+						After the payment method for the current billing period has been selected, you will only be able to change the payment method starting from the next billing period!
+					</div>
+				</div>
+				
+				<div class="row" ng-repeat="paymentError in paymentErrors">
+					<div class="col-md-12" style="text-align: center; margin-top: 0.5em; color: red;">
+						{{paymentError.text}}
+					</div>
+				</div>
+				
+				<div class="row" style="margin-top: 6.0em;">
+					<div class="col-md-12">
+						<b>BILLING</b>
+					</div>
+				</div>
+				
+				<div class="row" style="margin-top: 1.0em;">
+					<div class="col-md-12">
+					
+						<table class="table">
+							<tr>
+								<th>Billing period</th>
+								<th>Payment method</th>
+								<th>Fixed costs</th>
+								<th>Profit shared</th>
+							</tr>
+							
+							<tr ng-show="paymentMethod != ''">
+								<td>{{dateStart}} - {{dateEnd}}</td>
+								<td>{{paymentMethod}} ({{paymentCurrency|uppercase}})</td>
+								<td>{{serviceFees[paymentMethod][paymentCurrency]}} {{paymentCurrency|uppercase}}</td>
+								<td>
+								<span ng-show="{{sharedProfit['btc'] != '0.0'}}">{{sharedProfit["btc"]|truncate:6:""}} BTC<br/></span>
+								<span ng-show="{{sharedProfit['ltc'] != '0.0'}}">{{sharedProfit["ltc"]|truncate:6:""}} LTC<br/></span>
+								<span ng-show="{{sharedProfit['usd'] != '0.0'}}">{{sharedProfit["usd"]|truncate:6:""}} USD</span>
+								<span ng-show="{{sharedProfit['btc'] == '0.0' && sharedProfit['ltc'] == '0.0' && sharedProfit['usd'] == '0.0'}}">None</span>
+								</td>
+							</tr>
+							
+							<tr ng-show="paymentMethod == ''">
+								<td>{{dateStart}} - {{dateEnd}}</td>
+								<td colspan="3" style="text-align: center;">Not set</td>
+							</tr>
+							
+							<tr ng-show="missingReserves > 0">
+								<td colspan="4" style="border: none; color: red;">
+									Insufficient funds for the current billing period. Deposit funds or change the payment method.
+								</td>
+							</tr>
+							
+							<tr ng-show="nextPaymentMethod != ''">
+								<td>{{nextDateStart}} - {{nextDateEnd}}</td>
+								<td>{{nextPaymentMethod}} ({{nextPaymentCurrency|uppercase}})</td>
+								<td>{{serviceFees[nextPaymentMethod][nextPaymentCurrency]}} {{nextPaymentCurrency|uppercase}}</td>
+								<td>None</td>
+							</tr>
+							
+							<tr ng-show="nextPaymentMethod == ''">
+								<td>{{nextDateStart}} - {{nextDateEnd}}</td>
+								<td colspan="3" style="text-align: center;">Not set</td>
+							</tr>
+							
+					</table>
+				
+					</div>
+				</div>
+				
+			</div>
+
+			<div class="col-md-1"></div>
 			
-					<div class="span7"">
-						<span style="font-size: 1.8em; font-weight: bold;">Mt. Gox</span>
-						<span>(Coming soon!)</span>
+			<div class="col-md-5">
+				
+				<div class="row" style="margin-bottom: 2.0em;">
+					<div class="col-md-12">
+						<b>EXCHANGE ACCOUNTS</b>
+					</div>
+				</div>
+				
+				<div class="row" style="margin-bottom: 1.0em;">
+			
+					<div class="col-md-12" style="font-size: 1.8em; font-weight: bold;">
+						BTC-e
 					</div>
 			
 				</div>
 				
 				<div class="row" style="margin-bottom: 1.0em;">
 			
-					<div class="span5">
-						0 USD &nbsp;&nbsp; 0 BTC
+					<div class="col-md-12">
+						{{user.accountFunds.activeFunds['btce']['usd']|truncate:6:""}} USD &nbsp;&nbsp; 
+						{{user.accountFunds.activeFunds['btce']['btc']|truncate:6:""}} BTC &nbsp;&nbsp;
+						{{user.accountFunds.activeFunds['btce']['ltc']|truncate:6:""}} LTC
 					</div>
 					
 				</div>
 				
 				<div class="row" style="margin-bottom: 2.0em;">
 					
-					<div class="span5">
+					<div class="col-md-12">
 						
+						<div class="row" style="min-height: 3.0em;">
+							<div class="col-md-3">
+								<b>API key:</b>
+							</div>
+							<div class="col-md-6" ng-show="editBtceKey">
+								<input type="text" style="width: 100%; height: 2.0em;" ng-model="user.accountFunds.serviceProperties['btce'].properties['apiKey']"/>
+							</div>
+							<div class="col-md-2" ng-show="editBtceKey">
+								<a class="btn" style="margin-top: -0.3em;" ng-click="setServiceProperty('btce', 'apiKey', user.accountFunds.serviceProperties['btce'].properties['apiKey'])">
+									Set
+								</a>
+							</div>
+							<div class="col-md-6" ng-show="!editBtceKey && user.accountFunds.serviceProperties['btce'].properties['apiKey'] != ''" style="white-space: nowrap; text-overflow: ellipsis; overflow: hidden;">
+								{{user.accountFunds.serviceProperties['btce'].properties['apiKey']}}
+							</div>
+							<div class="col-md-6" ng-show="!editBtceKey && user.accountFunds.serviceProperties['btce'].properties['apiKey'] == ''" style="white-space: nowrap; text-overflow: ellipsis; overflow: hidden; text-align: center; color: red;">
+								Not set
+							</div>
+							<div class="col-md-2" ng-show="!editBtceKey">
+								<a class="btn" style="margin-top: -0.3em;" ng-click="editBtceKey = true">
+									Change
+								</a>
+							</div>
+						</div>
+						<div class="row" style="min-height: 3.0em;">
+							<div class="col-md-3">
+								<b>Secret:</b>
+							</div>
+							<div class="col-md-6" ng-show="editBtceSecret">
+								<input type="text" style="width: 100%; height: 2.0em;" ng-model="user.accountFunds.serviceProperties['btce'].properties['apiSecret']"/>
+							</div>
+							<div class="col-md-2" ng-show="editBtceSecret">
+								<a class="btn" style="margin-top: -0.3em;" ng-click="setServiceProperty('btce', 'apiSecret', user.accountFunds.serviceProperties['btce'].properties['apiSecret'])">
+									Set
+								</a>
+							</div>
+							<div class="col-md-6" ng-show="!editBtceSecret && user.accountFunds.serviceProperties['btce'].properties['apiSecret'] != ''" style="white-space: nowrap; text-overflow: ellipsis; overflow: hidden;">
+								{{user.accountFunds.serviceProperties['btce'].properties['apiSecret']}}
+							</div>
+							<div class="col-md-6" ng-show="!editBtceSecret && user.accountFunds.serviceProperties['btce'].properties['apiSecret'] == ''" style="white-space: nowrap; text-overflow: ellipsis; overflow: hidden; text-align: center; color: red;">
+								Not set
+							</div>
+							<div class="col-md-2" ng-show="!editBtceSecret">
+								<a class="btn" style="margin-top: -0.3em;" ng-click="editBtceSecret = true">
+									Change
+								</a>
+							</div>
+						</div>
+							
+					</div>
+				
+				</div>
+				
+				<div class="row"  style="margin-top: 1.0em;" ng-show="pendingTxBtce.length > 0">
+					<div class="col-md-12">
+						<b>Pending BTC-E transfers</b>
+					</div>
+				</div>
+				
+				<div class="row" ng-repeat="transaction in pendingTxBtce" style="margin-top: 2px;">
+					<div class="col-md-12" style="background: #d0d0d0;">
 						<div class="row">
-							<div class="span5">
-								<ul class="nav nav-pills">
-  									<li ng-class="{ active: mtgoxAdd }">
-    									<a href="" ng-click="mtgoxAdd = true">Add to Mt. Gox</a>
-  									</li>
-  									<li ng-class="{ active: !mtgoxAdd }">
-  										<a href="" ng-click="mtgoxAdd = false">Return to reserve</a>
-  									</li>
-								</ul>
+							<div class="col-md-4">
+								{{transaction.dateStr}}
+							</div>
+							<div class="col-md-2">
+								{{transaction.type}}
+							</div>
+							<div class="col-md-4" style="text-align: right;">
+								{{transaction.amount|truncate:6:""}} {{transaction.currency|uppercase}}
 							</div>
 						</div>
 						<div class="row">
-							<div class="span5">
-								<input type="text" style="width: 6em; padding-top: 14px; padding-bottom: 14px; margin-bottom: 0px;" disabled />
-								<select ng-model="addToMtgox" style="width: 12em; margin-bottom: 0px;" disabled>
-									<option value="btc" title="BTC">BTC</option>
-									<option value="usd" title="USD">USD</option>
-								</select>
-								<button class="btn" ng-show="mtgoxAdd" disabled>
-									Add
-								</button>
-								<button class="btn" ng-show="!mtgoxAdd" disabled>
-									Return
-								</button>
+							<div class="col-md-12">
+								{{transaction.stateInfo}}
 							</div>
 						</div>
+					</div>
+				</div>
+				
+				<div class="row" style="margin-bottom: 1.0em;">
+			
+					<div class="col-md-12" style="font-size: 1.8em; font-weight: bold;">
+						Mt. Gox
+					</div>
+			
+				</div>
+				
+				<div class="row" style="margin-bottom: 1.0em;">
+			
+					<div class="col-md-12">
+						{{user.accountFunds.activeFunds['mtgox']['usd']|truncate:6:""}} USD &nbsp;&nbsp; 
+						{{user.accountFunds.activeFunds['mtgox']['btc']|truncate:6:""}} BTC &nbsp;&nbsp;
+					</div>
+					
+				</div>
+				
+				<div class="row" style="margin-bottom: 2.0em;">
+					
+					<div class="col-md-12">
+						
+						<div class="row" style="min-height: 3.0em;">
+							<div class="col-md-3">
+								<b>API key:</b>
+							</div>
+							<div class="col-md-6" ng-show="editMtgoxKey">
+								<input type="text" style="width: 100%; height: 2.0em;" ng-model="user.accountFunds.serviceProperties['mtgox'].properties['apiKey']"/>
+							</div>
+							<div class="col-md-2" ng-show="editMtgoxKey">
+								<a class="btn" style="margin-top: -0.3em;" ng-click="setServiceProperty('mtgox', 'apiKey', user.accountFunds.serviceProperties['mtgox'].properties['apiKey'])">
+									Set
+								</a>
+							</div>
+							<div class="col-md-6" ng-show="!editMtgoxKey && user.accountFunds.serviceProperties['mtgox'].properties['apiKey'] != ''" style="white-space: nowrap; text-overflow: ellipsis; overflow: hidden;">
+								{{user.accountFunds.serviceProperties['mtgox'].properties['apiKey']}}
+							</div>
+							<div class="col-md-6" ng-show="!editMtgoxKey && user.accountFunds.serviceProperties['mtgox'].properties['apiKey'] == ''" style="white-space: nowrap; text-overflow: ellipsis; overflow: hidden; text-align: center; color: red;">
+								Not set
+							</div>
+							<div class="col-md-2" ng-show="!editMtgoxKey">
+								<a class="btn" style="margin-top: -0.3em;" ng-click="editMtgoxKey = true">
+									Change
+								</a>
+							</div>
+						</div>
+						<div class="row" style="min-height: 3.0em;">
+							<div class="col-md-3">
+								<b>Secret:</b>
+							</div>
+							<div class="col-md-6" ng-show="editMtgoxSecret">
+								<input type="text" style="width: 100%; height: 2.0em;" ng-model="user.accountFunds.serviceProperties['mtgox'].properties['apiSecret']"/>
+							</div>
+							<div class="col-md-2" ng-show="editMtgoxSecret">
+								<a class="btn" style="margin-top: -0.3em;" ng-click="setServiceProperty('mtgox', 'apiSecret', user.accountFunds.serviceProperties['mtgox'].properties['apiSecret'])">
+									Set
+								</a>
+							</div>
+							<div class="col-md-6" ng-show="!editMtgoxSecret && user.accountFunds.serviceProperties['mtgox'].properties['apiSecret'] != ''" style="white-space: nowrap; text-overflow: ellipsis; overflow: hidden;">
+								{{user.accountFunds.serviceProperties['mtgox'].properties['apiSecret']}}
+							</div>
+							<div class="col-md-6" ng-show="!editMtgoxSecret && user.accountFunds.serviceProperties['mtgox'].properties['apiSecret'] == ''" style="white-space: nowrap; text-overflow: ellipsis; overflow: hidden; text-align: center; color: red;">
+								Not set
+							</div>
+							<div class="col-md-2" ng-show="!editMtgoxSecret">
+								<a class="btn" style="margin-top: -0.3em;" ng-click="editMtgoxSecret = true">
+									Change
+								</a>
+							</div>
+						</div>
+							
+					</div>
+				
+				</div>
+				
+				
+				<div class="row" style="margin-top: 6.0em;">
+					
+					<div class="col-md-12" style="padding-top: 1.0em; padding-bottom: 1.0em; text-align: center; border-top: 1px solid black; border-bottom: 1px solid black;">
+						
+						<span ng-show="!removalRequested">
+							<a href="" ng-click="removeAccount()">Remove account</a>
+						</span>
+						
+						<span ng-show="removalRequested">
+							You have requested to remove your account. If you proceed you will lose ALL 
+							personal data associated with your account and any service fee deposits you have made.
+							<br/><br/>
+							<a href="" ng-click="removeAccount()">Yes, I want to proceed</a>
+							| <a href="" ng-click="removalRequested = false">Cancel</a>
+						</span>
+						
+						
 					</div>
 					
 				</div>

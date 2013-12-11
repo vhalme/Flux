@@ -1,5 +1,5 @@
-function LoginCtrl($scope, $routeParams, $location, $http) {
-	
+controllers.controller('LoginCtrl', ['$scope', '$routeParams', '$http', '$location', function($scope, $routeParams, $http, $location) {
+
 	$scope.username = "";
 	
 	$scope.password = undefined;
@@ -47,8 +47,14 @@ function LoginCtrl($scope, $routeParams, $location, $http) {
 				} else if(response.success == 3 || response.success == 1) {
 				
 					console.log("call setUser");
-					$scope.setUser(response.data);
-			
+					
+					var user = response.data;
+					$scope.setUser(user);
+					
+					var tradingSessionId = user.tradingSessions[0].id;
+					$scope.go("/tradingSession/"+tradingSessionId);
+					
+					
 				}
 				
 				$scope.status = "Processed successful response"
@@ -183,4 +189,4 @@ function LoginCtrl($scope, $routeParams, $location, $http) {
 	};
 	
 	
-};
+}]);

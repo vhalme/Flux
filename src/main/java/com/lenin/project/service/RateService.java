@@ -13,7 +13,15 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.mongodb.core.MongoOperations;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 
 import com.lenin.project.AuthComponent;
@@ -39,6 +47,9 @@ public class RateService {
 	@Autowired
 	private AuthComponent authComponent;
 	
+	@Autowired
+	private MongoTemplate mongoTemplate;
+	
 
 	public RateService() {
 	}
@@ -58,10 +69,19 @@ public class RateService {
 
 		List<Rate> rates = new ArrayList<Rate>();
 		
-		if(pair != null && setType != null && from != null && until != null) {
-			rates = rateRepository
-					.findByPairAndSetTypeAndTimeBetweenOrderByTimeAsc(pair,
-							setType, from, until);
+		if(pair != null && setType != null && from != null && until != null && service != null) {
+			
+			Query searchRates = new Query(Criteria.where("setType").is(setType).andOperator(
+					Criteria.where("service").is(service),
+					Criteria.where("pair").is(pair),
+					Criteria.where("time").gt(from),
+					Criteria.where("time").lte(until)
+				)).with(new Sort(Direction.ASC, "time"));
+		
+			rates = mongoTemplate.find(searchRates, Rate.class);
+			
+			//rates = rateRepository.findByPairAndSetTypeAndTimeBetweenOrderByTimeAsc(pair, setType, from, until);
+			
 		} else if (pair != null && from != null && until != null) {
 			rates = rateRepository.findByPairAndTimeBetweenOrderByTimeAsc(
 					pair, from, until);
@@ -102,6 +122,8 @@ public class RateService {
 			return response;
 		}
 		
+		MongoOperations mongoOps = (MongoOperations)mongoTemplate;
+		
 		TradingSession tradingSession = tradingSessionRepository.findOne(tradingSessionId);
 		
 		if(tradingSession.getLive() == false) {
@@ -114,7 +136,10 @@ public class RateService {
 			//rateRepository.save(rate);
 			
 			tradingSession.setRate(rate);
-			tradingSessionRepository.save(tradingSession);
+			mongoOps.updateFirst(new Query(Criteria.where("_id").is(new ObjectId(tradingSession.getId()))),
+					new Update().set("rate", rate), TradingSession.class);
+			
+			//tradingSessionRepository.save(tradingSession);
 			
 			response.setSuccess(1);
 			response.setData(rate);

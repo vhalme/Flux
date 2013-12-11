@@ -1,4 +1,4 @@
-function VerifyEmailCtrl($scope, $routeParams, $http) {
+controllers.controller('VerifyEmailCtrl', ['$scope', '$routeParams', '$http', function($scope, $routeParams, $http) {
 	
 	$scope.status = "Verifying...";
 	
@@ -32,4 +32,4 @@ function VerifyEmailCtrl($scope, $routeParams, $http) {
 	$scope.verifyEmail();
 	
 	
-};
+}]);
